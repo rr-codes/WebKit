@@ -13186,9 +13186,15 @@ inline static NSString *extendSelectionCommand(UITextLayoutDirection direction)
 
 #if ENABLE(WRITING_TOOLS)
 
+// FIXME: (rdar://130540028) Remove uses of the old WritingToolsAllowedInputOptions API in favor of the new WritingToolsResultOptions API, and remove staging.
 - (UIWritingToolsAllowedInputOptions)writingToolsAllowedInputOptions
 {
-    return [_webView writingToolsAllowedInputOptions];
+    return [_webView allowedWritingToolsResultOptions];
+}
+
+- (UIWritingToolsAllowedInputOptions)allowedWritingToolsResultOptions
+{
+    return [_webView allowedWritingToolsResultOptions];
 }
 
 - (BOOL)wantsWritingToolsInlineEditing
