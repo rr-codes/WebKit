@@ -176,6 +176,10 @@ typedef NS_ENUM(NSUInteger, _WKContentSecurityPolicyModeForExtension) {
 
 @property (nonatomic, setter=_setScrollToTextFragmentMarkingEnabled:) BOOL _scrollToTextFragmentMarkingEnabled WK_API_AVAILABLE(macos(15.0), ios(18.0), visionos(2.0));
 
++ (/* nullable */ NSString *)_canonicalSchemeForURLScheme:(NSString *)urlScheme WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
+
+- (void)_uncheckedSetURLSchemeHandler:(id <WKURLSchemeHandler>)urlSchemeHandler forCanonicalURLScheme:(NSString *)urlScheme WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
+
 #if defined(TARGET_OS_VISION) && TARGET_OS_VISION
 @property (nonatomic, setter=_setGamepadAccessRequiresExplicitConsent:) BOOL _gamepadAccessRequiresExplicitConsent WK_API_AVAILABLE(visionos(2.0));
 @property (nonatomic, setter=_setOverlayRegionsEnabled:) BOOL _overlayRegionsEnabled WK_API_AVAILABLE(visionos(WK_XROS_TBA));

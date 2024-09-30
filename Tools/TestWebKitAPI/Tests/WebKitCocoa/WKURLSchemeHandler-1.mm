@@ -1773,6 +1773,18 @@ TEST(URLSchemeHandler, ModulePreload)
     TestWebKitAPI::Util::run(&done);
 }
 
+TEST(URLSchemeHandler, CanonicalScheme)
+{
+    RetainPtr canonicalCustomScheme = [WKWebViewConfiguration _canonicalSchemeForURLScheme:@"my-custom-scheme"];
+    EXPECT_WK_STREQ(canonicalCustomScheme.get(), @"my-custom-scheme");
+
+    RetainPtr canonicalHttpsScheme = [WKWebViewConfiguration _canonicalSchemeForURLScheme:@"https"];
+    EXPECT_NULL(canonicalHttpsScheme.get());
+
+    RetainPtr canonicalInvalidScheme = [WKWebViewConfiguration _canonicalSchemeForURLScheme:@"invalid scheme"];
+    EXPECT_NULL(canonicalInvalidScheme.get());
+}
+
 static void runRedirectToHandledSchemeTest(unsigned redirectionCode)
 {
     TestWebKitAPI::HTTPServer server({

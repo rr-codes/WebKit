@@ -1555,6 +1555,23 @@ static WebKit::AttributionOverrideTesting toAttributionOverrideTesting(_WKAttrib
 
 #endif
 
+- (void)_uncheckedSetURLSchemeHandler:(id<WKURLSchemeHandler>)urlSchemeHandler forCanonicalURLScheme:(NSString *)urlScheme
+{
+    _pageConfiguration->setURLSchemeHandlerForURLScheme(WebKit::WebURLSchemeHandlerCocoa::create(urlSchemeHandler), urlScheme);
+}
+
++ (NSString *)_canonicalSchemeForURLScheme:(NSString *)urlScheme
+{
+    if ([WKWebView handlesURLScheme:urlScheme])
+        return nil;
+
+    auto canonicalScheme = WTF::URLParser::maybeCanonicalizeScheme(String(urlScheme));
+    if (!canonicalScheme)
+        return nil;
+
+    return (NSString *)canonicalScheme.value();
+}
+
 @end
 
 @implementation WKWebViewConfiguration (WKDeprecated)
