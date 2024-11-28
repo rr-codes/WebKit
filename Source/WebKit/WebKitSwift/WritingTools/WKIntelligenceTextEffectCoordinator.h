@@ -34,11 +34,11 @@
 #import <WebKit/_WKTextPreview.h>
 #endif
 
+#import <WritingTools/WritingTools.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class WKIntelligenceTextEffectCoordinator;
-
-@class WTTextSuggestion;
 
 NS_SWIFT_UI_ACTOR
 @protocol WKIntelligenceTextEffectCoordinatorDelegate <NSObject>
@@ -74,7 +74,7 @@ NS_SWIFT_UI_ACTOR
 
 - (instancetype)initWithDelegate:(id<WKIntelligenceTextEffectCoordinatorDelegate>)delegate;
 
-- (void)startAnimationForRange:(NSRange)range completion:(void (^)(void))completion;
+- (void)startAnimationForType:(WTSessionType)type withRange:(NSRange)range completion:(void (^)(void))completion;
 
 - (void)requestReplacementWithProcessedRange:(NSRange)range finished:(BOOL)finished characterDelta:(NSInteger)characterDelta operation:(void (^)(void (^)(void)))operation completion:(void (^)(void))completion;
 

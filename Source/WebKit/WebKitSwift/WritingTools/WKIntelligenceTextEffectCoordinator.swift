@@ -29,6 +29,8 @@ import WebKitSwift
 
     @nonobjc final private var processedRangeOffset = 0
     @nonobjc final private var contextRange: Range<Int>? = nil
+    @nonobjc final private var sessionType: WTSessionType = .proofreading
+    @nonobjc final private var previousProcessedRange: Range<Int> = 0..<0
 
     // Use the corresponding setter functions instead of setting these directly.
     @nonobjc final private var activePonderingEffect: PlatformIntelligencePonderingTextEffect<Chunk>? = nil
@@ -62,8 +64,8 @@ import WebKitSwift
         self.delegate = delegate
     }
 
-    @objc(startAnimationForRange:completion:)
-    public func startAnimation(for range: NSRange) async {
+    @objc(startAnimationForType:withRange:completion:)
+    public func startAnimation(for type: WTSessionType, with range: NSRange) async {
         self.reset()
 
         assert(self.activePonderingEffect == nil, "Intelligence text effect coordinator: cannot start a new animation while a pondering effect is already active")
@@ -75,6 +77,7 @@ import WebKitSwift
         }
 
         self.contextRange = contextRange
+        self.sessionType = type
 
         let chunk = Self.Chunk.Pondering(range: contextRange)
         let effect = PlatformIntelligencePonderingTextEffect(chunk: chunk as Chunk)
@@ -88,6 +91,8 @@ import WebKitSwift
             assertionFailure("Intelligence text effect coordinator: Unable to create Swift.Range from NSRange \(processedRange)")
             return
         }
+
+        NSLog("RR_CODES requestReplacement processedRange \(processedRange) previousProcessedRange \(self.previousProcessedRange) finished \(finished) characterDelta \(characterDelta)")
 
         let asyncBlock = async(operation)
         let request = Self.ReplacementOperationRequest(processedRange: range, finished: finished, characterDelta: characterDelta, operation: asyncBlock)
@@ -234,8 +239,9 @@ import WebKitSwift
     }
 
     @nonobjc final private func setActivePonderingEffect(_ effect: PlatformIntelligencePonderingTextEffect<Chunk>?) async {
+//        NSLog("RR_CODES setActivePonderingEffect \(String(describing: effect))")
+
         guard (self.activePonderingEffect == nil && effect != nil) || (self.activePonderingEffect != nil && effect == nil) else {
-            assertionFailure("Intelligence text effect coordinator: trying to either set a new pondering effect when there is an ongoing one, or trying to remove an effect when there are none.")
             return
         }
 
@@ -262,6 +268,8 @@ import WebKitSwift
     }
 
     @nonobjc final private func setActiveReplacementEffect(_ effect: PlatformIntelligenceReplacementTextEffect<Chunk>?) async {
+//        NSLog("RR_CODES setActiveReplacementEffect \(String(describing: effect))")
+
         guard (self.activeReplacementEffect == nil && effect != nil) || (self.activeReplacementEffect != nil && effect == nil) else {
             assertionFailure("Intelligence text effect coordinator: trying to either set a new replacement effect when there is an ongoing one, or trying to remove an effect when there are none.")
             return
@@ -312,6 +320,8 @@ extension WKIntelligenceTextEffectCoordinator: PlatformIntelligenceTextEffectVie
     }
 
     private func updateTextChunkVisibility(_ chunk: Chunk, visible: Bool, force: Bool) async {
+//        NSLog("RR_CODES updateTextChunkVisibility chunk \(type(of: chunk)) range \(chunk.range) visible \(visible) force \(force)")
+
         if chunk is Chunk.Pondering && visible && !force {
             // Typically, if `chunk` is part of a pondering effect, this delegate method will get called with `visible == true`
             // once the pondering effect is removed. However, instead of performing that logic here, it is done in `setActivePonderingEffect`
@@ -360,14 +370,15 @@ extension WKIntelligenceTextEffectCoordinator: PlatformIntelligenceTextEffectVie
 #if canImport(UIKit)
         return previews
 #else
-        let suggestionRects = await self.delegate.intelligenceTextEffectCoordinator(self, rectsForProofreadingSuggestionsIn: NSRange(chunk.range))
+//        let suggestionRects = await self.delegate.intelligenceTextEffectCoordinator(self, rectsForProofreadingSuggestionsIn: NSRange(chunk.range))
         return previews.map {
-            _WTTextPreview(snapshotImage: $0.previewImage, presentationFrame: $0.presentationFrame, backgroundColor: nil, clippingPath: nil, scale: 1, candidateRects: suggestionRects)
+            _WTTextPreview(snapshotImage: $0.previewImage, presentationFrame: $0.presentationFrame, backgroundColor: nil, clippingPath: nil, scale: 1, candidateRects: nil)
         }
 #endif
     }
 
     func replacementEffectWillBegin(_ effect: PlatformIntelligenceReplacementTextEffect<Chunk>) async {
+//        NSLog("RR_CODES replacementEffectWillBegin")
         // Stop the current pondering effect, and then create a new pondering effect once the replacement effect is complete.
         await self.setActivePonderingEffect(nil)
     }
@@ -394,6 +405,8 @@ extension WKIntelligenceTextEffectCoordinator: PlatformIntelligenceTextEffectVie
     }
 
     func replacementEffectDidComplete(_ effect: PlatformIntelligenceReplacementTextEffect<Chunk>) async {
+//        NSLog("RR_CODES replacementEffectDidComplete")
+
         guard let contextRange = self.contextRange else {
             assertionFailure("Intelligence text effect coordinator: Invariant failed (replacement effect completed without a context range)")
             return
@@ -409,7 +422,7 @@ extension WKIntelligenceTextEffectCoordinator: PlatformIntelligenceTextEffectVie
 
         // Inform the coordinator the active replacement effect is over, and then inform the delegate to decorate the replacements if needed.
         await self.setActiveReplacementEffect(nil)
-        await self.delegate.intelligenceTextEffectCoordinator(self, decorateReplacementsFor: NSRange(rangeAfterReplacement))
+//        await self.delegate.intelligenceTextEffectCoordinator(self, decorateReplacementsFor: NSRange(rangeAfterReplacement))
 
         // If this is the last chunk, that means that there will be no subsequent replacements, and no replacements other than
         // this one are in the replacement queue.
@@ -417,6 +430,8 @@ extension WKIntelligenceTextEffectCoordinator: PlatformIntelligenceTextEffectVie
         // Therefore, the entire animation is over and the selection can be restored to the context range.
 
         if chunk.finished {
+//            NSLog("RR_CODES replacementEffectDidComplete chunk.finished")
+
             self.replacementQueue.removeFirst()
             await self.restoreSelectionAcceptedReplacements(true)
             return
@@ -441,6 +456,7 @@ extension WKIntelligenceTextEffectCoordinator: PlatformIntelligenceTextEffectVie
 
         // When all text has been processed, the unprocessed range will be empty, and no pondering effect need be created.
         if !unprocessedRangeChunk.range.isEmpty {
+//            NSLog("RR_CODES replacementEffectDidComplete added pondering effect")
             await self.setActivePonderingEffect(ponderEffectForUnprocessedRange)
         }
 

@@ -29,7 +29,6 @@
 #if PLATFORM(MAC)
 
 #import "AppKitSPI.h"
-#import "WKTextAnimationType.h"
 #import "WKTextFinderClient.h"
 #import "WKWebViewConfigurationPrivate.h"
 #import "WebBackForwardList.h"

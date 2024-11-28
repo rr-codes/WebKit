@@ -290,9 +290,6 @@ void PageClientImpl::didCommitLoadForMainFrame(const String&, bool)
     m_impl->dismissContentRelativeChildWindowsWithAnimation(true);
     m_impl->clearPromisedDragImage();
     m_impl->pageDidScroll({0, 0});
-#if ENABLE(WRITING_TOOLS)
-    m_impl->hideTextAnimationView();
-#endif
 }
 
 void PageClientImpl::didFinishLoadingDataForCustomContentProvider(const String& suggestedFilename, std::span<const uint8_t> dataReference)

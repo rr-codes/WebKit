@@ -29,7 +29,6 @@
 
 #import "PDFPluginIdentifier.h"
 #import "WKIntelligenceTextEffectCoordinator.h"
-#import "WKTextAnimationType.h"
 #import <WebKit/WKShareSheet.h>
 #import <WebKit/WKWebViewConfiguration.h>
 #import <WebKit/WKWebViewPrivate.h>
@@ -258,8 +257,9 @@ struct PerWebProcessState {
     RetainPtr<WTSession> _activeWritingToolsSession;
 
     RetainPtr<WKIntelligenceTextEffectCoordinator> _intelligenceTextEffectCoordinator;
+    NSRange _previousProcessedRange;
+    NSInteger _previousStringLength;
 
-    NSUInteger _partialIntelligenceTextAnimationCount;
     BOOL _writingToolsTextReplacementsFinished;
 #endif
 
@@ -433,11 +433,7 @@ struct PerWebProcessState {
 - (PlatformWritingToolsResultOptions)allowedWritingToolsResultOptions;
 #endif
 
-- (void)_didEndPartialIntelligenceTextAnimation;
 - (BOOL)_writingToolsTextReplacementsFinished;
-
-- (void)_addTextAnimationForAnimationID:(NSUUID *)uuid withData:(const WebCore::TextAnimationData&)styleData;
-- (void)_removeTextAnimationForAnimationID:(NSUUID *)uuid;
 
 #endif
 

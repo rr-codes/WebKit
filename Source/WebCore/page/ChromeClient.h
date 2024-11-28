@@ -144,7 +144,6 @@ enum class ModalContainerControlType : uint8_t;
 enum class ModalContainerDecision : uint8_t;
 enum class PluginUnavailabilityReason : uint8_t;
 enum class RouteSharingPolicy : uint8_t;
-enum class TextAnimationRunMode : uint8_t;
 
 enum class MediaProducerMediaState : uint32_t;
 using MediaProducerMediaStateFlags = OptionSet<MediaProducerMediaState>;
@@ -685,20 +684,6 @@ public:
     virtual void proofreadingSessionShowDetailsForSuggestionWithIDRelativeToRect(const WritingTools::TextSuggestionID&, IntRect) { }
 
     virtual void proofreadingSessionUpdateStateForSuggestionWithID(WritingTools::TextSuggestionState, const WritingTools::TextSuggestionID&) { }
-
-    virtual void removeTextAnimationForAnimationID(const WTF::UUID&) { }
-
-    virtual void removeInitialTextAnimationForActiveWritingToolsSession() { }
-
-    virtual void addInitialTextAnimationForActiveWritingToolsSession() { }
-
-    virtual void addSourceTextAnimationForActiveWritingToolsSession(const WTF::UUID& /*sourceAnimationUUID*/, const WTF::UUID& /*destinationAnimationUUID*/, bool, const CharacterRange&, const String&, CompletionHandler<void(TextAnimationRunMode)>&&) { }
-
-    virtual void addDestinationTextAnimationForActiveWritingToolsSession(const WTF::UUID& /*sourceAnimationUUID*/, const WTF::UUID& /*destinationAnimationUUID*/, const std::optional<CharacterRange>&, const String&) { }
-
-    virtual void saveSnapshotOfTextPlaceholderForAnimation(const SimpleRange&) { };
-
-    virtual void clearAnimationsForActiveWritingToolsSession() { };
 #endif
 
     virtual void setIsInRedo(bool) { }

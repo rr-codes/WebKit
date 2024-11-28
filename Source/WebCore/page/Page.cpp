@@ -5174,11 +5174,6 @@ std::optional<SimpleRange> Page::contextRangeForActiveWritingToolsSession() cons
 {
     return m_writingToolsController->activeSessionRange();
 }
-
-void Page::intelligenceTextAnimationsDidComplete()
-{
-    m_writingToolsController->intelligenceTextAnimationsDidComplete();
-}
 #endif
 
 void Page::hasActiveNowPlayingSessionChanged()
