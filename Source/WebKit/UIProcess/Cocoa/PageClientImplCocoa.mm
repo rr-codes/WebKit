@@ -26,11 +26,8 @@
 #import "config.h"
 #import "PageClientImplCocoa.h"
 
-
-#import "WKTextAnimationType.h"
 #import "WKWebViewInternal.h"
 #import <WebCore/AlternativeTextUIController.h>
-#import <WebCore/TextAnimationTypes.h>
 #import <WebCore/WritingToolsTypes.h>
 #import <WebKit/WKWebViewConfigurationPrivate.h>
 #import <WebKit/WKWebViewPrivateForTesting.h>
@@ -285,24 +282,9 @@ void PageClientImplCocoa::writingToolsActiveDidChange()
     [m_webView didChangeValueForKey:writingToolsActiveKey];
 }
 
-void PageClientImplCocoa::didEndPartialIntelligenceTextAnimation()
-{
-    [m_webView _didEndPartialIntelligenceTextAnimation];
-}
-
 bool PageClientImplCocoa::writingToolsTextReplacementsFinished()
 {
     return [m_webView _writingToolsTextReplacementsFinished];
-}
-
-void PageClientImplCocoa::addTextAnimationForAnimationID(const WTF::UUID& uuid, const WebCore::TextAnimationData& data)
-{
-    [m_webView _addTextAnimationForAnimationID:uuid withData:data];
-}
-
-void PageClientImplCocoa::removeTextAnimationForAnimationID(const WTF::UUID& uuid)
-{
-    [m_webView _removeTextAnimationForAnimationID:uuid];
 }
 
 #endif

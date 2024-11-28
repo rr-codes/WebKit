@@ -525,20 +525,6 @@ private:
     void proofreadingSessionShowDetailsForSuggestionWithIDRelativeToRect(const WebCore::WritingTools::TextSuggestionID&, WebCore::IntRect selectionBoundsInRootView) final;
 
     void proofreadingSessionUpdateStateForSuggestionWithID(WebCore::WritingTools::TextSuggestionState, const WebCore::WritingTools::TextSuggestionID&) final;
-
-    void removeTextAnimationForAnimationID(const WTF::UUID&) final;
-
-    void removeInitialTextAnimationForActiveWritingToolsSession() final;
-
-    void addInitialTextAnimationForActiveWritingToolsSession() final;
-
-    void addSourceTextAnimationForActiveWritingToolsSession(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, bool finished, const WebCore::CharacterRange&, const String&, CompletionHandler<void(WebCore::TextAnimationRunMode)>&&) final;
-
-    void addDestinationTextAnimationForActiveWritingToolsSession(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, const std::optional<WebCore::CharacterRange>&, const String&) final;
-
-    void saveSnapshotOfTextPlaceholderForAnimation(const WebCore::SimpleRange&);
-
-    void clearAnimationsForActiveWritingToolsSession() final;
 #endif
 
     bool requiresScriptTelemetryForURL(const URL&, const WebCore::SecurityOrigin& topOrigin) const final;

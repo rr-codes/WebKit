@@ -68,7 +68,6 @@
 #import "WKPrintingView.h"
 #import "WKQuickLookPreviewController.h"
 #import "WKRevealItemPresenter.h"
-#import "WKTextAnimationManager.h"
 #import "WKTextInputWindowController.h"
 #import "WKTextPlaceholder.h"
 #import "WKViewLayoutStrategy.h"
@@ -3429,7 +3428,7 @@ void WebViewImpl::dismissContentRelativeChildWindowsFromViewOnly()
 bool WebViewImpl::hasContentRelativeChildViews() const
 {
 #if ENABLE(WRITING_TOOLS)
-    return [m_view _web_hasActiveIntelligenceTextEffects] || [m_textAnimationTypeManager hasActiveTextAnimationType];
+    return [m_view _web_hasActiveIntelligenceTextEffects];
 #else
     return false;
 #endif
@@ -3467,7 +3466,6 @@ void WebViewImpl::suppressContentRelativeChildViews()
 {
 #if ENABLE(WRITING_TOOLS)
     [m_view _web_suppressContentRelativeChildViews];
-    [m_textAnimationTypeManager suppressTextAnimationType];
 #endif
 }
 
@@ -3475,7 +3473,6 @@ void WebViewImpl::restoreContentRelativeChildViews()
 {
 #if ENABLE(WRITING_TOOLS)
     [m_view _web_restoreContentRelativeChildViews];
-    [m_textAnimationTypeManager restoreTextAnimationType];
 #endif
 }
 
@@ -4627,30 +4624,6 @@ void WebViewImpl::showWritingTools(WTRequestedTool tool)
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
     [[PAL::getWTWritingToolsClass() sharedInstance] showTool:tool forSelectionRect:selectionRect ofView:m_view.getAutoreleased() forDelegate:(NSObject<WTWritingToolsDelegate> *)m_view.getAutoreleased()];
 ALLOW_DEPRECATED_DECLARATIONS_END
-}
-
-void WebViewImpl::addTextAnimationForAnimationID(WTF::UUID uuid, const WebCore::TextAnimationData& data)
-{
-    if (!m_page->preferences().textAnimationsEnabled())
-        return;
-
-    if (!m_textAnimationTypeManager)
-        m_textAnimationTypeManager = adoptNS([[WKTextAnimationManager alloc] initWithWebViewImpl:*this]);
-
-    [m_textAnimationTypeManager addTextAnimationForAnimationID:uuid withData:data];
-}
-
-void WebViewImpl::removeTextAnimationForAnimationID(WTF::UUID uuid)
-{
-    if (!m_page->preferences().textAnimationsEnabled())
-        return;
-
-    [m_textAnimationTypeManager removeTextAnimationForAnimationID:uuid];
-}
-
-void WebViewImpl::hideTextAnimationView()
-{
-    [m_textAnimationTypeManager hideTextAnimationView];
 }
 
 #endif // ENABLE(WRITING_TOOLS)

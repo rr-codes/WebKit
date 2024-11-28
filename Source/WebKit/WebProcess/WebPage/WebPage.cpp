@@ -347,7 +347,6 @@
 #include "RemoteLayerTreeDrawingArea.h"
 #include "RemoteLayerTreeTransaction.h"
 #include "RemoteObjectRegistryMessages.h"
-#include "TextAnimationController.h"
 #include "TextCheckingControllerProxy.h"
 #include "VideoPresentationManager.h"
 #include "WKStringCF.h"
@@ -678,9 +677,6 @@ WebPage::WebPage(PageIdentifier pageID, WebPageCreationParameters&& parameters)
     , m_appHighlightsVisible(parameters.appHighlightsVisible)
 #endif
     , m_historyItemClient(WebHistoryItemClient::create(*this))
-#if ENABLE(WRITING_TOOLS)
-    , m_textAnimationController(makeUniqueRef<TextAnimationController>(*this))
-#endif
 {
     WEBPAGE_RELEASE_LOG(Loading, "constructor:");
 

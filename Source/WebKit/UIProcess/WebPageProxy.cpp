@@ -11081,13 +11081,6 @@ void WebPageProxy::resetState(ResetStateReason resetStateReason)
     setMediaCapability(nullptr);
 #endif
 
-#if ENABLE(WRITING_TOOLS)
-    auto& completionHandlers = internals().completionHandlerForAnimationID;
-    for (auto& completionHandler : completionHandlers.values())
-        completionHandler(WebCore::TextAnimationRunMode::DoNotRun);
-    completionHandlers.clear();
-#endif
-
     m_nowPlayingMetadataObservers.clear();
     m_nowPlayingMetadataObserverForTesting = nullptr;
 

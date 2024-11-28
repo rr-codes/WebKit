@@ -75,7 +75,6 @@
 #import "WKSelectMenuListViewController.h"
 #import "WKSyntheticFlagsChangedWebEvent.h"
 #import "WKTapHighlightView.h"
-#import "WKTextAnimationType.h"
 #import "WKTextInputListViewController.h"
 #import "WKTextInteractionWrapper.h"
 #import "WKTextPlaceholder.h"
@@ -135,7 +134,6 @@
 #import <WebCore/Scrollbar.h>
 #import <WebCore/ShareData.h>
 #import <WebCore/TextAlternativeWithRange.h>
-#import <WebCore/TextAnimationTypes.h>
 #import <WebCore/TextIndicator.h>
 #import <WebCore/TextIndicatorWindow.h>
 #import <WebCore/TextRecognitionResult.h>
@@ -202,7 +200,6 @@
 #endif
 
 #if ENABLE(WRITING_TOOLS)
-#import "WKSTextAnimationManager.h"
 #import "WebKitSwiftSoftLink.h"
 #endif
 
@@ -13498,79 +13495,6 @@ inline static NSString *extendSelectionCommand(UITextLayoutDirection direction)
     return !!_suppressSelectionAssistantReasons;
 }
 
-#pragma mark - WKSTextAnimationSourceDelegate
-
-#if ENABLE(WRITING_TOOLS)
-- (void)targetedPreviewForID:(NSUUID *)uuid completionHandler:(void (^)(UITargetedPreview *))completionHandler
-{
-    auto animationID = WTF::UUID::fromNSUUID(uuid);
-
-    _page->getTextIndicatorForID(*animationID, [protectedSelf = retainPtr(self), completionHandler = makeBlockPtr(completionHandler)] (auto&& indicatorData) {
-        if (!indicatorData) {
-            completionHandler(nil);
-            return;
-        }
-
-        RetainPtr targetedPreview = [protectedSelf _createTargetedPreviewFromTextIndicator:*indicatorData previewContainer:[protectedSelf containerForContextMenuHintPreviews]];
-        completionHandler(targetedPreview.get());
-    });
-}
-
-- (void)updateUnderlyingTextVisibilityForTextAnimationID:(NSUUID *)uuid visible:(BOOL)visible completionHandler:(void (^)(void))completionHandler
-{
-    NSUUID *destinationUUID = _sourceAnimationIDtoDestinationAnimationID.get()[uuid];
-    auto textUUID = WTF::UUID::fromNSUUID(uuid);
-    if (destinationUUID)
-        textUUID = WTF::UUID::fromNSUUID(destinationUUID);
-
-    _page->updateUnderlyingTextVisibilityForTextAnimationID(*textUUID, visible, [completionHandler = makeBlockPtr(completionHandler)] () {
-        completionHandler();
-    });
-}
-
-- (UIView *)containingViewForTextAnimationType
-{
-    return self;
-}
-
-- (void)callCompletionHandlerForAnimationID:(NSUUID *)uuid
-{
-    NSUUID *destinationUUID = _sourceAnimationIDtoDestinationAnimationID.get()[uuid];
-
-    if (!destinationUUID)
-        return;
-
-    auto animationUUID = WTF::UUID::fromNSUUID(destinationUUID);
-    _page->callCompletionHandlerForAnimationID(*animationUUID, WebCore::TextAnimationRunMode::RunAnimation);
-}
-
-- (void)callCompletionHandlerForAnimationID:(NSUUID *)uuid completionHandler:(void (^)(UITargetedPreview * _Nullable))completionHandler
-{
-    auto animationUUID = WTF::UUID::fromNSUUID(uuid);
-
-    // Store this completion handler so that it can be called after the execution of the next
-    // call to replace the text and eventually use this completion handler to pass the
-    // text indicator to UIKit.
-    _page->storeDestinationCompletionHandlerForAnimationID(*animationUUID, [protectedSelf = retainPtr(self), completionHandler = makeBlockPtr(completionHandler)] (auto&& indicatorData) {
-        if (!indicatorData) {
-            completionHandler(nil);
-            return;
-        }
-
-        RetainPtr targetedPreview = [protectedSelf _createTargetedPreviewFromTextIndicator:*indicatorData previewContainer:[protectedSelf containerForContextMenuHintPreviews]];
-        completionHandler(targetedPreview.get());
-    });
-
-    _page->callCompletionHandlerForAnimationID(*animationUUID, WebCore::TextAnimationRunMode::RunAnimation);
-}
-
-- (void)replacementEffectDidComplete
-{
-    _page->didEndPartialIntelligenceTextAnimationImpl();
-}
-
-#endif
-
 #pragma mark - BETextInteractionDelegate
 
 #if USE(BROWSERENGINEKIT)
@@ -13654,46 +13578,6 @@ inline static NSString *extendSelectionCommand(UITextLayoutDirection direction)
 - (void)writingToolsSession:(WTSession *)session didReceiveAction:(WTAction)action
 {
     [_webView writingToolsSession:session didReceiveAction:action];
-}
-
-static inline WKTextAnimationType toWKTextAnimationType(WebCore::TextAnimationType style)
-{
-    switch (style) {
-    case WebCore::TextAnimationType::Initial:
-        return WKTextAnimationTypeInitial;
-    case WebCore::TextAnimationType::Source:
-        return WKTextAnimationTypeSource;
-    case WebCore::TextAnimationType::Final:
-        return WKTextAnimationTypeFinal;
-    }
-}
-
-- (void)addTextAnimationForAnimationID:(NSUUID *)uuid withData:(const WebCore::TextAnimationData&)data
-{
-    if (!_page->preferences().textAnimationsEnabled())
-        return;
-
-    if (data.style == WebCore::TextAnimationType::Final)
-        [_sourceAnimationIDtoDestinationAnimationID setObject:uuid forKey:data.sourceAnimationUUID];
-
-    if (!_textAnimationManager)
-        _textAnimationManager = adoptNS([WebKit::allocWKSTextAnimationManagerInstance() initWithDelegate:self]);
-
-    [_textAnimationManager addTextAnimationForAnimationID:uuid withStyleType:toWKTextAnimationType(data.style)];
-}
-
-- (void)removeTextAnimationForAnimationID:(NSUUID *)uuid
-{
-    if (!uuid)
-        return;
-
-    if (!_page->preferences().textAnimationsEnabled())
-        return;
-
-    if (!_textAnimationManager)
-        return;
-
-    [_textAnimationManager removeTextAnimationForAnimationID:uuid];
 }
 
 #endif

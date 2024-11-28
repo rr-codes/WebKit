@@ -46,9 +46,6 @@ struct AppHighlight;
 
 namespace WebKit {
 
-struct TextAnimationData;
-enum class TextAnimationType : uint8_t;
-
 class PageClientImplCocoa : public PageClient {
 public:
     PageClientImplCocoa(WKWebView *);
@@ -119,11 +116,7 @@ public:
     void writingToolsActiveWillChange() final;
     void writingToolsActiveDidChange() final;
 
-    void didEndPartialIntelligenceTextAnimation() final;
     bool writingToolsTextReplacementsFinished() final;
-
-    void addTextAnimationForAnimationID(const WTF::UUID&, const WebCore::TextAnimationData&) final;
-    void removeTextAnimationForAnimationID(const WTF::UUID&) final;
 #endif
 
 #if ENABLE(SCREEN_TIME)

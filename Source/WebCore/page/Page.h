@@ -1248,7 +1248,6 @@ public:
     WEBCORE_EXPORT void setSelectionForActiveWritingToolsSession(const CharacterRange&);
 
     WEBCORE_EXPORT std::optional<SimpleRange> contextRangeForActiveWritingToolsSession() const;
-    WEBCORE_EXPORT void intelligenceTextAnimationsDidComplete();
 #endif
 
     bool hasActiveNowPlayingSession() const { return m_hasActiveNowPlayingSession; }

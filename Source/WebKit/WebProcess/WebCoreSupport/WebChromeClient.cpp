@@ -1925,41 +1925,6 @@ void WebChromeClient::proofreadingSessionUpdateStateForSuggestionWithID(WritingT
     protectedPage()->proofreadingSessionUpdateStateForSuggestionWithID(state, replacementID);
 }
 
-void WebChromeClient::removeTextAnimationForAnimationID(const WTF::UUID& animationID)
-{
-    protectedPage()->removeTextAnimationForAnimationID(animationID);
-}
-
-void WebChromeClient::removeInitialTextAnimationForActiveWritingToolsSession()
-{
-    protectedPage()->removeInitialTextAnimationForActiveWritingToolsSession();
-}
-
-void WebChromeClient::addInitialTextAnimationForActiveWritingToolsSession()
-{
-    protectedPage()->addInitialTextAnimationForActiveWritingToolsSession();
-}
-
-void WebChromeClient::addSourceTextAnimationForActiveWritingToolsSession(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, bool finished, const CharacterRange& range, const String& string, CompletionHandler<void(WebCore::TextAnimationRunMode)>&& completionHandler)
-{
-    protectedPage()->addSourceTextAnimationForActiveWritingToolsSession(sourceAnimationUUID, destinationAnimationUUID, finished, range, string, WTFMove(completionHandler));
-}
-
-void WebChromeClient::addDestinationTextAnimationForActiveWritingToolsSession(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, const std::optional<CharacterRange>& range, const String& string)
-{
-    protectedPage()->addDestinationTextAnimationForActiveWritingToolsSession(sourceAnimationUUID, destinationAnimationUUID, range, string);
-}
-
-void WebChromeClient::saveSnapshotOfTextPlaceholderForAnimation(const WebCore::SimpleRange& placeholderRange)
-{
-    protectedPage()->saveSnapshotOfTextPlaceholderForAnimation(placeholderRange);
-}
-
-void WebChromeClient::clearAnimationsForActiveWritingToolsSession()
-{
-    protectedPage()->clearAnimationsForActiveWritingToolsSession();
-}
-
 #endif
 
 void WebChromeClient::setIsInRedo(bool isInRedo)

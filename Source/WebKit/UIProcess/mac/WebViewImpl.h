@@ -32,7 +32,6 @@
 #include "ImageAnalysisUtilities.h"
 #include "PDFPluginIdentifier.h"
 #include "WKLayoutMode.h"
-#include "WKTextAnimationType.h"
 #include <WebCore/DOMPasteAccess.h>
 #include <WebCore/FocusDirection.h>
 #include <WebCore/PlatformPlaybackSessionInterface.h>
@@ -75,7 +74,6 @@ OBJC_CLASS WKMouseTrackingObserver;
 OBJC_CLASS WKRevealItemPresenter;
 OBJC_CLASS _WKWarningView;
 OBJC_CLASS WKShareSheet;
-OBJC_CLASS WKTextAnimationManager;
 OBJC_CLASS WKViewLayoutStrategy;
 OBJC_CLASS WKWebView;
 OBJC_CLASS WKWindowVisibilityObserver;
@@ -748,11 +746,6 @@ public:
 
 #if ENABLE(WRITING_TOOLS)
     void showWritingTools(WTRequestedTool = WTRequestedToolIndex);
-
-    void addTextAnimationForAnimationID(WTF::UUID, const WebCore::TextAnimationData&);
-    void removeTextAnimationForAnimationID(WTF::UUID);
-
-    void hideTextAnimationView();
 #endif
 
 #if HAVE(INLINE_PREDICTIONS)
@@ -983,10 +976,6 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     
 #if ENABLE(DRAG_SUPPORT)
     NSInteger m_initialNumberOfValidItemsForDrop { 0 };
-#endif
-
-#if ENABLE(WRITING_TOOLS)
-    RetainPtr<WKTextAnimationManager> m_textAnimationTypeManager;
 #endif
 
 #if HAVE(NSSCROLLVIEW_SEPARATOR_TRACKING_ADAPTER)

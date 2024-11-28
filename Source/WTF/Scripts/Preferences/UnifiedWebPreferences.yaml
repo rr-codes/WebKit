@@ -7389,20 +7389,6 @@ TemporaryTileCohortRetentionEnabled:
     WebCore:
       default: true
 
-TextAnimationsEnabled:
-  type: bool
-  status: internal
-  humanReadableName: "Text Animations"
-  humanReadableDescription: "Text Animations"
-  condition: ENABLE(WRITING_TOOLS)
-  defaultValue:
-    WebKitLegacy:
-      default: true
-    WebKit:
-      default: true
-    WebCore:
-      default: true
-
 TextAreasAreResizable:
   type: bool
   status: embedder

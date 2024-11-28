@@ -84,7 +84,6 @@
 #import "WKSecurityOriginInternal.h"
 #import "WKSharedAPICast.h"
 #import "WKSnapshotConfigurationPrivate.h"
-#import "WKTextAnimationType.h"
 #import "WKTextExtractionItem.h"
 #import "WKTextExtractionUtilities.h"
 #import "WKUIDelegate.h"
@@ -160,7 +159,6 @@
 #import <WebCore/Settings.h>
 #import <WebCore/SharedBuffer.h>
 #import <WebCore/StringUtilities.h>
-#import <WebCore/TextAnimationTypes.h>
 #import <WebCore/TextManipulationController.h>
 #import <WebCore/TextManipulationItem.h>
 #import <WebCore/ViewportArguments.h>
@@ -521,6 +519,7 @@ static uint32_t convertSystemLayoutDirection(NSUserInterfaceLayoutDirection dire
 #if ENABLE(WRITING_TOOLS)
     _activeWritingToolsSession = nil;
     _writingToolsTextSuggestions = [NSMapTable strongToWeakObjectsMapTable];
+    _previousProcessedRange = NSMakeRange(0, 0);
 #endif
 
 #if PLATFORM(APPLETV)
@@ -2248,10 +2247,10 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
 
     _page->didBeginWritingToolsSession(*webSession, contextData);
 
-    if (session.type == WTSessionTypeProofreading) {
+    if (!_intelligenceTextEffectCoordinator)
         _intelligenceTextEffectCoordinator = adoptNS([WebKit::allocWKIntelligenceTextEffectCoordinatorInstance() initWithDelegate:(id<WKIntelligenceTextEffectCoordinatorDelegate>)self]);
-        [_intelligenceTextEffectCoordinator startAnimationForRange:contexts.firstObject.range completion:^{ }];
-    }
+
+    [_intelligenceTextEffectCoordinator startAnimationForRange:contexts.firstObject.range completion:^{ }];
 }
 
 - (void)proofreadingSession:(WTSession *)session didReceiveSuggestions:(NSArray<WTTextSuggestion *> *)suggestions processedRange:(NSRange)range inContext:(WTContext *)context finished:(BOOL)finished
@@ -2340,12 +2339,6 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
     _activeWritingToolsSession = nil;
     [_writingToolsTextSuggestions removeAllObjects];
 
-    if (session.type != WTSessionTypeProofreading) {
-        _page->setWritingToolsActive(false);
-        _page->didEndWritingToolsSession(*webSession, accepted);
-        return;
-    }
-
     // Flush and invoke all replacement operations, then dismiss the markers (and revert the text if not accepted),
     // then set the selection to the updated context range, and finally clear the state in the web process.
     //
@@ -2382,9 +2375,31 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
     }
 
     _writingToolsTextReplacementsFinished = finished;
-    _partialIntelligenceTextAnimationCount += 1;
 
-    _page->compositionSessionDidReceiveTextWithReplacementRange(*webSession, WebCore::AttributedString::fromNSAttributedString(attributedText), { range }, *webContext, finished);
+    auto convertedAttributedText = WebCore::AttributedString::fromNSAttributedString(attributedText);
+    auto operation = makeBlockPtr([webSession, convertedAttributedText, range, webContext, finished, weakSelf = WeakObjCPtr<WKWebView>(self)](void (^completion)(void)) {
+        auto strongSelf = weakSelf.get();
+        if (!strongSelf) {
+            completion();
+            return;
+        }
+
+        strongSelf->_page->compositionSessionDidReceiveTextWithReplacementRange(*webSession, convertedAttributedText, range, *webContext, finished, [completion = makeBlockPtr(completion)] {
+            completion();
+        });
+    });
+
+    NSInteger newLocation = _previousProcessedRange.location + _previousProcessedRange.length; // 0 | 1222
+    NSRange newRange = NSMakeRange(newLocation, (NSInteger)range.length - (NSInteger)newLocation); // 0, 1222 - 0 | 1222, 1222 - 1222
+
+    NSInteger newStringLength = attributedText.length - _previousStringLength;
+
+    auto characterDelta = (newStringLength - (NSInteger)newRange.length);
+
+    [_intelligenceTextEffectCoordinator requestReplacementWithProcessedRange:newRange finished:finished characterDelta:characterDelta operation:operation.get() completion:^{ }];
+
+    _previousProcessedRange = range;
+    _previousStringLength = attributedText.length;
 }
 
 - (void)writingToolsSession:(WTSession *)session didReceiveAction:(WTAction)action
@@ -2399,7 +2414,6 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
 
     if (webAction == WebCore::WritingTools::Action::Restart) {
         _writingToolsTextReplacementsFinished = false;
-        _partialIntelligenceTextAnimationCount = 0;
     }
 
     _page->writingToolsSessionDidReceiveAction(*webSession, webAction);
@@ -2609,51 +2623,9 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
     [textViewDelegate proofreadingSessionWithUUID:[_activeWritingToolsSession uuid] updateState:WebKit::convertToPlatformTextSuggestionState(state) forSuggestionWithUUID:replacementUUID];
 }
 
-- (void)_didEndPartialIntelligenceTextAnimation
-{
-    if (!_partialIntelligenceTextAnimationCount) {
-        ASSERT_NOT_REACHED();
-        return;
-    }
-
-    _partialIntelligenceTextAnimationCount -= 1;
-
-    if (!_partialIntelligenceTextAnimationCount && _writingToolsTextReplacementsFinished) {
-        // If the entire replacement has already been completed, and this is the end of the last animation,
-        // then reveal the selection and end the session if needed.
-        _page->intelligenceTextAnimationsDidComplete();
-    }
-}
-
 - (BOOL)_writingToolsTextReplacementsFinished
 {
     return _writingToolsTextReplacementsFinished;
-}
-
-- (void)_addTextAnimationForAnimationID:(NSUUID *)nsUUID withData:(const WebCore::TextAnimationData&)data
-{
-#if PLATFORM(IOS_FAMILY)
-    [_contentView addTextAnimationForAnimationID:nsUUID withData:data];
-#else
-    auto uuid = WTF::UUID::fromNSUUID(nsUUID);
-    if (!uuid)
-        return;
-
-    _impl->addTextAnimationForAnimationID(*uuid, data);
-#endif
-}
-
-- (void)_removeTextAnimationForAnimationID:(NSUUID *)nsUUID
-{
-#if PLATFORM(IOS_FAMILY)
-    [_contentView removeTextAnimationForAnimationID:nsUUID];
-#else
-    auto uuid = WTF::UUID::fromNSUUID(nsUUID);
-    if (!uuid)
-        return;
-
-    _impl->removeTextAnimationForAnimationID(*uuid);
-#endif
 }
 
 #endif

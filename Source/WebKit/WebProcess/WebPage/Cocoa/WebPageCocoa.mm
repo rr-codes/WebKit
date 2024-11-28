@@ -33,7 +33,6 @@
 #import "MessageSenderInlines.h"
 #import "PDFPlugin.h"
 #import "PluginView.h"
-#import "TextAnimationController.h"
 #import "UserMediaCaptureManager.h"
 #import "WKAccessibilityWebPageObjectBase.h"
 #import "WebFrame.h"
@@ -964,9 +963,10 @@ void WebPage::didEndWritingToolsSession(const WebCore::WritingTools::Session& se
     corePage()->didEndWritingToolsSession(session, accepted);
 }
 
-void WebPage::compositionSessionDidReceiveTextWithReplacementRange(const WebCore::WritingTools::Session& session, const WebCore::AttributedString& attributedText, const WebCore::CharacterRange& range, const WebCore::WritingTools::Context& context, bool finished)
+void WebPage::compositionSessionDidReceiveTextWithReplacementRange(const WebCore::WritingTools::Session& session, const WebCore::AttributedString& attributedText, const WebCore::CharacterRange& range, const WebCore::WritingTools::Context& context, bool finished, CompletionHandler<void()>&& completionHandler)
 {
     corePage()->compositionSessionDidReceiveTextWithReplacementRange(session, attributedText, range, context, finished);
+    completionHandler();
 }
 
 void WebPage::writingToolsSessionDidReceiveAction(const WritingTools::Session& session, WebCore::WritingTools::Action action)
@@ -982,59 +982,6 @@ void WebPage::proofreadingSessionShowDetailsForSuggestionWithIDRelativeToRect(co
 void WebPage::proofreadingSessionUpdateStateForSuggestionWithID(WebCore::WritingTools::TextSuggestion::State state, const WebCore::WritingTools::TextSuggestion::ID& replacementID)
 {
     send(Messages::WebPageProxy::ProofreadingSessionUpdateStateForSuggestionWithID(state, replacementID));
-}
-
-void WebPage::addTextAnimationForAnimationID(const WTF::UUID& uuid, const WebCore::TextAnimationData& styleData, const WebCore::TextIndicatorData& indicatorData, CompletionHandler<void(WebCore::TextAnimationRunMode)>&& completionHandler)
-{
-    if (completionHandler)
-        sendWithAsyncReply(Messages::WebPageProxy::AddTextAnimationForAnimationIDWithCompletionHandler(uuid, styleData, indicatorData), WTFMove(completionHandler));
-    else
-        send(Messages::WebPageProxy::AddTextAnimationForAnimationID(uuid, styleData, indicatorData));
-}
-
-void WebPage::removeTextAnimationForAnimationID(const WTF::UUID& uuid)
-{
-    send(Messages::WebPageProxy::RemoveTextAnimationForAnimationID(uuid));
-}
-
-void WebPage::removeInitialTextAnimationForActiveWritingToolsSession()
-{
-    m_textAnimationController->removeInitialTextAnimationForActiveWritingToolsSession();
-}
-
-void WebPage::addInitialTextAnimationForActiveWritingToolsSession()
-{
-    m_textAnimationController->addInitialTextAnimationForActiveWritingToolsSession();
-}
-
-void WebPage::addSourceTextAnimationForActiveWritingToolsSession(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, bool finished, const CharacterRange& range, const String& string, CompletionHandler<void(WebCore::TextAnimationRunMode)>&& completionHandler)
-{
-    m_textAnimationController->addSourceTextAnimationForActiveWritingToolsSession(sourceAnimationUUID, destinationAnimationUUID, finished, range, string, WTFMove(completionHandler));
-}
-
-void WebPage::addDestinationTextAnimationForActiveWritingToolsSession(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, const std::optional<CharacterRange>& range, const String& string)
-{
-    m_textAnimationController->addDestinationTextAnimationForActiveWritingToolsSession(sourceAnimationUUID, destinationAnimationUUID, range, string);
-}
-
-void WebPage::saveSnapshotOfTextPlaceholderForAnimation(const WebCore::SimpleRange& placeholderRange)
-{
-    m_textAnimationController->saveSnapshotOfTextPlaceholderForAnimation(placeholderRange);
-}
-
-void WebPage::clearAnimationsForActiveWritingToolsSession()
-{
-    m_textAnimationController->clearAnimationsForActiveWritingToolsSession();
-}
-
-void WebPage::createTextIndicatorForTextAnimationID(const WTF::UUID& uuid, CompletionHandler<void(std::optional<WebCore::TextIndicatorData>&&)>&& completionHandler)
-{
-    m_textAnimationController->createTextIndicatorForTextAnimationID(uuid, WTFMove(completionHandler));
-}
-
-void WebPage::updateUnderlyingTextVisibilityForTextAnimationID(const WTF::UUID& uuid, bool visible, CompletionHandler<void()>&& completionHandler)
-{
-    m_textAnimationController->updateUnderlyingTextVisibilityForTextAnimationID(uuid, visible, WTFMove(completionHandler));
 }
 
 void WebPage::proofreadingSessionSuggestionTextRectsInRootViewCoordinates(const WebCore::CharacterRange& enclosingRangeRelativeToSessionRange, CompletionHandler<void(Vector<FloatRect>&&)>&& completionHandler) const
@@ -1065,16 +1012,6 @@ void WebPage::setSelectionForActiveWritingToolsSession(const WebCore::CharacterR
 {
     corePage()->setSelectionForActiveWritingToolsSession(rangeRelativeToSessionRange);
     completionHandler();
-}
-
-void WebPage::intelligenceTextAnimationsDidComplete()
-{
-    corePage()->intelligenceTextAnimationsDidComplete();
-}
-
-void WebPage::didEndPartialIntelligenceTextAnimation()
-{
-    send(Messages::WebPageProxy::DidEndPartialIntelligenceTextAnimation());
 }
 
 #endif

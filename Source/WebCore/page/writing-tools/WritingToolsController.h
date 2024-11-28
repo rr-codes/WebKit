@@ -46,9 +46,7 @@ class Page;
 
 struct SimpleRange;
 
-enum class TextAnimationRunMode : uint8_t;
-
-class WritingToolsController final : public CanMakeWeakPtr<WritingToolsController>, public CanMakeCheckedPtr<WritingToolsController> {
+class WritingToolsController final : public CanMakeCheckedPtr<WritingToolsController> {
     WTF_MAKE_TZONE_ALLOCATED(WritingToolsController);
     WTF_MAKE_NONCOPYABLE(WritingToolsController);
     WTF_OVERRIDE_DELETE_FOR_CHECKED_PTR(WritingToolsController);
@@ -80,17 +78,11 @@ public:
     // FIXME: Refactor `TextAnimationController` in such a way so as to not explicitly depend on `WritingToolsController`,
     // and then remove these methods after doing so.
     std::optional<SimpleRange> activeSessionRange() const;
-    void intelligenceTextAnimationsDidComplete();
 
 private:
     struct CompositionState : CanMakeCheckedPtr<CompositionState> {
         WTF_MAKE_STRUCT_FAST_ALLOCATED;
         WTF_STRUCT_OVERRIDE_DELETE_FOR_CHECKED_PTR(CompositionState);
-
-        enum class ClearStateDeferralReason : uint8_t {
-            SessionInProgress = 1 << 0,
-            AnimationInProgress = 1 << 1,
-        };
 
         CompositionState(const Vector<Ref<WritingToolsCompositionCommand>>& unappliedCommands, const Vector<Ref<WritingToolsCompositionCommand>>& reappliedCommands, const WritingTools::Session& session)
             : unappliedCommands(unappliedCommands)
@@ -103,11 +95,6 @@ private:
         Vector<Ref<WritingToolsCompositionCommand>> unappliedCommands;
         Vector<Ref<WritingToolsCompositionCommand>> reappliedCommands;
         WritingTools::Session session;
-        OptionSet<ClearStateDeferralReason> clearStateDeferralReasons;
-
-        bool shouldCommitAfterReplacement { false };
-        std::optional<CharacterRange> replacedRange;
-        std::optional<CharacterRange> pendingReplacedRange;
     };
 
     struct ProofreadingState : CanMakeCheckedPtr<ProofreadingState> {
@@ -168,17 +155,11 @@ private:
     void replaceContentsOfRangeInSession(ProofreadingState&, const SimpleRange&, const String&);
     void replaceContentsOfRangeInSession(CompositionState&, const SimpleRange&, const AttributedString&, WritingToolsCompositionCommand::State);
 
-    void compositionSessionDidFinishReplacement();
-    void compositionSessionDidFinishReplacement(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, const CharacterRange&, const String&);
-
-    void compositionSessionDidReceiveTextWithReplacementRangeAsync(const WTF::UUID&, const WTF::UUID&, const AttributedString&, const CharacterRange&, const WritingTools::Context&, bool finished, TextAnimationRunMode);
+    void compositionSessionDidReceiveTextWithReplacementRangeAsync(const AttributedString&, const CharacterRange&, const WritingTools::Context&, bool finished);
 
     void showOriginalCompositionForSession();
     void showRewrittenCompositionForSession();
     void restartCompositionForSession();
-
-    template<CompositionState::ClearStateDeferralReason Reason>
-    void removeCompositionClearStateDeferralReason();
 
     template<WritingTools::Session::Type Type>
     void writingToolsSessionDidReceiveAction(WritingTools::Action);
@@ -188,8 +169,6 @@ private:
 
     template<WritingTools::Session::Type Type>
     void didEndWritingToolsSession(bool accepted);
-
-    void commitComposition(CompositionState&, Document&);
 
     RefPtr<Document> document() const;
 

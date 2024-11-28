@@ -84,7 +84,6 @@
 #import <WebCore/SearchPopupMenuCocoa.h>
 #import <WebCore/SleepDisabler.h>
 #import <WebCore/TextAlternativeWithRange.h>
-#import <WebCore/TextAnimationTypes.h>
 #import <WebCore/ValidationBubble.h>
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
 #import <pal/spi/ios/BrowserEngineKitSPI.h>
@@ -1280,9 +1279,9 @@ void WebPageProxy::didEndWritingToolsSession(const WebCore::WritingTools::Sessio
     protectedLegacyMainFrameProcess()->send(Messages::WebPage::DidEndWritingToolsSession(session, accepted), webPageIDInMainFrameProcess());
 }
 
-void WebPageProxy::compositionSessionDidReceiveTextWithReplacementRange(const WebCore::WritingTools::Session& session, const WebCore::AttributedString& attributedText, const WebCore::CharacterRange& range, const WebCore::WritingTools::Context& context, bool finished)
+void WebPageProxy::compositionSessionDidReceiveTextWithReplacementRange(const WebCore::WritingTools::Session& session, const WebCore::AttributedString& attributedText, const WebCore::CharacterRange& range, const WebCore::WritingTools::Context& context, bool finished, CompletionHandler<void()>&& completionHandler)
 {
-    protectedLegacyMainFrameProcess()->send(Messages::WebPage::CompositionSessionDidReceiveTextWithReplacementRange(session, attributedText, range, context, finished), webPageIDInMainFrameProcess());
+    protectedLegacyMainFrameProcess()->sendWithAsyncReply(Messages::WebPage::CompositionSessionDidReceiveTextWithReplacementRange(session, attributedText, range, context, finished), WTFMove(completionHandler), webPageIDInMainFrameProcess());
 }
 
 void WebPageProxy::writingToolsSessionDidReceiveAction(const WebCore::WritingTools::Session& session, WebCore::WritingTools::Action action)
@@ -1315,123 +1314,11 @@ void WebPageProxy::setSelectionForActiveWritingToolsSession(const WebCore::Chara
     protectedLegacyMainFrameProcess()->sendWithAsyncReply(Messages::WebPage::SetSelectionForActiveWritingToolsSession(rangeRelativeToSessionRange), WTFMove(completionHandler), webPageIDInMainFrameProcess());
 }
 
-void WebPageProxy::addTextAnimationForAnimationID(IPC::Connection& connection, const WTF::UUID& uuid, const WebCore::TextAnimationData& styleData, const WebCore::TextIndicatorData& indicatorData)
-{
-    addTextAnimationForAnimationIDWithCompletionHandler(connection, uuid, styleData, indicatorData, { });
-}
-
-void WebPageProxy::addTextAnimationForAnimationIDWithCompletionHandler(IPC::Connection& connection, const WTF::UUID& uuid, const WebCore::TextAnimationData& styleData, const WebCore::TextIndicatorData& indicatorData, CompletionHandler<void(WebCore::TextAnimationRunMode)>&& completionHandler)
-{
-    if (completionHandler)
-        MESSAGE_CHECK_COMPLETION(uuid.isValid(), connection, completionHandler({ }));
-    else
-        MESSAGE_CHECK(uuid.isValid(), connection);
-
-    internals().textIndicatorDataForAnimationID.add(uuid, indicatorData);
-
-    if (completionHandler)
-        internals().completionHandlerForAnimationID.add(uuid, WTFMove(completionHandler));
-
-#if PLATFORM(IOS_FAMILY)
-    // The shape of the iOS API requires us to have stored this completionHandler when we call into the WebProcess
-    // to replace the text and generate the text indicator of the replacement text.
-    if (auto destinationAnimationCompletionHandler = internals().completionHandlerForDestinationTextIndicatorForSourceID.take(uuid))
-        destinationAnimationCompletionHandler(indicatorData);
-
-    // Storing and sending information for the different shaped SPI on iOS.
-    if (styleData.runMode == WebCore::TextAnimationRunMode::RunAnimation) {
-        if (styleData.style == WebCore::TextAnimationType::Source)
-            internals().sourceAnimationIDtoDestinationAnimationID.add(styleData.destinationAnimationUUID, uuid);
-
-        if (styleData.style == WebCore::TextAnimationType::Final) {
-            if (auto sourceAnimationID = internals().sourceAnimationIDtoDestinationAnimationID.take(uuid)) {
-                if (auto completionHandler = internals().completionHandlerForDestinationTextIndicatorForSourceID.take(sourceAnimationID))
-                    completionHandler(indicatorData);
-            }
-        }
-    }
-#endif
-
-    if (RefPtr pageClient = this->pageClient())
-        pageClient->addTextAnimationForAnimationID(uuid, styleData);
-}
-
-void WebPageProxy::callCompletionHandlerForAnimationID(const WTF::UUID& uuid, WebCore::TextAnimationRunMode runMode)
-{
-    if (!hasRunningProcess())
-        return;
-
-    if (auto completionHandler = internals().completionHandlerForAnimationID.take(uuid))
-        completionHandler(runMode);
-}
-
-#if PLATFORM(IOS_FAMILY)
-void WebPageProxy::storeDestinationCompletionHandlerForAnimationID(const WTF::UUID& destinationAnimationUUID, CompletionHandler<void(std::optional<WebCore::TextIndicatorData>)>&& completionHandler)
-{
-    internals().completionHandlerForDestinationTextIndicatorForSourceID.add(destinationAnimationUUID, WTFMove(completionHandler));
-}
-#endif
-
-void WebPageProxy::getTextIndicatorForID(const WTF::UUID& uuid, CompletionHandler<void(std::optional<WebCore::TextIndicatorData>&&)>&& completionHandler)
-{
-    if (!hasRunningProcess()) {
-        completionHandler(std::nullopt);
-        return;
-    }
-
-    auto textIndicatorData = internals().textIndicatorDataForAnimationID.getOptional(uuid);
-
-    if (textIndicatorData) {
-        completionHandler(*textIndicatorData);
-        return;
-    }
-
-    // FIXME: This shouldn't be reached/called anymore. Verify and remove.
-    protectedLegacyMainFrameProcess()->sendWithAsyncReply(Messages::WebPage::CreateTextIndicatorForTextAnimationID(uuid), WTFMove(completionHandler), webPageIDInMainFrameProcess());
-}
-
-void WebPageProxy::updateUnderlyingTextVisibilityForTextAnimationID(const WTF::UUID& uuid, bool visible, CompletionHandler<void()>&& completionHandler)
-{
-    if (!hasRunningProcess()) {
-        completionHandler();
-        return;
-    }
-
-    protectedLegacyMainFrameProcess()->sendWithAsyncReply(Messages::WebPage::UpdateUnderlyingTextVisibilityForTextAnimationID(uuid, visible), WTFMove(completionHandler), webPageIDInMainFrameProcess());
-}
-
-void WebPageProxy::didEndPartialIntelligenceTextAnimationImpl()
-{
-    if (RefPtr pageClient = this->pageClient())
-        pageClient->didEndPartialIntelligenceTextAnimation();
-}
-
-void WebPageProxy::didEndPartialIntelligenceTextAnimation(IPC::Connection&)
-{
-    didEndPartialIntelligenceTextAnimationImpl();
-}
-
 bool WebPageProxy::writingToolsTextReplacementsFinished()
 {
     if (RefPtr pageClient = this->pageClient())
         return pageClient->writingToolsTextReplacementsFinished();
     return true;
-}
-
-void WebPageProxy::intelligenceTextAnimationsDidComplete()
-{
-    if (!hasRunningProcess())
-        return;
-
-    protectedLegacyMainFrameProcess()->send(Messages::WebPage::IntelligenceTextAnimationsDidComplete(), webPageIDInMainFrameProcess());
-}
-
-void WebPageProxy::removeTextAnimationForAnimationID(IPC::Connection& connection, const WTF::UUID& uuid)
-{
-    MESSAGE_CHECK(uuid.isValid(), connection);
-
-    if (RefPtr pageClient = this->pageClient())
-        pageClient->removeTextAnimationForAnimationID(uuid);
 }
 
 void WebPageProxy::proofreadingSessionShowDetailsForSuggestionWithIDRelativeToRect(IPC::Connection& connection, const WebCore::WritingTools::TextSuggestion::ID& replacementID, WebCore::IntRect selectionBoundsInRootView)

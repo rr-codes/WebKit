@@ -3709,12 +3709,6 @@ RefPtr<TextPlaceholderElement> Editor::insertTextPlaceholder(const IntSize& size
 
     document->selection().setSelection(VisibleSelection { positionInParentBeforeNode(placeholder.ptr()) }, FrameSelection::defaultSetSelectionOptions(UserTriggered::Yes));
 
-#if ENABLE(WRITING_TOOLS)
-    // For Writing Tools, we need the snapshot of the last inserted placeholder.
-    if (auto placeholderRange = makeRangeSelectingNode(placeholder.get()))
-        protectedDocument()->page()->chrome().client().saveSnapshotOfTextPlaceholderForAnimation(*placeholderRange);
-#endif
-
     return placeholder;
 }
 

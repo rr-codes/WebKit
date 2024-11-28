@@ -64,7 +64,7 @@ import WebKitSwift
 
     @objc(startAnimationForRange:completion:)
     public func startAnimation(for range: NSRange) async {
-        self.reset()
+         self.reset()
 
         assert(self.activePonderingEffect == nil, "Intelligence text effect coordinator: cannot start a new animation while a pondering effect is already active")
         assert(self.activeReplacementEffect == nil, "Intelligence text effect coordinator: cannot start a new animation while a replacement effect is already active")
@@ -235,7 +235,6 @@ import WebKitSwift
 
     @nonobjc final private func setActivePonderingEffect(_ effect: PlatformIntelligencePonderingTextEffect<Chunk>?) async {
         guard (self.activePonderingEffect == nil && effect != nil) || (self.activePonderingEffect != nil && effect == nil) else {
-            assertionFailure("Intelligence text effect coordinator: trying to either set a new pondering effect when there is an ongoing one, or trying to remove an effect when there are none.")
             return
         }
 
