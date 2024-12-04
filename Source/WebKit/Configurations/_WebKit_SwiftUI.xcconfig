@@ -1,0 +1,72 @@
+// Copyright (C) 2024 Apple Inc. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+// 1. Redistributions of source code must retain the above copyright
+//    notice, this list of conditions and the following disclaimer.
+// 2. Redistributions in binary form must reproduce the above copyright
+//    notice, this list of conditions and the following disclaimer in the
+//    documentation and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY APPLE INC. ``AS IS'' AND ANY
+// EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+// PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
+// CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+// EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+// PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+// OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+#include "BaseTarget.xcconfig"
+
+// InstallAPI is transitively enabled through including BaseTarget.xcconfig.
+
+PRODUCT_NAME = _WebKit_SwiftUI; // Cross-import overlay projects must have this exact naming scheme.
+PRODUCT_BUNDLE_IDENTIFIER = com.apple.WebKit.$(PRODUCT_NAME:rfc1034identifier);
+INFOPLIST_FILE = Info.plist;
+
+INSTALL_PATH = $(WEBKIT_FRAMEWORKS_DIR);
+DYLIB_INSTALL_NAME_BASE = $(NORMAL_WEBKIT_FRAMEWORKS_DIR);
+
+BUILD_LIBRARY_FOR_DISTRIBUTION = YES; // This is required for all public frameworks in the OS.
+
+SWIFT_LIBRARY_LEVEL = api;
+
+// Prevent Objective-C from importing the cross-import overlay
+SWIFT_INSTALL_OBJC_HEADER = NO;
+DEFINES_MODULE = NO;
+
+OTHER_SWIFT_FLAGS = -Xfrontend -experimental-spi-only-imports $(OTHER_SWIFT_FLAGS_AVAILABILITY_$(USE_INTERNAL_SDK));
+
+// Disable optimization for debug builds.
+SWIFT_OPTIMIZATION_LEVEL = -O;
+SWIFT_OPTIMIZATION_LEVEL[config=Debug] = -Onone;
+
+CLANG_INSTRUMENT_FOR_OPTIMIZATION_PROFILING = NO; // Disable PGO profile generation.
+
+OTHER_LDFLAGS = $(inherited) $(SOURCE_VERSION_LDFLAGS) $(FRAMEWORK_LDFLAGS_$(WK_PLATFORM_NAME));
+
+ENABLE_SWIFTUI = YES
+ENABLE_SWIFTUI[sdk=macosx13*] = NO;
+ENABLE_SWIFTUI[sdk=macosx14*] = NO;
+ENABLE_SWIFTUI[sdk=iphone*17*] = NO;
+ENABLE_SWIFTUI[sdk=watch*] = NO;
+ENABLE_SWIFTUI[sdk=appletv*] = NO;
+ENABLE_SWIFTUI[sdk=xr*1*] = NO;
+
+SWIFT_VERSION = $(SWIFT_VERSION_$(ENABLE_SWIFTUI));
+SWIFT_VERSION_YES = 6.0;
+SWIFT_VERSION_NO = 5.0;
+
+SKIP_INSTALL = $(SKIP_INSTALL_$(ENABLE_SWIFTUI));
+SKIP_INSTALL_YES = NO;
+SKIP_INSTALL_NO = YES;
+
+EXCLUDED_SOURCE_FILE_NAMES = $(EXCLUDED_SOURCE_FILE_NAMES_$(ENABLE_SWIFTUI));
+EXCLUDED_SOURCE_FILE_NAMES_NO = *;
+
+INCLUDED_SOURCE_FILE_NAMES = _WebKit_SwiftUI/Empty.swift;

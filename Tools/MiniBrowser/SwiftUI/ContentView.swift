@@ -25,6 +25,7 @@
 
 import SwiftUI
 @_spi(Private) import WebKit
+@_spi(Private) import _WebKit_SwiftUI
 
 struct ContentView: View {
     @Environment(BrowserViewModel.self) private var viewModel

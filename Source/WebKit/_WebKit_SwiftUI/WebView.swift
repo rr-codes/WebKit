@@ -21,9 +21,8 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-#if ENABLE_SWIFTUI && compiler(>=6.0)
-
 public import SwiftUI
+@_spi(Private) @_spi(CrossImportOverlay) import WebKit
 
 #if canImport(UIKit)
 fileprivate typealias PlatformView = UIView
@@ -127,6 +126,4 @@ extension WebViewRepresentable: NSViewRepresentable {
         updatePlatformView(nsView, context: context)
     }
 }
-#endif
-
 #endif

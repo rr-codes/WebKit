@@ -23,11 +23,11 @@
 
 #if ENABLE_SWIFTUI && canImport(Testing) && compiler(>=6.0)
 
+import SwiftUI
 import Observation
 import Testing
-import WebKit
-@_spi(Private) import WebKit
-@_spi(Testing) import WebKit
+@_spi(Private) @_spi(Testing) import WebKit
+@_spi(Private) import _WebKit_SwiftUI
 
 // MARK: Helper extension functions
 
