@@ -21,10 +21,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-#if ENABLE_SWIFTUI && compiler(>=6.0)
-
-internal import WebKit_Internal
-public import SwiftUI // FIXME: (283455) Do not import SwiftUI in WebKit proper.
+public import SwiftUI
+@_spi(Private) @_spi(CrossImportOverlay) import WebKit
+internal import WebKit_Private.WKPreferencesPrivate
 
 #if canImport(UIKit)
 fileprivate typealias PlatformView = UIView
@@ -138,6 +137,4 @@ extension WebViewRepresentable: NSViewRepresentable {
         updatePlatformView(nsView, context: context)
     }
 }
-#endif
-
 #endif

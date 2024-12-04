@@ -28,6 +28,7 @@
 				2DA8152C28A4204400CF811C /* PBXTargetDependency */,
 				BC8283D516B4C01F00A278FE /* PBXTargetDependency */,
 				2D9FB22C2375245C0049F936 /* PBXTargetDependency */,
+				07275C6B2D00ED43002315A5 /* PBXTargetDependency */,
 			);
 			name = "Framework, XPC Services, Extensions, and daemons";
 			productName = WebKit2;
@@ -139,6 +140,13 @@
 		0701789E23BE9CFC005F0FAA /* RemoteMediaPlayerMIMETypeCache.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0701789B23BAE261005F0FAA /* RemoteMediaPlayerMIMETypeCache.cpp */; };
 		0712654928EE06F800AE69D7 /* WebChromeClientCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0712654728EE06F800AE69D7 /* WebChromeClientCocoa.mm */; };
 		071BC59023CE1EAA00680D7C /* RemoteMediaPlayerProxyMessages.h in Headers */ = {isa = PBXBuildFile; fileRef = 071BC58D23CE1EAA00680D7C /* RemoteMediaPlayerProxyMessages.h */; };
+		07275C612D00CD24002315A5 /* CrossImportOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07275C602D00CD24002315A5 /* CrossImportOverlay.swift */; };
+		07275C632D00D32D002315A5 /* WebPage+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07275C622D00D32D002315A5 /* WebPage+SwiftUI.swift */; };
+		07275C672D00E3CA002315A5 /* SwiftUI.swiftoverlay in Resources */ = {isa = PBXBuildFile; fileRef = 07275C662D00E3CA002315A5 /* SwiftUI.swiftoverlay */; };
+		07275C682D00E3D6002315A5 /* SwiftUI.swiftoverlay in Install SwiftUI Cross Import Overlay */ = {isa = PBXBuildFile; fileRef = 07275C662D00E3CA002315A5 /* SwiftUI.swiftoverlay */; };
+		07275C692D00E7DF002315A5 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076CEF0B2CEEE79900E4ABD6 /* WebView.swift */; };
+		07275C6C2D00F051002315A5 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8DC2EF5B0486A6940098B216 /* WebKit.framework */; };
+		07275C8F2D011396002315A5 /* Empty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07275C8E2D011396002315A5 /* Empty.swift */; };
 		07297F9F1C17BBEA003F0735 /* UserMediaPermissionCheckProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 07297F9D1C17BBEA003F0735 /* UserMediaPermissionCheckProxy.h */; };
 		07297F9F1C17BBEA015F0735 /* DeviceIdHashSaltStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 07297F9D1C17BBEA223F0735 /* DeviceIdHashSaltStorage.h */; };
 		07297FA31C186ADB003F0735 /* WKUserMediaPermissionCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = 07297FA11C186ADB003F0735 /* WKUserMediaPermissionCheck.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -150,7 +158,6 @@
 		075A9CF326169BAB006DFA3A /* MediaSessionCoordinatorProxyPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 077BA570260E8F630072F19F /* MediaSessionCoordinatorProxyPrivate.h */; };
 		076897EE2D07B0BE006F9FA7 /* WebPage+DialogPresenting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076897ED2D07B0BE006F9FA7 /* WebPage+DialogPresenting.swift */; };
 		076897F02D07B330006F9FA7 /* WKUIDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076897EF2D07B330006F9FA7 /* WKUIDelegateAdapter.swift */; };
-		076CEF0C2CEEE79900E4ABD6 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076CEF0B2CEEE79900E4ABD6 /* WebView.swift */; };
 		076E884E1A13CADF005E90FC /* APIContextMenuClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 076E884D1A13CADF005E90FC /* APIContextMenuClient.h */; };
 		0772811D21234FF600C8EF2E /* UserMediaPermissionRequestManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4A410F4319AF7B27002EBAB5 /* UserMediaPermissionRequestManager.h */; };
 		077FD1A02CC7569200C5D9E0 /* WKIntelligenceTextEffectCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077FD19F2CC7569200C5D9E0 /* WKIntelligenceTextEffectCoordinator.swift */; };
@@ -159,11 +166,10 @@
 		078B04462CF1154B00B453A6 /* WebPage+Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078B04452CF1154B00B453A6 /* WebPage+Configuration.swift */; };
 		078B04A02CF18EAB00B453A6 /* WebPage+NavigationPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078B049F2CF18EAB00B453A6 /* WebPage+NavigationPreferences.swift */; };
 		078B04B42CF1A27F00B453A6 /* WebPage+FrameInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078B04B32CF1A27F00B453A6 /* WebPage+FrameInfo.swift */; };
-		078B04B62CF2B4D300B453A6 /* View+WebViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078B04B52CF2B4D300B453A6 /* View+WebViewModifiers.swift */; };
+		078B708E2D0D015800FCF807 /* View+WebViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078B04B52CF2B4D300B453A6 /* View+WebViewModifiers.swift */; };
 		0792314C239CBCB8009598E2 /* RemoteMediaPlayerManagerProxyMessages.h in Headers */ = {isa = PBXBuildFile; fileRef = 07923146239CBCB7009598E2 /* RemoteMediaPlayerManagerProxyMessages.h */; };
 		079D1D9A26960CD300883577 /* SystemStatusSPI.h in Headers */ = {isa = PBXBuildFile; fileRef = 079D1D9926960CD300883577 /* SystemStatusSPI.h */; };
-		07A58C882D068CAE00CAB4ED /* WebPage+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A58C872D068CAE00CAB4ED /* WebPage+SwiftUI.swift */; };
-		07A58C912D06905800CAB4ED /* WebPage+NavigationDecidingSwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A58C902D06905800CAB4ED /* WebPage+NavigationDecidingSwiftUI.swift */; };
+		07A4CEC72D0933E700764F5E /* WebPageNavigationAction+SwiftUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A4CEC62D0933E700764F5E /* WebPageNavigationAction+SwiftUI.swift */; };
 		07A5EBBC1C7BA43E00B9CA69 /* WKFrameHandleRef.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A5EBBA1C7BA43E00B9CA69 /* WKFrameHandleRef.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		07CB79962CE9435700199C49 /* WebPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07CB79952CE9435700199C49 /* WebPage.swift */; };
 		07CB79982CE943E400199C49 /* WKNavigationDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07CB79972CE943E400199C49 /* WKNavigationDelegateAdapter.swift */; };
@@ -2579,6 +2585,13 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		07275C6A2D00ED43002315A5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07275C4E2D00C934002315A5;
+			remoteInfo = _WebKit_SwiftUI;
+		};
 		2D11BA042126A5AE006F8878 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -2890,6 +2903,17 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		07275C652D00E284002315A5 /* Install SwiftUI Cross Import Overlay */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Modules/WebKit.swiftcrossimport;
+			dstSubfolderSpec = 1;
+			files = (
+				07275C682D00E3D6002315A5 /* SwiftUI.swiftoverlay in Install SwiftUI Cross Import Overlay */,
+			);
+			name = "Install SwiftUI Cross Import Overlay";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0FB94836239F31B700926A8F /* Copy Testing Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3053,6 +3077,13 @@
 		0725EFAB239AE38400A538A9 /* RemoteMediaPlayerManagerProxy.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = RemoteMediaPlayerManagerProxy.messages.in; sourceTree = "<group>"; };
 		0725EFAC239AE38500A538A9 /* RemoteMediaPlayerManagerProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteMediaPlayerManagerProxy.h; sourceTree = "<group>"; };
 		0725EFAD239B024500A538A9 /* RemoteMediaPlayerManagerProxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteMediaPlayerManagerProxy.cpp; sourceTree = "<group>"; };
+		07275C4F2D00C934002315A5 /* _WebKit_SwiftUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = _WebKit_SwiftUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		07275C5F2D00CAAD002315A5 /* _WebKit_SwiftUI.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = _WebKit_SwiftUI.xcconfig; sourceTree = "<group>"; };
+		07275C602D00CD24002315A5 /* CrossImportOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossImportOverlay.swift; sourceTree = "<group>"; };
+		07275C622D00D32D002315A5 /* WebPage+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebPage+SwiftUI.swift"; sourceTree = "<group>"; };
+		07275C662D00E3CA002315A5 /* SwiftUI.swiftoverlay */ = {isa = PBXFileReference; lastKnownFileType = text; path = SwiftUI.swiftoverlay; sourceTree = "<group>"; };
+		07275C832D00F782002315A5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		07275C8E2D011396002315A5 /* Empty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Empty.swift; sourceTree = "<group>"; };
 		07297F9C1C1711EA003F0735 /* DeviceIdHashSaltStorage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceIdHashSaltStorage.cpp; sourceTree = "<group>"; };
 		07297F9C1C17BBEA003F0735 /* UserMediaPermissionCheckProxy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UserMediaPermissionCheckProxy.cpp; sourceTree = "<group>"; };
 		07297F9D1C17BBEA003F0735 /* UserMediaPermissionCheckProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserMediaPermissionCheckProxy.h; sourceTree = "<group>"; };
@@ -3101,8 +3132,7 @@
 		0794B4AF24452A2C0001B9C4 /* MediaUsageManagerCocoa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaUsageManagerCocoa.h; sourceTree = "<group>"; };
 		079D1D9926960CD300883577 /* SystemStatusSPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemStatusSPI.h; sourceTree = "<group>"; };
 		079D1D9C2698DBD000883577 /* cocoa */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cocoa; sourceTree = "<group>"; };
-		07A58C872D068CAE00CAB4ED /* WebPage+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebPage+SwiftUI.swift"; sourceTree = "<group>"; };
-		07A58C902D06905800CAB4ED /* WebPage+NavigationDecidingSwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebPage+NavigationDecidingSwiftUI.swift"; sourceTree = "<group>"; };
+		07A4CEC62D0933E700764F5E /* WebPageNavigationAction+SwiftUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebPageNavigationAction+SwiftUI.swift"; sourceTree = "<group>"; };
 		07A5EBB91C7BA43E00B9CA69 /* WKFrameHandleRef.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WKFrameHandleRef.cpp; sourceTree = "<group>"; };
 		07A5EBBA1C7BA43E00B9CA69 /* WKFrameHandleRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WKFrameHandleRef.h; sourceTree = "<group>"; };
 		07A6E5E3260E411400959478 /* RemoteMediaSessionCoordinatorProxyMessageReceiver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteMediaSessionCoordinatorProxyMessageReceiver.cpp; sourceTree = "<group>"; };
@@ -8313,6 +8343,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		07275C4C2D00C934002315A5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07275C6C2D00F051002315A5 /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D56C1C428A367A00081BD25 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -8473,11 +8511,26 @@
 				5C139DAC29DB82E500D5117B /* WebContentCaptivePortalExtension.appex */,
 				5CA5A2CA29CBBA1B000F1046 /* WebContentExtension.appex */,
 				8DC2EF5B0486A6940098B216 /* WebKit.framework */,
+				07275C4F2D00C934002315A5 /* _WebKit_SwiftUI.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 			tabWidth = 8;
 			usesTabs = 0;
+		};
+		07275C5C2D00C9D2002315A5 /* _WebKit_SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				07275C602D00CD24002315A5 /* CrossImportOverlay.swift */,
+				07275C8E2D011396002315A5 /* Empty.swift */,
+				07275C832D00F782002315A5 /* Info.plist */,
+				078B04B52CF2B4D300B453A6 /* View+WebViewModifiers.swift */,
+				07275C622D00D32D002315A5 /* WebPage+SwiftUI.swift */,
+				07A4CEC62D0933E700764F5E /* WebPageNavigationAction+SwiftUI.swift */,
+				076CEF0B2CEEE79900E4ABD6 /* WebView.swift */,
+			);
+			path = _WebKit_SwiftUI;
+			sourceTree = "<group>";
 		};
 		0736B752260D039F00E06994 /* MediaSession */ = {
 			isa = PBXGroup;
@@ -8708,18 +8761,14 @@
 			isa = PBXGroup;
 			children = (
 				078B04432CF1149200B453A6 /* URLSchemeHandler.swift */,
-				078B04B52CF2B4D300B453A6 /* View+WebViewModifiers.swift */,
 				07E2AD962CF42302000844EA /* WebPage+BackForwardList.swift */,
 				078B04452CF1154B00B453A6 /* WebPage+Configuration.swift */,
 				076897ED2D07B0BE006F9FA7 /* WebPage+DialogPresenting.swift */,
 				078B04B32CF1A27F00B453A6 /* WebPage+FrameInfo.swift */,
 				07FAA74A2CE947AA00128360 /* WebPage+Navigation.swift */,
 				074E87E02CF8EA3D0059E469 /* WebPage+NavigationDeciding.swift */,
-				07A58C902D06905800CAB4ED /* WebPage+NavigationDecidingSwiftUI.swift */,
 				078B049F2CF18EAB00B453A6 /* WebPage+NavigationPreferences.swift */,
-				07A58C872D068CAE00CAB4ED /* WebPage+SwiftUI.swift */,
 				07CB79952CE9435700199C49 /* WebPage.swift */,
-				076CEF0B2CEEE79900E4ABD6 /* WebView.swift */,
 				07CB79972CE943E400199C49 /* WKNavigationDelegateAdapter.swift */,
 				076897EF2D07B330006F9FA7 /* WKUIDelegateAdapter.swift */,
 			);
@@ -8733,6 +8782,7 @@
 				1A4F9769100E7B6600637A18 /* Configurations */,
 				C0CE729D1247E71D00BC0EC4 /* Derived Sources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
+				07275C5C2D00C9D2002315A5 /* _WebKit_SwiftUI */,
 				5750F3292032D4E300389347 /* Frameworks */,
 				2D9FB1FF2375209D0049F936 /* GPUProcess */,
 				84120B2828258B82002988E2 /* Modules */,
@@ -8971,6 +9021,7 @@
 		1A4F9769100E7B6600637A18 /* Configurations */ = {
 			isa = PBXGroup;
 			children = (
+				07275C5F2D00CAAD002315A5 /* _WebKit_SwiftUI.xcconfig */,
 				5CAF7AA626F93AA50003F19E /* adattributiond.xcconfig */,
 				A1EDD2D91884ACE000BBFE98 /* All.xcconfig */,
 				1A4F976A100E7B6600637A18 /* Base.xcconfig */,
@@ -13304,6 +13355,7 @@
 				84120B2B28258BB5002988E2 /* MacCatalyst.modulemap */,
 				84120B2A28258B82002988E2 /* OSX.modulemap */,
 				848A33AE294AA847002DD640 /* OSX_Private.modulemap */,
+				07275C662D00E3CA002315A5 /* SwiftUI.swiftoverlay */,
 			);
 			path = Modules;
 			sourceTree = "<group>";
@@ -16015,6 +16067,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		07275C4A2D00C934002315A5 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5C1579D127165B2F00ED5280 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -17862,6 +17921,27 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		07275C4E2D00C934002315A5 /* _WebKit_SwiftUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07275C592D00C935002315A5 /* Build configuration list for PBXNativeTarget "_WebKit_SwiftUI" */;
+			buildPhases = (
+				07275C4A2D00C934002315A5 /* Headers */,
+				07275C4B2D00C934002315A5 /* Sources */,
+				07275C4C2D00C934002315A5 /* Frameworks */,
+				07275C4D2D00C934002315A5 /* Resources */,
+				07275CBE2D014A44002315A5 /* Create Symlink to Alt Root Path */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = _WebKit_SwiftUI;
+			packageProductDependencies = (
+			);
+			productName = _WebKit_SwiftUI;
+			productReference = 07275C4F2D00C934002315A5 /* _WebKit_SwiftUI.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		2D56C1BA28A367A00081BD25 /* Model */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D56C1CE28A367A00081BD25 /* Build configuration list for PBXNativeTarget "Model" */;
@@ -18137,6 +18217,7 @@
 				EBE4D2AD28A2F3BD00C0FAE7 /* Copy Signpost Plists */,
 				DD00C28D2A37908400CBB4D9 /* Work around rdar://109484516 */,
 				DD4BDE9F2CAB1275001A3339 /* Create legacy Swift overlay symlink */,
+				07275C652D00E284002315A5 /* Install SwiftUI Cross Import Overlay */,
 			);
 			buildRules = (
 				DD4DB777280F91CA001700D4 /* PBXBuildRule */,
@@ -18230,6 +18311,9 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1140;
 				TargetAttributes = {
+					07275C4E2D00C934002315A5 = {
+						CreatedOnToolsVersion = 16.2;
+					};
 					1A50DB38110A3C13000D3FE5 = {
 						LastSwiftMigration = 1500;
 					};
@@ -18305,11 +18389,20 @@
 				5CE4B61529CF877F0038F565 /* GPUExtension */,
 				5CA5A2C929CBBA1A000F1046 /* WebContentExtension */,
 				5C139DA129DB82E500D5117B /* WebContentCaptivePortalExtension */,
+				07275C4E2D00C934002315A5 /* _WebKit_SwiftUI */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		07275C4D2D00C934002315A5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07275C672D00E3CA002315A5 /* SwiftUI.swiftoverlay in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D56C1C728A367A00081BD25 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -18403,6 +18496,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		07275CBE2D014A44002315A5 /* Create Symlink to Alt Root Path */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Create Symlink to Alt Root Path";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/zsh;
+			shellScript = "\"${SRCROOT}/Scripts/create-symlink-to-altroot.sh\"\n";
+		};
 		1A07D2F51919AA8A00ECDA16 /* Make Frameworks Symbolic Link */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -19452,6 +19563,19 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		07275C4B2D00C934002315A5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07275C612D00CD24002315A5 /* CrossImportOverlay.swift in Sources */,
+				07275C8F2D011396002315A5 /* Empty.swift in Sources */,
+				078B708E2D0D015800FCF807 /* View+WebViewModifiers.swift in Sources */,
+				07275C632D00D32D002315A5 /* WebPage+SwiftUI.swift in Sources */,
+				07A4CEC72D0933E700764F5E /* WebPageNavigationAction+SwiftUI.swift in Sources */,
+				07275C692D00E7DF002315A5 /* WebView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D56C1C128A367A00081BD25 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -19912,7 +20036,6 @@
 				FAE61CE82D0A5608000D238D /* UnifiedSource136.cpp in Sources */,
 				FAE61CEA2D0A5608000D238D /* UnifiedSource137.cpp in Sources */,
 				078B04442CF1149200B453A6 /* URLSchemeHandler.swift in Sources */,
-				078B04B62CF2B4D300B453A6 /* View+WebViewModifiers.swift in Sources */,
 				52CDC5C62731DA0D00A3E3EB /* VirtualAuthenticatorManager.cpp in Sources */,
 				52F4B46A27E1197700FFD129 /* VirtualAuthenticatorUtils.mm in Sources */,
 				5252A51A27E048740094BEB9 /* VirtualHidConnection.cpp in Sources */,
@@ -20011,9 +20134,7 @@
 				078B04B42CF1A27F00B453A6 /* WebPage+FrameInfo.swift in Sources */,
 				07FAA74B2CE947AA00128360 /* WebPage+Navigation.swift in Sources */,
 				074E87E12CF8EA3D0059E469 /* WebPage+NavigationDeciding.swift in Sources */,
-				07A58C912D06905800CAB4ED /* WebPage+NavigationDecidingSwiftUI.swift in Sources */,
 				078B04A02CF18EAB00B453A6 /* WebPage+NavigationPreferences.swift in Sources */,
-				07A58C882D068CAE00CAB4ED /* WebPage+SwiftUI.swift in Sources */,
 				07CB79962CE9435700199C49 /* WebPage.swift in Sources */,
 				7CE9CE101FA0767A000177DE /* WebPageUpdatePreferences.cpp in Sources */,
 				7CEB00DD1FA69ABE0065473B /* WebPreferencesFeatures.cpp in Sources */,
@@ -20029,7 +20150,6 @@
 				9356F2DF2152B72300E6D5DF /* WebSWOriginStore.cpp in Sources */,
 				9356F2E12152B76600E6D5DF /* WebSWServerConnection.cpp in Sources */,
 				9356F2E02152B75200E6D5DF /* WebSWServerToContextConnection.cpp in Sources */,
-				076CEF0C2CEEE79900E4ABD6 /* WebView.swift in Sources */,
 				C6A4CA0C2252899800169289 /* WKBundlePageMac.mm in Sources */,
 				2D931169212F61B200044BFE /* WKContentView.mm in Sources */,
 				2D93116A212F61B500044BFE /* WKContentViewInteraction.mm in Sources */,
@@ -20101,6 +20221,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		07275C6B2D00ED43002315A5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07275C4E2D00C934002315A5 /* _WebKit_SwiftUI */;
+			targetProxy = 07275C6A2D00ED43002315A5 /* PBXContainerItemProxy */;
+		};
 		2D11BA052126A5AE006F8878 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2D7DEBD821269C6B00B9F73C /* Generate Unified Sources */;
@@ -20347,6 +20472,27 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		07275C552D00C935002315A5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07275C5F2D00CAAD002315A5 /* _WebKit_SwiftUI.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		07275C562D00C935002315A5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07275C5F2D00CAAD002315A5 /* _WebKit_SwiftUI.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		07275C572D00C935002315A5 /* Production */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07275C5F2D00CAAD002315A5 /* _WebKit_SwiftUI.xcconfig */;
+			buildSettings = {
+			};
+			name = Production;
+		};
 		1A50DB39110A3C13000D3FE5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A1EDD2D91884ACE000BBFE98 /* All.xcconfig */;
@@ -20910,6 +21056,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		07275C592D00C935002315A5 /* Build configuration list for PBXNativeTarget "_WebKit_SwiftUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07275C552D00C935002315A5 /* Debug */,
+				07275C562D00C935002315A5 /* Release */,
+				07275C572D00C935002315A5 /* Production */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Production;
+		};
 		1A50DB48110A3C27000D3FE5 /* Build configuration list for PBXAggregateTarget "Framework, XPC Services, Extensions, and daemons" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

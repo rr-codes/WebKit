@@ -236,6 +236,10 @@ typedef NS_ENUM(NSInteger, _WKPitchCorrectionAlgorithm) {
 @property (nonatomic, setter=_setAppNapEnabled:) BOOL _appNapEnabled WK_API_AVAILABLE(macos(10.15));
 #endif
 
+#if TARGET_OS_IPHONE
+@property (nonatomic) BOOL tabFocusesLinks WK_API_AVAILABLE(ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
+#endif
+
 @end
 
 @interface WKPreferences (WKPrivateDeprecated)
