@@ -36,14 +36,11 @@ struct WKWebViewSwiftOverlayTests {
         #expect(response == 3)
     }
 
-    @Test(
-        .disabled("This test currently crashes due to the associated bug."),
-        .bug("https://bugs.webkit.org/show_bug.cgi?id=282918")
-    )
+    @Test(.bug("https://bugs.webkit.org/show_bug.cgi?id=282918"))
     func evaluateJavaScriptWithNilResponse() async throws {
         let webView = WKWebView()
         
-        let response: Any? = try await webView.evaluateJavaScript("console.log('hello')")
+        let response = try await webView.evaluateJavaScript("console.log('hello')")
         #expect(response == nil)
     }
 }
