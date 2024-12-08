@@ -21,12 +21,21 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-#if ENABLE_SWIFTUI && compiler(>=6.0)
-
+import CoreTransferable
 import Foundation
 import os
 import Observation
 @_spi(Private) import WebKit
+
+struct PDF {
+    let data: Data
+}
+
+extension PDF: Transferable {
+    static var transferRepresentation: some TransferRepresentation {
+        DataRepresentation(exportedContentType: .pdf, exporting: \.data)
+    }
+}
 
 @Observable
 @MainActor
@@ -39,8 +48,35 @@ final class BrowserViewModel {
 
     var displayedURL: String = ""
 
+    var pdfExporterIsPresented = false {
+        didSet {
+            if !pdfExporterIsPresented {
+                exportedPDF = nil
+            }
+        }
+    }
+
+    @ObservationIgnored
+    private(set) var exportedPDF: PDF? = nil {
+        didSet {
+            if exportedPDF != nil {
+                pdfExporterIsPresented = true
+            }
+        }
+    }
+
+    func openURL(_ url: URL) {
+        assert(url.isFileURL)
+
+        page.load(fileURL: url, allowingReadAccessTo: url.deletingLastPathComponent())
+    }
+
     func didReceiveNavigationEvent(_ event: WebPage.NavigationEvent) {
         Self.logger.info("Did receive navigation event \(String(describing: event.kind)) for navigation \(String(describing: event.navigationID))")
+
+        if case .committed = event.kind {
+            displayedURL = page.url?.absoluteString ?? ""
+        }
     }
 
     func navigateToSubmittedURL() {
@@ -49,8 +85,23 @@ final class BrowserViewModel {
         }
 
         let request = URLRequest(url: url)
-        self.page.load(request)
+        page.load(request)
+    }
+
+    func exportAsPDF() {
+        Task {
+            let data = try await page.pdf()
+            exportedPDF = PDF(data: data)
+        }
+    }
+
+    func didExportPDF(result: Result<URL, any Error>) {
+        switch result {
+        case let .success(url):
+            Self.logger.info("Exported PDF to \(url)")
+
+        case let .failure(error):
+            Self.logger.error("Failed to export PDF: \(error)")
+        }
     }
 }
-
-#endif
