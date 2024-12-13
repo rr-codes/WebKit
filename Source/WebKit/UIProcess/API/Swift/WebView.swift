@@ -89,6 +89,9 @@ fileprivate class WebViewWrapper: PlatformView {
 fileprivate struct WebViewRepresentable {
     let owner: WebView_v0
 
+    @Environment(\.webViewCameraCaptureState) var cameraCaptureState
+    @Environment(\.webViewMicrophoneCaptureState) var microphoneCaptureState
+
     func makePlatformView(context: Context) -> WebViewWrapper {
         // FIXME: Make this more robust by figuring out what happens when a WebPage moves between representables.
         // We can't have multiple owners regardless, but we'll want to decide if it's an error, if we can handle it gracefully, and how deterministic it might even be.
@@ -99,6 +102,8 @@ fileprivate struct WebViewRepresentable {
         let parent = WebViewWrapper()
         parent.webView = owner.page.backingWebView
         owner.page.isBoundToWebView = true
+
+        context.coordinator.owner = owner.page
 
         return parent
     }
@@ -115,6 +120,18 @@ fileprivate struct WebViewRepresentable {
         webView.configuration.preferences.isTextInteractionEnabled = environment.webViewAllowsTextInteraction
         webView.configuration.preferences.tabFocusesLinks = environment.webViewAllowsTabFocusingLinks
         webView.configuration.preferences.isElementFullscreenEnabled = environment.webViewAllowsElementFullscreen
+
+        if let cameraCaptureState = environment.webViewCameraCaptureState, cameraCaptureState.wrappedValue != webView.cameraCaptureState {
+            webView.setCameraCaptureState(cameraCaptureState.wrappedValue)
+        }
+
+        if let microphoneCaptureState = environment.webViewMicrophoneCaptureState, microphoneCaptureState.wrappedValue != webView.microphoneCaptureState {
+            webView.setMicrophoneCaptureState(microphoneCaptureState.wrappedValue)
+        }
+    }
+
+    func makeCoordinator() -> WebViewCoordinator {
+        WebViewCoordinator(cameraCaptureState: cameraCaptureState, microphoneCaptureState: microphoneCaptureState)
     }
 }
 
@@ -139,5 +156,73 @@ extension WebViewRepresentable: NSViewRepresentable {
     }
 }
 #endif
+
+@MainActor
+private final class WebViewCoordinator {
+    init(cameraCaptureState: Binding<WKMediaCaptureState>?, microphoneCaptureState: Binding<WKMediaCaptureState>?) {
+        self.cameraCaptureState = cameraCaptureState
+        self.microphoneCaptureState = microphoneCaptureState
+    }
+
+    deinit {
+        for observation in observations {
+            observation.invalidate()
+        }
+    }
+
+    private var cameraCaptureState: Binding<WKMediaCaptureState>?
+    private var microphoneCaptureState: Binding<WKMediaCaptureState>?
+
+    private var observations: Set<NSKeyValueObservation> = []
+
+    weak var owner: WebPage_v0? = nil {
+        didSet {
+            updateObservations()
+        }
+    }
+
+    private func createObservation<Value>(
+        on webView: WKWebView,
+        keyPath: KeyPath<WebViewCoordinator, Binding<Value>?>,
+        backedBy backingKeyPath: KeyPath<WKWebView, Value>
+    ) -> NSKeyValueObservation where Value: Equatable {
+        let boxedKeyPath = UncheckedSendableKeyPathBox(keyPath: keyPath)
+        let boxedBackingKeyPath = UncheckedSendableKeyPathBox(keyPath: backingKeyPath)
+
+        return webView.observe(backingKeyPath, options: []) { [weak self] webView, change in
+            guard let self else {
+                return
+            }
+
+            MainActor.assumeIsolated {
+                guard self[keyPath: boxedKeyPath.keyPath]?.wrappedValue != webView[keyPath: boxedBackingKeyPath.keyPath] else {
+                    return
+                }
+
+                self[keyPath: boxedKeyPath.keyPath]?.wrappedValue = webView[keyPath: boxedBackingKeyPath.keyPath]
+            }
+        }
+    }
+
+    private func updateObservations() {
+        if let owner {
+            observations = [
+                createObservation(on: owner.backingWebView, keyPath: \.cameraCaptureState, backedBy: \.cameraCaptureState),
+                createObservation(on: owner.backingWebView, keyPath: \.microphoneCaptureState, backedBy: \.microphoneCaptureState),
+            ]
+        } else {
+            for observation in observations {
+                observation.invalidate()
+            }
+            observations = []
+        }
+    }
+}
+
+/// The key path used within `createObservation` must be Sendable.
+/// This is safe as long as it is not used for object subscripting and isn't created with captured subscript key paths.
+fileprivate struct UncheckedSendableKeyPathBox<Root, Value>: @unchecked Sendable {
+    let keyPath: KeyPath<Root, Value>
+}
 
 #endif

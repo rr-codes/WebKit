@@ -36,6 +36,10 @@ extension EnvironmentValues {
     @Entry var webViewAllowsTextInteraction = true
 
     @Entry var webViewAllowsElementFullscreen = false
+
+    @Entry var webViewCameraCaptureState: Binding<WKMediaCaptureState>? = nil
+
+    @Entry var webViewMicrophoneCaptureState: Binding<WKMediaCaptureState>? = nil
 }
 
 extension View {
@@ -62,6 +66,16 @@ extension View {
     @_spi(Private)
     public func webViewAllowsElementFullscreen(_ value: Bool = true) -> some View {
         environment(\.webViewAllowsElementFullscreen, value)
+    }
+
+    @_spi(Private)
+    public func webViewCameraCaptureState(_ value: Binding<WKMediaCaptureState>) -> some View {
+        environment(\.webViewCameraCaptureState, value)
+    }
+
+    @_spi(Private)
+    public func webViewMicrophoneCaptureState(_ value: Binding<WKMediaCaptureState>) -> some View {
+        environment(\.webViewMicrophoneCaptureState, value)
     }
 }
 
