@@ -122,10 +122,12 @@ public class WebPage_v0 {
     private var observations = KeyValueObservations()
 
     @ObservationIgnored
-    var isBoundToWebView = false
+    @_spi(CrossImportOverlay)
+    public var isBoundToWebView = false
 
     @ObservationIgnored
-    lazy var backingWebView: WKWebView = {
+    @_spi(CrossImportOverlay)
+    public lazy var backingWebView: WKWebView = {
         let webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration(configuration))
         webView.navigationDelegate = backingNavigationDelegate
         webView.uiDelegate = backingUIDelegate
@@ -238,7 +240,8 @@ public class WebPage_v0 {
         }
     }
 
-    func backingProperty<Value, BackingValue>(_ keyPath: KeyPath<WebPage_v0, Value>, backedBy backingKeyPath: KeyPath<WKWebView, BackingValue>, _ transform: (BackingValue) -> Value) -> Value {
+    @_spi(CrossImportOverlay)
+    public func backingProperty<Value, BackingValue>(_ keyPath: KeyPath<WebPage_v0, Value>, backedBy backingKeyPath: KeyPath<WKWebView, BackingValue>, _ transform: (BackingValue) -> Value) -> Value {
         if observations.contents[keyPath] == nil {
             observations.contents[keyPath] = createObservation(for: keyPath, backedBy: backingKeyPath)
         }
@@ -249,7 +252,8 @@ public class WebPage_v0 {
         return transform(backingValue)
     }
 
-    func backingProperty<Value>(_ keyPath: KeyPath<WebPage_v0, Value>, backedBy backingKeyPath: KeyPath<WKWebView, Value>) -> Value {
+    @_spi(CrossImportOverlay)
+    public func backingProperty<Value>(_ keyPath: KeyPath<WebPage_v0, Value>, backedBy backingKeyPath: KeyPath<WKWebView, Value>) -> Value {
         backingProperty(keyPath, backedBy: backingKeyPath) { $0 }
     }
 }

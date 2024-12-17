@@ -21,22 +21,49 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-#if ENABLE_SWIFTUI && compiler(>=6.0)
-
 import Foundation
-public import SwiftUI // FIXME: (283455) Do not import SwiftUI in WebKit proper.
+public import SwiftUI
 
-extension WebPage_v0 {
-    public var themeColor: Color? {
-        self.backingProperty(\.themeColor, backedBy: \.themeColor) { backingValue in
-            // The themeColor property is a UIColor/NSColor in WKWebView.
-#if canImport(UIKit)
-            return backingValue.map(Color.init(uiColor:))
-#else
-            return backingValue.map(Color.init(nsColor:))
-#endif
-        }
-    }
+extension EnvironmentValues {
+    @Entry
+    var webViewAllowsBackForwardNavigationGestures = false
+
+    @Entry
+    var webViewAllowsLinkPreview = true
+
+    @Entry
+    var webViewAllowsTabFocusingLinks = false
+
+    @Entry
+    var webViewAllowsTextInteraction = true
+
+    @Entry
+    var webViewAllowsElementFullscreen = false
 }
 
-#endif
+extension View {
+    @_spi(Private)
+    public func webViewAllowsBackForwardNavigationGestures(_ value: Bool = true) -> some View {
+        environment(\.webViewAllowsBackForwardNavigationGestures, value)
+    }
+
+    @_spi(Private)
+    public func webViewAllowsLinkPreview(_ value: Bool = true) -> some View {
+        environment(\.webViewAllowsLinkPreview, value)
+    }
+
+    @_spi(Private)
+    public func webViewAllowsTabFocusingLinks(_ value: Bool = true) -> some View {
+        environment(\.webViewAllowsTabFocusingLinks, value)
+    }
+
+    @_spi(Private)
+    public func webViewAllowsTextInteraction(_ value: Bool = true) -> some View {
+        environment(\.webViewAllowsTextInteraction, value)
+    }
+
+    @_spi(Private)
+    public func webViewAllowsElementFullscreen(_ value: Bool = true) -> some View {
+        environment(\.webViewAllowsElementFullscreen, value)
+    }
+}
