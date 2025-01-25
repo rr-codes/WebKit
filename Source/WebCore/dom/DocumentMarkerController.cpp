@@ -303,6 +303,9 @@ static bool canMergeMarkers(const DocumentMarker& marker, const DocumentMarker& 
         return std::get<DocumentMarker::WritingToolsTextSuggestionData>(marker.data()).suggestionID == std::get<DocumentMarker::WritingToolsTextSuggestionData>(other.data()).suggestionID;
 #endif
 
+    if (marker.type() == DocumentMarkerType::TransparentContent)
+        return std::get<DocumentMarker::TransparentContentData>(marker.data()).uuid == std::get<DocumentMarker::TransparentContentData>(other.data()).uuid;
+
     return true;
 }
 

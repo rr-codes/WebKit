@@ -75,8 +75,8 @@ import WebKitSwift
         self.delegate = delegate
     }
 
-    @objc(startAnimationForRange:completion:)
-    public func startAnimation(for range: NSRange) async {
+    @objc(createAnimationForRange:completion:)
+    public func createAnimation(for range: NSRange) async {
         self.reset()
 
         self.viewManager.assertPonderingEffectIsInactive()
@@ -88,8 +88,16 @@ import WebKitSwift
         }
 
         self.contextRange = contextRange
+    }
 
-        let chunk = IntelligenceTextEffectChunk.Pondering(range: contextRange)
+    @objc(startWithCompletion:)
+    public func start() async {
+        self.viewManager.reset()
+
+        self.processedRangeOffset = 0
+        self.replacementQueue = []
+
+        let chunk = IntelligenceTextEffectChunk.Pondering(range: contextRange!)
         let effect = PlatformIntelligencePonderingTextEffect(chunk: chunk as IntelligenceTextEffectChunk)
 
         await self.viewManager.setActivePonderingEffect(effect)
@@ -101,6 +109,9 @@ import WebKitSwift
             assertionFailure("Intelligence text effect coordinator: Unable to create Swift.Range from NSRange \(processedRange)")
             return
         }
+
+        // The Range initializer that takes an NSRange does not do bounds checking.
+        assert(range.upperBound >= range.lowerBound, "Intelligence text effect coordinator: Invalid NSRange \(processedRange)")
 
         let asyncBlock = async(operation)
         let request = Self.ReplacementOperationRequest(processedRange: range, finished: finished, characterDelta: characterDelta, operation: asyncBlock)

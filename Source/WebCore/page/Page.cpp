@@ -5388,7 +5388,6 @@ std::optional<SimpleRange> Page::contextRangeForActiveWritingToolsSession() cons
 
 void Page::intelligenceTextAnimationsDidComplete()
 {
-    m_writingToolsController->intelligenceTextAnimationsDidComplete();
 }
 #endif
 

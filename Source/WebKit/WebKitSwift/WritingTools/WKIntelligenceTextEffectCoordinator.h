@@ -75,7 +75,9 @@ NS_SWIFT_UI_ACTOR
 
 - (instancetype)initWithDelegate:(id<WKIntelligenceTextEffectCoordinatorDelegate>)delegate;
 
-- (void)startAnimationForRange:(NSRange)range completion:(void (^)(void))completion;
+- (void)createAnimationForRange:(NSRange)range completion:(void (^)(void))completion;
+
+- (void)startWithCompletion:(void (^)(void))completion;
 
 - (void)requestReplacementWithProcessedRange:(NSRange)range finished:(BOOL)finished characterDelta:(NSInteger)characterDelta operation:(void (^)(void (^)(void)))operation completion:(void (^)(void))completion;
 

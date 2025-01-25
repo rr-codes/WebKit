@@ -2248,14 +2248,12 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
 
     _page->didBeginWritingToolsSession(*webSession, contextData);
 
-    if (session.type == WTSessionTypeProofreading)
-        _intelligenceTextEffectCoordinator = adoptNS([WebKit::allocWKIntelligenceReplacementTextEffectCoordinatorInstance() initWithDelegate:(id<WKIntelligenceTextEffectCoordinatorDelegate>)self]);
-    else if (session.type == WTSessionTypeComposition && session.compositionSessionType == WTCompositionSessionTypeSmartReply)
+    if (session.type == WTSessionTypeComposition && session.compositionSessionType == WTCompositionSessionTypeSmartReply)
         _intelligenceTextEffectCoordinator = adoptNS([WebKit::allocWKIntelligenceSmartReplyTextEffectCoordinatorInstance() initWithDelegate:(id<WKIntelligenceTextEffectCoordinatorDelegate>)self]);
     else
-        _intelligenceTextEffectCoordinator = nil;
+        _intelligenceTextEffectCoordinator = adoptNS([WebKit::allocWKIntelligenceReplacementTextEffectCoordinatorInstance() initWithDelegate:(id<WKIntelligenceTextEffectCoordinatorDelegate>)self]);
 
-    [_intelligenceTextEffectCoordinator startAnimationForRange:contexts.firstObject.range completion:^{ }];
+    [_intelligenceTextEffectCoordinator createAnimationForRange:contexts.firstObject.range completion:^{ }];
 }
 
 - (void)proofreadingSession:(WTSession *)session didReceiveSuggestions:(NSArray<WTTextSuggestion *> *)suggestions processedRange:(NSRange)range inContext:(WTContext *)context finished:(BOOL)finished
@@ -2344,11 +2342,8 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
     _activeWritingToolsSession = nil;
     [_writingToolsTextSuggestions removeAllObjects];
 
-    if (!_intelligenceTextEffectCoordinator) {
-        _page->setWritingToolsActive(false);
-        _page->didEndWritingToolsSession(*webSession, accepted);
-        return;
-    }
+    _previousProcessedRange = NSMakeRange(0, 0);
+    _previousStringLength = 0;
 
     // Flush and invoke all replacement operations, then dismiss the markers (and revert the text if not accepted),
     // then set the selection to the updated context range, and finally clear the state in the web process.
@@ -2385,15 +2380,6 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
         return;
     }
 
-    // FIXME: This branch can be removed once all composition types use the new effects system.
-    if (!_intelligenceTextEffectCoordinator) {
-        _writingToolsTextReplacementsFinished = finished;
-        _partialIntelligenceTextAnimationCount += 1;
-
-        _page->compositionSessionDidReceiveTextWithReplacementRange(*webSession, WebCore::AttributedString::fromNSAttributedString(attributedText), { range }, *webContext, finished, [] { });
-        return;
-    }
-
     auto convertedAttributedText = WebCore::AttributedString::fromNSAttributedString(attributedText);
 
     auto operation = makeBlockPtr([webSession, convertedAttributedText, range, webContext, finished, weakSelf = WeakObjCPtr<WKWebView>(self)](void (^completion)(void)) {
@@ -2408,19 +2394,38 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
         });
     });
 
-    // With Smart Replies, the `range` parameter will always be `(0, 0)` instead of the actual replacement range,
-    // which is in fact just the current selection and always starts at the beginning, and so this range is used instead.
+    auto [adjustedReplacementRange, characterDelta] = [&] {
+        if (session.compositionSessionType == WTCompositionSessionTypeSmartReply) {
+            // With Smart Replies, the `range` parameter will always be `(0, 0)` instead of the actual replacement range,
+            // which is in fact just the current selection and always starts at the beginning, and so this range is used instead.
 
-    auto& editorState = _page->editorState();
-    auto selectedTextCharacterCount = editorState.postLayoutData
-        .transform([](auto& postLayoutData) { return postLayoutData.selectedTextLength; })
-        .value_or(0);
+            auto& editorState = _page->editorState();
+            auto selectedTextCharacterCount = editorState.postLayoutData
+                .transform([](auto& postLayoutData) { return postLayoutData.selectedTextLength; })
+                .value_or(0);
 
-    // The character delta is the difference between the existing text and the text after the replacement.
+            NSRange adjustedReplacementRange = NSMakeRange(0, selectedTextCharacterCount);
 
-    auto characterDelta = attributedText.length - selectedTextCharacterCount;
+            // The character delta is the difference between the existing text and the text after the replacement.
+            NSInteger characterDelta = attributedText.length - selectedTextCharacterCount;
 
-    [_intelligenceTextEffectCoordinator requestReplacementWithProcessedRange:NSMakeRange(0, selectedTextCharacterCount) finished:finished characterDelta:characterDelta operation:operation.get() completion:^{ }];
+            return std::pair { adjustedReplacementRange, characterDelta };
+        }
+
+        NSInteger newLocation = _previousProcessedRange.location + _previousProcessedRange.length; // 0 | 1222
+        NSRange adjustedReplacementRange = NSMakeRange(newLocation, (NSInteger)range.length - (NSInteger)newLocation); // 0, 1222 - 0 | 1222, 1222 - 1222
+
+        NSInteger newStringLength = attributedText.length - _previousStringLength;
+
+        auto characterDelta = (newStringLength - (NSInteger)adjustedReplacementRange.length);
+
+        return std::pair { adjustedReplacementRange, characterDelta };
+    }();
+
+    _previousProcessedRange = range;
+    _previousStringLength = attributedText.length;
+
+    [_intelligenceTextEffectCoordinator requestReplacementWithProcessedRange:adjustedReplacementRange finished:finished characterDelta:characterDelta operation:operation.get() completion:^{ }];
 }
 
 - (void)writingToolsSession:(WTSession *)session didReceiveAction:(WTAction)action
@@ -2433,12 +2438,32 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
 
     auto webAction = WebKit::convertToWebAction(action);
 
-    if (webAction == WebCore::WritingTools::Action::Restart) {
-        _writingToolsTextReplacementsFinished = false;
-        _partialIntelligenceTextAnimationCount = 0;
-    }
+    if (action == WTActionCompositionRestart) {
+        _previousProcessedRange = NSMakeRange(0, 0);
+        _previousStringLength = 0;
 
-    _page->writingToolsSessionDidReceiveAction(*webSession, webAction);
+        [_intelligenceTextEffectCoordinator flushReplacementsWithCompletion:makeBlockPtr([webSession, webAction, weakSelf = WeakObjCPtr<WKWebView>(self)] {
+            auto strongSelf = weakSelf.get();
+            if (!strongSelf)
+                return;
+
+            [strongSelf->_intelligenceTextEffectCoordinator startWithCompletion:makeBlockPtr([webSession, webAction, weakSelf] {
+                auto strongSelf = weakSelf.get();
+                if (!strongSelf)
+                    return;
+
+                strongSelf->_page->writingToolsSessionDidReceiveAction(*webSession, webAction);
+            }).get()];
+        }).get()];
+    } else {
+        [_intelligenceTextEffectCoordinator flushReplacementsWithCompletion:makeBlockPtr([webSession, webAction, weakSelf = WeakObjCPtr<WKWebView>(self)] {
+            auto strongSelf = weakSelf.get();
+            if (!strongSelf)
+                return;
+
+            strongSelf->_page->writingToolsSessionDidReceiveAction(*webSession, webAction);
+        }).get()];
+    }
 }
 
 #pragma mark - WKIntelligenceTextEffectCoordinatorDelegate conformance
@@ -2643,27 +2668,6 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
         return;
 
     [textViewDelegate proofreadingSessionWithUUID:[_activeWritingToolsSession uuid] updateState:WebKit::convertToPlatformTextSuggestionState(state) forSuggestionWithUUID:replacementUUID];
-}
-
-- (void)_didEndPartialIntelligenceTextAnimation
-{
-    if (!_partialIntelligenceTextAnimationCount) {
-        ASSERT_NOT_REACHED();
-        return;
-    }
-
-    _partialIntelligenceTextAnimationCount -= 1;
-
-    if (!_partialIntelligenceTextAnimationCount && _writingToolsTextReplacementsFinished) {
-        // If the entire replacement has already been completed, and this is the end of the last animation,
-        // then reveal the selection and end the session if needed.
-        _page->intelligenceTextAnimationsDidComplete();
-    }
-}
-
-- (BOOL)_writingToolsTextReplacementsFinished
-{
-    return _writingToolsTextReplacementsFinished;
 }
 
 - (void)_addTextAnimationForAnimationID:(NSUUID *)nsUUID withData:(const WebCore::TextAnimationData&)data

@@ -287,12 +287,11 @@ void PageClientImplCocoa::writingToolsActiveDidChange()
 
 void PageClientImplCocoa::didEndPartialIntelligenceTextAnimation()
 {
-    [m_webView _didEndPartialIntelligenceTextAnimation];
 }
 
 bool PageClientImplCocoa::writingToolsTextReplacementsFinished()
 {
-    return [m_webView _writingToolsTextReplacementsFinished];
+    return false;
 }
 
 void PageClientImplCocoa::addTextAnimationForAnimationID(const WTF::UUID& uuid, const WebCore::TextAnimationData& data)

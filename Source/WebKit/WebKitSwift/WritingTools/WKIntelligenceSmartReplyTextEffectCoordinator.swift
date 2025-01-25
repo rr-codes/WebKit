@@ -80,8 +80,8 @@ import WebKitSwift
         self.delegate = delegate
     }
 
-    @objc(startAnimationForRange:completion:)
-    public func startAnimation(for range: NSRange) async {
+    @objc(createAnimationForRange:completion:)
+    public func createAnimation(for range: NSRange) async {
         self.viewManager.assertPonderingEffectIsInactive()
         self.viewManager.assertReplacementEffectIsInactive()
 
@@ -94,6 +94,10 @@ import WebKitSwift
         let effect = PlatformIntelligencePonderingTextEffect(chunk: chunk as IntelligenceTextEffectChunk)
 
         await self.viewManager.setActivePonderingEffect(effect)
+    }
+
+    @objc(startWithCompletion:)
+    public func start() async {
     }
 
     @objc(requestReplacementWithProcessedRange:finished:characterDelta:operation:completion:)
@@ -173,7 +177,7 @@ import WebKitSwift
             // This is because in the platform effect view, when a replacement effect gets created, the underlying text becomes hidden
             // for a non-instantaneous amount of time while the replacement is performed. So, a pondering effect has to be ongoing when
             // this happens to avoid the user from seeing the text become briefly hidden.
-            await startAnimation(for: NSRange(request.processedRange))
+            await createAnimation(for: NSRange(request.processedRange))
         }
 
         let chunk = IntelligenceTextEffectChunk.Replacement(

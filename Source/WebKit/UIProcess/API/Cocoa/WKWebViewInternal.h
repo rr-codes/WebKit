@@ -264,9 +264,8 @@ struct PerWebProcessState {
     RetainPtr<WTSession> _activeWritingToolsSession;
 
     RetainPtr<id<WKIntelligenceTextEffectCoordinating>> _intelligenceTextEffectCoordinator;
-
-    NSUInteger _partialIntelligenceTextAnimationCount;
-    BOOL _writingToolsTextReplacementsFinished;
+    NSRange _previousProcessedRange;
+    NSInteger _previousStringLength;
 #endif
 
 #if ENABLE(SCREEN_TIME)
@@ -448,9 +447,6 @@ struct PerWebProcessState {
 - (PlatformWritingToolsResultOptions)writingToolsAllowedInputOptions;
 - (PlatformWritingToolsResultOptions)allowedWritingToolsResultOptions;
 #endif
-
-- (void)_didEndPartialIntelligenceTextAnimation;
-- (BOOL)_writingToolsTextReplacementsFinished;
 
 - (void)_addTextAnimationForAnimationID:(NSUUID *)uuid withData:(const WebCore::TextAnimationData&)styleData;
 - (void)_removeTextAnimationForAnimationID:(NSUUID *)uuid;
