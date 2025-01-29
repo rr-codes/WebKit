@@ -92,9 +92,10 @@ private:
             AnimationInProgress = 1 << 1,
         };
 
-        CompositionState(const Vector<Ref<WritingToolsCompositionCommand>>& unappliedCommands, const Vector<Ref<WritingToolsCompositionCommand>>& reappliedCommands, const WritingTools::Session& session)
+        CompositionState(const Vector<Ref<WritingToolsCompositionCommand>>& unappliedCommands, const Vector<Ref<WritingToolsCompositionCommand>>& reappliedCommands, const WritingTools::Session& session, RefPtr<DocumentFragment>&& originalSessionContents = nullptr)
             : unappliedCommands(unappliedCommands)
             , reappliedCommands(reappliedCommands)
+            , originalSessionContents(WTFMove(originalSessionContents))
             , session(session)
         {
         }
@@ -102,6 +103,7 @@ private:
         // These two vectors should never have the same command in both of them.
         Vector<Ref<WritingToolsCompositionCommand>> unappliedCommands;
         Vector<Ref<WritingToolsCompositionCommand>> reappliedCommands;
+        RefPtr<DocumentFragment> originalSessionContents;
         WritingTools::Session session;
         OptionSet<ClearStateDeferralReason> clearStateDeferralReasons;
 
@@ -167,6 +169,7 @@ private:
 
     void replaceContentsOfRangeInSession(ProofreadingState&, const SimpleRange&, const String&);
     void replaceContentsOfRangeInSession(CompositionState&, const SimpleRange&, const AttributedString&, WritingToolsCompositionCommand::State);
+    void restoreOriginalContents(CompositionState&);
 
     void compositionSessionDidFinishReplacement();
     void compositionSessionDidFinishReplacement(const WTF::UUID& sourceAnimationUUID, const WTF::UUID& destinationAnimationUUID, const CharacterRange&, const String&);

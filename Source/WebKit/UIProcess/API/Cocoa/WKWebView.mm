@@ -2375,6 +2375,8 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
 
 - (void)compositionSession:(WTSession *)session didReceiveText:(NSAttributedString *)attributedText replacementRange:(NSRange)range inContext:(WTContext *)context finished:(BOOL)finished
 {
+//    NSLog(@"RR_CODES didReceiveText attributedText `%@` range %@ finished %@", attributedText, NSStringFromRange(range), @(finished));
+
     auto webSession = WebKit::convertToWebSession(session);
     if (!webSession) {
         ASSERT_NOT_REACHED();

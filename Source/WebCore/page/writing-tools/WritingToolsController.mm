@@ -235,7 +235,8 @@ void WritingToolsController::willBeginWritingToolsSession(const std::optional<Wr
         // the command itself is never applied or unapplied.
         //
         // The range associated with each command is the resulting context range after the command is applied.
-        m_state = CompositionState { { }, { WritingToolsCompositionCommand::create(Ref { *document }, *contextRange) }, *session };
+        Ref originalContents = createLiveRange(*contextRange)->cloneContents().returnValue();
+        m_state = CompositionState { { }, { WritingToolsCompositionCommand::create(Ref { *document }, *contextRange) }, *session, WTFMove(originalContents) };
         break;
     }
 
@@ -608,26 +609,16 @@ void WritingToolsController::compositionSessionDidReceiveTextWithReplacementRang
     }
 
     // When `didReceiveText` is invoked multiple times, subsequent invocations will always have their replacement text as a superset
-    // of the prior invocations' text. Therefore, this can effectively be modeled as the prior replacement being undone, and then the
+    // of the prior invocations' text. Therefore, this can effectively be modeled as the original content being restored, and then the
     // current replacement being applied.
     //
     // This is specifically needed in the case where tables and/or lists are the replacement text, since it is impossible to construct
     // a selection that is just "outside" one of these elements.
 
-    Ref currentCommand = state->reappliedCommands.takeLast();
-
-    // The prior replacement command must be undone in such a way as to not have it be added to the undo stack
-    currentCommand->ensureComposition().unapply(EditCommandComposition::AddToUndoStack::No);
-
-    // Now that the prior replacement command is undone, remove and replace it with a fresh command, with the same range.
-    // The same range is used since it represents the end of the previous command, and is only updated again when `finished` is `true`,
-    // at which point this will not be invoked again.
-
-    auto currentContextRange = currentCommand->endingContextRange();
-    state->reappliedCommands.append(WritingToolsCompositionCommand::create(Ref { *document }, currentContextRange));
+    restoreOriginalContents(*state);
 
     // The current session context range is always the range associated with the most recently applied command.
-    auto sessionRange = state->reappliedCommands.last()->endingContextRange();
+    auto sessionRange = state->reappliedCommands.last()->currentContextRange();
     auto sessionRangeCharacterCount = characterCount(sessionRange);
 
     if (UNLIKELY(range.length + sessionRangeCharacterCount < contextTextCharacterCount)) {
@@ -1163,6 +1154,8 @@ void WritingToolsController::restartCompositionForSession()
     // The stack will never be empty as the sentinel command always exists.
     auto currentContextRange = state->reappliedCommands.last()->endingContextRange();
     state->reappliedCommands.append(WritingToolsCompositionCommand::create(Ref { *document }, currentContextRange));
+
+    restoreOriginalContents(*state);
 }
 
 std::optional<std::tuple<Node&, DocumentMarker&>> WritingToolsController::findTextSuggestionMarkerByID(const SimpleRange& outerRange, const WritingTools::TextSuggestion::ID& textSuggestionID) const
@@ -1265,6 +1258,15 @@ void WritingToolsController::replaceContentsOfRangeInSession(CompositionState& s
 
     EditingScope editingScope { *document() };
     state.reappliedCommands.last()->replaceContentsOfRangeWithFragment(WTFMove(fragment), range, matchStyle, commandState);
+}
+
+void WritingToolsController::restoreOriginalContents(CompositionState& state)
+{
+    Ref cloned = uncheckedDowncast<DocumentFragment>(state.originalSessionContents->cloneNode(true));
+    auto range = state.reappliedCommands.last()->currentContextRange();
+
+    EditingScope editingScope { *document() };
+    state.reappliedCommands.last()->replaceContentsOfRangeWithFragment(WTFMove(cloned), range, WritingToolsCompositionCommand::MatchStyle::No, WritingToolsCompositionCommand::State::InProgress);
 }
 
 void WritingToolsController::commitComposition(CompositionState& state, Document& document)

@@ -186,7 +186,7 @@ using PlatformTextPlaceholder = NSTextPlaceholder;
     [configuration setWritingToolsBehavior:behavior];
     [configuration _setAttachmentElementEnabled:attachmentElementEnabled];
 
-    if (!(self = [super initWithFrame:CGRectMake(0, 0, 320, 568) configuration:configuration]))
+    if (!(self = [super initWithFrame:CGRectMake(0, 0, 1000, 800) configuration:configuration]))
         return nil;
 
 #if PLATFORM(IOS_FAMILY)
@@ -3760,6 +3760,279 @@ TEST(WritingTools, CompositionWithOmittedTrailingWhitespaceContent)
     }];
 
     TestWebKitAPI::Util::run(&finished);
+}
+
+static auto resource = R"TESTRESOURCE(
+<html>
+    <head></head>
+    <body dir="auto" style="overflow-wrap: break-word; -webkit-nbsp-mode: space; line-break: after-white-space;" contenteditable>
+        <div>
+            It was late December, and the village of Eldershade was covered in a blanket of thick snow, the kind that turned everything into a silent, sparkling wonderland. The cobbled streets, once bustling with market vendors and children running between stalls, were now deserted, save for the occasional dog with its breath clouding the cold air.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            In the heart of the village stood an old, crooked house, its windows covered with layers of frost. Inside, a fire crackled in the hearth, casting a warm orange glow across the room. On a small wooden table by the window, a lantern sat, its flame flickering with a delicate, ethereal light.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            The house belonged to old Maeryn, the village’s only healer. People whispered of her strange ways, how she could call the wind to calm a fever, how she spoke to plants as if they were old friends, and how, in the dead of winter, the lantern on her windowsill never seemed to go out. Not even in the fiercest blizzards.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            Maeryn sat by the fire, knitting a scarf with hands that trembled more from age than the cold. Her mind wandered as she worked, her thoughts drifting to the past. Her husband, Ciaran, had passed long ago, and their only daughter, Elira, had left for the city years before, chasing dreams of a life beyond the quiet village. Though Maeryn had never stopped hoping Elira would return, she knew the world had a way of sweeping people away, making promises of more than what Eldershade could offer.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            The wind howled outside, rattling the shutters. Maeryn paused in her knitting and looked toward the window, where the lantern flickered against the storm. The flame seemed to pulse, as if alive, and Maeryn felt a familiar pull in her chest. She stood slowly, as if drawn by some invisible thread, and made her way to the door.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            As she stepped outside, the cold air bit at her skin, but she didn’t flinch. The lantern's light seemed brighter than before, illuminating the path ahead as though it were guiding her. Maeryn walked through the snow, the crunch of her boots the only sound in the deep silence. The storm swirled around her, yet the lantern’s light remained steady, cutting through the darkness like a beacon.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            She walked for what felt like hours, though the village was no more than a few miles away. The storm had only grown stronger, and Maeryn's face was numb with the cold, but she didn’t stop. The lantern’s light was her only guide, and it felt more important now than ever.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            Finally, after what seemed like an eternity, she reached the edge of the forest, where the trees stood like silent sentinels. Beneath one of the ancient oaks, she saw a figure standing still, almost as if waiting for her.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            “Elira,” Maeryn whispered, her breath coming in quick bursts.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            Her daughter, now grown and dressed in a heavy coat, stepped forward. Her hair had darkened with age, but her eyes—those familiar eyes—were unchanged.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            “Mother,” Elira said softly, her voice barely audible over the wind. “I’ve come home.”
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            Maeryn’s heart surged with a strange mixture of joy and sorrow. She had spent years waiting for this moment, but now that it had arrived, she wasn’t sure what to say. Instead, she simply opened her arms, and Elira stepped into them, wrapping her in a warm embrace.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            For a long time, neither of them spoke. They stood together in the quiet, the lantern’s glow lighting the snow around them, as if the world itself had paused to give them this moment.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            When Maeryn finally pulled away, she looked at her daughter with tear-filled eyes. “I never gave up hope,” she said quietly. “The lantern... it’s always been here, waiting for you.”
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            Elira smiled softly, wiping a tear from her mother’s cheek. “I know, Mother. I felt it too. The light... It’s what brought me back.”
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            And in that moment, the storm seemed to calm, the snow settling around them like a soft, gentle blanket. The lantern’s flame flickered one last time, and then, as if content with its purpose, it went out.
+        </div>
+        <div>
+            <br>
+        </div>
+        <div>
+            But neither of them noticed. They were already home.
+        </div>
+    </body>
+</html>
+)TESTRESOURCE";
+
+TEST(WritingTools, ABCD)
+{
+    static auto originalText = R"TESTRESOURCE(It was late December, and the village of Eldershade was covered in a blanket of thick snow, the kind that turned everything into a silent, sparkling wonderland. The cobbled streets, once bustling with market vendors and children running between stalls, were now deserted, save for the occasional dog with its breath clouding the cold air.
+
+In the heart of the village stood an old, crooked house, its windows covered with layers of frost. Inside, a fire crackled in the hearth, casting a warm orange glow across the room. On a small wooden table by the window, a lantern sat, its flame flickering with a delicate, ethereal light.
+
+The house belonged to old Maeryn, the village’s only healer. People whispered of her strange ways, how she could call the wind to calm a fever, how she spoke to plants as if they were old friends, and how, in the dead of winter, the lantern on her windowsill never seemed to go out. Not even in the fiercest blizzards.
+
+Maeryn sat by the fire, knitting a scarf with hands that trembled more from age than the cold. Her mind wandered as she worked, her thoughts drifting to the past. Her husband, Ciaran, had passed long ago, and their only daughter, Elira, had left for the city years before, chasing dreams of a life beyond the quiet village. Though Maeryn had never stopped hoping Elira would return, she knew the world had a way of sweeping people away, making promises of more than what Eldershade could offer.
+
+The wind howled outside, rattling the shutters. Maeryn paused in her knitting and looked toward the window, where the lantern flickered against the storm. The flame seemed to pulse, as if alive, and Maeryn felt a familiar pull in her chest. She stood slowly, as if drawn by some invisible thread, and made her way to the door.
+
+As she stepped outside, the cold air bit at her skin, but she didn’t flinch. The lantern's light seemed brighter than before, illuminating the path ahead as though it were guiding her. Maeryn walked through the snow, the crunch of her boots the only sound in the deep silence. The storm swirled around her, yet the lantern’s light remained steady, cutting through the darkness like a beacon.
+
+She walked for what felt like hours, though the village was no more than a few miles away. The storm had only grown stronger, and Maeryn's face was numb with the cold, but she didn’t stop. The lantern’s light was her only guide, and it felt more important now than ever.
+
+Finally, after what seemed like an eternity, she reached the edge of the forest, where the trees stood like silent sentinels. Beneath one of the ancient oaks, she saw a figure standing still, almost as if waiting for her.
+
+“Elira,” Maeryn whispered, her breath coming in quick bursts.
+
+Her daughter, now grown and dressed in a heavy coat, stepped forward. Her hair had darkened with age, but her eyes—those familiar eyes—were unchanged.
+
+“Mother,” Elira said softly, her voice barely audible over the wind. “I’ve come home.”
+
+Maeryn’s heart surged with a strange mixture of joy and sorrow. She had spent years waiting for this moment, but now that it had arrived, she wasn’t sure what to say. Instead, she simply opened her arms, and Elira stepped into them, wrapping her in a warm embrace.
+
+For a long time, neither of them spoke. They stood together in the quiet, the lantern’s glow lighting the snow around them, as if the world itself had paused to give them this moment.
+
+When Maeryn finally pulled away, she looked at her daughter with tear-filled eyes. “I never gave up hope,” she said quietly. “The lantern... it’s always been here, waiting for you.”
+
+Elira smiled softly, wiping a tear from her mother’s cheek. “I know, Mother. I felt it too. The light... It’s what brought me back.”
+
+And in that moment, the storm seemed to calm, the snow settling around them like a soft, gentle blanket. The lantern’s flame flickered one last time, and then, as if content with its purpose, it went out.
+
+But neither of them noticed. They were already home.)TESTRESOURCE";
+
+    RetainPtr session = adoptNS([[WTSession alloc] initWithType:WTSessionTypeComposition textViewDelegate:nil]);
+    RetainPtr webView = adoptNS([[WritingToolsWKWebView alloc] initWithHTMLString:String::fromUTF8(resource)]);
+    [webView focusDocumentBodyAndSelectAll];
+
+    __block bool finished = false;
+    __block RetainPtr<WTContext> context = nil;
+
+    [[webView writingToolsDelegate] willBeginWritingToolsSession:session.get() requestContexts:^(NSArray<WTContext *> *contexts) {
+        EXPECT_EQ(1UL, contexts.count);
+
+        EXPECT_WK_STREQ(String::fromUTF8(originalText), contexts.firstObject.attributedText.string);
+
+        [[webView writingToolsDelegate] didBeginWritingToolsSession:session.get() contexts:contexts];
+
+        context = contexts.firstObject;
+        finished = true;
+    }];
+
+    TestWebKitAPI::Util::run(&finished);
+    finished = false;
+
+    TestWebKitAPI::Util::runFor(3.0_s);
+
+    [[webView writingToolsDelegate] writingToolsSession:session.get() didReceiveAction:WTActionCompositionRestart];
+
+    TestWebKitAPI::Util::runFor(3.0_s);
+
+    static auto text3 = R"TESTRESOURCE(In late December, the village of Eldershade was draped in a thick blanket of snow, transforming everything into a hushed, enchanting wonderland. The once lively cobbled streets, once filled with market vendors and children darting between stalls, were now deserted, save for the occasional dog whose breath fogged up the cold air.
+
+Amidst the village’s tranquility, an old, crooked house stood tall, its windows adorned with frosty layers. Inside, a crackling fire in the hearth cast a warm, golden glow across the room. A small wooden table by the window held a lantern, its flickering flame emitting a delicate, ethereal light.
+
+This house belonged to the village’s sole healer, an enigmatic woman known for her peculiar practices. People whispered of her extraordinary abilities, such as summoning the wind to soothe fevers, communicating with plants as if they were old companions, and maintaining her lantern on the windowsill even during the harshest blizzards.
+
+Maeryn sat by the fire, knitting a scarf with hands that trembled more from age than the cold. Her mind wandered as she worked, her thoughts drifting to the past. Her husband, Ciaran, had passed away long ago, and their only daughter, Elira, had left for the city years before, chasing dreams of a life beyond the peaceful village. Although Maeryn never lost hope of Elira’s return, she understood the world’s allure, capable of drawing people away with promises of more than Eldershade could offer.
+
+The howling wind outside rattled the shutters, causing Maeryn to pause her knitting. She turned to the window, where the lantern flickered against the storm. The flame seemed to pulse, as if alive, and Maeryn felt a familiar tug at her heart. Drawn by an invisible force, she slowly rose and made her way to the door.
+
+As she stepped outside, the cold air nipped at her skin, but she remained unmoved. The lantern’s light seemed brighter than before, illuminating the path ahead as if guiding her. Maeryn traversed the snow, the crunch of her boots the only sound in the deep silence. The storm intensified, yet the lantern’s light persisted, cutting through the darkness like a beacon.
+
+Hours passed, though the village was mere miles away. The storm intensified, and Maeryn’s face was numb with the cold, yet she refused to halt. The lantern’s light became her sole guide, its significance growing with each passing moment.
+
+Finally, after what seemed like an eternity, she reached the forest’s edge, where the trees stood like silent sentinels. Beneath an ancient oak, she spotted a figure standing still, almost as if waiting for her.
+
+“Elira,” Maeryn whispered, her breath coming in short gasps.
+
+Her daughter, now grown and clad in a heavy coat, approached. Her hair had darkened with age, but her eyes—those familiar eyes—retained their youthful sparkle.
+
+“Mother,” Elira spoke softly, her voice barely audible over the wind. “I’ve returned home.”
+
+Maeryn’s heart swelled with a peculiar blend of joy and sorrow. Years of anticipation had led her to this moment, yet now, uncertainty lingered. Instead, she simply opened her arms, and Elira stepped into them, enveloping her in a warm embrace.
+
+For a long time, neither of them spoke. They stood together in the tranquil silence, the lantern’s glow illuminating the snow around them, as if the world itself had paused to grant them this precious moment.
+
+When Maeryn finally released Elira, she gazed into her daughter’s tear-streaked eyes. “I never lost hope,” she whispered. “The lantern… it’s always been here, patiently waiting for you.”
+
+Elira smiled softly, wiping a tear from her mother’s cheek. “I know, Mother. I felt it too. The light… It’s what propelled me back.”
+
+In that moment, the storm appeared to subside, and the snow settled around them like a soft, gentle blanket. The lantern’s flame flickered one final time before, as if satisfied with its function, it extinguished itself.
+
+However, neither of them noticed. They were already home.)TESTRESOURCE";
+
+    RetainPtr attributedText3 = adoptNS([[NSAttributedString alloc] initWithString:String::fromUTF8(text3)]);
+
+    [[webView writingToolsDelegate] compositionSession:session.get() didReceiveText:attributedText3.get() replacementRange:NSMakeRange(0, 3992) inContext:context.get() finished:NO];
+    TestWebKitAPI::Util::runFor(3_s);
+
+    static auto text4 = R"TESTRESOURCE(In late December, the village of Eldershade was draped in a thick blanket of snow, transforming everything into a hushed, enchanting wonderland. The once lively cobbled streets, once filled with market vendors and children darting between stalls, were now deserted, save for the occasional dog whose breath fogged up the cold air.
+
+Amidst the village’s tranquility, an old, crooked house stood tall, its windows adorned with frosty layers. Inside, a crackling fire in the hearth cast a warm, golden glow across the room. A small wooden table by the window held a lantern, its flickering flame emitting a delicate, ethereal light.
+
+This house belonged to the village’s sole healer, an enigmatic woman known for her peculiar practices. People whispered of her extraordinary abilities, such as summoning the wind to soothe fevers, communicating with plants as if they were old companions, and maintaining her lantern on the windowsill even during the harshest blizzards.
+
+Maeryn sat by the fire, knitting a scarf with hands that trembled more from age than the cold. Her mind wandered as she worked, her thoughts drifting to the past. Her husband, Ciaran, had passed away long ago, and their only daughter, Elira, had left for the city years before, chasing dreams of a life beyond the peaceful village. Although Maeryn never lost hope of Elira’s return, she understood the world’s allure, capable of drawing people away with promises of more than Eldershade could offer.
+
+The howling wind outside rattled the shutters, causing Maeryn to pause her knitting. She turned to the window, where the lantern flickered against the storm. The flame seemed to pulse, as if alive, and Maeryn felt a familiar tug at her heart. Drawn by an invisible force, she slowly rose and made her way to the door.
+
+As she stepped outside, the cold air nipped at her skin, but she remained unmoved. The lantern’s light seemed brighter than before, illuminating the path ahead as if guiding her. Maeryn traversed the snow, the crunch of her boots the only sound in the deep silence. The storm intensified, yet the lantern’s light persisted, cutting through the darkness like a beacon.
+
+Hours passed, though the village was mere miles away. The storm intensified, and Maeryn’s face was numb with the cold, yet she refused to halt. The lantern’s light became her sole guide, its significance growing with each passing moment.
+
+Finally, after what seemed like an eternity, she reached the forest’s edge, where the trees stood like silent sentinels. Beneath an ancient oak, she spotted a figure standing still, almost as if waiting for her.
+
+“Elira,” Maeryn whispered, her breath coming in short gasps.
+
+Her daughter, now grown and clad in a heavy coat, approached. Her hair had darkened with age, but her eyes—those familiar eyes—retained their youthful sparkle.
+
+“Mother,” Elira spoke softly, her voice barely audible over the wind. “I’ve returned home.”
+
+Maeryn’s heart swelled with a peculiar blend of joy and sorrow. Years of anticipation had led her to this moment, yet now, uncertainty lingered. Instead, she simply opened her arms, and Elira stepped into them, enveloping her in a warm embrace.
+
+For a long time, neither of them spoke. They stood together in the tranquil silence, the lantern’s glow illuminating the snow around them, as if the world itself had paused to grant them this precious moment.
+
+When Maeryn finally released Elira, she gazed into her daughter’s tear-streaked eyes. “I never lost hope,” she whispered. “The lantern… it’s always been here, patiently waiting for you.”
+
+Elira smiled softly, wiping a tear from her mother’s cheek. “I know, Mother. I felt it too. The light… It’s what propelled me back.”
+
+In that moment, the storm appeared to subside, and the snow settled around them like a soft, gentle blanket. The lantern’s flame flickered one final time before, as if satisfied with its function, it extinguished itself.
+
+However, neither of them noticed. They were already home.)TESTRESOURCE";
+
+    RetainPtr attributedText4 = adoptNS([[NSAttributedString alloc] initWithString:String::fromUTF8(text4)]);
+
+    [[webView writingToolsDelegate] compositionSession:session.get() didReceiveText:attributedText4.get() replacementRange:NSMakeRange(0, 3992) inContext:context.get() finished:YES];
+    TestWebKitAPI::Util::runFor(3_s);
+
+    [[webView writingToolsDelegate] writingToolsSession:session.get() didReceiveAction:WTActionCompositionRestart];
+
+    TestWebKitAPI::Util::runFor(3.0_s);
+
+    static auto text5 = R"TESTRESOURCE(It was late December, and the village of Eldershade was draped in a thick blanket of snow, transforming everything into a hushed, enchanting wonderland. The once lively cobbled streets, once filled with market vendors and children darting between stalls, were now deserted, save for the occasional dog whose breath fogged up the chilly air.
+
+Amidst the village’s tranquility, an old, crooked house stood tall, its windows adorned with frosty layers. Inside, a crackling fire danced in the hearth, casting a warm, golden glow across the room. On a small wooden table by the window, a lantern flickered with a delicate, ethereal light.
+
+This house belonged to the village’s sole healer, an enigmatic woman known for her peculiar practices. People whispered tales of her remarkable abilities, such as summoning the wind to soothe a fever, communicating with plants as if they were long-lost companions, and the mysterious lantern on her windowsill, which never seemed to flicker or extinguish, even during the fiercest blizzards.
+
+Maeryn, sitting by the fire, knitted a scarf with hands that trembled more from age than the cold. Her mind wandered as she worked, her thoughts drifting back to the past. Her husband, Ciaran, had passed away long ago, and their only daughter, Elira, had embarked on a journey to the city years before, chasing dreams of a life beyond the confines of their quiet village. Although Maeryn had never given up hope of Elira’s return, she understood the allure of the world’s promises, knowing that Eldershade could not fulfill all that people sought.
+
+The howling wind outside rattled the shutters, causing Maeryn to pause her knitting. She glanced toward the window, where the lantern flickered against the storm. The flame seemed to pulse, as if alive, and Maeryn felt a familiar tug at her heart. Drawn by an invisible force, she stood slowly and made her way to the door.
+
+)TESTRESOURCE";
+
+    RetainPtr attributedText5 = adoptNS([[NSAttributedString alloc] initWithString:String::fromUTF8(text5)]);
+
+    [[webView writingToolsDelegate] compositionSession:session.get() didReceiveText:attributedText5.get() replacementRange:NSMakeRange(0, 1775) inContext:context.get() finished:NO];
+
+    TestWebKitAPI::Util::runFor(30_s);
+
+//    EXPECT_WK_STREQ(@"", [webView contentsAsString]);
 }
 
 TEST(WritingTools, IntelligenceTextEffectCoordinatorDelegate_RectsForProofreadingSuggestionsInRange)
