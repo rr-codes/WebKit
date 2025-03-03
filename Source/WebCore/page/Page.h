@@ -524,6 +524,9 @@ public:
     void setTabKeyCyclesThroughElements(bool b) { m_tabKeyCyclesThroughElements = b; }
     bool tabKeyCyclesThroughElements() const { return m_tabKeyCyclesThroughElements; }
 
+    void setLastTouchedNode(Node* node) { m_lastTouchedNode = node; }
+    Node* lastTouchedNode() const { return m_lastTouchedNode.get(); }
+
     WEBCORE_EXPORT std::optional<FrameIdentifier> findString(const String&, FindOptions, DidWrap* = nullptr);
     WEBCORE_EXPORT uint32_t replaceRangesWithText(const Vector<SimpleRange>& rangesToReplace, const String& replacementText, bool selectionOnly);
     WEBCORE_EXPORT uint32_t replaceSelectionWithText(const String& replacementText);
@@ -1437,6 +1440,8 @@ private:
     bool m_tabKeyCyclesThroughElements { true };
     bool m_defersLoading { false };
     unsigned m_defersLoadingCallCount { 0 };
+
+    RefPtr<Node> m_lastTouchedNode;
 
     bool m_inLowQualityInterpolationMode { false };
     bool m_areMemoryCacheClientCallsEnabled { true };

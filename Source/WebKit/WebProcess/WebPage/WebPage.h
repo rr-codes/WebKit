@@ -2836,6 +2836,7 @@ private:
     BidiSelectionFlippingState m_bidiSelectionFlippingState { BidiSelectionFlippingState::NotFlipping };
 
     RefPtr<WebCore::Node> m_potentialTapNode;
+    RefPtr<WebCore::Node> m_lastTouchedNode;
     WebCore::FloatPoint m_potentialTapLocation;
     RefPtr<WebCore::SecurityOrigin> m_potentialTapSecurityOrigin;
     CompletionHandler<void(WebCore::SyntheticClickResult)> m_pendingSyntheticClickCallback;
