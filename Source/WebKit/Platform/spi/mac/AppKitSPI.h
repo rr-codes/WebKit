@@ -48,6 +48,8 @@ DECLARE_SYSTEM_HEADER
 
 #else
 
+#import <pal/spi/mac/NSTextInputContextSPI.h>
+
 @interface NSInspectorBar : NSObject
 @property (getter=isVisible) BOOL visible;
 @end
@@ -65,6 +67,12 @@ DECLARE_SYSTEM_HEADER
 #endif
 
 @protocol NSTextInputClient_Async
+@optional
+
+- (void)insertTextPlaceholderWithSize:(CGSize)size completionHandler:(void (^)(NSTextPlaceholder *))completionHandler;
+
+- (void)removeTextPlaceholder:(NSTextPlaceholder *)placeholder willInsertText:(BOOL)willInsertText completionHandler:(void (^)(void))completionHandler;
+
 @end
 
 typedef NS_OPTIONS(NSUInteger, NSWindowShadowOptions) {

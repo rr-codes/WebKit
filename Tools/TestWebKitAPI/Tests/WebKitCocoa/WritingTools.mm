@@ -27,6 +27,10 @@
 
 #if ENABLE(WRITING_TOOLS)
 
+#if PLATFORM(MAC)
+#import "AppKitSPI.h"
+#endif
+
 #import "InstanceMethodSwizzler.h"
 #import "PlatformUtilities.h"
 #import "Test.h"
@@ -37,7 +41,6 @@
 #import "UIKitSPIForTesting.h"
 #import "UnifiedPDFTestHelpers.h"
 #import "WKWebViewConfigurationExtras.h"
-#import <SoftLinking/WeakLinking.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <WebCore/ColorCocoa.h>
 #import <WebCore/FloatRect.h>
@@ -62,10 +65,6 @@
 #import <pal/spi/mac/NSMenuSPI.h>
 #import <pal/spi/mac/NSTextInputContextSPI.h>
 #endif
-
-WEAK_IMPORT_OBJC_CLASS(WTContext);
-WEAK_IMPORT_OBJC_CLASS(WTSession);
-WEAK_IMPORT_OBJC_CLASS(WTTextSuggestion);
 
 #if PLATFORM(MAC)
 

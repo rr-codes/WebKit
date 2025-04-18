@@ -25,7 +25,7 @@
 
 #import <Foundation/Foundation.h>
 
-#if !TARGET_OS_WATCH && !TARGET_OS_TV && __has_include(<WritingTools/WritingTools.h>)
+#if !TARGET_OS_WATCH && !TARGET_OS_TV
 
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>

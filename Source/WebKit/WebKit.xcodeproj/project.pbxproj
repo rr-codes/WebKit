@@ -154,12 +154,16 @@
 		0735F3202D3761A10003D029 /* WKIntelligenceReplacementTextEffectCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 0735F31F2D3761A10003D029 /* WKIntelligenceReplacementTextEffectCoordinator.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		0735F3222D38B09E0003D029 /* WKIntelligenceSmartReplyTextEffectCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0735F3212D38B09E0003D029 /* WKIntelligenceSmartReplyTextEffectCoordinator.swift */; };
 		0735F3242D38C7790003D029 /* WKIntelligenceSmartReplyTextEffectCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 0735F3232D38C7790003D029 /* WKIntelligenceSmartReplyTextEffectCoordinator.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		074000C62DB2F057007B5A8A /* WritingTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 074000C22DB2E9C5007B5A8A /* WritingTools.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		074000C82DB30234007B5A8A /* WritingTools.h in Headers */ = {isa = PBXBuildFile; fileRef = 074000C72DB30234007B5A8A /* WritingTools.h */; };
 		07438C722D4C645600BD1E68 /* _WebKit_SwiftUI.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 07275C4F2D00C934002315A5 /* _WebKit_SwiftUI.framework */; };
 		0744DA552CE05FE400AACC81 /* WebKitInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 0744DA542CE05FE400AACC81 /* WebKitInternal.h */; };
 		074A6FC72D5F1FAF0027F958 /* KeyEventInterpretationContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 074A6FC52D5F1DEA0027F958 /* KeyEventInterpretationContext.h */; };
 		074E75FE1DF2211900D318EC /* UserMediaProcessManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 074E75FB1DF1FD1300D318EC /* UserMediaProcessManager.h */; };
 		074E87E12CF8EA3D0059E469 /* WebPage+NavigationDeciding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 074E87E02CF8EA3D0059E469 /* WebPage+NavigationDeciding.swift */; };
 		074F34812CC5F7D500CA5301 /* WKIntelligenceTextEffectCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 074F34802CC5F7D500CA5301 /* WKIntelligenceTextEffectCoordinator.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		075757652DB357FB003EA951 /* WritingToolsUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 075757642DB357F4003EA951 /* WritingToolsUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		075757672DB35F18003EA951 /* WKIntelligenceReplacementTextEffectCoordinator+WTUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075757662DB35F10003EA951 /* WKIntelligenceReplacementTextEffectCoordinator+WTUI.swift */; };
 		075A9CF326169BAB006DFA3A /* MediaSessionCoordinatorProxyPrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 077BA570260E8F630072F19F /* MediaSessionCoordinatorProxyPrivate.h */; };
 		075C079A2D92125D00B3E900 /* WKContextMenuElementInfoAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075C07992D9211F700B3E900 /* WKContextMenuElementInfoAdapter.swift */; };
 		076867FF2D4C283E004DA801 /* WebViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076867F72D4C26A8004DA801 /* WebViewRepresentable.swift */; };
@@ -3212,6 +3216,9 @@
 		0736B75D260D4A4F00E06994 /* RemoteMediaSessionCoordinatorProxy.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = RemoteMediaSessionCoordinatorProxy.messages.in; sourceTree = "<group>"; };
 		0736B75E260D4A5000E06994 /* RemoteMediaSessionCoordinatorProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteMediaSessionCoordinatorProxy.h; sourceTree = "<group>"; };
 		073EFBB72D0F448500FAE7CF /* Foundation+Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Foundation+Extras.swift"; sourceTree = "<group>"; };
+		074000BE2DB2E103007B5A8A /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		074000C22DB2E9C5007B5A8A /* WritingTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WritingTools.h; sourceTree = "<group>"; };
+		074000C72DB30234007B5A8A /* WritingTools.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WritingTools.h; sourceTree = "<group>"; };
 		0744720525E5BD020054B231 /* MediaOverridesForTesting.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaOverridesForTesting.h; sourceTree = "<group>"; };
 		0744DA532CE05F9500AACC81 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		0744DA542CE05FE400AACC81 /* WebKitInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WebKitInternal.h; sourceTree = "<group>"; };
@@ -3224,6 +3231,9 @@
 		074E76011DF7075D00D318EC /* MediaDeviceSandboxExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaDeviceSandboxExtensions.h; sourceTree = "<group>"; };
 		074E87E02CF8EA3D0059E469 /* WebPage+NavigationDeciding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WebPage+NavigationDeciding.swift"; sourceTree = "<group>"; };
 		074F34802CC5F7D500CA5301 /* WKIntelligenceTextEffectCoordinator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WKIntelligenceTextEffectCoordinator.h; sourceTree = "<group>"; };
+		075757632DB357D1003EA951 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		075757642DB357F4003EA951 /* WritingToolsUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WritingToolsUI.h; sourceTree = "<group>"; };
+		075757662DB35F10003EA951 /* WKIntelligenceReplacementTextEffectCoordinator+WTUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WKIntelligenceReplacementTextEffectCoordinator+WTUI.swift"; sourceTree = "<group>"; };
 		075C07992D9211F700B3E900 /* WKContextMenuElementInfoAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKContextMenuElementInfoAdapter.swift; sourceTree = "<group>"; };
 		076867F42D4C26A8004DA801 /* CocoaWebViewAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CocoaWebViewAdapter.swift; sourceTree = "<group>"; };
 		076867F52D4C26A8004DA801 /* PlatformTextSearching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformTextSearching.swift; sourceTree = "<group>"; };
@@ -8514,26 +8524,26 @@
 		FA580B102DA64085005E4965 /* UnifiedSource158.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource158.cpp; sourceTree = "<group>"; };
 		FA580B112DA64085005E4965 /* UnifiedSource159.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource159.cpp; sourceTree = "<group>"; };
 		FA580B122DA64085005E4965 /* UnifiedSource160.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource160.cpp; sourceTree = "<group>"; };
-		FA580B272DA64B5F005E4965 /* UnifiedSource161.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource161.cpp; path = "UnifiedSource161.cpp"; sourceTree = "<group>"; };
-		FA580B282DA64B5F005E4965 /* UnifiedSource162.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource162.cpp; path = "UnifiedSource162.cpp"; sourceTree = "<group>"; };
-		FA580B292DA64B5F005E4965 /* UnifiedSource163.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource163.cpp; path = "UnifiedSource163.cpp"; sourceTree = "<group>"; };
-		FA580B2A2DA64B5F005E4965 /* UnifiedSource164.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource164.cpp; path = "UnifiedSource164.cpp"; sourceTree = "<group>"; };
-		FA580B2B2DA64B5F005E4965 /* UnifiedSource165.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource165.cpp; path = "UnifiedSource165.cpp"; sourceTree = "<group>"; };
-		FA580B2C2DA64B5F005E4965 /* UnifiedSource166.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource166.cpp; path = "UnifiedSource166.cpp"; sourceTree = "<group>"; };
-		FA580B2D2DA64B5F005E4965 /* UnifiedSource167.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource167.cpp; path = "UnifiedSource167.cpp"; sourceTree = "<group>"; };
-		FA580B2E2DA64B5F005E4965 /* UnifiedSource168.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource168.cpp; path = "UnifiedSource168.cpp"; sourceTree = "<group>"; };
-		FA580B2F2DA64B5F005E4965 /* UnifiedSource169.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource169.cpp; path = "UnifiedSource169.cpp"; sourceTree = "<group>"; };
-		FA580B302DA64B5F005E4965 /* UnifiedSource170.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource170.cpp; path = "UnifiedSource170.cpp"; sourceTree = "<group>"; };
-		FA580B312DA64B5F005E4965 /* UnifiedSource171.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource171.cpp; path = "UnifiedSource171.cpp"; sourceTree = "<group>"; };
-		FA580B322DA64B5F005E4965 /* UnifiedSource172.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource172.cpp; path = "UnifiedSource172.cpp"; sourceTree = "<group>"; };
-		FA580B332DA64B5F005E4965 /* UnifiedSource173.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource173.cpp; path = "UnifiedSource173.cpp"; sourceTree = "<group>"; };
-		FA580B342DA64B5F005E4965 /* UnifiedSource174.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource174.cpp; path = "UnifiedSource174.cpp"; sourceTree = "<group>"; };
-		FA580B352DA64B5F005E4965 /* UnifiedSource175.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource175.cpp; path = "UnifiedSource175.cpp"; sourceTree = "<group>"; };
-		FA580B362DA64B5F005E4965 /* UnifiedSource176.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource176.cpp; path = "UnifiedSource176.cpp"; sourceTree = "<group>"; };
-		FA580B372DA64B5F005E4965 /* UnifiedSource177.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource177.cpp; path = "UnifiedSource177.cpp"; sourceTree = "<group>"; };
-		FA580B382DA64B5F005E4965 /* UnifiedSource178.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource178.cpp; path = "UnifiedSource178.cpp"; sourceTree = "<group>"; };
-		FA580B392DA64B5F005E4965 /* UnifiedSource179.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource179.cpp; path = "UnifiedSource179.cpp"; sourceTree = "<group>"; };
-		FA580B3A2DA64B5F005E4965 /* UnifiedSource180.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = UnifiedSource180.cpp; path = "UnifiedSource180.cpp"; sourceTree = "<group>"; };
+		FA580B272DA64B5F005E4965 /* UnifiedSource161.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource161.cpp; sourceTree = "<group>"; };
+		FA580B282DA64B5F005E4965 /* UnifiedSource162.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource162.cpp; sourceTree = "<group>"; };
+		FA580B292DA64B5F005E4965 /* UnifiedSource163.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource163.cpp; sourceTree = "<group>"; };
+		FA580B2A2DA64B5F005E4965 /* UnifiedSource164.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource164.cpp; sourceTree = "<group>"; };
+		FA580B2B2DA64B5F005E4965 /* UnifiedSource165.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource165.cpp; sourceTree = "<group>"; };
+		FA580B2C2DA64B5F005E4965 /* UnifiedSource166.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource166.cpp; sourceTree = "<group>"; };
+		FA580B2D2DA64B5F005E4965 /* UnifiedSource167.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource167.cpp; sourceTree = "<group>"; };
+		FA580B2E2DA64B5F005E4965 /* UnifiedSource168.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource168.cpp; sourceTree = "<group>"; };
+		FA580B2F2DA64B5F005E4965 /* UnifiedSource169.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource169.cpp; sourceTree = "<group>"; };
+		FA580B302DA64B5F005E4965 /* UnifiedSource170.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource170.cpp; sourceTree = "<group>"; };
+		FA580B312DA64B5F005E4965 /* UnifiedSource171.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource171.cpp; sourceTree = "<group>"; };
+		FA580B322DA64B5F005E4965 /* UnifiedSource172.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource172.cpp; sourceTree = "<group>"; };
+		FA580B332DA64B5F005E4965 /* UnifiedSource173.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource173.cpp; sourceTree = "<group>"; };
+		FA580B342DA64B5F005E4965 /* UnifiedSource174.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource174.cpp; sourceTree = "<group>"; };
+		FA580B352DA64B5F005E4965 /* UnifiedSource175.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource175.cpp; sourceTree = "<group>"; };
+		FA580B362DA64B5F005E4965 /* UnifiedSource176.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource176.cpp; sourceTree = "<group>"; };
+		FA580B372DA64B5F005E4965 /* UnifiedSource177.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource177.cpp; sourceTree = "<group>"; };
+		FA580B382DA64B5F005E4965 /* UnifiedSource178.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource178.cpp; sourceTree = "<group>"; };
+		FA580B392DA64B5F005E4965 /* UnifiedSource179.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource179.cpp; sourceTree = "<group>"; };
+		FA580B3A2DA64B5F005E4965 /* UnifiedSource180.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UnifiedSource180.cpp; sourceTree = "<group>"; };
 		FA6342192D9D98D300A6BECE /* WebFrame.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = WebFrame.messages.in; sourceTree = "<group>"; };
 		FA63421A2D9D990400A6BECE /* WebFrameProxy.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = WebFrameProxy.messages.in; sourceTree = "<group>"; };
 		FA651BAE2AA3E5FB00747576 /* WebTransportSendStreamSink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WebTransportSendStreamSink.h; path = Network/WebTransportSendStreamSink.h; sourceTree = "<group>"; };
@@ -8794,6 +8804,15 @@
 			path = MediaSession;
 			sourceTree = "<group>";
 		};
+		074000C02DB2E362007B5A8A /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				075757612DB356BC003EA951 /* WritingTools */,
+				075757622DB35788003EA951 /* WritingToolsUI */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
 		0744DA522CE05F5300AACC81 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
@@ -8803,12 +8822,31 @@
 			path = Internal;
 			sourceTree = "<group>";
 		};
+		075757612DB356BC003EA951 /* WritingTools */ = {
+			isa = PBXGroup;
+			children = (
+				074000BE2DB2E103007B5A8A /* module.modulemap */,
+				074000C22DB2E9C5007B5A8A /* WritingTools.h */,
+			);
+			path = WritingTools;
+			sourceTree = "<group>";
+		};
+		075757622DB35788003EA951 /* WritingToolsUI */ = {
+			isa = PBXGroup;
+			children = (
+				075757632DB357D1003EA951 /* module.modulemap */,
+				075757642DB357F4003EA951 /* WritingToolsUI.h */,
+			);
+			path = WritingToolsUI;
+			sourceTree = "<group>";
+		};
 		0785E7FE2CBCDFDD00F68126 /* WritingTools */ = {
 			isa = PBXGroup;
 			children = (
 				0735F31D2D3760BC0003D029 /* IntelligenceTextEffectChunk.swift */,
 				0735F31B2D3760AA0003D029 /* IntelligenceTextEffectViewManager.swift */,
 				0785E7FF2CBCDFFD00F68126 /* PlatformIntelligenceTextEffectView.swift */,
+				075757662DB35F10003EA951 /* WKIntelligenceReplacementTextEffectCoordinator+WTUI.swift */,
 				0735F31F2D3761A10003D029 /* WKIntelligenceReplacementTextEffectCoordinator.h */,
 				077FD19F2CC7569200C5D9E0 /* WKIntelligenceReplacementTextEffectCoordinator.swift */,
 				0735F3232D38C7790003D029 /* WKIntelligenceSmartReplyTextEffectCoordinator.h */,
@@ -11770,6 +11808,7 @@
 		3754D5411B3A2998003A4C7F /* Cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				074000C02DB2E362007B5A8A /* Modules */,
 				E3CAAA432413278A00CED2E2 /* AccessibilitySupportSPI.h */,
 				E3B8F7F72BA8AC4D006E97B6 /* AccessibilityUtilitiesSPI.h */,
 				9565083726D87A2B00E15CB7 /* AppleMediaServicesSPI.h */,
@@ -14077,6 +14116,7 @@
 				AE9552872D756E920039B9F9 /* CredentialUpdaterShim.swift */,
 				A14F9B652B686E0200AD9C56 /* module.modulemap */,
 				A14F9B662B686E0200AD9C56 /* WebKitSwift.h */,
+				074000C72DB30234007B5A8A /* WritingTools.h */,
 			);
 			path = WebKitSwift;
 			sourceTree = "<group>";
@@ -18355,6 +18395,8 @@
 				6A5080BF1F0EDAAA00E617C5 /* WKWindowFeaturesPrivate.h in Headers */,
 				1A7C0DF71B7D1F1000A9B848 /* WKWindowFeaturesRef.h in Headers */,
 				7BDD9DDD28D205C6004CDF48 /* WorkQueueMessageReceiver.h in Headers */,
+				074000C62DB2F057007B5A8A /* WritingTools.h in Headers */,
+				075757652DB357FB003EA951 /* WritingToolsUI.h in Headers */,
 				C15E6CB324B7BE6F00E501A2 /* XPCEndpoint.h in Headers */,
 				C15E6CB424B7BE7600E501A2 /* XPCEndpointClient.h in Headers */,
 				A1D4D23A2B7E82D90008C40E /* XPCEndpointMessages.h in Headers */,
@@ -18377,6 +18419,7 @@
 				B66F88C22B6D202600FB1734 /* WKSPreviewWindowController.h in Headers */,
 				EEA52F482D70545300D578B5 /* WKStageMode.h in Headers */,
 				44DBDA4E2BAE451F004E3712 /* WKSTextAnimationSourceDelegate.h in Headers */,
+				074000C82DB30234007B5A8A /* WritingTools.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -20835,6 +20878,7 @@
 				B66F88C02B6D1F2300FB1734 /* PreviewWindowController.swift in Sources */,
 				528952812C70797900D0357E /* RKEntity.swift in Sources */,
 				440DB5B72C1914DC0021639B /* TextAnimationManager.swift in Sources */,
+				075757672DB35F18003EA951 /* WKIntelligenceReplacementTextEffectCoordinator+WTUI.swift in Sources */,
 				077FD1A02CC7569200C5D9E0 /* WKIntelligenceReplacementTextEffectCoordinator.swift in Sources */,
 				0735F3222D38B09E0003D029 /* WKIntelligenceSmartReplyTextEffectCoordinator.swift in Sources */,
 				EEA52F492D7055A700D578B5 /* WKStageMode.swift in Sources */,

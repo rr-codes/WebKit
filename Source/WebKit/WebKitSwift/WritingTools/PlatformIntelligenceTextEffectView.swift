@@ -29,9 +29,7 @@ import Foundation
 import AppKit
 // WritingToolsUI is not present in the base system, but WebKit is, so it must be weak-linked.
 // WritingToolsUI need not be soft-linked from WebKitSwift because although WTUI links WebKit, WebKit does not directly link WebKitSwift.
-@_weakLinked internal import WritingToolsUI_Private._WTTextEffectView
-@_weakLinked internal import WritingToolsUI_Private._WTSweepTextEffect
-@_weakLinked internal import WritingToolsUI_Private._WTReplaceTextEffect
+@_weakLinked internal import WritingToolsUI_Private
 #else
 internal import UIKit_Private
 @_spi(TextEffects) import UIKit

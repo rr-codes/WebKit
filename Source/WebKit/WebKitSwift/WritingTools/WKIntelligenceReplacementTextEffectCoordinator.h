@@ -29,13 +29,42 @@
 #if !TARGET_OS_WATCH && !TARGET_OS_TV && HAVE(WRITING_TOOLS_FRAMEWORK)
 
 #import "WKIntelligenceTextEffectCoordinator.h"
+#import <pal/spi/cocoa/WritingToolsSPI.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class WTTextSuggestion;
+//#ifdef __swift__
+
+//typedef NS_ENUM(NSInteger, WTTextSuggestionState) {
+//    WTTextSuggestionStatePending = 0,
+//    WTTextSuggestionStateReviewing = 1,
+//    WTTextSuggestionStateRejected = 3,
+//    WTTextSuggestionStateInvalid = 4,
+//};
+
+//#endif
+
+
+//@interface WTTextSuggestion : NSObject
+//
+//@property (nonatomic, readonly) NSUUID *uuid;
+//
+//@property (nonatomic, readonly) NSRange originalRange;
+//
+//@property (nonatomic, readonly) NSString *replacement;
+//
+//@property (nonatomic) WTTextSuggestionState state;
+//
+//- (instancetype)initWithOriginalRange:(NSRange)originalRange replacement:(NSString *)replacement;
+//
+//@end
 
 NS_SWIFT_UI_ACTOR
 @interface WKIntelligenceReplacementTextEffectCoordinator : NSObject <WKIntelligenceTextEffectCoordinating>
+
+@end
+
+@interface WKIntelligenceReplacementTextEffectCoordinator (WTUI)
 
 + (NSInteger)characterDeltaForReceivedSuggestions:(NSArray<WTTextSuggestion *> *)suggestions;
 

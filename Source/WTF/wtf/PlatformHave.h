@@ -1814,7 +1814,6 @@
 #endif
 
 #if !defined(HAVE_WRITING_TOOLS_FRAMEWORK) \
-    && __has_include(<WritingTools/WritingTools.h>) \
     && ((PLATFORM(MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 150000) \
     || ((PLATFORM(IOS) || PLATFORM(MACCATALYST)) && __IPHONE_OS_VERSION_MIN_REQUIRED >= 180000) \
     || (PLATFORM(WATCHOS) && __WATCH_OS_VERSION_MIN_REQUIRED >= 120000) \

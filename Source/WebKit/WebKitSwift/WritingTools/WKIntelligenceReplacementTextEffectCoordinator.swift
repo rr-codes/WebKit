@@ -30,7 +30,7 @@ import WebKitSwift
 @_spiOnly import WritingTools
 
 #if os(macOS)
-@_weakLinked internal import WritingToolsUI_Private._WTTextEffectView
+@_weakLinked internal import WritingToolsUI_Private
 #endif
 
 // MARK: Implementation
@@ -63,12 +63,12 @@ import WebKitSwift
         viewManager.hasActiveEffects
     }
 
-    @objc(characterDeltaForReceivedSuggestions:)
-    public class func characterDelta(forReceivedSuggestions suggestions: [WTTextSuggestion]) -> Int {
-        suggestions.reduce(0) { partialResult, suggestion in
-            partialResult + (suggestion.replacement.count - suggestion.originalRange.length)
-        }
-    }
+//    @objc(characterDeltaForReceivedSuggestions:)
+//    public class func characterDelta(forReceivedSuggestions suggestions: [WTTextSuggestion]) -> Int {
+//        suggestions.reduce(0) { partialResult, suggestion in
+//            partialResult + (suggestion.replacement.count - suggestion.originalRange.length)
+//        }
+//    }
 
     @objc(initWithDelegate:)
     public init(delegate: any WKIntelligenceTextEffectCoordinatorDelegate) {

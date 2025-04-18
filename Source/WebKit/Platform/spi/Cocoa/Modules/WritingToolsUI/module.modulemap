@@ -1,0 +1,8 @@
+// Copyright © 2025 ___ORGANIZATIONNAME___ All rights reserved.
+
+framework module WritingToolsUI_Private [system] {
+    umbrella header "/Users/richardrobinson/safari/OpenSource/Source/WebKit/Platform/spi/Cocoa/Modules/WritingToolsUI/WritingToolsUI.h"
+
+    module * { export * }
+    export *
+}

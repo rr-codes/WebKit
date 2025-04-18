@@ -30,7 +30,7 @@ import WebKitSwift
 @_spiOnly import WritingTools
 
 #if os(macOS)
-@_weakLinked internal import WritingToolsUI_Private._WTTextEffectView
+@_weakLinked internal import WritingToolsUI_Private
 #endif
 
 // MARK: Implementation

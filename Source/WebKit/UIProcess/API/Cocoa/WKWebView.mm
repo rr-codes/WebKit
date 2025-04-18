@@ -198,6 +198,8 @@
 #import <wtf/text/StringToIntegerConversion.h>
 #import <wtf/text/TextStream.h>
 
+#import "WKIntelligenceReplacementTextEffectCoordinator.h"
+
 #if ENABLE(WK_WEB_EXTENSIONS)
 #import "WKWebExtensionControllerInternal.h"
 #endif
@@ -2637,7 +2639,11 @@ static _WKSelectionAttributes selectionAttributes(const WebKit::EditorState& edi
 {
     _page->proofreadingSessionSuggestionTextRectsInRootViewCoordinates(range, [completion = makeBlockPtr(completion)](auto&& rects) {
         RetainPtr nsArray = createNSArray(rects, [](auto& rect) {
+#if PLATFORM(IOS_FAMILY)
+            return [NSValue valueWithCGRect:rect];
+#else
             return [NSValue valueWithRect:rect];
+#endif
         });
 
         completion(nsArray.get());

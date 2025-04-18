@@ -28,7 +28,7 @@
 #ifdef __cplusplus
 
 #import "PDFPluginIdentifier.h"
-#import "WKIntelligenceReplacementTextEffectCoordinator.h"
+//#import "WKIntelligenceReplacementTextEffectCoordinator.h"
 #import "WKIntelligenceSmartReplyTextEffectCoordinator.h"
 #import "WKIntelligenceTextEffectCoordinator.h"
 #import "WKTextAnimationType.h"
@@ -39,7 +39,7 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import "_WKAttachmentInternal.h"
 #import "_WKWebViewPrintFormatterInternal.h"
-#import <pal/spi/cocoa/WritingToolsSPI.h>
+//#import <pal/spi/cocoa/WritingToolsSPI.h>
 #import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/HashMap.h>
@@ -70,7 +70,7 @@
 #if PLATFORM(IOS_FAMILY)
 
 #if ENABLE(WRITING_TOOLS)
-#define WK_WEB_VIEW_PROTOCOLS <WKBEScrollViewDelegate, WTWritingToolsDelegate, UITextInputTraits>
+#define WK_WEB_VIEW_PROTOCOLS <WKBEScrollViewDelegate, UITextInputTraits>
 #else
 #define WK_WEB_VIEW_PROTOCOLS <WKBEScrollViewDelegate>
 #endif
@@ -80,7 +80,7 @@
 #if PLATFORM(MAC)
 
 #if ENABLE(WRITING_TOOLS)
-#define WK_WEB_VIEW_PROTOCOLS <WKShareSheetDelegate, WTWritingToolsDelegate, NSTextInputTraits>
+#define WK_WEB_VIEW_PROTOCOLS <WKShareSheetDelegate, NSTextInputTraits>
 #else
 #define WK_WEB_VIEW_PROTOCOLS <WKShareSheetDelegate>
 #endif
@@ -479,7 +479,7 @@ struct PerWebProcessState {
 
 - (void)_proofreadingSessionUpdateState:(WebCore::WritingTools::TextSuggestionState)state forSuggestionWithUUID:(NSUUID *)replacementUUID;
 
-- (PlatformWritingToolsResultOptions)allowedWritingToolsResultOptions;
+- (NSUInteger)allowedWritingToolsResultOptions;
 
 - (void)_didEndPartialIntelligenceTextAnimation;
 - (BOOL)_writingToolsTextReplacementsFinished;
