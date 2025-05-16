@@ -44,9 +44,9 @@ final class WKNavigationDelegateAdapter: NSObject, WKNavigationDelegate {
     private func yieldNavigationProgress(kind: WebPage.NavigationEvent.Kind, cocoaNavigation: WKNavigation!) {
         let navigation = WebPage.NavigationEvent(kind: kind, navigationID: .init(cocoaNavigation))
 
-        owner?.backingWebView._do(afterNextPresentationUpdate: { [weak owner] in
+        Task { [weak owner] in
             owner?.currentNavigationEvent = navigation
-        })
+        }
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
