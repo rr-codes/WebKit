@@ -22,7 +22,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 
 internal import SwiftUI
-@_spi(Private) @_spi(CrossImportOverlay) import WebKit
+import WebKit
 
 @MainActor
 struct WebViewRepresentable {

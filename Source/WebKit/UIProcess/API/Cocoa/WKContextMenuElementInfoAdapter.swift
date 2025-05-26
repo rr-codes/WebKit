@@ -26,8 +26,7 @@
 public import Foundation
 internal import WebKit_Internal
 
-@_spi(CrossImportOverlay)
-public struct WKContextMenuElementInfoAdapter {
+package struct WKContextMenuElementInfoAdapter {
     public let linkURL: URL?
 }
 

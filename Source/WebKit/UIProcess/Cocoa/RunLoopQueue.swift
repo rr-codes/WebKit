@@ -56,8 +56,7 @@ import Foundation
 /// - Note: Coalescing changes to observable properties is generally the preferred behavior; only use this if you
 /// have a specific reason to avoid this behavior.
 @MainActor
-@_spi(Testing)
-public final class RunLoopQueue {
+package final class RunLoopQueue {
     // FIXME: Consider implementing this in an actor-agnostic manner.
 
     /// The type of change the queue contains.

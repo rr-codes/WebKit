@@ -26,8 +26,7 @@
 public import Foundation
 internal import WebKit_Internal
 
-@_spi(CrossImportOverlay)
-public struct WKScrollGeometryAdapter {
+package struct WKScrollGeometryAdapter {
     public let containerSize: CGSize
 
 #if canImport(UIKit)

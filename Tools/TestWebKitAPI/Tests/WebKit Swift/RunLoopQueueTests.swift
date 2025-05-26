@@ -24,7 +24,7 @@
 #if canImport(Testing) && compiler(>=6.0)
 
 import Testing
-@_spi(Testing) import WebKit
+import WebKit
 
 @MainActor
 struct RunLoopQueueTests {

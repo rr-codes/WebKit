@@ -26,35 +26,8 @@
 import SwiftUI
 import Observation
 import Testing
-@_spi(Private) @_spi(Testing) import WebKit
-@_spi(Private) import _WebKit_SwiftUI
-
-extension WebPage.NavigationEvent.Kind: @retroactive Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        switch (lhs, rhs) {
-        case (.startedProvisionalNavigation, .startedProvisionalNavigation):
-            true
-        case (.receivedServerRedirect, .receivedServerRedirect):
-            true
-        case (.committed, .committed):
-            true
-        case (.finished, .finished):
-            true
-        case (.failedProvisionalNavigation(_), .failedProvisionalNavigation(_)):
-            true
-        case (.failed(_), .failed(_)):
-            true
-        default:
-            false
-        }
-    }
-}
-
-extension WebPage.NavigationEvent: @retroactive Equatable {
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.kind == rhs.kind && lhs.navigationID == rhs.navigationID
-    }
-}
+import WebKit
+import _WebKit_SwiftUI
 
 // MARK: Supporting test types
 

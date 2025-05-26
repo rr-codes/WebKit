@@ -27,8 +27,7 @@ import Foundation
 internal import WebKit_Internal
 
 @MainActor
-@_spi(CrossImportOverlay)
-public final class WebPageWebView: WKWebView {
+package final class WebPageWebView: WKWebView {
     public weak var delegate: (any Delegate)? = nil
 
 #if os(iOS)

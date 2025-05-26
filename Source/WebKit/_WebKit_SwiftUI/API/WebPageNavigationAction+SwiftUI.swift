@@ -23,7 +23,7 @@
 
 import Foundation
 public import SwiftUI
-@_spi(CrossImportOverlay) import WebKit
+import WebKit
 
 extension WebPage.NavigationAction {
     /// The modifier keys that were pressed at the time of the navigation request.

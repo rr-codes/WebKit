@@ -254,8 +254,7 @@ final public class WebPage {
     private let backingNavigationDelegate: WKNavigationDelegateAdapter
 
 #if os(macOS)
-    @_spi(CrossImportOverlay)
-    public func setMenuBuilder(_ menuBuilder: ((WKContextMenuElementInfoAdapter) -> NSMenu)?) {
+    package func setMenuBuilder(_ menuBuilder: ((WKContextMenuElementInfoAdapter) -> NSMenu)?) {
         backingUIDelegate.menuBuilder = menuBuilder
     }
 #endif
@@ -264,12 +263,10 @@ final public class WebPage {
     private var observations = KeyValueObservations()
 
     @ObservationIgnored
-    @_spi(CrossImportOverlay)
-    public var isBoundToWebView = false
+    package var isBoundToWebView = false
 
     @ObservationIgnored
-    @_spi(CrossImportOverlay)
-    public lazy var backingWebView: WebPageWebView = {
+    package lazy var backingWebView: WebPageWebView = {
         let webView = WebPageWebView(frame: .zero, configuration: WKWebViewConfiguration(configuration))
         webView.navigationDelegate = backingNavigationDelegate
         webView.uiDelegate = backingUIDelegate
@@ -516,8 +513,7 @@ final public class WebPage {
         }
     }
 
-    @_spi(CrossImportOverlay)
-    public func backingProperty<Value, BackingValue>(_ keyPath: KeyPath<WebPage, Value>, backedBy backingKeyPath: KeyPath<WebPageWebView, BackingValue>, _ transform: (BackingValue) -> Value) -> Value {
+    package func backingProperty<Value, BackingValue>(_ keyPath: KeyPath<WebPage, Value>, backedBy backingKeyPath: KeyPath<WebPageWebView, BackingValue>, _ transform: (BackingValue) -> Value) -> Value {
         if observations.contents[keyPath] == nil {
             observations.contents[keyPath] = createObservation(for: keyPath, backedBy: backingKeyPath)
         }
@@ -528,8 +524,7 @@ final public class WebPage {
         return transform(backingValue)
     }
 
-    @_spi(CrossImportOverlay)
-    public func backingProperty<Value>(_ keyPath: KeyPath<WebPage, Value>, backedBy backingKeyPath: KeyPath<WebPageWebView, Value>) -> Value {
+    package func backingProperty<Value>(_ keyPath: KeyPath<WebPage, Value>, backedBy backingKeyPath: KeyPath<WebPageWebView, Value>) -> Value {
         backingProperty(keyPath, backedBy: backingKeyPath) { $0 }
     }
 }

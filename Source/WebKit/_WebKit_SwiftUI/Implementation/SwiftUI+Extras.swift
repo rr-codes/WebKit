@@ -22,7 +22,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 
 public import SwiftUI
-@_spi(CrossImportOverlay) public import WebKit
+public import WebKit
 
 extension EdgeInsets {
     #if canImport(UIKit)

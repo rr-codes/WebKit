@@ -64,8 +64,7 @@ extension WebPage {
         public var buttonNumber: Int { wrapped.buttonNumber }
 #endif
 
-        @_spi(CrossImportOverlay)
-        public var wrapped: WKNavigationAction
+        package var wrapped: WKNavigationAction
     }
 
     /// An object that contains the response to a navigation request, and which you use to make navigation-related policy decisions.

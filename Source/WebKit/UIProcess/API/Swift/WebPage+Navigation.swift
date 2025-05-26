@@ -66,8 +66,7 @@ extension WebPage {
             case failed(underlyingError: any Error)
         }
 
-        @_spi(Testing)
-        public init(kind: Kind, navigationID: NavigationID) {
+        package init(kind: Kind, navigationID: NavigationID) {
             self.kind = kind
             self.navigationID = navigationID
         }

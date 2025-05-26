@@ -22,7 +22,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 
 public import SwiftUI
-@_spi(Private) @_spi(CrossImportOverlay) import WebKit
+import WebKit
 
 #if canImport(UIKit)
 typealias CocoaView = UIView
