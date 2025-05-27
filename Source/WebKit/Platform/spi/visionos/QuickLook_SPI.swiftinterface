@@ -2,12 +2,14 @@
 // swift-module-flags: -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -library-level spi -enable-bare-slash-regex -user-module-version 967 -module-name QuickLook_SPI -module-abi-name QuickLook
 import Foundation
 @_exported import QuickLook
+import Swift
+@_exported import _Concurrency
 
 @_hasMissingDesignatedInitializers @available(visionOS 2.0, *)
 final public class PreviewApplication {
-  final public class func open(urls: [Foundation.URL], selectedURL: Foundation.URL? = nil) -> QuickLook.PreviewSession
-  final public class func open(items: [QuickLook.PreviewItem], selectedItem: QuickLook.PreviewItem? = nil) -> QuickLook.PreviewSession
-  final public class func open(items: [QuickLook.PreviewItem], selectedItem: QuickLook.PreviewItem? = nil, configuration: QuickLook_SPI.PreviewApplication.PreviewConfiguration?) -> QuickLook.PreviewSession
+  final public class func open(urls: [Foundation.URL], selectedURL: Foundation.URL? = nil) -> QuickLook_SPI.PreviewSession
+  final public class func open(items: [QuickLook.PreviewItem], selectedItem: QuickLook.PreviewItem? = nil) -> QuickLook_SPI.PreviewSession
+  final public class func open(items: [QuickLook.PreviewItem], selectedItem: QuickLook.PreviewItem? = nil, configuration: QuickLook_SPI.PreviewApplication.PreviewConfiguration?) -> QuickLook_SPI.PreviewSession
   public struct PreviewConfiguration : Swift.Sendable {
     public static let hideDocumentMenuKey: Swift.String
     public static let showCloseButtonKey: Swift.String
@@ -20,4 +22,16 @@ final public class PreviewApplication {
     public init()
   }
   @objc deinit
+}
+public struct PreviewSession : Swift.Sendable {
+  public enum Event : Swift.Sendable {
+    case didOpen
+    case didFail(any Swift.Error)
+    case didClose
+  }
+  public var events: some _Concurrency.AsyncSequence<QuickLook_SPI.PreviewSession.Event, Swift.Never> {
+    get
+  }
+  public func close() async throws
+  public func update(items: [QuickLook.PreviewItem], selectedItem: QuickLook.PreviewItem? = nil) async throws
 }
