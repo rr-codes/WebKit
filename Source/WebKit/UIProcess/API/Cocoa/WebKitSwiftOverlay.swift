@@ -23,8 +23,6 @@
 
 // FIXME: Eliminate this file since the refined API can now just go with the rest of the normal API where it belongs.
 
-#if !os(tvOS) && !os(watchOS)
-
 // Older versions of the Swift compiler fail to import WebKit_Private. Can be
 // removed when WebKit drops support for macOS Sonoma.
 #if ENABLE_WK_WEB_EXTENSIONS && compiler(>=6.1)
@@ -33,9 +31,13 @@ internal import WebKit_Private.WKWebExtensionPrivate
 
 #if USE_APPLE_INTERNAL_SDK
 @_spi(CTypeConversion) import Network
+#else
+import Network
 #endif
 
-@available(iOS 14.0, macOS 10.16, *)
+@available(iOS 14.0, macOS 10.16, visionOS 1.0, *)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
 extension WKPDFConfiguration {
     // This is pre-existing API whose documentation does not use the source code.
     // swift-format-ignore: AllPublicDeclarationsHaveDocumentation
@@ -45,7 +47,9 @@ extension WKPDFConfiguration {
     }
 }
 
-@available(iOS 14.0, macOS 10.16, *)
+@available(iOS 14.0, macOS 10.16, visionOS 1.0, *)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
 extension WKWebView {
     // This is pre-existing API whose documentation does not use the source code.
     // swift-format-ignore: AllPublicDeclarationsHaveDocumentation
@@ -103,7 +107,9 @@ extension WKWebView {
     }
 }
 
-@available(iOS 15.0, macOS 12.0, *)
+@available(iOS 15.0, macOS 12.0, visionOS 1.0, *)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
 extension WKWebView {
     // This is pre-existing API whose documentation does not use the source code.
     // swift-format-ignore: AllPublicDeclarationsHaveDocumentation
@@ -212,11 +218,9 @@ extension WKWebExtensionContext {
 }
 #endif
 
-// FIXME: Need to declare ProxyConfiguration SPI in order to build and test
-// this with public SDKs (https://bugs.webkit.org/show_bug.cgi?id=280911).
-#if USE_APPLE_INTERNAL_SDK
-#if canImport(Network, _version: "3623.0.0.0")
-@available(iOS 17.0, macOS 14.0, *)
+@available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
+@available(watchOS, unavailable)
+@available(tvOS, unavailable)
 extension WKWebsiteDataStore {
     /// Gets or sets the proxy configurations to be used to override networking in all WKWebViews that use this WKWebsiteDataStore.
     ///
@@ -227,7 +231,3 @@ extension WKWebsiteDataStore {
         set { __proxyConfigurations = newValue.map(\.nw) }
     }
 }
-#endif
-#endif
-
-#endif // !os(tvOS) && !os(watchOS)
