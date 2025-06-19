@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -65,6 +65,7 @@
 		079D45F22A2A6BBE003830C7 /* Viewport.mm in Sources */ = {isa = PBXBuildFile; fileRef = 079D45F12A2A6BBE003830C7 /* Viewport.mm */; };
 		07C02FD22D6D6FBC0004ED97 /* rtl-sideways-scrolling.html in Copy Resources */ = {isa = PBXBuildFile; fileRef = 07C02FD12D6D6FBC0004ED97 /* rtl-sideways-scrolling.html */; };
 		07C046CA1E4262A8007201E7 /* CARingBufferTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 07C046C91E42573E007201E7 /* CARingBufferTest.cpp */; };
+		07C284FF2E04ABFC00143F9F /* libWebKitSwiftMacros.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 07C284FE2E04ABFC00143F9F /* libWebKitSwiftMacros.dylib */; };
 		07CE1CF31F06A7E000BF89F5 /* GetUserMediaNavigation.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07CE1CF21F06A7E000BF89F5 /* GetUserMediaNavigation.mm */; };
 		07E499911F9E56DF002F1EF3 /* GetUserMediaReprompt.mm in Sources */ = {isa = PBXBuildFile; fileRef = 07E499901F9E56A1002F1EF3 /* GetUserMediaReprompt.mm */; };
 		07FAA74D2CE95E3200128360 /* WebPageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FAA74C2CE95E3200128360 /* WebPageTests.swift */; };
@@ -653,9 +654,9 @@
 		A14FC58B1B89927100D107EB /* ContentFilteringPlugIn.mm in Sources */ = {isa = PBXBuildFile; fileRef = A14FC5891B89927100D107EB /* ContentFilteringPlugIn.mm */; };
 		A170E3AA2ABA7857009EA799 /* VectorCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = A170E3A22ABA7857009EA799 /* VectorCocoa.mm */; };
 		A17191AD2CD2DB090088944E /* WKWebViewLogging.mm in Sources */ = {isa = PBXBuildFile; fileRef = A17191AC2CD2DB090088944E /* WKWebViewLogging.mm */; };
-		A176D24B2D6D2A4E00C63915 /* GPUExtension.appex in Embed Extensions */ = {isa = PBXBuildFile; fileRef = A176D2472D6D295400C63915 /* GPUExtension.appex */; platformFilters = (ios, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A176D24C2D6D2A4E00C63915 /* NetworkingExtension.appex in Embed Extensions */ = {isa = PBXBuildFile; fileRef = A176D2482D6D295400C63915 /* NetworkingExtension.appex */; platformFilters = (ios, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		A176D24D2D6D2A4E00C63915 /* WebContentExtension.appex in Embed Extensions */ = {isa = PBXBuildFile; fileRef = A176D2492D6D295400C63915 /* WebContentExtension.appex */; platformFilters = (ios, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A176D24B2D6D2A4E00C63915 /* GPUExtension.appex in Embed Extensions */ = {isa = PBXBuildFile; fileRef = A176D2472D6D295400C63915 /* GPUExtension.appex */; platformFilters = (ios, xros, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A176D24C2D6D2A4E00C63915 /* NetworkingExtension.appex in Embed Extensions */ = {isa = PBXBuildFile; fileRef = A176D2482D6D295400C63915 /* NetworkingExtension.appex */; platformFilters = (ios, xros, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A176D24D2D6D2A4E00C63915 /* WebContentExtension.appex in Embed Extensions */ = {isa = PBXBuildFile; fileRef = A176D2492D6D295400C63915 /* WebContentExtension.appex */; platformFilters = (ios, xros, ); settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A1798B7F22431D2B000764BD /* libWebCoreTestSupport.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A1798B7E22431D2B000764BD /* libWebCoreTestSupport.dylib */; };
 		A1798B8522433647000764BD /* WebProcessPlugInWithInternals.mm in Sources */ = {isa = PBXBuildFile; fileRef = A1798B8422433647000764BD /* WebProcessPlugInWithInternals.mm */; };
 		A17991881E1C994E00A505ED /* SharedBuffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = A17991861E1C994E00A505ED /* SharedBuffer.mm */; };
@@ -1176,7 +1177,7 @@
 		A17C57EE2C9A53AD009DD0B5 /* WebTransportServer.mm in Sources */ = {isa = PBXBuildFile; fileRef = FA8650322C7D01CA00117287 /* WebTransportServer.mm */; };
 		A17C57EF2C9A53B7009DD0B5 /* WKWebViewSpatialTrackingLabels.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD780E752BBE176D002A3DEC /* WKWebViewSpatialTrackingLabels.mm */; };
 		A17C58172C9AA132009DD0B5 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = A17C58162C9AA132009DD0B5 /* main.mm */; };
-		A17C58252C9AAA25009DD0B5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17C58242C9AAA25009DD0B5 /* UIKit.framework */; platformFilters = (ios, maccatalyst, tvos, ); };
+		A17C58252C9AAA25009DD0B5 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A17C58242C9AAA25009DD0B5 /* UIKit.framework */; platformFilters = (ios, maccatalyst, tvos, xros, ); };
 		A17C58472C9BF524009DD0B5 /* GoogleTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = A17C583E2C9B3EFE009DD0B5 /* GoogleTests.mm */; };
 		A17C58482C9C0387009DD0B5 /* gtest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DDF3A83528930475005920CF /* gtest.framework */; };
 		A18898FB2CA9F1ED00FEB09A /* AppCommon.mm in Sources */ = {isa = PBXBuildFile; fileRef = A18898FA2CA9F1ED00FEB09A /* AppCommon.mm */; };
@@ -2274,6 +2275,9 @@
 		079D45F12A2A6BBE003830C7 /* Viewport.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Viewport.mm; sourceTree = "<group>"; };
 		07C02FD12D6D6FBC0004ED97 /* rtl-sideways-scrolling.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "rtl-sideways-scrolling.html"; sourceTree = "<group>"; };
 		07C046C91E42573E007201E7 /* CARingBufferTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CARingBufferTest.cpp; sourceTree = "<group>"; };
+		07C284F62E04AB9700143F9F /* WebKitSwiftMacrosTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WebKitSwiftMacrosTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		07C284FD2E04ABC000143F9F /* WebKitSwiftMacrosTests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WebKitSwiftMacrosTests.xcconfig; sourceTree = "<group>"; };
+		07C284FE2E04ABFC00143F9F /* libWebKitSwiftMacros.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libWebKitSwiftMacros.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		07CC7DFD2266330800E39181 /* MediaBufferingPolicy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MediaBufferingPolicy.mm; sourceTree = "<group>"; };
 		07CC7DFD2266330800E39281 /* NoResumeSoundPlayedToTheEndAfterThePageBecomesVisible.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NoResumeSoundPlayedToTheEndAfterThePageBecomesVisible.mm; sourceTree = "<group>"; };
 		07CD32F52065B5420064A4BE /* AVFoundationPreference.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AVFoundationPreference.mm; sourceTree = "<group>"; };
@@ -3337,10 +3341,10 @@
 		95A524942581A10D00461FE9 /* WKWebViewThemeColor.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WKWebViewThemeColor.mm; sourceTree = "<group>"; };
 		95B6B3B6251EBF2F00FC4382 /* MediaDocument.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MediaDocument.mm; sourceTree = "<group>"; };
 		95C52728275F35E100DA7E40 /* FontShadowTests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontShadowTests.cpp; sourceTree = "<group>"; };
+		96E05A012DF7B66F00285827 /* WKWebExtensionAPIBookmarks.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WKWebExtensionAPIBookmarks.mm; sourceTree = "<group>"; };
 		97DAA8C22DF096CE004B3040 /* TypeCheckingTests.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TypeCheckingTests.cpp; sourceTree = "<group>"; };
 		97DAA8CD2DF1F325004B3040 /* MetalCompilationTests.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = MetalCompilationTests.mm; sourceTree = "<group>"; };
 		97DAA8CF2DF70B91004B3040 /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
-		96E05A012DF7B66F00285827 /* WKWebExtensionAPIBookmarks.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WKWebExtensionAPIBookmarks.mm; sourceTree = "<group>"; };
 		996EDCCA270E70AB006DF175 /* InspectorExtension-basic-page.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = "InspectorExtension-basic-page.html"; sourceTree = "<group>"; };
 		9984FACA1CFFAEEE008D198C /* WKWebViewTextInput.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WKWebViewTextInput.mm; sourceTree = "<group>"; };
 		9984FACD1CFFB038008D198C /* editable-body.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "editable-body.html"; sourceTree = "<group>"; };
@@ -4096,7 +4100,19 @@
 		FFD3FF2F2AF9BD8F0057C508 /* DragonBoxTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DragonBoxTest.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		07C284F72E04AB9700143F9F /* WebKitSwiftMacrosTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WebKitSwiftMacrosTests; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		07C284F32E04AB9700143F9F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07C284FF2E04ABFC00143F9F /* libWebKitSwiftMacros.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A15784628D1505B00142DB1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -4230,6 +4246,7 @@
 				BCB9EB66112366D800A137E0 /* Tests */,
 				BC90957D12554CEA00083756 /* Configurations */,
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
+				07C284F72E04AB9700143F9F /* WebKitSwiftMacrosTests */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 				7C83E0281D0A5CDF00FEBCF3 /* Frameworks */,
 			);
@@ -4420,6 +4437,7 @@
 				A17C46462C98E3430023F3C7 /* TestWebKitAPIResources.bundle */,
 				A17C58022C9AA12F009DD0B5 /* TestWebKitAPI.app */,
 				A17C582E2C9B3EAD009DD0B5 /* TestWebKitAPIBundle.xctest */,
+				07C284F62E04AB9700143F9F /* WebKitSwiftMacrosTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -5186,6 +5204,7 @@
 				4135FB862011FABF00332139 /* libWebCoreTestSupport.dylib */,
 				7B9FC5A928A38F2E007570E7 /* libWebKitIPC.a */,
 				7B9FC5CC28A52DC0007570E7 /* libWebKitPlatform.a */,
+				07C284FE2E04ABFC00143F9F /* libWebKitSwiftMacros.dylib */,
 				3A5DDB2028D54269004DA950 /* libwgsl.a */,
 				466CB9FE2DADC4A200B32457 /* libWTF.a */,
 				466CBA072DADC50A00B32457 /* libWTF.a */,
@@ -5746,6 +5765,7 @@
 				3A5DDADB28D15328004DA950 /* TestWGSL.xcconfig */,
 				7C83E0261D0A5B8D00FEBCF3 /* TestWTF.xcconfig */,
 				7C83E0271D0A5B8D00FEBCF3 /* TestWTFLibrary.xcconfig */,
+				07C284FD2E04ABC000143F9F /* WebKitSwiftMacrosTests.xcconfig */,
 				A13EBB521B87346600097110 /* WebProcessPlugIn.xcconfig */,
 			);
 			path = Configurations;
@@ -6529,6 +6549,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		07C284F52E04AB9700143F9F /* WebKitSwiftMacrosTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07C284FA2E04AB9700143F9F /* Build configuration list for PBXNativeTarget "WebKitSwiftMacrosTests" */;
+			buildPhases = (
+				07C284F22E04AB9700143F9F /* Sources */,
+				07C284F32E04AB9700143F9F /* Frameworks */,
+				07C284F42E04AB9700143F9F /* Resources */,
+				07C285002E04B0E600143F9F /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				07C284F72E04AB9700143F9F /* WebKitSwiftMacrosTests */,
+			);
+			name = WebKitSwiftMacrosTests;
+			packageProductDependencies = (
+			);
+			productName = WebKitSwiftMacrosTests;
+			productReference = 07C284F62E04AB9700143F9F /* WebKitSwiftMacrosTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		3A15783C28D1505B00142DB1 /* TestWGSL */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3A15785028D1505B00142DB1 /* Build configuration list for PBXNativeTarget "TestWGSL" */;
@@ -6740,9 +6783,12 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0700;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1140;
 				TargetAttributes = {
+					07C284F52E04AB9700143F9F = {
+						CreatedOnToolsVersion = 26.0;
+					};
 					537CF84322EFD64100C6EBB3 = {
 						CreatedOnToolsVersion = 11.0;
 					};
@@ -6809,6 +6855,7 @@
 				BC57597F126E74AF006F0F12 /* InjectedBundleTestWebKitAPI */,
 				A13EBB481B87339E00097110 /* WebProcessPlugIn */,
 				537CF84322EFD64100C6EBB3 /* Apply Configuration to XCFileLists */,
+				07C284F52E04AB9700143F9F /* WebKitSwiftMacrosTests */,
 			);
 		};
 /* End PBXProject section */
@@ -6866,6 +6913,13 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		07C284F42E04AB9700143F9F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A17C582C2C9B3EAD009DD0B5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -6886,6 +6940,32 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		07C285002E04B0E600143F9F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftSyntax.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftSyntaxMacros.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftDiagnostics.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftParser.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftOperators.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftSyntaxBuilder.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftParserDiagnostics.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftBasicFormat.dylib",
+				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/libSwiftSyntaxMacroExpansion.dylib",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Copy toolchain host libs into built test directory \n# This allows the test runner to link host libs that may not be present on the test device\nFRAMEWORKS_DIR=$BUILT_PRODUCTS_DIR/$FRAMEWORKS_FOLDER_PATH\necho \"$FRAMEWORKS_DIR\"\nmkdir -p \"$FRAMEWORKS_DIR\"\nfor ((i = 0; i < SCRIPT_OUTPUT_FILE_COUNT; i++)); do\n    DYLIB_VARIABLE=SCRIPT_OUTPUT_FILE_$i\n    DYLIB_OUTPUT_PATH=${!DYLIB_VARIABLE}\n    DYLIB_NAME=$(basename \"$DYLIB_OUTPUT_PATH\")\n    echo Copying \"$DYLIB_NAME\" into xctest package\n    cp \"$PLATFORM_DIR/Developer/usr/lib/swift/host/$(basename \"$DYLIB_OUTPUT_PATH\")\" \"$DYLIB_OUTPUT_PATH\"\ndone\n";
+		};
 		537CF84722EFD65000C6EBB3 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -7017,6 +7097,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		07C284F22E04AB9700143F9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3A15783F28D1505B00142DB1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -7957,6 +8044,19 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		07C284FB2E04AB9700143F9F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07C284FD2E04ABC000143F9F /* WebKitSwiftMacrosTests.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		07C284FC2E04AB9700143F9F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		1DEB927508733DD40010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = A17C58232C9AA491009DD0B5 /* TestWebKitAPI.xcconfig */;
@@ -8172,6 +8272,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		07C284FA2E04AB9700143F9F /* Build configuration list for PBXNativeTarget "WebKitSwiftMacrosTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07C284FB2E04AB9700143F9F /* Debug */,
+				07C284FC2E04AB9700143F9F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "TestWebKitAPI" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -13,10 +13,18 @@
   },
   "testTargets" : [
     {
+      "enabled" : false,
       "target" : {
         "containerPath" : "container:TestWebKitAPI.xcodeproj",
         "identifier" : "A17C582D2C9B3EAD009DD0B5",
         "name" : "TestWebKitAPIBundle"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/..\/Tools\/TestWebKitAPI\/TestWebKitAPI.xcodeproj",
+        "identifier" : "07C284F52E04AB9700143F9F",
+        "name" : "WebKitSwiftMacrosTests"
       }
     }
   ],

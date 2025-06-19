@@ -1,0 +1,80 @@
+// Prevents the test target from being built before the macro library is produced since xcbuild is currently unaware of macros as build dependencies
+EAGER_COMPILATION_DISABLE = YES
+
+// Includes the swift toolchain host libraries during the build process
+LIBRARY_SEARCH_PATHS = $(inherited) $(SWIFT_HOST_INCLUDE_PATH_$(RC_PLAYGROUNDS))
+SWIFT_INCLUDE_PATHS = $(inherited) $(SWIFT_HOST_INCLUDE_PATH_$(RC_PLAYGROUNDS))
+
+// In OS trains, the macro is built against host libraries in the platform
+// We need to look in the XBS_BUILDROOT in B&I in case we have a just-built platform available
+SWIFT_HOST_INCLUDE_PATH_XBS_YES = $(XBS_BUILDROOT)/$(RC_PLATFORM_INSTALL_PATH)/Developer/usr/lib/swift/host
+
+// If no just-built platform is available, fallback to the appropriate toolchain directory within the Xcode we're using
+// Note that in the future we need to be including modules from the platform and not from the toolchain, but since PLATFORM_DIR always points to the macOS platform for this target we don't have a good way to do that yet
+SWIFT_HOST_INCLUDE_PATH_ = $(SWIFT_HOST_INCLUDE_PATH_XBS_$(RC_XBS)) $(TOOLCHAIN_DIR)/usr/lib/swift/host
+
+// In the Playgrounds train, the macro is built against special libraries provided in the embedded project directory
+SWIFT_HOST_INCLUDE_PATH_YES[sdk=iphoneos*] = $(RC_EMBEDDEDPROJECT_DIR)/Skagway/AppleInternal/Serenity/Toolchain/usr/lib/swift/host
+SWIFT_HOST_INCLUDE_PATH_YES[sdk=iphonesimulator*] = $(RC_EMBEDDEDPROJECT_DIR)/Skagway_Sim/AppleInternal/Serenity_Sim/Toolchain/usr/lib/swift/host
+SWIFT_HOST_INCLUDE_PATH_YES[sdk=macosx*] = $(RC_EMBEDDEDPROJECT_DIR)/Skagway_macOS/AppleInternal/Serenity_macOS/Toolchain/usr/lib/swift/host
+
+// Build for the internal SDK and arm64/x86_64 archs (the toolchain is not built for arm64e)
+SDKROOT = auto
+SPECIALIZATION_SDK_OPTIONS = internal
+ARCHS = arm64 x86_64
+EXCLUDED_ARCHS = arm64e
+
+SUPPORTED_PLATFORMS = $(SUPPORTED_PLATFORMS_$(RC_PLAYGROUNDS))
+
+// OS trains only support macOS hosts, the Playgrounds train also supports iOS and iOS Simulator hosts
+SUPPORTED_PLATFORMS_ = macosx
+SUPPORTED_PLATFORMS_YES = macosx iphoneos iphonesimulator
+
+// OS builds used by B&I Builders
+MACOSX_DEPLOYMENT_TARGET = 12.0
+IPHONEOS_DEPLOYMENT_TARGET = 16.0
+
+CODE_SIGN_IDENTITY = -
+
+SWIFT_VERSION = 5.0
+
+
+// B
+
+EXECUTABLE_PREFIX = lib
+PRODUCT_NAME = $(TARGET_NAME)
+PRODUCT_BUNDLE_IDENTIFIER = com.apple.WebKit.WebKitSwiftMacros
+INSTALL_PATH = $(INSTALL_PATH_$(RC_PLAYGROUNDS))
+INSTALL_PATH_ = $(RC_PLATFORM_INSTALL_PATH)/Developer/usr/lib/swift/host/plugins
+INSTALL_PATH_YES = $(TOOLCHAIN_INSTALL_DIR)/usr/lib/swift/host/plugins
+
+// Suppress warnings about linking libraries not in the shared cache
+OTHER_LDFLAGS = $(inherited) -Wl,-not_for_dyld_shared_cache
+
+ALLOW_UNSUPPORTED_TEXT_BASED_API = YES
+SUPPORTS_TEXT_BASED_API = NO
+INSTALLHDRS_SCRIPT_PHASE = YES
+
+VERSION_INFO_EXPORT_DECL = __attribute__((visibility("hidden")))
+
+SWIFT_LIBRARY_LEVEL=other
+SWIFT_OPTIMIZATION_LEVEL[config=Debug] = -Onone
+OTHER_SWIFT_FLAGS = -Xfrontend -require-explicit-availability=ignore
+
+// C
+
+// NOTE: include the following if your project is part of your main framework's workspace
+CLANG_ADDRESS_SANITIZER = NO
+SWIFT_ADDRESS_SANITIZER = NO
+CLANG_THREAD_SANITIZER = NO
+SWIFT_THREAD_SANITIZER = NO
+
+// When building at desk in Xcode (RC_XBS is unset), we always want to build the macro source files when needed
+// When building in B&I (RC_XBS is YES), we only want to build the macro source files as part of the macro B&I project (the scheme uses the ReleaseHostContent config) and exclude its source files and install during the root Foundation project build (the scheme uses the Release config)
+SKIP_INSTALL = $(SKIP_INSTALL_$(RC_XBS):default=NO)
+SKIP_INSTALL_YES = YES
+SKIP_INSTALL_YES[config=*HostContent] = NO
+EXCLUDED_SOURCE_FILE_NAMES = *
+INCLUDED_SOURCE_FILE_NAMES = $(INCLUDED_SOURCE_FILE_NAMES_$(RC_XBS))
+INCLUDED_SOURCE_FILE_NAMES_ = *
+INCLUDED_SOURCE_FILE_NAMES_YES[config=*HostContent] = *

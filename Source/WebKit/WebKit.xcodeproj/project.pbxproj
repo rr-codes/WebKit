@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -3364,6 +3364,8 @@
 		07B93FF523AF0CB80036F8EA /* RemoteMediaPlayerConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteMediaPlayerConfiguration.h; sourceTree = "<group>"; };
 		07BAF35623A2CC170044257E /* RemoteMediaPlayerProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteMediaPlayerProxy.h; sourceTree = "<group>"; };
 		07BAF35723A2CC190044257E /* RemoteMediaPlayerProxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteMediaPlayerProxy.cpp; sourceTree = "<group>"; };
+		07C284BA2E042C9900143F9F /* libWebKitSwiftMacros.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libWebKitSwiftMacros.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		07C284C42E042CE500143F9F /* WebKitSwiftMacros.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WebKitSwiftMacros.xcconfig; sourceTree = "<group>"; };
 		07CA7FE92C20FAAA00798167 /* PlatformWritingToolsUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformWritingToolsUtilities.h; sourceTree = "<group>"; };
 		07CA7FEA2C20FAAA00798167 /* PlatformWritingToolsUtilities.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformWritingToolsUtilities.mm; sourceTree = "<group>"; };
 		07CB79952CE9435700199C49 /* WebPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPage.swift; sourceTree = "<group>"; };
@@ -8734,12 +8736,23 @@
 		FEE43FD21E67AFC60077D6D1 /* WebInspectorInterruptDispatcher.messages.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WebInspectorInterruptDispatcher.messages.in; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		07C284BB2E042C9900143F9F /* WebKitSwiftMacros */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = WebKitSwiftMacros; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		07275C4C2D00C934002315A5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				07275C6C2D00F051002315A5 /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07C284B82E042C9900143F9F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -8904,6 +8917,7 @@
 				5CA5A2CA29CBBA1B000F1046 /* WebContentExtension.appex */,
 				8DC2EF5B0486A6940098B216 /* WebKit.framework */,
 				07275C4F2D00C934002315A5 /* _WebKit_SwiftUI.framework */,
+				07C284BA2E042C9900143F9F /* libWebKitSwiftMacros.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -9266,6 +9280,7 @@
 				C0CE729D1247E71D00BC0EC4 /* Derived Sources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				07275C5C2D00C9D2002315A5 /* _WebKit_SwiftUI */,
+				07C284BB2E042C9900143F9F /* WebKitSwiftMacros */,
 				5750F3292032D4E300389347 /* Frameworks */,
 				2D9FB1FF2375209D0049F936 /* GPUProcess */,
 				84120B2828258B82002988E2 /* Modules */,
@@ -9525,6 +9540,7 @@
 				BCB86F4B116AAACD00CE20B7 /* WebKit.xcconfig */,
 				7B9FC5A228A2A0B5007570E7 /* WebKitPlatform.xcconfig */,
 				CD09FD0A26152E2300E4ACF1 /* WebKitSwift.xcconfig */,
+				07C284C42E042CE500143F9F /* WebKitSwiftMacros.xcconfig */,
 				5C1579DD27165BE500ED5280 /* webpushd.xcconfig */,
 				517B5F6A275AA199002DC22D /* webpushtool.xcconfig */,
 			);
@@ -16765,6 +16781,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07C284B62E042C9900143F9F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5C1579D127165B2F00ED5280 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -18691,6 +18714,29 @@
 			productReference = 07275C4F2D00C934002315A5 /* _WebKit_SwiftUI.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		07C284B92E042C9900143F9F /* WebKitSwiftMacros */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07C284C32E042C9A00143F9F /* Build configuration list for PBXNativeTarget "WebKitSwiftMacros" */;
+			buildPhases = (
+				07C284B62E042C9900143F9F /* Headers */,
+				07C284B72E042C9900143F9F /* Sources */,
+				07C284B82E042C9900143F9F /* Frameworks */,
+				07C284DD2E0477BC00143F9F /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				07C284BB2E042C9900143F9F /* WebKitSwiftMacros */,
+			);
+			name = WebKitSwiftMacros;
+			packageProductDependencies = (
+			);
+			productName = WebKitSwiftMacros;
+			productReference = 07C284BA2E042C9900143F9F /* libWebKitSwiftMacros.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 		2D56C1BA28A367A00081BD25 /* Model */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D56C1CE28A367A00081BD25 /* Build configuration list for PBXNativeTarget "Model" */;
@@ -19060,11 +19106,15 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1140;
 				TargetAttributes = {
 					07275C4E2D00C934002315A5 = {
 						CreatedOnToolsVersion = 16.2;
+					};
+					07C284B92E042C9900143F9F = {
+						CreatedOnToolsVersion = 26.0;
+						LastSwiftMigration = 2600;
 					};
 					1A50DB38110A3C13000D3FE5 = {
 						LastSwiftMigration = 1500;
@@ -19142,6 +19192,7 @@
 				5CA5A2C929CBBA1A000F1046 /* WebContentExtension */,
 				5C139DA129DB82E500D5117B /* WebContentCaptivePortalExtension */,
 				07275C4E2D00C934002315A5 /* _WebKit_SwiftUI */,
+				07C284B92E042C9900143F9F /* WebKitSwiftMacros */,
 			);
 		};
 /* End PBXProject section */
@@ -19264,6 +19315,24 @@
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/zsh;
 			shellScript = "\"${SRCROOT}/Scripts/create-symlink-to-cryptex.sh\"\n";
+		};
+		07C284DD2E0477BC00143F9F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DSTROOT)/AppleInternal",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Install an empty directory in order to avoid a verifier error during installapi due to an empty DSTROOT\necho Creating empty file at ${SCRIPT_OUTPUT_FILE_0}\nmkdir -p \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 		};
 		1A07D2F51919AA8A00ECDA16 /* Make Frameworks Symbolic Link */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -20446,6 +20515,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07C284B72E042C9900143F9F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D56C1C128A367A00081BD25 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -21274,6 +21350,7 @@
 			isa = PBXTargetDependency;
 			platformFilters = (
 				ios,
+				xros,
 			);
 			target = 5C139DA129DB82E500D5117B /* WebContentCaptivePortalExtension */;
 			targetProxy = 5C400E6929DB8AB500446F6F /* PBXContainerItemProxy */;
@@ -21292,6 +21369,7 @@
 			isa = PBXTargetDependency;
 			platformFilters = (
 				ios,
+				xros,
 			);
 			target = 5CA5A2C929CBBA1A000F1046 /* WebContentExtension */;
 			targetProxy = 5CE4B60629CEBB760038F565 /* PBXContainerItemProxy */;
@@ -21300,6 +21378,7 @@
 			isa = PBXTargetDependency;
 			platformFilters = (
 				ios,
+				xros,
 			);
 			target = 5CE4B61529CF877F0038F565 /* GPUExtension */;
 			targetProxy = 5CE4B62229CF880B0038F565 /* PBXContainerItemProxy */;
@@ -21308,6 +21387,7 @@
 			isa = PBXTargetDependency;
 			platformFilters = (
 				ios,
+				xros,
 			);
 			target = 5CE4B60829CF87680038F565 /* NetworkingExtension */;
 			targetProxy = 5CE4B62429CF880B0038F565 /* PBXContainerItemProxy */;
@@ -21454,6 +21534,32 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 07275C5F2D00CAAD002315A5 /* _WebKit_SwiftUI.xcconfig */;
 			buildSettings = {
+			};
+			name = Production;
+		};
+		07C284C02E042C9A00143F9F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07C284C42E042CE500143F9F /* WebKitSwiftMacros.xcconfig */;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		07C284C12E042C9A00143F9F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		07C284C22E042C9A00143F9F /* Production */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				SWIFT_VERSION = 6.0;
 			};
 			name = Production;
 		};
@@ -22026,6 +22132,16 @@
 				07275C552D00C935002315A5 /* Debug */,
 				07275C562D00C935002315A5 /* Release */,
 				07275C572D00C935002315A5 /* Production */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Production;
+		};
+		07C284C32E042C9A00143F9F /* Build configuration list for PBXNativeTarget "WebKitSwiftMacros" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07C284C02E042C9A00143F9F /* Debug */,
+				07C284C12E042C9A00143F9F /* Release */,
+				07C284C22E042C9A00143F9F /* Production */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Production;
