@@ -224,7 +224,7 @@ private:
 enum VMIdentifierType { };
 using VMIdentifier = AtomicObjectIdentifier<VMIdentifierType>;
 
-class VM : public ThreadSafeRefCountedWithSuppressingSaferCPPChecking<VM>, public DoublyLinkedListNode<VM> {
+class VM : public WTF::ThreadSafeRefCountedWithSuppressingSaferCPPChecking<VM>, public WTF::DoublyLinkedListNode<VM> {
     WTF_DEPRECATED_MAKE_FAST_ALLOCATED_WITH_HEAP_IDENTIFIER(VM, VM);
 public:
     // WebCore has a one-to-one mapping of threads to VMs;
@@ -1180,6 +1180,27 @@ template<> struct DefaultRefDerefTraits<JSC::VM> {
     }
 
     static ALWAYS_INLINE void derefIfNotNull(JSC::VM* ptr)
+    {
+        if (ptr) [[likely]]
+            ptr->derefSuppressingSaferCPPChecking();
+    }
+};
+
+template<> struct DefaultRefDerefTraits<const JSC::VM> {
+    static ALWAYS_INLINE const JSC::VM* refIfNotNull(const JSC::VM* ptr)
+    {
+        if (ptr) [[likely]]
+            ptr->refSuppressingSaferCPPChecking();
+        return ptr;
+    }
+
+    static ALWAYS_INLINE const JSC::VM& ref(const JSC::VM& ref)
+    {
+        ref.refSuppressingSaferCPPChecking();
+        return ref;
+    }
+
+    static ALWAYS_INLINE void derefIfNotNull(const JSC::VM* ptr)
     {
         if (ptr) [[likely]]
             ptr->derefSuppressingSaferCPPChecking();
