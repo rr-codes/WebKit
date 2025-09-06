@@ -30,6 +30,7 @@
 
 #if ENABLE(WEBASSEMBLY_BBQJIT)
 
+#include "AbstractMacroAssemblerInternal.h"
 #include "B3Common.h"
 #include "B3ValueRep.h"
 #include "BinarySwitch.h"

@@ -99,6 +99,12 @@
 		072F53502E3C0F3300389E15 /* JITSubGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = FE98B5B61BB9AE110073E7A6 /* JITSubGenerator.h */; };
 		072F53512E3C3F8700389E15 /* BytecodeGeneratorBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C5AD6522F1866C00F1FB83 /* BytecodeGeneratorBase.h */; };
 		072F53522E3C3FDA00389E15 /* ProfileTypeBytecodeFlag.h in Headers */ = {isa = PBXBuildFile; fileRef = 14BA7752211A8E5F008D0B05 /* ProfileTypeBytecodeFlag.h */; };
+		07A995582E6ABED500157FC5 /* ExecutableAllocatorInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A995572E6ABED500157FC5 /* ExecutableAllocatorInternal.h */; };
+		07A9955A2E6AC06800157FC5 /* ARM64AssemblerInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A995592E6AC06800157FC5 /* ARM64AssemblerInternal.h */; };
+		07A9955C2E6BCF5900157FC5 /* AssemblerCommonInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A9955B2E6BCF5900157FC5 /* AssemblerCommonInternal.h */; };
+		07A9955E2E6BD5D400157FC5 /* MacroAssemblerARM64Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A9955D2E6BD5D400157FC5 /* MacroAssemblerARM64Internal.h */; };
+		07A995602E6BD7B500157FC5 /* AbstractMacroAssemblerInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A9955F2E6BD7B500157FC5 /* AbstractMacroAssemblerInternal.h */; };
+		07A995622E6BE02000157FC5 /* LinkBufferInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07A995612E6BE02000157FC5 /* LinkBufferInternal.h */; };
 		0F0123331944EA1B00843A0C /* DFGValueStrength.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F0123311944EA1B00843A0C /* DFGValueStrength.h */; };
 		0F0332C418B01763005F979A /* GetByVariant.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F0332C218B01763005F979A /* GetByVariant.h */; };
 		0F0332C618B53FA9005F979A /* FTLWeight.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F0332C518B53FA9005F979A /* FTLWeight.h */; };
@@ -983,7 +989,7 @@
 		525C0DDA1E935847002184CD /* WasmCallee.h in Headers */ = {isa = PBXBuildFile; fileRef = 525C0DD81E935847002184CD /* WasmCallee.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		52678F8F1A031009006A306D /* BasicBlockLocation.h in Headers */ = {isa = PBXBuildFile; fileRef = 52678F8D1A031009006A306D /* BasicBlockLocation.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		52678F911A04177C006A306D /* ControlFlowProfiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 52678F901A04177C006A306D /* ControlFlowProfiler.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		5267CF82249316B10022BF6D /* FastJITPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5267CF81249316AD0022BF6D /* FastJITPermissions.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		5267CF82249316B10022BF6D /* FastJITPermissions.h in Headers */ = {isa = PBXBuildFile; fileRef = 5267CF81249316AD0022BF6D /* FastJITPermissions.h */; };
 		526AC4B71E977C5D003500E1 /* WasmCalleeGroup.h in Headers */ = {isa = PBXBuildFile; fileRef = 526AC4B51E977C5D003500E1 /* WasmCalleeGroup.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		527E6CEC2772B9CB005E0782 /* WasmOSREntryPlan.h in Headers */ = {isa = PBXBuildFile; fileRef = 527E6CEB2772B9C5005E0782 /* WasmOSREntryPlan.h */; };
 		52B310FB1974AE610080857C /* FunctionHasExecutedCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 52B310FA1974AE610080857C /* FunctionHasExecutedCache.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -2675,6 +2681,12 @@
 		05517CA02C74004700ED0CD5 /* JSIteratorConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIteratorConstructor.h; sourceTree = "<group>"; };
 		05517CA12C74004700ED0CD5 /* JSIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIterator.h; sourceTree = "<group>"; };
 		05517CA22C74004700ED0CD5 /* JSIteratorConstructor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSIteratorConstructor.cpp; sourceTree = "<group>"; };
+		07A995572E6ABED500157FC5 /* ExecutableAllocatorInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExecutableAllocatorInternal.h; sourceTree = "<group>"; };
+		07A995592E6AC06800157FC5 /* ARM64AssemblerInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ARM64AssemblerInternal.h; sourceTree = "<group>"; };
+		07A9955B2E6BCF5900157FC5 /* AssemblerCommonInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AssemblerCommonInternal.h; sourceTree = "<group>"; };
+		07A9955D2E6BD5D400157FC5 /* MacroAssemblerARM64Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MacroAssemblerARM64Internal.h; sourceTree = "<group>"; };
+		07A9955F2E6BD7B500157FC5 /* AbstractMacroAssemblerInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AbstractMacroAssemblerInternal.h; sourceTree = "<group>"; };
+		07A995612E6BE02000157FC5 /* LinkBufferInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LinkBufferInternal.h; sourceTree = "<group>"; };
 		0F0123301944EA1B00843A0C /* DFGValueStrength.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DFGValueStrength.cpp; path = dfg/DFGValueStrength.cpp; sourceTree = "<group>"; };
 		0F0123311944EA1B00843A0C /* DFGValueStrength.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DFGValueStrength.h; path = dfg/DFGValueStrength.h; sourceTree = "<group>"; };
 		0F0332BF18ADFAE1005F979A /* ExitingJITType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ExitingJITType.cpp; sourceTree = "<group>"; };
@@ -7014,6 +7026,7 @@
 				0FF054F81AC35B4400E5BE57 /* ExecutableAllocationFuzz.h */,
 				A7B48DB60EE74CFC00DCBDB6 /* ExecutableAllocator.cpp */,
 				A7B48DB50EE74CFC00DCBDB6 /* ExecutableAllocator.h */,
+				07A995572E6ABED500157FC5 /* ExecutableAllocatorInternal.h */,
 				3245DC90298B40B900E2BE0B /* ExecutableMemoryHandle.cpp */,
 				0F5193F6266C432D00483A2C /* ExecutableMemoryHandle.h */,
 				0F24E53E17EA9F5900ABB217 /* FPRInfo.h */,
@@ -9600,9 +9613,11 @@
 				0F1FE51B1922A3BC006987C5 /* AbortReason.h */,
 				0F2C63BF1E660EA500C13839 /* AbstractMacroAssembler.cpp */,
 				860161DF0F3A83C100F84710 /* AbstractMacroAssembler.h */,
+				07A9955F2E6BD7B500157FC5 /* AbstractMacroAssemblerInternal.h */,
 				0F3730901C0CD70C00052BFA /* AllowMacroScratchRegisterUsage.h */,
 				AD412B351E7B57C0008AF157 /* AllowMacroScratchRegisterUsageIf.h */,
 				8640923B156EED3B00566CB2 /* ARM64Assembler.h */,
+				07A995592E6AC06800157FC5 /* ARM64AssemblerInternal.h */,
 				FE1E2C3D2240D2F600F6B729 /* ARM64EAssembler.h */,
 				8640923B156EED3B00566CC2 /* ARM64Registers.h */,
 				86ADD1430FDDEA980006EEC2 /* ARMv7Assembler.h */,
@@ -9610,6 +9625,7 @@
 				0FA6F39620CCB7A600A03DCD /* AssemblerBuffer.cpp */,
 				9688CB130ED12B4E001D649F /* AssemblerBuffer.h */,
 				43C392AA1C3BEB0000241F53 /* AssemblerCommon.h */,
+				07A9955B2E6BCF5900157FC5 /* AssemblerCommonInternal.h */,
 				4BDF3001289324AB00AE1DE3 /* AssemblyComments.cpp */,
 				4BDF3002289324AC00AE1DE3 /* AssemblyComments.h */,
 				86E116B00FE75AC800B512BC /* CodeLocation.h */,
@@ -9623,11 +9639,13 @@
 				6B2360CD26C6253C0054AEEC /* JITOperationValidation.h */,
 				0FF4275615914A20004CB9FF /* LinkBuffer.cpp */,
 				86D3B3C110159D7F002865E7 /* LinkBuffer.h */,
+				07A995612E6BE02000157FC5 /* LinkBufferInternal.h */,
 				0FEB3ECE16237F6700AB67AD /* MacroAssembler.cpp */,
 				86C36EE90EE1289D00B3DF59 /* MacroAssembler.h */,
 				FEB137561BB11EEE00CD5100 /* MacroAssemblerARM64.cpp */,
 				8640923C156EED3B00566CB2 /* MacroAssemblerARM64.h */,
 				FE1E2C3E2240D30B00F6B729 /* MacroAssemblerARM64E.h */,
+				07A9955D2E6BD5D400157FC5 /* MacroAssemblerARM64Internal.h */,
 				A729009B17976C6000317298 /* MacroAssemblerARMv7.cpp */,
 				86ADD1440FDDEA980006EEC2 /* MacroAssemblerARMv7.h */,
 				0F6DB7EB1D617D0F00CDBF8E /* MacroAssemblerCodeRef.cpp */,
@@ -10385,6 +10403,7 @@
 				0FFA549816B8835300B3A982 /* A64DOpcode.h in Headers */,
 				0F1FE51C1922A3BC006987C5 /* AbortReason.h in Headers */,
 				860161E30F3A83C100F84710 /* AbstractMacroAssembler.h in Headers */,
+				07A995602E6BD7B500157FC5 /* AbstractMacroAssemblerInternal.h in Headers */,
 				AD4937C41DDBE6140077C807 /* AbstractModuleRecord.h in Headers */,
 				FE912B4F2531193300FABDDF /* AbstractSlotVisitor.h in Headers */,
 				FE912B5125311AD100FABDDF /* AbstractSlotVisitorInlines.h in Headers */,
@@ -10477,6 +10496,7 @@
 				79A228361D35D71F00D8E067 /* ArithProfile.h in Headers */,
 				0F6B1CB91861244C00845D97 /* ArityCheckMode.h in Headers */,
 				A1A009C11831A26E00CF8711 /* ARM64Assembler.h in Headers */,
+				07A9955A2E6AC06800157FC5 /* ARM64AssemblerInternal.h in Headers */,
 				FE1E2C402240DD6200F6B729 /* ARM64EAssembler.h in Headers */,
 				A1A009C11831A26E00CF8722 /* ARM64Registers.h in Headers */,
 				86ADD1450FDDEA980006EEC2 /* ARMv7Assembler.h in Headers */,
@@ -10497,6 +10517,7 @@
 				FE1D6D7123625AB1007A5C26 /* ArrayStorageInlines.h in Headers */,
 				9688CB150ED12B4E001D649F /* AssemblerBuffer.h in Headers */,
 				43C392AB1C3BEB0500241F53 /* AssemblerCommon.h in Headers */,
+				07A9955C2E6BCF5900157FC5 /* AssemblerCommonInternal.h in Headers */,
 				4BDF3004289324AC00AE1DE3 /* AssemblyComments.h in Headers */,
 				0F24E54117EA9F5900ABB217 /* AssemblyHelpers.h in Headers */,
 				6B767E7B26791F270017F8D1 /* AssemblyHelpersSpoolers.h in Headers */,
@@ -11038,6 +11059,7 @@
 				FE6491371D78F01D00A694D4 /* ExceptionScope.h in Headers */,
 				0FF054FA1AC35B4400E5BE57 /* ExecutableAllocationFuzz.h in Headers */,
 				A766B44F0EE8DCD1009518CA /* ExecutableAllocator.h in Headers */,
+				07A995582E6ABED500157FC5 /* ExecutableAllocatorInternal.h in Headers */,
 				147341CC1DC02D7200AA29BA /* ExecutableBase.h in Headers */,
 				E35A0B9D220AD87A00AC4474 /* ExecutableBaseInlines.h in Headers */,
 				14142E531B796EDD00F4BF4B /* ExecutableInfo.h in Headers */,
@@ -11634,6 +11656,7 @@
 				BC18C4310E16F5CD00B34460 /* Lexer.h in Headers */,
 				FEC503FE2B51E09700176A93 /* LineColumn.h in Headers */,
 				86D3B3C310159D7F002865E7 /* LinkBuffer.h in Headers */,
+				07A995622E6BE02000157FC5 /* LinkBufferInternal.h in Headers */,
 				E3637EE9236E56B00096BD0A /* LinkTimeConstant.h in Headers */,
 				A7E2EA6B0FB460CF00601F06 /* LiteralParser.h in Headers */,
 				FE20CE9E15F04A9500DF3430 /* LLIntCLoop.h in Headers */,
@@ -11657,6 +11680,7 @@
 				86C36EEA0EE1289D00B3DF59 /* MacroAssembler.h in Headers */,
 				A1A009C01831A22D00CF8711 /* MacroAssemblerARM64.h in Headers */,
 				FE1E2C3F2240DD5800F6B729 /* MacroAssemblerARM64E.h in Headers */,
+				07A9955E2E6BD5D400157FC5 /* MacroAssemblerARM64Internal.h in Headers */,
 				86ADD1460FDDEA980006EEC2 /* MacroAssemblerARMv7.h in Headers */,
 				863B23E00FC6118900703AA4 /* MacroAssemblerCodeRef.h in Headers */,
 				E32AB2441DCD75F400D7533A /* MacroAssemblerHelpers.h in Headers */,

@@ -27,7 +27,6 @@
 
 #include <JavaScriptCore/AssemblerCommon.h>
 #include <JavaScriptCore/ExecutableMemoryHandle.h>
-#include <JavaScriptCore/FastJITPermissions.h>
 #include <JavaScriptCore/JITCompilationEffort.h>
 #include <JavaScriptCore/JSCConfig.h>
 #include <JavaScriptCore/JSCPtrTag.h>
@@ -274,47 +273,7 @@ ALWAYS_INLINE void jitMemcpyChecks(void *dst, const void *src, size_t n)
 }
 
 template<RepatchingInfo repatch>
-ALWAYS_INLINE void* performJITMemcpy(void *dst, const void *src, size_t n)
-{
-    static_assert(!(*repatch).contains(RepatchingFlag::Memcpy));
-    static_assert(!(*repatch).contains(RepatchingFlag::Flush));
-    jitMemcpyChecks(dst, src, n);
-    if (isJITPC(dst)) {
-#if ENABLE(MPROTECT_RX_TO_RWX)
-        auto ret = performJITMemcpyWithMProtect(dst, src, n);
-        jitMemcpyCheckForZeros(dst, src, n);
-        return ret;
-#endif
-
-        if (g_jscConfig.useFastJITPermissions) {
-            threadSelfRestrict<MemoryRestriction::kRwxToRw>();
-            if constexpr ((*repatch).contains(RepatchingFlag::Atomic))
-                memcpyAtomic(dst, src, n);
-            else
-                memcpyAtomicIfPossible(dst, src, n);
-            threadSelfRestrict<MemoryRestriction::kRwxToRx>();
-            jitMemcpyCheckForZeros(dst, src, n);
-            return dst;
-        }
-
-#if ENABLE(SEPARATED_WX_HEAP)
-        if (g_jscConfig.jitWriteSeparateHeaps) {
-            // Use execute-only write thunk for writes inside the JIT region. This is a variant of
-            // memcpy that takes an offset into the JIT region as its destination (first) parameter.
-            off_t offset = (off_t)((uintptr_t)dst - startOfFixedExecutableMemoryPool<uintptr_t>());
-            retagCodePtr<JITThunkPtrTag, CFunctionPtrTag>(g_jscConfig.jitWriteSeparateHeaps)(offset, src, n);
-            RELEASE_ASSERT(!Gigacage::contains(src));
-            jitMemcpyCheckForZeros(dst, src, n);
-            return dst;
-        }
-#endif
-        memcpyAtomicIfPossible(dst, src, n);
-        jitMemcpyCheckForZeros(dst, src, n);
-        return dst;
-    }
-
-    return memcpyAtomicIfPossible(dst, src, n);
-}
+ALWAYS_INLINE void* performJITMemcpy(void *dst, const void *src, size_t n);
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 
@@ -383,12 +342,7 @@ private:
     ~ExecutableAllocator() = default;
 };
 
-inline void* performJITMemcpy(void *dst, const void *src, size_t n)
-{
-WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
-    return memcpy(dst, src, n);
-WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
-}
+inline void* performJITMemcpy(void *dst, const void *src, size_t n);
 
 inline bool isJITPC(void*) { return false; }
 #endif // ENABLE(JIT)

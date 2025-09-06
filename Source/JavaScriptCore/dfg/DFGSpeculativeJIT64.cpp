@@ -41,6 +41,8 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include "HasOwnPropertyCache.h"
 #include "JSMap.h"
 #include "JSSet.h"
+#include "LinkBufferInternal.h"
+#include "MacroAssemblerARM64Internal.h"
 #include "MegamorphicCache.h"
 #include "SetupVarargsFrame.h"
 #include "SpillRegistersMode.h"

@@ -30,6 +30,7 @@
 #include "CacheableIdentifierInlines.h"
 #include "DFGJITCode.h"
 #include "InlineCacheCompiler.h"
+#include "MacroAssemblerARM64Internal.h"
 #include "Repatch.h"
 
 namespace JSC {

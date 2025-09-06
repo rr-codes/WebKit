@@ -57,6 +57,7 @@
 #include "JSWebAssemblyModule.h"
 #include "LLIntData.h"
 #include "LinkBuffer.h"
+#include "MacroAssemblerARM64Internal.h"
 #include "MaxFrameExtentForSlowPathCall.h"
 #include "ModuleNamespaceAccessCase.h"
 #include "ScopedArguments.h"

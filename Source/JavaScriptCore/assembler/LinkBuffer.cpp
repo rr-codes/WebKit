@@ -28,10 +28,13 @@
 
 #if ENABLE(ASSEMBLER)
 
+#include "ARM64AssemblerInternal.h"
 #include "CodeBlock.h"
 #include "Disassembler.h"
+#include "FastJITPermissions.h"
 #include "GdbJIT.h"
 #include "JITCode.h"
+#include "MacroAssemblerARM64Internal.h"
 #include "Options.h"
 #include "PerfLog.h"
 #include "WasmCallee.h"

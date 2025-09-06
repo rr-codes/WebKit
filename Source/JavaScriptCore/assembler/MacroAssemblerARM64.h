@@ -6441,22 +6441,13 @@ public:
     }
 
     template<PtrTag tag>
-    static void replaceWithVMHalt(CodeLocationLabel<tag> instructionStart)
-    {
-        Assembler::replaceWithVMHalt(instructionStart.dataLocation());
-    }
+    static void replaceWithVMHalt(CodeLocationLabel<tag> instructionStart);
 
     template<PtrTag startTag, PtrTag destTag>
-    static void replaceWithJump(CodeLocationLabel<startTag> instructionStart, CodeLocationLabel<destTag> destination)
-    {
-        Assembler::replaceWithJump(instructionStart.dataLocation(), destination.dataLocation());
-    }
+    static void replaceWithJump(CodeLocationLabel<startTag> instructionStart, CodeLocationLabel<destTag> destination);
 
     template<PtrTag startTag>
-    static void replaceWithNops(CodeLocationLabel<startTag> instructionStart, size_t memoryToFillWithNopsInBytes)
-    {
-        Assembler::replaceWithNops(instructionStart.dataLocation(), memoryToFillWithNopsInBytes);
-    }
+    static void replaceWithNops(CodeLocationLabel<startTag> instructionStart, size_t memoryToFillWithNopsInBytes);
 
     static ptrdiff_t maxJumpReplacementSize()
     {
@@ -6517,16 +6508,10 @@ public:
     }
 
     template<PtrTag callTag, PtrTag destTag>
-    static void repatchCall(CodeLocationCall<callTag> call, CodeLocationLabel<destTag> destination)
-    {
-        Assembler::repatchPointer(call.dataLabelPtrAtOffset(REPATCH_OFFSET_CALL_TO_POINTER).dataLocation(), destination.taggedPtr());
-    }
+    static void repatchCall(CodeLocationCall<callTag>, CodeLocationLabel<destTag> destination);
 
     template<PtrTag callTag, PtrTag destTag>
-    static void repatchCall(CodeLocationCall<callTag> call, CodePtr<destTag> destination)
-    {
-        Assembler::repatchPointer(call.dataLabelPtrAtOffset(REPATCH_OFFSET_CALL_TO_POINTER).dataLocation(), destination.taggedPtr());
-    }
+    static void repatchCall(CodeLocationCall<callTag>, CodePtr<destTag> destination);
 
     JSC_OPERATION_VALIDATION_MACROASSEMBLER_ARM64_SUPPORT();
 
@@ -7245,15 +7230,7 @@ protected:
     friend class LinkBuffer;
 
     template<PtrTag tag>
-    static void linkCall(void* code, Call call, CodePtr<tag> function)
-    {
-        if (!call.isFlagSet(Call::Near))
-            Assembler::linkPointer(code, call.m_label.labelAtOffset(REPATCH_OFFSET_CALL_TO_POINTER), function.taggedPtr());
-        else if (call.isFlagSet(Call::Tail))
-            Assembler::linkJump(code, call.m_label, function.untaggedPtr());
-        else
-            Assembler::linkCall(code, call.m_label, function.untaggedPtr());
-    }
+    static void linkCall(void* code, Call, CodePtr<tag> function);
 
     JS_EXPORT_PRIVATE static void collectCPUFeatures();
 

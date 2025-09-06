@@ -38,7 +38,7 @@
 #include "JSCast.h"
 #include "JSFunction.h"
 #include "JSPropertyNameEnumerator.h"
-#include "LinkBuffer.h"
+#include "LinkBufferInternal.h"
 #include "SuperSampler.h"
 #include "ThunkGenerators.h"
 #include "TypeLocation.h"

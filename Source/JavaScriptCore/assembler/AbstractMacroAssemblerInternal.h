@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Apple Inc. All rights reserved.
+ * Copyright (C) 2008-2023 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,40 +20,39 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-#include "DFGJumpReplacement.h"
+#pragma once
 
-#if ENABLE(DFG_JIT)
+#include "ARM64AssemblerInternal.h"
+#include <JavaScriptCore/AbstractMacroAssembler.h>
 
-#include "MacroAssembler.h"
-#include "MacroAssemblerARM64Internal.h"
-#include "Options.h"
+namespace JSC {
 
-namespace JSC { namespace DFG {
+#if ENABLE(ASSEMBLER)
 
-void JumpReplacement::fire()
+template<class AssemblerType>
+template<PtrTag tag>
+ALWAYS_INLINE void AbstractMacroAssembler<AssemblerType>::repatchPointer(CodeLocationDataLabelPtr<tag> dataLabelPtr, void* value)
 {
-    dataLogLnIf(Options::dumpDisassembly(),
-        "Firing jump replacement watchpoint from ", RawPointer(m_source.dataLocation()),
-        " to ", RawPointer(m_destination.dataLocation()));
-    MacroAssembler::replaceWithJump(m_source, m_destination);
+    AssemblerType::repatchPointer(dataLabelPtr.dataLocation(), value);
 }
 
-void JumpReplacement::installVMTrapBreakpoint()
+template<class AssemblerType>
+ALWAYS_INLINE void AbstractMacroAssembler<AssemblerType>::linkPointer(void* code, AssemblerLabel label, void* value)
 {
-    dataLogLnIf(Options::dumpDisassembly(),
-        "Inserting VMTrap breakpoint at ", RawPointer(m_source.dataLocation()));
-#if ENABLE(SIGNAL_BASED_VM_TRAPS)
-    MacroAssembler::replaceWithVMHalt(m_source);
-#else
-    UNREACHABLE_FOR_PLATFORM();
-#endif
+    AssemblerType::linkPointer(code, label, value);
 }
 
-} } // namespace JSC::DFG
+template<class AssemblerType>
+template<PtrTag tag>
+ALWAYS_INLINE void AbstractMacroAssembler<AssemblerType>::linkPointer(void* code, AssemblerLabel label, CodePtr<tag> value)
+{
+    AssemblerType::linkPointer(code, label, value.taggedPtr());
+}
 
-#endif // ENABLE(DFG_JIT)
+#endif // ENABLE(ASSEMBLER)
+
+} // namespace JSC
 

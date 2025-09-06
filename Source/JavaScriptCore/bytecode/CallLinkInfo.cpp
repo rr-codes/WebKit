@@ -26,6 +26,7 @@
 #include "config.h"
 #include "CallLinkInfo.h"
 
+#include "AbstractMacroAssemblerInternal.h"
 #include "CCallHelpers.h"
 #include "CallFrameShuffleData.h"
 #include "DFGJITCode.h"
@@ -36,6 +37,7 @@
 #include "JSWebAssemblyModule.h"
 #include "LLIntEntrypoint.h"
 #include "LinkBuffer.h"
+#include "MacroAssemblerARM64Internal.h"
 #include "Opcode.h"
 #include "Repatch.h"
 #include "ThunkGenerators.h"

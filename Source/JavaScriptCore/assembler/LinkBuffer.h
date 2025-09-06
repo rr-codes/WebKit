@@ -159,52 +159,24 @@ public:
     // These methods are used to link or set values at code generation time.
 
     template<PtrTag tag, typename Func, typename = std::enable_if_t<std::is_function<typename std::remove_pointer<Func>::type>::value>>
-    void link(Call call, Func funcName)
-    {
-        CodePtr<tag> function(funcName);
-        link(call, function);
-    }
+    void link(Call, Func funcName);
 
     template<PtrTag tag>
-    void link(Call call, CodePtr<tag> function)
-    {
-        ASSERT(call.isFlagSet(Call::Linkable));
-        call.m_label = applyOffset(call.m_label);
-        MacroAssembler::linkCall(code(), call, function);
-    }
-    
-    template<PtrTag tag>
-    void link(Call call, CodeLocationLabel<tag> label)
-    {
-        link(call, CodePtr<tag>(label));
-    }
-    
-    template<PtrTag tag>
-    void link(Jump jump, CodeLocationLabel<tag> label)
-    {
-        jump.m_label = applyOffset(jump.m_label);
-        MacroAssembler::linkJump(code(), jump, label);
-    }
+    void link(Call, CodePtr<tag> function);
 
     template<PtrTag tag>
-    void link(const JumpList& list, CodeLocationLabel<tag> label)
-    {
-        for (const Jump& jump : list.jumps())
-            link(jump, label);
-    }
-
-    void patch(DataLabelPtr label, void* value)
-    {
-        AssemblerLabel target = applyOffset(label.m_label);
-        MacroAssembler::linkPointer(code(), target, value);
-    }
+    void link(Call, CodeLocationLabel<tag>);
 
     template<PtrTag tag>
-    void patch(DataLabelPtr label, CodeLocationLabel<tag> value)
-    {
-        AssemblerLabel target = applyOffset(label.m_label);
-        MacroAssembler::linkPointer(code(), target, value);
-    }
+    void link(Jump, CodeLocationLabel<tag>);
+
+    template<PtrTag tag>
+    void link(const JumpList&, CodeLocationLabel<tag>);
+
+    void patch(DataLabelPtr, void* value);
+
+    template<PtrTag tag>
+    void patch(DataLabelPtr, CodeLocationLabel<tag> value);
 
     // These methods are used to obtain handles to allow the code to be relinked / repatched later.
     

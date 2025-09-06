@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2017 Apple Inc. All rights reserved.
+ * Copyright (C) 2012-2023 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -20,40 +20,37 @@
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-#include "DFGJumpReplacement.h"
+#pragma once
 
-#if ENABLE(DFG_JIT)
+#include "ExecutableAllocatorInternal.h"
+#include <JavaScriptCore/AssemblerCommon.h>
 
-#include "MacroAssembler.h"
-#include "MacroAssemblerARM64Internal.h"
-#include "Options.h"
+namespace JSC {
 
-namespace JSC { namespace DFG {
+WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 
-void JumpReplacement::fire()
+template<RepatchingInfo repatch>
+ALWAYS_INLINE void* machineCodeCopy(void* dst, const void* src, size_t n)
 {
-    dataLogLnIf(Options::dumpDisassembly(),
-        "Firing jump replacement watchpoint from ", RawPointer(m_source.dataLocation()),
-        " to ", RawPointer(m_destination.dataLocation()));
-    MacroAssembler::replaceWithJump(m_source, m_destination);
+    static_assert(!(*repatch).contains(RepatchingFlag::Flush));
+    if constexpr (is32Bit()) {
+        // Avoid unaligned accesses.
+        if (WTF::isAligned(dst, n))
+            return memcpyAtomicIfPossible(dst, src, n);
+        return memcpyTearing(dst, src, n);
+    }
+    if constexpr ((*repatch).contains(RepatchingFlag::Memcpy) && (*repatch).contains(RepatchingFlag::Atomic))
+        return memcpyAtomic(dst, src, n);
+    else if constexpr ((*repatch).contains(RepatchingFlag::Memcpy))
+        return memcpyAtomicIfPossible(dst, src, n);
+    else
+        return performJITMemcpy<repatch>(dst, src, n);
 }
 
-void JumpReplacement::installVMTrapBreakpoint()
-{
-    dataLogLnIf(Options::dumpDisassembly(),
-        "Inserting VMTrap breakpoint at ", RawPointer(m_source.dataLocation()));
-#if ENABLE(SIGNAL_BASED_VM_TRAPS)
-    MacroAssembler::replaceWithVMHalt(m_source);
-#else
-    UNREACHABLE_FOR_PLATFORM();
-#endif
-}
+WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 
-} } // namespace JSC::DFG
-
-#endif // ENABLE(DFG_JIT)
+} // namespace JSC.
 

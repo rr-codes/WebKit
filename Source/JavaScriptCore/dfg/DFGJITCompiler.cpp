@@ -38,7 +38,7 @@
 #include "DFGSpeculativeJIT.h"
 #include "DFGThunks.h"
 #include "JSCJSValueInlines.h"
-#include "LinkBuffer.h"
+#include "LinkBufferInternal.h"
 #include "ProbeContext.h"
 #include "ThunkGenerators.h"
 #include "VM.h"

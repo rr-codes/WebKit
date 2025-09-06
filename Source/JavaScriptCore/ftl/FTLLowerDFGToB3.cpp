@@ -95,6 +95,7 @@
 #include "JSWebAssemblyInstance.h"
 #include "JSWrapForValidIterator.h"
 #include "LLIntThunks.h"
+#include "LinkBufferInternal.h"
 #include "MegamorphicCache.h"
 #include "OperandsInlines.h"
 #include "PCToCodeOriginMap.h"

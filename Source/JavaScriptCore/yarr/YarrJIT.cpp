@@ -29,7 +29,7 @@
 
 #include "AllowMacroScratchRegisterUsage.h"
 #include "CCallHelpers.h"
-#include "LinkBuffer.h"
+#include "LinkBufferInternal.h"
 #include "Options.h"
 #if ENABLE(YARR_JIT_BACKREFERENCES_FOR_16BIT_EXPRS)
 #include "JITThunks.h"

@@ -32,6 +32,7 @@
 #include "FTLState.h"
 #include "FTLThunks.h"
 #include "GPRInfo.h"
+#include "LinkBufferInternal.h"
 
 namespace JSC { namespace FTL {
 

@@ -40,7 +40,7 @@
 #include "JITThunks.h"
 #include "LLIntEntrypoint.h"
 #include "LLIntThunks.h"
-#include "LinkBuffer.h"
+#include "LinkBufferInternal.h"
 #include "MaxFrameExtentForSlowPathCall.h"
 #include "ModuleProgramCodeBlock.h"
 #include "PCToCodeOriginMap.h"

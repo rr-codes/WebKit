@@ -28,10 +28,11 @@
 
 #if ENABLE(DFG_JIT)
 
+#include "AbstractMacroAssemblerInternal.h"
 #include "CCallHelpers.h"
 #include "DFGGraph.h"
 #include "JSCJSValueInlines.h"
-#include "LinkBuffer.h"
+#include "LinkBufferInternal.h"
 
 namespace JSC { namespace DFG {
 

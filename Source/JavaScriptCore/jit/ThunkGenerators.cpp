@@ -31,6 +31,7 @@
 #include "JSBoundFunction.h"
 #include "JSRemoteFunction.h"
 #include "LLIntThunks.h"
+#include "LinkBufferInternal.h"
 #include "MaxFrameExtentForSlowPathCall.h"
 #include "SpecializedThunkJIT.h"
 #include "ThunkGenerator.h"

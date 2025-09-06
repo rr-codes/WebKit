@@ -24,10 +24,11 @@
  */
 
 #include "config.h"
-#include "ExecutableAllocator.h"
+#include "ExecutableAllocatorInternal.h"
 
 #if ENABLE(JIT)
 
+#include "ARM64AssemblerInternal.h"
 #include "ExecutableAllocationFuzz.h"
 #include "JITOperationValidation.h"
 #include "LinkBuffer.h"

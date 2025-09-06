@@ -992,19 +992,13 @@ public:
         AssemblerType::linkJump(code, jump.m_label, target.dataLocation());
     }
 
-    static void linkPointer(void* code, AssemblerLabel label, void* value)
-    {
-        AssemblerType::linkPointer(code, label, value);
-    }
+    static void linkPointer(void* code, AssemblerLabel, void* value);
 
     template<PtrTag tag>
-    static void linkPointer(void* code, AssemblerLabel label, CodePtr<tag> value)
-    {
-        AssemblerType::linkPointer(code, label, value.taggedPtr());
-    }
+    static void linkPointer(void* code, AssemblerLabel label, CodePtr<tag> value);
 
     template<PtrTag tag>
-    static void* getLinkerAddress(void* code, AssemblerLabel label)
+    static void* getLinkerAddress(void* code, AssemblerLabel)
     {
         return tagCodePtr<tag>(AssemblerType::getRelocatedAddress(code, label));
     }
@@ -1052,10 +1046,7 @@ public:
     }
 
     template<PtrTag tag>
-    static void repatchPointer(CodeLocationDataLabelPtr<tag> dataLabelPtr, void* value)
-    {
-        AssemblerType::repatchPointer(dataLabelPtr.dataLocation(), value);
-    }
+    static void repatchPointer(CodeLocationDataLabelPtr<tag>, void* value);
 
     template<PtrTag tag>
     static void* readPointer(CodeLocationDataLabelPtr<tag> dataLabelPtr)
