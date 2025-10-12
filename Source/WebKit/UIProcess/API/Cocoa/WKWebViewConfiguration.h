@@ -167,6 +167,15 @@ on the system setting.
 */
 @property (nonatomic) BOOL allowsInlinePredictions API_AVAILABLE(macos(14.0), ios(17.0));
 
+/*! @abstract An enum value indicating the type of data detection desired.
+ @discussion The default value is WKDataDetectorTypeNone.
+ An example of how this property may affect the content loaded in the WKWebView is that content like
+ 'Visit apple.com on July 4th or call 1 800 555-5545' will be transformed to add links around 'apple.com', 'July 4th' and '1 800 555-5545'
+ if the dataDetectorTypes property is set to WKDataDetectorTypePhoneNumber | WKDataDetectorTypeLink | WKDataDetectorTypeCalendarEvent.
+
+ */
+@property (nonatomic) WKDataDetectorTypes dataDetectorTypes WK_API_AVAILABLE(ios(10.0), visionos(1.0)) WK_API_UNAVAILABLE(macos);
+
 #if TARGET_OS_IPHONE
 /*! @abstract A Boolean value indicating whether HTML5 videos play inline
  (YES) or use the native full-screen controller (NO).
@@ -186,15 +195,6 @@ on the system setting.
  @discussion The default value is YES.
  */
 @property (nonatomic) BOOL allowsPictureInPictureMediaPlayback WK_API_AVAILABLE(ios(9_0));
-
-/*! @abstract An enum value indicating the type of data detection desired.
- @discussion The default value is WKDataDetectorTypeNone.
- An example of how this property may affect the content loaded in the WKWebView is that content like
- 'Visit apple.com on July 4th or call 1 800 555-5545' will be transformed to add links around 'apple.com', 'July 4th' and '1 800 555-5545'
- if the dataDetectorTypes property is set to WKDataDetectorTypePhoneNumber | WKDataDetectorTypeLink | WKDataDetectorTypeCalendarEvent.
-
- */
-@property (nonatomic) WKDataDetectorTypes dataDetectorTypes WK_API_AVAILABLE(ios(10.0));
 
 /*! @abstract A Boolean value indicating whether the WKWebView should always allow scaling of the web page, regardless of author intent.
  @discussion This will override the user-scalable property.

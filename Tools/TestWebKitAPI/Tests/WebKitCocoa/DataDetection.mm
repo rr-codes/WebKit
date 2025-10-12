@@ -33,8 +33,6 @@
 #import <WebKit/WebKit.h>
 #import <wtf/RetainPtr.h>
 
-#if PLATFORM(IOS_FAMILY)
-
 @interface WKWebView (DataDetection)
 - (void)synchronouslyDetectDataWithTypes:(WKDataDetectorTypes)types;
 - (void)synchronouslyRemoveDataDetectedLinks;
@@ -115,7 +113,6 @@ TEST(WebKit, DISABLED_DataDetectionReferenceDate)
     expectLinkCount(webView.get(), @"<a href='about:blank'>tomorrow at 6PM</a>", 0);
     expectLinkCount(webView.get(), @"<a href='about:blank'>tomorrow</a> at <a href='about:blank'>6PM</a>", 0);
 
-
     NSTimeInterval week = 60 * 60 * 24 * 7;
 
     [UIDelegate setReferenceDate:[NSDate dateWithTimeIntervalSinceNow:-week]];
@@ -125,6 +122,26 @@ TEST(WebKit, DISABLED_DataDetectionReferenceDate)
     [UIDelegate setReferenceDate:[NSDate dateWithTimeIntervalSinceNow:week]];
     expectLinkCount(webView.get(), @"tomorrow at 6PM", 1);
     expectLinkCount(webView.get(), @"yesterday at 6PM", 1);
+}
+
+TEST(WebKit, LoadWKWebViewWithDataDetectorTypePhoneNumber)
+{
+    NSString *const phoneNumber = @"(555) 867-5309";
+
+    auto configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    configuration.get().dataDetectorTypes = WKDataDetectorTypePhoneNumber;
+
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500) configuration:configuration.get()]);
+    [webView synchronouslyLoadHTMLString:[NSString stringWithFormat:@"<!DOCTYPE><html><head></head><body><p>Call Jenny at %@</p></body></html>", phoneNumber]];
+
+    // Ensure that the phone number is linked by Data Detectors.
+    NSString *linkCount = [webView stringByEvaluatingJavaScript:@"document.querySelectorAll('a').length"];
+    EXPECT_EQ(1, linkCount.intValue);
+    NSString *linkText = [webView stringByEvaluatingJavaScript:@"document.querySelectorAll('a')[0].innerText"];
+    EXPECT_WK_STREQ(phoneNumber, linkText);
+    NSString *linkURL = [webView stringByEvaluatingJavaScript:@"document.querySelectorAll('a')[0].href"];
+    NSString *expectedLinkURL = [NSString stringWithFormat:@"tel:%@", [phoneNumber stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet whitespaceCharacterSet].invertedSet]];
+    EXPECT_WK_STREQ(expectedLinkURL, linkURL);
 }
 
 #if PLATFORM(IOS) || PLATFORM(VISION)
@@ -175,5 +192,3 @@ TEST(WebKit, DoNotCrashWhenDetectingDataAfterWebProcessTerminates)
 }
 
 #endif // PLATFORM(IOS) || PLATFORM(VISION)
-
-#endif

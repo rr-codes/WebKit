@@ -49,7 +49,6 @@ extension WKWebViewConfiguration {
         #endif
 
         #if os(iOS)
-        self.dataDetectorTypes = wrapped.dataDetectorTypes
         self.ignoresViewportScaleLimits = wrapped.ignoresViewportScaleLimits
 
         if wrapped.mediaPlaybackBehavior != .automatic {

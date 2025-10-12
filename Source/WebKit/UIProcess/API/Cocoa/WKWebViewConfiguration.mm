@@ -140,6 +140,22 @@ WK_OBJECT_DISABLE_DISABLE_KVC_IVAR_ACCESS;
     return _pageConfiguration->allowsInlinePredictions();
 }
 
+- (void)setDataDetectorTypes:(WKDataDetectorTypes)types
+{
+#if ENABLE(DATA_DETECTION)
+    _pageConfiguration->setDataDetectorTypes(fromWKDataDetectorTypes(types));
+#endif
+}
+
+- (WKDataDetectorTypes)dataDetectorTypes
+{
+#if ENABLE(DATA_DETECTION)
+    return toWKDataDetectorTypes(_pageConfiguration->dataDetectorTypes());
+#else
+    return WKDataDetectorTypeNone;
+#endif
+}
+
 #if PLATFORM(IOS_FAMILY)
 - (void)setAllowsInlineMediaPlayback:(BOOL)allows
 {
@@ -179,22 +195,6 @@ WK_OBJECT_DISABLE_DISABLE_KVC_IVAR_ACCESS;
 - (BOOL)ignoresViewportScaleLimits
 {
     return _pageConfiguration->ignoresViewportScaleLimits();
-}
-
-- (void)setDataDetectorTypes:(WKDataDetectorTypes)types
-{
-#if ENABLE(DATA_DETECTION)
-    _pageConfiguration->setDataDetectorTypes(fromWKDataDetectorTypes(types));
-#endif
-}
-
-- (WKDataDetectorTypes)dataDetectorTypes
-{
-#if ENABLE(DATA_DETECTION)
-    return toWKDataDetectorTypes(_pageConfiguration->dataDetectorTypes());
-#else
-    return WKDataDetectorTypeNone;
-#endif
 }
 
 #else // PLATFORM(IOS_FAMILY)

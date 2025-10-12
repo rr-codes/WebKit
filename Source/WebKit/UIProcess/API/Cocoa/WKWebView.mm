@@ -821,7 +821,7 @@ static void addBrowsingContextControllerMethodStubsIfNeeded()
     preferences->setAttachmentElementEnabled(!![_configuration _attachmentElementEnabled]);
     preferences->setAttachmentWideLayoutEnabled(!![_configuration _attachmentWideLayoutEnabled]);
 
-#if ENABLE(DATA_DETECTION) && PLATFORM(IOS_FAMILY)
+#if ENABLE(DATA_DETECTION)
     preferences->setDataDetectorTypes(fromWKDataDetectorTypes([_configuration dataDetectorTypes]).toRaw());
 #endif
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
@@ -6120,6 +6120,21 @@ static inline OptionSet<WebKit::FindOptions> toFindOptions(_WKFindOptions wkFind
     }
 
     _page->setMuted(coreState, WebKit::WebPageProxy::FromApplication::Yes);
+}
+
+- (void)_detectDataWithTypes:(WKDataDetectorTypes)types completionHandler:(dispatch_block_t)completion
+{
+#if ENABLE(DATA_DETECTION)
+    _page->detectDataInAllFrames(fromWKDataDetectorTypes(types), [completion = makeBlockPtr(completion), page = WeakPtr { _page.get() }] (auto&& result) {
+        if (page)
+            page->setDataDetectionResult(WTFMove(result));
+        if (completion)
+            completion();
+    });
+#else
+    UNUSED_PARAM(types);
+    UNUSED_PARAM(completion);
+#endif
 }
 
 - (void)_removeDataDetectedLinks:(dispatch_block_t)completion

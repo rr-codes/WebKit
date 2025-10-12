@@ -655,6 +655,8 @@ typedef NS_OPTIONS(NSUInteger, _WKWebViewDataType) {
 - (void)_debugTextWithConfiguration:(_WKTextExtractionConfiguration *)configuration completionHandler:(WK_SWIFT_UI_ACTOR void(^)(NSString *))completionHandler WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA)) NS_SWIFT_NAME(_debugText(with:completionHandler:));
 - (void)_performInteraction:(_WKTextExtractionInteraction *)interaction completionHandler:(WK_SWIFT_UI_ACTOR void(^)(_WKTextExtractionInteractionResult *))completionHandler WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA)) NS_SWIFT_NAME(_performInteraction(_:completionHandler:));
 
+- (void)_detectDataWithTypes:(WKDataDetectorTypes)types completionHandler:(dispatch_block_t)completion;
+
 @end
 
 #if TARGET_OS_IPHONE
@@ -734,8 +736,6 @@ typedef NS_OPTIONS(NSUInteger, _WKWebViewDataType) {
 - (void)_setFont:(UIFont *)font sender:(id)sender WK_API_AVAILABLE(ios(12.2));
 - (void)_setFontSize:(CGFloat)fontSize sender:(id)sender WK_API_AVAILABLE(ios(12.2));
 - (void)_setTextColor:(UIColor *)color sender:(id)sender WK_API_AVAILABLE(ios(12.2));
-
-- (void)_detectDataWithTypes:(WKDataDetectorTypes)types completionHandler:(dispatch_block_t)completion WK_API_AVAILABLE(ios(12.2));
 
 - (void)_requestActivatedElementAtPosition:(CGPoint)position completionBlock:(void (^)(_WKActivatedElementInfo *))block WK_API_AVAILABLE(ios(11.0));
 

@@ -192,7 +192,6 @@
 		41D2A21F27906F9F0088FCCE /* UUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 144D40EC221B46A7004B474F /* UUID.cpp */; };
 		41E67A8525D16E83007B0A4C /* STUNMessageParsingTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41E67A8425D16E83007B0A4C /* STUNMessageParsingTest.cpp */; };
 		41EBA9F228ABA06700953013 /* ImageRotationSessionVT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41EBA9F128ABA06500953013 /* ImageRotationSessionVT.cpp */; };
-		44077BB123144B5000179E2D /* DataDetectorsTestIOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 44077BB0231449D200179E2D /* DataDetectorsTestIOS.mm */; };
 		4433A396208044140091ED57 /* SynchronousTimeoutTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4433A395208044130091ED57 /* SynchronousTimeoutTests.mm */; };
 		44449DC12718B4B700E821B5 /* OSObjectPtrCocoaARC.mm in Sources */ = {isa = PBXBuildFile; fileRef = 44449DBF2718B4B600E821B5 /* OSObjectPtrCocoaARC.mm */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		44449DC22718B4B700E821B5 /* OSObjectPtrCocoa.mm in Sources */ = {isa = PBXBuildFile; fileRef = 44449DC02718B4B700E821B5 /* OSObjectPtrCocoa.mm */; };
@@ -2828,7 +2827,6 @@
 		41E67A8425D16E83007B0A4C /* STUNMessageParsingTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = STUNMessageParsingTest.cpp; sourceTree = "<group>"; };
 		41E9EE1A28B4DBF8006A2298 /* PermissionsAPI.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PermissionsAPI.mm; sourceTree = "<group>"; };
 		41EBA9F128ABA06500953013 /* ImageRotationSessionVT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageRotationSessionVT.cpp; sourceTree = "<group>"; };
-		44077BB0231449D200179E2D /* DataDetectorsTestIOS.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = DataDetectorsTestIOS.mm; sourceTree = "<group>"; };
 		442BBF681C91CAD90017087F /* RefLogger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RefLogger.cpp; sourceTree = "<group>"; };
 		4433A395208044130091ED57 /* SynchronousTimeoutTests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SynchronousTimeoutTests.mm; sourceTree = "<group>"; };
 		44449DBF2718B4B600E821B5 /* OSObjectPtrCocoaARC.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OSObjectPtrCocoaARC.mm; sourceTree = "<group>"; };
@@ -5378,7 +5376,6 @@
 				F46C45C327D42A2F00ECED2C /* ApplicationStateTracking.mm */,
 				F42D634322A1729F00D2FB3A /* AutocorrectionTestsIOS.mm */,
 				F491536E2901CEED004E2E97 /* CustomContentViewGestures.mm */,
-				44077BB0231449D200179E2D /* DataDetectorsTestIOS.mm */,
 				E532A15E2BDA271F00E79810 /* DataListTextSuggestionTests.mm */,
 				F4D4F3B71E4E36E400BB2767 /* DragAndDropTestsIOS.mm */,
 				A11E7DA224A17C7D00026745 /* ElementActionTests.mm */,
@@ -7692,7 +7689,6 @@
 				7CCE7F2A1A411B1000447C4C /* CustomProtocolsSyncXHRTest.mm in Sources */,
 				7CCE7F2B1A411B1000447C4C /* CustomProtocolsTest.mm in Sources */,
 				751B05D61F8EAC410028A09E /* DatabaseTrackerTest.mm in Sources */,
-				44077BB123144B5000179E2D /* DataDetectorsTestIOS.mm in Sources */,
 				E532A15F2BDA271F00E79810 /* DataListTextSuggestionTests.mm in Sources */,
 				E5AA8D1D25151CC60051CC45 /* DateInputTests.mm in Sources */,
 				E589183C252BC90A0041DED5 /* DateTimeInputsAccessoryViewTests.mm in Sources */,

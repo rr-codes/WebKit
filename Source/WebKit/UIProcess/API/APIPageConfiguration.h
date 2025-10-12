@@ -184,6 +184,11 @@ public:
     Ref<WebsitePolicies> protectedDefaultWebsitePolicies() const;
     void setDefaultWebsitePolicies(RefPtr<WebsitePolicies>&&);
 
+#if ENABLE(DATA_DETECTION)
+    OptionSet<WebCore::DataDetectorType> dataDetectorTypes() const { return m_data.dataDetectorTypes; }
+    void setDataDetectorTypes(OptionSet<WebCore::DataDetectorType> types) { m_data.dataDetectorTypes = types; }
+#endif
+
 #if PLATFORM(IOS_FAMILY)
     bool canShowWhileLocked() const { return m_data.canShowWhileLocked; }
     void setCanShowWhileLocked(bool canShowWhileLocked) { m_data.canShowWhileLocked = canShowWhileLocked; }
@@ -205,11 +210,6 @@ public:
 
     WebKit::DragLiftDelay dragLiftDelay() const { return m_data.dragLiftDelay; }
     void setDragLiftDelay(WebKit::DragLiftDelay delay) { m_data.dragLiftDelay = delay; }
-
-#if ENABLE(DATA_DETECTION)
-    OptionSet<WebCore::DataDetectorType> dataDetectorTypes() const { return m_data.dataDetectorTypes; }
-    void setDataDetectorTypes(OptionSet<WebCore::DataDetectorType> types) { m_data.dataDetectorTypes = types; }
-#endif
 
     WebKit::SelectionGranularity selectionGranularity() const { return m_data.selectionGranularity; }
     void setSelectionGranularity(WebKit::SelectionGranularity granularity) { m_data.selectionGranularity = granularity; }
@@ -537,6 +537,10 @@ private:
         WeakPtr<WebKit::WebPageProxy> pageToCloneSessionStorageFrom;
         WeakPtr<WebKit::WebPageProxy> alternateWebViewForNavigationGestures;
 
+#if ENABLE(DATA_DETECTION)
+        OptionSet<WebCore::DataDetectorType> dataDetectorTypes;
+#endif
+
 #if PLATFORM(IOS_FAMILY)
         bool canShowWhileLocked { false };
         WebKit::AttributionOverrideTesting appInitiatedOverrideValueForTesting { WebKit::AttributionOverrideTesting::NoOverride };
@@ -546,9 +550,6 @@ private:
         bool allowsInlineMediaPlaybackAfterFullscreen { !allowsInlineMediaPlayback };
         bool mediaDataLoadsAutomatically { allowsInlineMediaPlayback };
         WebKit::DragLiftDelay dragLiftDelay { defaultDragLiftDelay() };
-#if ENABLE(DATA_DETECTION)
-        OptionSet<WebCore::DataDetectorType> dataDetectorTypes;
-#endif
         WebKit::SelectionGranularity selectionGranularity { WebKit::SelectionGranularity::Dynamic };
 #if PLATFORM(WATCHOS)
         bool allowsPictureInPictureMediaPlayback { false };

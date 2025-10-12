@@ -4512,21 +4512,6 @@ static bool isLockdownModeWarningNeeded()
         [_contentView _setTextColorForWebView:color sender:sender];
 }
 
-- (void)_detectDataWithTypes:(WKDataDetectorTypes)types completionHandler:(dispatch_block_t)completion
-{
-#if ENABLE(DATA_DETECTION)
-    _page->detectDataInAllFrames(fromWKDataDetectorTypes(types), [completion = makeBlockPtr(completion), page = WeakPtr { _page.get() }] (auto&& result) {
-        if (page)
-            page->setDataDetectionResult(WTFMove(result));
-        if (completion)
-            completion();
-    });
-#else
-    UNUSED_PARAM(types);
-    UNUSED_PARAM(completion);
-#endif
-}
-
 - (void)_requestActivatedElementAtPosition:(CGPoint)position completionBlock:(void (^)(_WKActivatedElementInfo *))block
 {
     auto infoRequest = WebKit::InteractionInformationRequest(WebCore::roundedIntPoint(position));

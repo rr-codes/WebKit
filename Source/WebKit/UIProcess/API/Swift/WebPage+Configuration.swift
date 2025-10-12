@@ -117,7 +117,8 @@ extension WebPage {
             set { backingShowsSystemScreenTimeBlockingView = newValue }
         }
 
-        #if os(iOS)
+        private var backingDataDetectorTypes: WKDataDetectorTypes = []
+
         /// The types of data detectors to apply to the webpage's content.
         ///
         /// Data detectors add interactivity to web content by creating links for specially formatted text.
@@ -125,8 +126,13 @@ extension WebPage {
         /// become a link to the Apple website.
         ///
         /// The default value of this property is an empty OptionSet.
-        public var dataDetectorTypes: WKDataDetectorTypes = []
+        @available(macOS, unavailable)
+        public var dataDetectorTypes: WKDataDetectorTypes {
+            get { backingDataDetectorTypes }
+            set { backingDataDetectorTypes = newValue }
+        }
 
+        #if os(iOS)
         /// Determines whether a webpage allows scaling of the webpage.
         ///
         /// When set to `true`, this property overrides the user-scalable HTML property in a webpage, and lets
