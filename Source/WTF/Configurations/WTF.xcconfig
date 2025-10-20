@@ -65,3 +65,24 @@ GENERATE_WTF_MODULEMAP[sdk=macosx26.3*] = $(WK_NOT_$(DEPLOYMENT_LOCATION));
 
 GENERATE_WTF_MODULEMAP[sdk=iphone*] = $(GENERATE_WTF_MODULEMAP$(WK_IOS_26));
 GENERATE_WTF_MODULEMAP_IOS_SINCE_26 = YES;
+
+SCRIPT_OUTPUT_DIR = $(SCRIPT_OUTPUT_DIR__$(DEPLOYMENT_LOCATION:default=NO));
+SCRIPT_OUTPUT_DIR__NO = $(TARGET_BUILD_DIR);
+SCRIPT_OUTPUT_DIR__YES = $(DSTROOT);
+
+USE_HEADERMAP = NO;
+USER_HEADER_SEARCH_PATHS = $(inherited) $(SRCROOT);
+
+SWIFT_VERSION = 6.0;
+SWIFT_VERSION[sdk=macosx14*] = 5.0;
+
+SWIFT_OPTIMIZATION_LEVEL = -O;
+SWIFT_OPTIMIZATION_LEVEL[config=Debug] = -Onone;
+
+OTHER_SWIFT_FLAGS = $(inherited) -Xcc -std=c++2b -Xfrontend -experimental-spi-only-imports -no-verify-emitted-module-interface -Xfrontend -enable-experimental-concurrency -Xfrontend -enable-upcoming-feature -Xfrontend IsolatedDefaultValues;
+
+SWIFT_OBJC_INTEROP_MODE = objcxx;
+
+BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+SWIFT_INSTALL_OBJC_HEADER = NO;
+SWIFT_LIBRARY_LEVEL = spi;
