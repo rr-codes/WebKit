@@ -24,9 +24,50 @@
 #if compiler(>=6.2) && ENABLE_CXX_INTEROP
 
 import Testing
-import wtf
 
 private typealias Cxx = SwiftCxxInteropTestbed
+
+extension WTF.String {
+    /// Creates a WTF String from an optional Swift String.
+    ///
+    /// - Parameter string: The Swift String to convert. If this is `nil`, the resulting WTF String will be ``WTF/nullString``.
+    public init(_ string: Swift.String?) {
+        self = if let string {
+            .init(string as NSString)
+        } else {
+            unsafe WTF.nullString().pointee
+        }
+    }
+}
+
+extension Swift.String {
+    /// Creates an optional Swift String from a WTF String.
+    ///
+    /// - Parameter string: The WTF String to convert. If this is ``WTF/nullString``, the resulting optional Swift String will be `nil`.
+    public init?(_ string: WTF.String) {
+        guard !string.isNull() else {
+            return nil
+        }
+
+        self = unsafe string.createNSString().get()
+    }
+}
+
+extension WTF.String : LosslessStringConvertible {
+    public init(_ description: Swift.String) {
+        self = .init(description as NSString)
+    }
+
+    public var description: Swift.String {
+        unsafe self.createNSString().get()
+    }
+}
+
+extension WTF.String : ExpressibleByStringLiteral {
+    public init(stringLiteral: Swift.String) {
+        self.init(stringLiteral)
+    }
+}
 
 @MainActor
 struct SwiftCxxInteropTests {

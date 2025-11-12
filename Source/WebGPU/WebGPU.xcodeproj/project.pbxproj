@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		072E50CA2EC068C600788750 /* wtf.framework in Product Dependencies */ = {isa = PBXBuildFile; fileRef = 072E50C92EC068C600788750 /* wtf.framework */; };
 		0D078E922E737C0500A9B266 /* DDMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 0D078E8F2E737C0500A9B266 /* DDMesh.h */; };
 		0D078E932E737C0500A9B266 /* DDMesh.mm in Sources */ = {isa = PBXBuildFile; fileRef = 0D078E902E737C0500A9B266 /* DDMesh.mm */; };
 		0D078E942E737C0500A9B266 /* UsdModelRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D078E912E737C0500A9B266 /* UsdModelRenderer.swift */; };
@@ -218,7 +219,6 @@
 		97F547B9298055D90011D79A /* GlobalVariableRewriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 97F547B7298055D90011D79A /* GlobalVariableRewriter.h */; };
 		97FA1A8E29C086230052D650 /* wgslc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97FA1A8729C085A60052D650 /* wgslc.cpp */; };
 		97FA1AA729C0DA890052D650 /* libwgsl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1CEBD7F22716B2CC00A5254D /* libwgsl.a */; };
-		DD05A35C27BF09C60096EFAB /* libWTF.a in Product Dependencies */ = {isa = PBXBuildFile; fileRef = 1CEBD8292716CAE700A5254D /* libWTF.a */; };
 		DD5697FE2DC1316A00050321 /* rdar150228472.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD5697FC2DC1311D00050321 /* rdar150228472.swift */; };
 /* End PBXBuildFile section */
 
@@ -289,7 +289,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				DD05A35C27BF09C60096EFAB /* libWTF.a in Product Dependencies */,
+				072E50CA2EC068C600788750 /* wtf.framework in Product Dependencies */,
 			);
 			name = "Product Dependencies";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -297,6 +297,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		072E50C92EC068C600788750 /* wtf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = wtf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0D078E8F2E737C0500A9B266 /* DDMesh.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DDMesh.h; sourceTree = "<group>"; };
 		0D078E902E737C0500A9B266 /* DDMesh.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DDMesh.mm; sourceTree = "<group>"; };
 		0D078E912E737C0500A9B266 /* UsdModelRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsdModelRenderer.swift; sourceTree = "<group>"; };
@@ -613,6 +614,7 @@
 		1CEBD7D92716AFBA00A5254D = {
 			isa = PBXGroup;
 			children = (
+				072E50C92EC068C600788750 /* wtf.framework */,
 				DD5697FD2DC1311D00050321 /* Derived Sources */,
 				1CEBD8242716C81400A5254D /* Info.plist */,
 				1CEBD7F92716B38600A5254D /* Configurations */,

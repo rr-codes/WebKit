@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5D247B6114689B8600E78B76"
-               BuildableName = "libWTF.a"
+               BuildableName = "wtf.framework"
                BlueprintName = "WTF"
                ReferencedContainer = "container:WTF.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5D247B6114689B8600E78B76"
-            BuildableName = "libWTF.a"
+            BuildableName = "wtf.framework"
             BlueprintName = "WTF"
             ReferencedContainer = "container:WTF.xcodeproj">
          </BuildableReference>

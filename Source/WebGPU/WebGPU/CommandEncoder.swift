@@ -25,6 +25,7 @@
 
 import Metal
 import WebGPU_Internal
+import wtf_Private.Core.text.TextStream
 public typealias WTFString = String
 public typealias String = Swift.String
 // FIXME: rdar://140819194

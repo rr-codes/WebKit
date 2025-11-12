@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07E171D32EB1DBB50082CE25 /* generate-platform-args in Install Scripts */ = {isa = PBXBuildFile; fileRef = DD9C67FB2D70243000D4BEC7 /* generate-platform-args */; };
+		07E171D42EB1DBC00082CE25 /* audit-spi-if-needed.sh in Install Scripts */ = {isa = PBXBuildFile; fileRef = DD725EC92D8A442900E72544 /* audit-spi-if-needed.sh */; };
+		07E171D52EB1DBC20082CE25 /* generate-tapi-filelist.py in Install Scripts */ = {isa = PBXBuildFile; fileRef = DD28DF2329D368BD00BBB459 /* generate-tapi-filelist.py */; };
+		07E171D62EB1DBC60082CE25 /* generate-unified-source-bundles.rb in Install Scripts */ = {isa = PBXBuildFile; fileRef = DD3DCA0527A4E176007E5B61 /* generate-unified-source-bundles.rb */; };
+		07E171D72EB1DBC90082CE25 /* GeneratePreferences.rb in Install Scripts */ = {isa = PBXBuildFile; fileRef = DD3DCA0627A4E176007E5B61 /* GeneratePreferences.rb */; };
+		07E171D82EB1DBCB0082CE25 /* UnifiedWebPreferences.yaml in Install Scripts Preferences */ = {isa = PBXBuildFile; fileRef = DD284687292442F30009A61D /* UnifiedWebPreferences.yaml */; };
 		0F0C03D029981BEB0064230A /* EmbeddedFixedVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F0C03CF29981BEB0064230A /* EmbeddedFixedVector.cpp */; };
 		0F0C03D8299820EB0064230A /* WeakPtr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F0C03D7299820EB0064230A /* WeakPtr.cpp */; };
 		0F0C03E7299828E60064230A /* BloomFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F0C03E6299828E50064230A /* BloomFilter.cpp */; };
@@ -1060,6 +1066,32 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		07C1C8452EB6B6D8009A39A8 /* Install Scripts Preferences */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = PrivateHeaders/Scripts/Preferences;
+			dstSubfolderSpec = 1;
+			files = (
+				07E171D82EB1DBCB0082CE25 /* UnifiedWebPreferences.yaml in Install Scripts Preferences */,
+			);
+			name = "Install Scripts Preferences";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07E171D22EB1DB980082CE25 /* Install Scripts */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = PrivateHeaders/Scripts;
+			dstSubfolderSpec = 1;
+			files = (
+				07E171D42EB1DBC00082CE25 /* audit-spi-if-needed.sh in Install Scripts */,
+				07E171D32EB1DBB50082CE25 /* generate-platform-args in Install Scripts */,
+				07E171D52EB1DBC20082CE25 /* generate-tapi-filelist.py in Install Scripts */,
+				07E171D62EB1DBC60082CE25 /* generate-unified-source-bundles.rb in Install Scripts */,
+				07E171D72EB1DBC90082CE25 /* GeneratePreferences.rb in Install Scripts */,
+			);
+			name = "Install Scripts";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DDE99316278D08B900F60D26 /* Product Dependencies */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1076,6 +1108,10 @@
 /* Begin PBXFileReference section */
 		077CD86A1FD9CFD200828587 /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
 		077CD86B1FD9CFD300828587 /* LoggerHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggerHelper.h; sourceTree = "<group>"; };
+		07C998AC2EB4149F003E8DAA /* wtf.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = wtf.modulemap; sourceTree = "<group>"; };
+		07C998AD2EB414CB003E8DAA /* wtf_Private.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = wtf_Private.modulemap; sourceTree = "<group>"; };
+		07E171CA2EB1A3680082CE25 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		07F2793E2EC2DD1200643EF8 /* create-symlink-to-cryptex.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "create-symlink-to-cryptex.sh"; sourceTree = "<group>"; };
 		0F0C03CF29981BEB0064230A /* EmbeddedFixedVector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EmbeddedFixedVector.cpp; sourceTree = "<group>"; };
 		0F0C03D7299820EB0064230A /* WeakPtr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WeakPtr.cpp; sourceTree = "<group>"; };
 		0F0C03E6299828E50064230A /* BloomFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BloomFilter.cpp; sourceTree = "<group>"; };
@@ -1390,7 +1426,7 @@
 		5CC0EE872162BC2200A1A842 /* NSURLExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSURLExtras.h; sourceTree = "<group>"; };
 		5CC0EE882162BC2200A1A842 /* NSURLExtras.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSURLExtras.mm; sourceTree = "<group>"; };
 		5CFF32562925A2EB001050F2 /* ThreadSafeWeakPtr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThreadSafeWeakPtr.h; sourceTree = "<group>"; };
-		5D247B6214689B8600E78B76 /* libWTF.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWTF.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D247B6214689B8600E78B76 /* wtf.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework.static; includeInIndex = 0; path = wtf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D247B6E14689C4700E78B76 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		5D247B7014689C4700E78B76 /* DebugRelease.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = DebugRelease.xcconfig; sourceTree = "<group>"; };
 		5D247B7314689C4700E78B76 /* WTF.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WTF.xcconfig; sourceTree = "<group>"; };
@@ -2171,6 +2207,9 @@
 		5D247B5714689B8600E78B76 = {
 			isa = PBXGroup;
 			children = (
+				07C998AD2EB414CB003E8DAA /* wtf_Private.modulemap */,
+				07C998AC2EB4149F003E8DAA /* wtf.modulemap */,
+				07E171CA2EB1A3680082CE25 /* Info.plist */,
 				5D247B6D14689C4700E78B76 /* Configurations */,
 				DDE9931F278D0FAA00F60D26 /* Frameworks */,
 				5D247B6314689B8600E78B76 /* Products */,
@@ -2185,7 +2224,7 @@
 			isa = PBXGroup;
 			children = (
 				DDF3081E27C44EFF006A526F /* libicu.a */,
-				5D247B6214689B8600E78B76 /* libWTF.a */,
+				5D247B6214689B8600E78B76 /* wtf.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2957,6 +2996,7 @@
 				DD9C67FB2D70243000D4BEC7 /* generate-platform-args */,
 				DD3DCA0027A4E176007E5B61 /* Preferences */,
 				DD725EC92D8A442900E72544 /* audit-spi-if-needed.sh */,
+				07F2793E2EC2DD1200643EF8 /* create-symlink-to-cryptex.sh */,
 				DD28DF2329D368BD00BBB459 /* generate-tapi-filelist.py */,
 				DD3DCA0527A4E176007E5B61 /* generate-unified-source-bundles.rb */,
 				DD3DCA0627A4E176007E5B61 /* GeneratePreferences.rb */,
@@ -4176,9 +4216,11 @@
 				DD07DF4C2A7DB6640091EACE /* Symlink public SDK headers */,
 				DD3DC85D27A4BF87007E5B61 /* Headers */,
 				DDA35E4929CA74D4006C1018 /* Generate TAPI filelist */,
-				DDC9D68C2DEBE87000E175C0 /* Generate modulemap */,
 				5D247B5E14689B8600E78B76 /* Sources */,
 				5D247B5F14689B8600E78B76 /* Frameworks */,
+				07E171D22EB1DB980082CE25 /* Install Scripts */,
+				07C1C8452EB6B6D8009A39A8 /* Install Scripts Preferences */,
+				07F2793D2EC2DCD800643EF8 /* Create Symlink to Cryptex Path */,
 			);
 			buildRules = (
 				147572882CCD82170027BA8F /* PBXBuildRule */,
@@ -4192,8 +4234,8 @@
 			);
 			name = WTF;
 			productName = WTF;
-			productReference = 5D247B6214689B8600E78B76 /* libWTF.a */;
-			productType = "com.apple.product-type.library.static";
+			productReference = 5D247B6214689B8600E78B76 /* wtf.framework */;
+			productType = "com.apple.product-type.framework.static";
 		};
 		DDF3081D27C44EFE006A526F /* icu */ = {
 			isa = PBXNativeTarget;
@@ -4246,6 +4288,24 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		07F2793D2EC2DCD800643EF8 /* Create Symlink to Cryptex Path */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Create Symlink to Cryptex Path";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Scripts/create-symlink-to-cryptex.sh\"\n";
+		};
 		520CF9492BDA9B4800C27FD2 /* Generate clangd configuration file */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4265,7 +4325,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${DEPLOYMENT_LOCATION}\" != YES ]; then\n    \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_INPUT_FILE_1}\" \"${SCRIPT_OUTPUT_FILE_0}\"\nfi\n";
+			shellScript = "exit 0;\nif [ \"${DEPLOYMENT_LOCATION}\" != YES ]; then\n    \"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_INPUT_FILE_1}\" \"${SCRIPT_OUTPUT_FILE_0}\"\nfi\n";
 		};
 		DD07DF4C2A7DB6640091EACE /* Symlink public SDK headers */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -4304,35 +4364,11 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH)/WTF.json",
-				"$(DSTROOT)/$(PRIVATE_HEADERS_FOLDER_PATH)/WTF.json",
+				"$(WTF_PRIVATE_HEADERS_DIR)/WTF.json",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ ${DEPLOYMENT_LOCATION} != YES ]; then\n    \"${SCRIPT_INPUT_FILE_0}\" --from=\"${WK_HEADERS_VFS_FILE}\" --install-dir=\"${BUILT_PRODUCTS_DIR}${PRIVATE_HEADERS_FOLDER_PATH}\" --relative-to=\"${SRCROOT}/wtf\" > \"${SCRIPT_OUTPUT_FILE_0}\"\nelse\n    \"${SRCROOT}/Scripts/generate-tapi-filelist.py\" --from=\"${DSTROOT}${PRIVATE_HEADERS_FOLDER_PATH}\" --install-dir=\"<SDKROOT>${PRIVATE_HEADERS_FOLDER_PATH}\" --relative-to=\"${DSTROOT}${PRIVATE_HEADERS_FOLDER_PATH}\" > \"${SCRIPT_OUTPUT_FILE_1}\"\nfi\n";
-		};
-		DDC9D68C2DEBE87000E175C0 /* Generate modulemap */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Scripts/modulemap-from-tapi-filelist.py",
-				"$(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH)/WTF.json",
-				"$(SRCROOT)/Configurations/modulemap.toml",
-			);
-			name = "Generate modulemap";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/$(PRIVATE_HEADERS_FOLDER_PATH)/module.modulemap",
-				"$(DSTROOT)/$(PRIVATE_HEADERS_FOLDER_PATH)/module.modulemap",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ \"${GENERATE_WTF_MODULEMAP}\" != YES ] && [ \"${DEPLOYMENT_LOCATION}\" != YES ]; then\nrm -f \"${SCRIPT_OUTPUT_FILE_0}\"\nelif [ \"${GENERATE_WTF_MODULEMAP}\" != YES ]; then\nrm -f \"${SCRIPT_OUTPUT_FILE_1}\"\nelif [ \"${DEPLOYMENT_LOCATION}\" != YES ]; then\n\"${SCRIPT_INPUT_FILE_0}\" \"${SCRIPT_INPUT_FILE_1}\" --config \"${SCRIPT_INPUT_FILE_2}\" --relative-to \"${BUILT_PRODUCTS_DIR}${PRIVATE_HEADERS_FOLDER_PATH}\" > \"${SCRIPT_OUTPUT_FILE_0}\"\nelse\n\"${SCRIPT_INPUT_FILE_0}\" ${DSTROOT}/${PRIVATE_HEADERS_FOLDER_PATH}/WTF.json --config \"${SCRIPT_INPUT_FILE_2}\" --relative-to \"<SDKROOT>/${PRIVATE_HEADERS_FOLDER_PATH}\" > \"${SCRIPT_OUTPUT_FILE_1}\"\nfi\n";
+			shellScript = "echo \"RR_CODES ${INSTALL_DIR}/${PRIVATE_HEADERS_FOLDER_PATH}\"\necho \"RR_CODES ${SCRIPT_OUTPUT_FILE_0}\"\n\nif [ ${DEPLOYMENT_LOCATION} != YES ]; then\n    \"${SCRIPT_INPUT_FILE_0}\" --from=\"${WK_HEADERS_VFS_FILE}\" --install-dir=\"${BUILT_PRODUCTS_DIR}/${PRIVATE_HEADERS_FOLDER_PATH}\" --relative-to=\"${SRCROOT}/wtf\" > \"${SCRIPT_OUTPUT_FILE_0}\"\nelse\n    \"${SRCROOT}/Scripts/generate-tapi-filelist.py\" --from=\"${INSTALL_DIR}/${PRIVATE_HEADERS_FOLDER_PATH}\" --install-dir=\"<SDKROOT>/System/Cryptexes/OS/System/Library/PrivateFrameworks/wtf.framework/Versions/A/PrivateHeaders\" --relative-to=\"${INSTALL_DIR}/${PRIVATE_HEADERS_FOLDER_PATH}\" > \"${SCRIPT_OUTPUT_FILE_0}\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

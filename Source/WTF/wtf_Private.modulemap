@@ -1,0 +1,46 @@
+framework module wtf_Private [system] {
+    explicit module Platform {
+        header "Platform.h"
+        private textual header "PlatformCallingConventions.h"
+        private textual header "PlatformCPU.h"
+        private textual header "PlatformEnable.h"
+        private textual header "PlatformEnableCocoa.h"
+        private textual header "PlatformHave.h"
+        private textual header "PlatformLegacy.h"
+        private textual header "PlatformOS.h"
+        private textual header "PlatformRegisters.h"
+        private textual header "PlatformUse.h"
+
+        export *
+    }
+
+    explicit module Compiler {
+        header "Compiler.h"
+        export *
+    }
+
+    explicit module ExportMacros {
+        header "ExportMacros.h"
+        export *
+    }
+
+    explicit module spi {
+        umbrella "PrivateHeaders/spi"
+
+        requires objc
+
+        explicit module * {
+            export *
+        }
+    }
+
+    explicit module Core {
+        umbrella "PrivateHeaders"
+
+        requires cplusplus20
+
+        explicit module * {
+            export *
+        }
+    }
+}
