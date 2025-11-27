@@ -27,9 +27,9 @@
 
 #if ENABLE(WEB_AUDIO)
 
-#include "AudioNode.h"
-
 #include "AudioContext.h"
+
+#include "AudioNode.h"
 #include "AudioNodeInput.h"
 #include "AudioNodeOptions.h"
 #include "AudioNodeOutput.h"
@@ -38,10 +38,10 @@
 #include "EventTargetInterfaces.h"
 #include "ExceptionOr.h"
 #include "Logging.h"
-#include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/concurrency/Atomics.h>
 
 #if DEBUG_AUDIONODE_REFERENCES
 #include <stdio.h>

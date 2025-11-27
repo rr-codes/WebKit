@@ -35,7 +35,6 @@
 #include "FileStream.h"
 #include "FileStreamClient.h"
 #include <mutex>
-#include <wtf/AutodrainedPool.h>
 #include <wtf/Function.h>
 #include <wtf/MainThread.h>
 #include <wtf/MessageQueue.h>
@@ -43,6 +42,7 @@
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/Threading.h>
 #include <wtf/URL.h>
+#include <wtf/memory/AutodrainedPool.h>
 
 namespace WebCore {
 

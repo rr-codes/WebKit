@@ -26,9 +26,8 @@
  */
 
 #include "config.h"
-#include "XMLDocumentParser.h"
-
 #include "CDATASection.h"
+
 #include "Comment.h"
 #include "CommonAtomStrings.h"
 #include "CustomElementReactionQueue.h"
@@ -57,23 +56,24 @@
 #include "ProcessingInstruction.h"
 #include "ResourceError.h"
 #include "ResourceResponse.h"
-#include "SVGElement.h"
 #include "ScriptElement.h"
 #include "ScriptSourceCode.h"
 #include "Settings.h"
 #include "SharedBuffer.h"
 #include "StyleScope.h"
+#include "SVGElement.h"
 #include "TextResourceDecoder.h"
 #include "ThrowOnDynamicMarkupInsertionCountIncrementer.h"
 #include "TransformSource.h"
 #include "UserScriptTypes.h"
+#include "XMLDocumentParser.h"
 #include "XMLDocumentParserScope.h"
 #include "XMLNSNames.h"
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/unicode/CharacterNames.h>
 #include <wtf/unicode/UTF8Conversion.h>

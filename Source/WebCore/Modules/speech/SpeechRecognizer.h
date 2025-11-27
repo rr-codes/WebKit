@@ -28,9 +28,9 @@
 #include <WebCore/SpeechRecognitionCaptureSource.h>
 #include <WebCore/SpeechRecognitionConnectionClientIdentifier.h>
 #include <WebCore/SpeechRecognitionError.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if HAVE(SPEECHRECOGNIZER)
 #include <CoreMedia/CMTime.h>

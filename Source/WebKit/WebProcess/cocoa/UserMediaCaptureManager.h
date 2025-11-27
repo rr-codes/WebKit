@@ -35,9 +35,9 @@
 #include <WebCore/RealtimeMediaSourceFactory.h>
 #include <WebCore/RealtimeMediaSourceIdentifier.h>
 #include <WebCore/SharedMemory.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace IPC {
 class Decoder;

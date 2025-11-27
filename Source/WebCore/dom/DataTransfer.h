@@ -26,8 +26,8 @@
 #include <WebCore/CachedResourceHandle.h>
 #include <WebCore/DragActions.h>
 #include <WebCore/DragImage.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

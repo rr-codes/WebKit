@@ -33,7 +33,7 @@
 #include "WorkerGlobalScope.h"
 #include "WorkerLoaderProxy.h"
 #include "WorkerThread.h"
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 namespace WebCore {
 

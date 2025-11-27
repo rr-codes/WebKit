@@ -29,7 +29,7 @@
 
 #import "UIScriptControllerCocoa.h"
 #import "WKBrowserEngineDefinitions.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 typedef struct CGRect CGRect;
 OBJC_CLASS UITextSelectionDisplayInteraction;

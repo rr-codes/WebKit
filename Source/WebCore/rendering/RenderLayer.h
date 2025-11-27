@@ -56,9 +56,9 @@
 #include <WebCore/ScrollBehavior.h>
 #include <WebCore/TransformationMatrix.h>
 #include <memory>
-#include <wtf/CheckedRef.h>
 #include <wtf/Markable.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WTF {
 class TextStream;

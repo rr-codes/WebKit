@@ -21,13 +21,13 @@
 #pragma once
 
 #include <optional>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashFunctions.h>
 #include <wtf/Int128.h>
 #include <wtf/RefPtr.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/URL.h>
 #include <wtf/Variant.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/AtomString.h>
 #include <wtf/text/SuperFastHash.h>
 

@@ -28,8 +28,8 @@
 #if ENABLE(WEB_RTC)
 
 #include <WebCore/RTCDataChannelState.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

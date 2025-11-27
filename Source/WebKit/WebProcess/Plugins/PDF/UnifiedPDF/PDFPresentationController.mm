@@ -36,7 +36,7 @@
 #include <WebCore/GraphicsLayer.h>
 #include <WebCore/GraphicsLayerFactory.h>
 #include <WebCore/LocalFrameView.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {

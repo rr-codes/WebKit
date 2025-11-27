@@ -22,9 +22,9 @@
 
 #include "LayoutUnit.h"
 #include "RenderTable.h"
-#include <wtf/CheckedPtr.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

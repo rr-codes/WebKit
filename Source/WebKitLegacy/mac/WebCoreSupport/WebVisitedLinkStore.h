@@ -28,8 +28,8 @@
 
 #import <WebCore/SharedStringHash.h>
 #import <WebCore/VisitedLinkStore.h>
-#import <wtf/CheckedRef.h>
 #import <wtf/Ref.h>
+#import <wtf/memory/CheckedRef.h>
 
 class WebVisitedLinkStore final : public WebCore::VisitedLinkStore, public CanMakeWeakPtr<WebVisitedLinkStore> {
 public:

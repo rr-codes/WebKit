@@ -26,9 +26,9 @@
 #if USE(PASSKIT)
 
 #import <pal/spi/cocoa/PassKitSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 OBJC_CLASS NSArray;
 OBJC_CLASS NSError;

@@ -32,12 +32,12 @@
 #include <WebCore/ScrollSnapOffsetsInfo.h>
 #include <WebCore/ScrollTypes.h>
 #include <WebCore/Scrollbar.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/Platform.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WTF {
 class TextStream;

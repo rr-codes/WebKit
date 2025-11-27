@@ -24,9 +24,8 @@
  */
 
 #include "config.h"
-#include "WebPlatformStrategies.h"
-
 #include "BlobRegistryProxy.h"
+
 #include "BlockingResponseMap.h"
 #include "HangDetectionDisabler.h"
 #include "NetworkConnectionToWebProcessMessages.h"
@@ -41,6 +40,7 @@
 #include "WebPage.h"
 #include "WebPasteboardOverrides.h"
 #include "WebPasteboardProxyMessages.h"
+#include "WebPlatformStrategies.h"
 #include "WebProcess.h"
 #include "WebProcessProxyMessages.h"
 #include <WebCore/AudioDestination.h>
@@ -62,8 +62,8 @@
 #include <WebCore/SameSiteInfo.h>
 #include <WebCore/StorageNamespace.h>
 #include <WebCore/SubframeLoader.h>
-#include <wtf/Atomics.h>
 #include <wtf/URL.h>
+#include <wtf/concurrency/Atomics.h>
 
 #if PLATFORM(GTK)
 #include <WebCore/SelectionData.h>

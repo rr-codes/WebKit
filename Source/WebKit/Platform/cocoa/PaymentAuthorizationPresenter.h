@@ -29,12 +29,12 @@
 
 #include "CocoaWindow.h"
 #include <WebCore/ApplePaySessionPaymentRequest.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 OBJC_CLASS UIViewController;
 OBJC_CLASS WKPaymentAuthorizationDelegate;

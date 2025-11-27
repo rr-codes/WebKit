@@ -26,8 +26,8 @@
 #pragma once
 
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -27,13 +27,13 @@
 
 #if PLATFORM(IOS_FAMILY)
 
-#import <wtf/CanMakeWeakPtr.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/Noncopyable.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/CanMakeWeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 @class WKContentView;
 @class WKDeferringGestureRecognizer;

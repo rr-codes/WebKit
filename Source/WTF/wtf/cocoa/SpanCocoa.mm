@@ -26,9 +26,9 @@
 #import "config.h"
 #import "SpanCocoa.h"
 
-#import <wtf/BlockPtr.h>
 #import <wtf/Function.h>
 #import <wtf/StdLibExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WTF {
 

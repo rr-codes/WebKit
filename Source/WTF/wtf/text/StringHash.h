@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include <wtf/CompactPtr.h>
 #include <wtf/HashTraits.h>
+#include <wtf/memory/CompactPtr.h>
 #include <wtf/text/AtomString.h>
 #include <wtf/text/StringHasher.h>
 #include <wtf/text/StringView.h>

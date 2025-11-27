@@ -27,10 +27,10 @@
 
 #if ENABLE(WEBASSEMBLY) && ENABLE(B3_JIT)
 #include "WasmTypeDefinition.h"
-#include <wtf/Atomics.h>
 #include <wtf/DataLog.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/Vector.h>
+#include <wtf/concurrency/Atomics.h>
 
 #if PLATFORM(COCOA)
 #include <notify.h>

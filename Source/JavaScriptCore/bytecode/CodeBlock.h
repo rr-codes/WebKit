@@ -67,12 +67,12 @@
 #include <JavaScriptCore/VirtualRegister.h>
 #include <JavaScriptCore/Watchpoint.h>
 #include <wtf/ApproximateTime.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/FixedVector.h>
 #include <wtf/HashSet.h>
 #include <wtf/RefPtr.h>
 #include <wtf/SegmentedVector.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/WTFString.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

@@ -24,15 +24,15 @@
  */
 
 #include "config.h"
-#include "WebPageOverlay.h"
-
 #include "WebFrame.h"
+
 #include "WebPage.h"
+#include "WebPageOverlay.h"
 #include <WebCore/GraphicsLayer.h>
 #include <WebCore/LocalFrame.h>
 #include <WebCore/PageOverlay.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 using namespace WebCore;

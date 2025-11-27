@@ -37,7 +37,7 @@
 #import <WebCore/KeyEventCodesIOS.h>
 #import <WebCore/NotImplemented.h>
 #import <WebCore/WebEvent.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 using namespace WebCore;

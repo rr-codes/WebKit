@@ -27,11 +27,11 @@
 
 #include <JavaScriptCore/JSExportMacros.h>
 #include <cstddef>
-#include <wtf/Atomics.h>
-#include <wtf/GetPtr.h>
 #include <wtf/HashTraits.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/VectorTraits.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace JSC {
 

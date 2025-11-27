@@ -32,10 +32,10 @@
 #include <WebCore/JSDOMPromiseDeferred.h>
 #include <WebCore/UnvalidatedDigitalCredentialRequest.h>
 #include <optional>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 class AbortSignal;

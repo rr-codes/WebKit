@@ -33,8 +33,8 @@
 #import "TestUIDelegate.h"
 #import "TestWKWebView.h"
 #import <Carbon/Carbon.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace TestWebKitAPI {
     

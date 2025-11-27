@@ -26,7 +26,7 @@
 #import "config.h"
 #import "WKNSNumber.h"
 
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 using namespace WebKit;
 

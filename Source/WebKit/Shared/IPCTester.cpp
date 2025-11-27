@@ -43,7 +43,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <wtf/CryptographicallyRandomNumber.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 // The tester API.
 extern "C" {

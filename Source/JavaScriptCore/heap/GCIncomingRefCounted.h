@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/DeferrableRefCounted.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/DeferrableRefCounted.h>
 
 namespace JSC {
 

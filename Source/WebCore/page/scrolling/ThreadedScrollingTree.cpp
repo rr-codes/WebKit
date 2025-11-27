@@ -41,8 +41,8 @@
 #include <wtf/SetForScope.h>
 #include <wtf/SystemTracing.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/TextStream.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 namespace WebCore {
 

@@ -33,9 +33,9 @@
 
 #include "AudioBus.h"
 #include "AudioProcessor.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

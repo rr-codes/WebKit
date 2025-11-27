@@ -20,8 +20,8 @@
 #pragma once
 
 #include <unicode/uchar.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

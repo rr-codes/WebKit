@@ -28,11 +28,11 @@
 
 #include "PendingScriptClient.h"
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

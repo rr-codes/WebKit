@@ -28,8 +28,8 @@
 #include "ActivityState.h"
 #include "Timer.h"
 #include <wtf/CPUTime.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

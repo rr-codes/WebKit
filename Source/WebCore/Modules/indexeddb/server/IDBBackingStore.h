@@ -31,9 +31,9 @@
 #include <WebCore/IDBObjectStoreIdentifier.h>
 #include <WebCore/IDBValue.h>
 #include <WebCore/IndexKey.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/MainThread.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

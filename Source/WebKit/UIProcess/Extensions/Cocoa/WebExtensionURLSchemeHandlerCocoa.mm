@@ -47,7 +47,7 @@
 #import "WebPageProxy.h"
 #import "WebProcessProxy.h"
 #import "WebURLSchemeTask.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

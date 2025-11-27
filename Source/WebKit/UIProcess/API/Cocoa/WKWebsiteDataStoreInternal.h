@@ -23,12 +23,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "WKWebsiteDataStorePrivate.h"
+#import "WebsiteDataStore.h"
 
 #import "WKObject.h"
-#import "WebsiteDataStore.h"
-#import <wtf/AlignedStorage.h>
+#import "WKWebsiteDataStorePrivate.h"
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

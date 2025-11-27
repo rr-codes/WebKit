@@ -28,7 +28,6 @@
 #import "Instance.h"
 #import <Metal/Metal.h>
 #import <wtf/CompletionHandler.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/HashMap.h>
 #import <wtf/Ref.h>
 #import <wtf/RetainReleaseSwift.h>
@@ -36,6 +35,7 @@
 #import <wtf/ThreadSafeRefCounted.h>
 #import <wtf/Vector.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 IGNORE_CLANG_WARNINGS_BEGIN("nullability-completeness")
 

@@ -32,9 +32,9 @@
 #include <WebCore/MediaSessionCoordinatorState.h>
 #include <WebCore/MediaSessionPlaybackState.h>
 #include <WebCore/MediaSessionReadyState.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WTF {
 class Logger;

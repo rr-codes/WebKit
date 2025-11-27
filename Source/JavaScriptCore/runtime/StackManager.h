@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
 #include <wtf/Lock.h>
 #include <wtf/SentinelLinkedList.h>
+#include <wtf/concurrency/Atomics.h>
 
 #if ENABLE(C_LOOP)
 #include <JavaScriptCore/CLoopStack.h>

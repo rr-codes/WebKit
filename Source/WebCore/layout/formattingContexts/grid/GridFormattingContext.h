@@ -29,7 +29,7 @@
 #include <WebCore/LayoutIntegrationUtils.h>
 #include <WebCore/LayoutState.h>
 #include <WebCore/LayoutUnit.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 namespace Layout {

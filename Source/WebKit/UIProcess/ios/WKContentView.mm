@@ -28,6 +28,8 @@
 
 #if PLATFORM(IOS_FAMILY)
 
+#import "_WKFrameHandleInternal.h"
+#import "_WKWebViewPrintFormatterInternal.h"
 #import "APIPageConfiguration.h"
 #import "Connection.h"
 #import "FrameProcess.h"
@@ -44,13 +46,6 @@
 #import "UIKitSPI.h"
 #import "UIKitUtilities.h"
 #import "VisibleContentRectUpdateInfo.h"
-#import "WKBrowsingContextGroupPrivate.h"
-#import "WKInspectorHighlightView.h"
-#import "WKPreferencesInternal.h"
-#import "WKUIDelegatePrivate.h"
-#import "WKVisibilityPropagationView.h"
-#import "WKWebViewConfiguration.h"
-#import "WKWebViewIOS.h"
 #import "WebFrameProxy.h"
 #import "WebKit2Initialize.h"
 #import "WebPageGroup.h"
@@ -58,8 +53,13 @@
 #import "WebPageProxy.h"
 #import "WebPageProxyMessages.h"
 #import "WebProcessPool.h"
-#import "_WKFrameHandleInternal.h"
-#import "_WKWebViewPrintFormatterInternal.h"
+#import "WKBrowsingContextGroupPrivate.h"
+#import "WKInspectorHighlightView.h"
+#import "WKPreferencesInternal.h"
+#import "WKUIDelegatePrivate.h"
+#import "WKVisibilityPropagationView.h"
+#import "WKWebViewConfiguration.h"
+#import "WKWebViewIOS.h"
 #import <CoreGraphics/CoreGraphics.h>
 #import <WebCore/AXRemoteTokenIOS.h>
 #import <WebCore/FloatConversion.h>
@@ -79,14 +79,14 @@
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/concurrency/BinarySemaphore.h>
 #import <wtf/darwin/DispatchExtras.h>
 #import <wtf/text/MakeString.h>
 #import <wtf/text/TextStream.h>
-#import <wtf/threads/BinarySemaphore.h>
 
 #if USE(EXTENSIONKIT)
-#import <UIKit/UIInteraction.h>
 #import "ExtensionKitSPI.h"
+#import <UIKit/UIInteraction.h>
 #endif
 
 #if ENABLE(MODEL_PROCESS)

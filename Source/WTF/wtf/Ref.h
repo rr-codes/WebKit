@@ -26,13 +26,13 @@
 #pragma once
 
 #include <wtf/Assertions.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Forward.h>
-#include <wtf/GetPtr.h>
 #include <wtf/RawPtrTraits.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/SwiftBridging.h>
 #include <wtf/TypeCasts.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
+#include <wtf/memory/GetPtr.h>
 
 #if ASAN_ENABLED
 extern "C" void __asan_poison_memory_region(void const volatile *addr, size_t size);

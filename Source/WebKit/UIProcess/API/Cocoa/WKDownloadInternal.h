@@ -26,8 +26,8 @@
 #import "DownloadProxy.h"
 #import "WKDownload.h"
 #import "WKObject.h"
-#import <wtf/AlignedStorage.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

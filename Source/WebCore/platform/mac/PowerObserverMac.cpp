@@ -27,7 +27,7 @@
 
 #if PLATFORM(MAC)
 #import "PowerObserverMac.h"
-#import <wtf/CheckedPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

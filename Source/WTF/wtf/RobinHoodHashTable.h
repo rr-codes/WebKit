@@ -52,8 +52,8 @@
 #pragma once
 
 #include <numeric>
-#include <wtf/AlignedStorage.h>
 #include <wtf/HashTable.h>
+#include <wtf/memory/AlignedStorage.h>
 #include <wtf/text/StringHash.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

@@ -34,7 +34,7 @@
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
 #import <WebCore/WheelEvent.h>
-#import <wtf/GetPtr.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::WheelEvent*>(reinterpret_cast<WebCore::Event*>(_internal))
 

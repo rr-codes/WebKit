@@ -28,7 +28,7 @@
 
 #if PLATFORM(IOS_FAMILY)
 
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation TestInputDelegate {
     BlockPtr<_WKFocusStartsInputSessionPolicy(WKWebView *, id<_WKFocusedElementInfo>)> _focusStartsInputSessionPolicyHandler;

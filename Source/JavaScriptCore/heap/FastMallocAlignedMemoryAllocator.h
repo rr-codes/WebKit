@@ -28,7 +28,7 @@
 #include <JavaScriptCore/AlignedMemoryAllocator.h>
 
 #if ENABLE(MALLOC_HEAP_BREAKDOWN)
-#include <wtf/DebugHeap.h>
+#include <wtf/memory/DebugHeap.h>
 #endif
 
 namespace JSC {

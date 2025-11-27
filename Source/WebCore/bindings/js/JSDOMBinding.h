@@ -40,5 +40,5 @@
 #include <WebCore/JSDOMWrapperCache.h>
 #include <cstddef>
 #include <wtf/Forward.h>
-#include <wtf/GetPtr.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/GetPtr.h>

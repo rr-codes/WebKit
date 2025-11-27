@@ -23,9 +23,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMProcessingInstructionInternal.h"
-
 #import "DOMNodeInternal.h"
+
+#import "DOMProcessingInstructionInternal.h"
 #import "DOMStyleSheetInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
@@ -33,8 +33,8 @@
 #import <WebCore/StyleSheet.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::ProcessingInstruction*>(reinterpret_cast<WebCore::Node*>(_internal))
 

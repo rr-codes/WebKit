@@ -48,8 +48,8 @@
 #import "WebPage.h"
 #import "WebProcess.h"
 #import <WebCore/SecurityOrigin.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 static NSString * const idKey = @"id";

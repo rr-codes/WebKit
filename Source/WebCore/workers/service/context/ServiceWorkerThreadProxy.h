@@ -38,10 +38,10 @@
 #include <WebCore/WorkerBadgeProxy.h>
 #include <WebCore/WorkerDebuggerProxy.h>
 #include <WebCore/WorkerLoaderProxy.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/URLHash.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

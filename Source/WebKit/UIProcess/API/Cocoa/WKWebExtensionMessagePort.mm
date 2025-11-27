@@ -28,11 +28,11 @@
 #endif
 
 #import "config.h"
-#import "WKWebExtensionMessagePortInternal.h"
-
 #import "WebExtensionMessagePort.h"
-#import <wtf/BlockPtr.h>
+
+#import "WKWebExtensionMessagePortInternal.h"
 #import <wtf/CompletionHandler.h>
+#import <wtf/memory/BlockPtr.h>
 
 NSErrorDomain const WKWebExtensionMessagePortErrorDomain = @"WKWebExtensionMessagePortErrorDomain";
 

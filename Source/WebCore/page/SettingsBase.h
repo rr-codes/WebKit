@@ -45,12 +45,12 @@
 #include <WebCore/UserInterfaceDirectionPolicy.h>
 #include <WebCore/WritingMode.h>
 #include <unicode/uscript.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Seconds.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/URL.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 #if ENABLE(DATA_DETECTION)
 #include <WebCore/DataDetectorType.h>

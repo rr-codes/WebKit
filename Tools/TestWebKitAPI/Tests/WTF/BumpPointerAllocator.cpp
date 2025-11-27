@@ -24,8 +24,8 @@
  */
 
 #include "config.h"
-#include <wtf/BumpPointerAllocator.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/BumpPointerAllocator.h>
 
 namespace TestWebKitAPI {
 

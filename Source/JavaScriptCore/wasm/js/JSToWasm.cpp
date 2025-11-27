@@ -26,8 +26,8 @@
 #include "config.h"
 #include "JSToWasm.h"
 #include "WasmCallee.h"
-#include <wtf/Gigacage.h>
 #include <wtf/WTFConfig.h>
+#include <wtf/memory/Gigacage.h>
 
 #if ENABLE(WEBASSEMBLY) && ENABLE(JIT)
 

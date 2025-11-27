@@ -30,21 +30,21 @@
  */
 
 #include "config.h"
-#include "HTMLDocumentParserFastPath.h"
-
 #include "ContainerNode.h"
+
 #include "Document.h"
 #include "ElementAncestorIteratorInlines.h"
 #include "ElementTraversal.h"
 #include "HTMLAnchorElement.h"
-#include "HTMLBRElement.h"
 #include "HTMLBodyElement.h"
+#include "HTMLBRElement.h"
 #include "HTMLButtonElement.h"
 #include "HTMLDivElement.h"
+#include "HTMLDocumentParserFastPath.h"
 #include "HTMLEntityParser.h"
 #include "HTMLInputElement.h"
-#include "HTMLLIElement.h"
 #include "HTMLLabelElement.h"
+#include "HTMLLIElement.h"
 #include "HTMLNameCache.h"
 #include "HTMLNames.h"
 #include "HTMLOListElement.h"
@@ -57,9 +57,9 @@
 #include "QualifiedName.h"
 #include "Settings.h"
 #include <span>
-#include <wtf/CheckedRef.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomString.h>
 #include <wtf/text/FastCharacterComparison.h>
 #include <wtf/text/ParsingUtilities.h>

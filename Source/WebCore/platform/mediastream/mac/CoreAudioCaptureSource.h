@@ -36,7 +36,7 @@
 #include <WebCore/CaptureDevice.h>
 #include <WebCore/RealtimeMediaSource.h>
 #include <WebCore/RealtimeMediaSourceFactory.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 typedef struct OpaqueCMClock* CMClockRef;

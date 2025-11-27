@@ -27,7 +27,7 @@
 
 #if ENABLE(LEGACY_ENCRYPTED_MEDIA)
 
-#include <wtf/AbstractRefCounted.h>
+#include <wtf/memory/AbstractRefCounted.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

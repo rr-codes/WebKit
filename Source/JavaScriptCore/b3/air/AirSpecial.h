@@ -29,11 +29,11 @@
 
 #include "AirInst.h"
 #include "B3SparseCollection.h"
-#include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/ScopedLambda.h>
 #include <wtf/SequesteredMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/CString.h>
 
 namespace JSC { namespace B3 { namespace Air {

@@ -173,7 +173,7 @@ my $audioWorkletGlobalScopeConstructorsCode = "";
 my $testGlobalScopeConstructorsCode = "";
 
 my $isoSubspacesHeaderCode = <<END;
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 
 #pragma once
@@ -189,7 +189,7 @@ public:
 END
 
 my $clientISOSubspacesHeaderCode = <<END;
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 
 #pragma once
@@ -206,7 +206,7 @@ END
 
 my @constructors = ();
 my $constructorsHeaderCode = <<END;
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 #include <JavaScriptCore/JSCInlines.h>
 

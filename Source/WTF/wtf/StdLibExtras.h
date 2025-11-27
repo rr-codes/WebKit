@@ -42,12 +42,12 @@
 #include <wtf/Assertions.h>
 #include <wtf/Brigand.h>
 #include <wtf/Compiler.h>
-#include <wtf/GetPtr.h>
 #include <wtf/IterationStatus.h>
 #include <wtf/NotFound.h>
 #include <wtf/TypeCasts.h>
 #include <wtf/TypeTraits.h>
 #include <wtf/Variant.h>
+#include <wtf/memory/GetPtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

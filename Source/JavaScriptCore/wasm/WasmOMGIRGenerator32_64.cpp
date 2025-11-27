@@ -60,8 +60,8 @@
 #include "ScratchRegisterAllocator.h"
 #include "WasmBaselineData.h"
 #include "WasmBranchHints.h"
-#include "WasmCallProfile.h"
 #include "WasmCallingConvention.h"
+#include "WasmCallProfile.h"
 #include "WasmContext.h"
 #include "WasmExceptionType.h"
 #include "WasmFaultSignalHandler.h"
@@ -69,17 +69,17 @@
 #include "WasmIRGeneratorHelpers.h"
 #include "WasmMemory.h"
 #include "WasmMergedProfile.h"
-#include "WasmOSREntryData.h"
 #include "WasmOpcodeOrigin.h"
 #include "WasmOperations.h"
+#include "WasmOSREntryData.h"
 #include "WasmSIMDOpcodes.h"
 #include "WasmThunks.h"
 #include "WasmTypeDefinitionInlines.h"
 #include "WebAssemblyFunctionBase.h"
 #include <limits>
-#include <wtf/FastMalloc.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/MakeString.h>
 
 #if !ENABLE(WEBASSEMBLY)

@@ -35,7 +35,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <wtf/Assertions.h>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #if ENABLE(JIT_SIGN_ASSEMBLER_BUFFER)
 #include <wtf/PtrTag.h>
 #endif

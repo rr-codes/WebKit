@@ -41,10 +41,10 @@
 #include <pal/spi/cocoa/NSAccessibilitySPI.h>
 #endif // PLATFORM(MAC)
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/WeakObjCPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 @interface NSObject (AXPriv)

@@ -26,9 +26,9 @@
 #pragma once
 
 #include <WebCore/ProcessIdentifier.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

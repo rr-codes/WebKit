@@ -35,8 +35,8 @@
 #import <WebKit/_WKFocusedElementInfo.h>
 #import <WebKit/_WKFormInputSession.h>
 #import <WebKit/_WKInputDelegate.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 static bool willSubmitFormValuesCalled;
 

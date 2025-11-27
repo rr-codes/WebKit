@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include <wtf/CanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -23,10 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMNamedNodeMapInternal.h"
-
-#import "DOMNodeInternal.h"
 #import "DOMInternal.h"
+
+#import "DOMNamedNodeMapInternal.h"
+#import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/Attr.h>
 #import <WebCore/JSExecState.h>
@@ -34,8 +34,8 @@
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebCoreObjCExtras.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL reinterpret_cast<WebCore::NamedNodeMap*>(_internal)
 

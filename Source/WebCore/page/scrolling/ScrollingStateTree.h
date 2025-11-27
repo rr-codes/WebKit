@@ -28,9 +28,9 @@
 #if ENABLE(ASYNC_SCROLLING)
 
 #include <WebCore/ScrollingStateNode.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
  
 namespace WebCore {
 

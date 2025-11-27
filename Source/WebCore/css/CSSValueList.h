@@ -24,7 +24,7 @@
 #include <array>
 #include <ranges>
 #include <unicode/umachine.h>
-#include <wtf/MallocSpan.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WebCore {
 

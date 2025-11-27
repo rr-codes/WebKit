@@ -22,13 +22,13 @@
 
 #include <WebCore/CSSParserContext.h>
 #include <optional>
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/URL.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomStringHash.h>
 
 namespace WebCore {

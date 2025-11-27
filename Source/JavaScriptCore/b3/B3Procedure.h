@@ -36,7 +36,6 @@
 #include "PureNaN.h"
 #include "RegisterAtOffsetList.h"
 #include <wtf/Bag.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashSet.h>
 #include <wtf/IndexedContainerIterator.h>
 #include <wtf/Noncopyable.h>
@@ -46,6 +45,7 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/TriState.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace JSC {
 

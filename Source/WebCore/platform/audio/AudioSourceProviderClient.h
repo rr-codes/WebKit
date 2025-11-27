@@ -25,8 +25,8 @@
 #ifndef AudioSourceProviderClient_h
 #define AudioSourceProviderClient_h
 
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

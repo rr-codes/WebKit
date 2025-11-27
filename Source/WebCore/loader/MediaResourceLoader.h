@@ -34,11 +34,11 @@
 #include <WebCore/FetchOptions.h>
 #include <WebCore/PlatformMediaResourceLoader.h>
 #include <WebCore/ResourceResponse.h>
-#include <wtf/Atomics.h>
 #include <wtf/HashSet.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/concurrency/Atomics.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

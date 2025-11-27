@@ -26,8 +26,8 @@
 #pragma once
 
 #include <optional>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

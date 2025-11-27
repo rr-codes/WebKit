@@ -24,18 +24,18 @@
  */
 
 #import "config.h"
-#import "WKURLSchemeTask.h"
-
-#import "WKFrameInfoInternal.h"
-#import "WKURLSchemeTaskInternal.h"
 #import "WebURLSchemeHandler.h"
+
 #import "WebURLSchemeTask.h"
+#import "WKFrameInfoInternal.h"
+#import "WKURLSchemeTask.h"
+#import "WKURLSchemeTaskInternal.h"
 #import <WebCore/ResourceError.h>
 #import <WebCore/ResourceResponse.h>
 #import <WebCore/SharedBuffer.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/MainThread.h>
+#import <wtf/memory/BlockPtr.h>
 
 static WebKit::WebURLSchemeTask::ExceptionType getExceptionTypeFromMainRunLoop(Function<WebKit::WebURLSchemeTask::ExceptionType ()>&& function)
 {

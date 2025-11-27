@@ -31,8 +31,8 @@
 #include <wtf/ASCIICType.h>
 #include <wtf/SynchronizedFixedQueue.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/CString.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 namespace TestWebKitAPI {
 

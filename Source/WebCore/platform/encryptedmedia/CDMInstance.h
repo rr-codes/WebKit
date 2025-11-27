@@ -31,11 +31,11 @@
 #include <WebCore/CDMMessageType.h>
 #include <WebCore/CDMSessionType.h>
 #include <utility>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TypeCasts.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 #if !RELEASE_LOG_DISABLED
 namespace WTF {

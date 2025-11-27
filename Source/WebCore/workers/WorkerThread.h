@@ -39,8 +39,8 @@
 #include <WebCore/WorkerType.h>
 #include <memory>
 #include <pal/SessionID.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/URL.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

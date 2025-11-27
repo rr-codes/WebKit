@@ -29,8 +29,8 @@
 #import "TestWKWebView.h"
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WKWebViewPrivateForTesting.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(MAC)
 

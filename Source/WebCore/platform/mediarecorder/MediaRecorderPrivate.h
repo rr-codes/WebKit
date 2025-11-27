@@ -27,10 +27,10 @@
 #include <WebCore/ExceptionOr.h>
 #include <WebCore/MediaRecorderPrivateOptions.h>
 #include <WebCore/RealtimeMediaSource.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if ENABLE(MEDIA_RECORDER)
 

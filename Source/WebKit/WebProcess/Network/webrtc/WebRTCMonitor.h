@@ -29,9 +29,9 @@
 
 #include "RTCNetwork.h"
 #include <WebCore/LibWebRTCProvider.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace IPC {
 class Connection;

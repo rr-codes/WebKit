@@ -30,7 +30,7 @@
 #include "GPUProcessConnection.h"
 #include "RemoteRealtimeMediaSourceProxy.h"
 #include <WebCore/RealtimeMediaSource.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebKit {
 

@@ -29,8 +29,8 @@
 
 #import "BoxExtents.h"
 #import "PlatformControl.h"
-#import <wtf/CheckedRef.h>
 #import <wtf/TZoneMalloc.h>
+#import <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

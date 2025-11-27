@@ -37,11 +37,11 @@
 #import <WebKit/WKWebsiteDataStorePrivate.h>
 #import <WebKit/_WKProcessPoolConfiguration.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/ProcessPrivilege.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/Seconds.h>
 #import <wtf/StdLibExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 #import <wtf/text/WTFString.h>
 

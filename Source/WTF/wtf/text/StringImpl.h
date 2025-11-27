@@ -22,22 +22,22 @@
 
 #pragma once
 
-#include <wtf/Compiler.h>
-
 #include <limits.h>
+
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <wtf/ASCIICType.h>
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/CompactPtr.h>
-#include <wtf/DebugHeap.h>
+#include <wtf/Compiler.h>
 #include <wtf/Expected.h>
-#include <wtf/FlipBytes.h>
 #include <wtf/MathExtras.h>
 #include <wtf/NoVirtualDestructorBase.h>
 #include <wtf/Packed.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CompactPtr.h>
+#include <wtf/memory/DebugHeap.h>
+#include <wtf/memory/FlipBytes.h>
 #include <wtf/text/ASCIIFastPath.h>
 #include <wtf/text/ASCIILiteral.h>
 #include <wtf/text/ConversionMode.h>

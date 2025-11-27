@@ -28,9 +28,9 @@
 #if ENABLE(CONTEXT_MENUS)
 
 #include "APIObject.h"
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebKit {
 

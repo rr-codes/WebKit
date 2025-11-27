@@ -24,21 +24,21 @@
  */
 
 #import "config.h"
-#import "UserMediaPermissionRequestManagerProxy.h"
-
 #import "MediaPermissionUtilities.h"
+
 #import "SandboxUtilities.h"
-#import "WKWebView.h"
+#import "UserMediaPermissionRequestManagerProxy.h"
 #import "WebPageProxy.h"
 #import "WebPreferences.h"
+#import "WKWebView.h"
 #import <WebCore/VideoFrame.h>
 #import <pal/spi/cocoa/TCCSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RuntimeApplicationChecks.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
-#import <pal/cocoa/AVFoundationSoftLink.h>
 #import <wtf/spi/darwin/SandboxSPI.h>
+#import <pal/cocoa/AVFoundationSoftLink.h>
 
 #if ENABLE(MEDIA_STREAM) && HAVE(AVCAPTUREDEVICEROTATIONCOORDINATOR)
 

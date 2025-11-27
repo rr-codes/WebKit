@@ -34,7 +34,6 @@
 #include <WebCore/Timer.h>
 #include <WebCore/VisibleUnits.h>
 #include <limits.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Deque.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
@@ -42,6 +41,7 @@
 #include <wtf/Platform.h>
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if PLATFORM(COCOA)
 #include <wtf/RetainPtr.h>

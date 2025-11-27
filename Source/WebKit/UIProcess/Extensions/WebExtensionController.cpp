@@ -35,8 +35,8 @@
 #include <wtf/NeverDestroyed.h>
 
 #if PLATFORM(COCOA)
-#include <wtf/BlockPtr.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 #endif
 
 namespace WebKit {

@@ -23,23 +23,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMCSSStyleDeclarationInternal.h"
-
-#import <WebCore/CSSImportRule.h>
-#import <WebCore/CSSRule.h>
-#import <WebCore/CSSStyleDeclaration.h>
-#import <WebCore/DeprecatedCSSOMValue.h>
 #import "DOMCSSRuleInternal.h"
+
+#import "DOMCSSStyleDeclarationInternal.h"
 #import "DOMCSSValueInternal.h"
 #import "DOMInternal.h"
 #import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
+#import <WebCore/CSSImportRule.h>
+#import <WebCore/CSSRule.h>
+#import <WebCore/CSSStyleDeclaration.h>
+#import <WebCore/DeprecatedCSSOMValue.h>
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebCoreObjCExtras.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL reinterpret_cast<WebCore::CSSStyleDeclaration*>(_internal)
 

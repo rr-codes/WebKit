@@ -27,9 +27,9 @@
 
 #include <WebCore/IntPoint.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

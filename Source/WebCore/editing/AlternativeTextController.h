@@ -29,10 +29,10 @@
 #include "DocumentMarker.h"
 #include "EventLoop.h"
 #include "Position.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

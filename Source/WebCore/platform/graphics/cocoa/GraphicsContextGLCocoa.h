@@ -31,7 +31,7 @@
 #include <WebCore/IOSurfaceDrawingBuffer.h>
 #include <WebCore/ProcessIdentity.h>
 #include <array>
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if ENABLE(MEDIA_STREAM)
 #include <memory>

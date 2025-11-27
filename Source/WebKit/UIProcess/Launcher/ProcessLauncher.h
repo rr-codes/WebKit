@@ -27,14 +27,14 @@
 
 #include "Connection.h"
 #include <WebCore/ProcessIdentifier.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/ProcessID.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/Threading.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 

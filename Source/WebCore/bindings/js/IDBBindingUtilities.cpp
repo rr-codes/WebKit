@@ -55,9 +55,9 @@
 #include <JavaScriptCore/DateInstance.h>
 #include <JavaScriptCore/ObjectConstructor.h>
 #include <JavaScriptCore/StrongInlines.h>
-#include <wtf/AutodrainedPool.h>
 #include <wtf/MessageQueue.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
+#include <wtf/memory/AutodrainedPool.h>
 
 namespace WebCore {
 using namespace JSC;

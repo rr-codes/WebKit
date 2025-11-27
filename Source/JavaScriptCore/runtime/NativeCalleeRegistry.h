@@ -26,10 +26,10 @@
 #pragma once
 
 #include <JavaScriptCore/PCToCodeOriginMap.h>
-#include <wtf/Box.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

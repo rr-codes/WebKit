@@ -24,13 +24,13 @@
  */
 
 #include "config.h"
-#include "PushMessageCrypto.h"
-
 #include "PushCrypto.h"
+
+#include "PushMessageCrypto.h"
 #include <array>
-#include <wtf/ByteOrder.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/ByteOrder.h>
 #include <wtf/text/ASCIILiteral.h>
 
 namespace WebCore::PushCrypto {

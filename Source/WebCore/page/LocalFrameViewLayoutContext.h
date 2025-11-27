@@ -29,12 +29,12 @@
 #include <WebCore/LayoutUnit.h>
 #include <WebCore/RenderLayerModelObject.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/SegmentedVector.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

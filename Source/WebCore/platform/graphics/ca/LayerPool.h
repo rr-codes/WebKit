@@ -30,12 +30,12 @@
 #include <WebCore/IntSizeHash.h>
 #include <WebCore/PlatformCALayer.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Deque.h>
 #include <wtf/HashMap.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
     

@@ -28,10 +28,10 @@
 
 #if HAVE(APPLE_PUSH_SERVICE_URL_TOKEN_SUPPORT)
 
-#import <wtf/BlockPtr.h>
 #import <wtf/WeakPtr.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface _WKAPSConnectionDelegate : NSObject<APSConnectionDelegate> {
     WeakPtr<WebPushD::ApplePushServiceConnection> _connection;

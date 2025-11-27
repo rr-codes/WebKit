@@ -36,7 +36,6 @@
 #include <WebCore/InspectorOverlayLabel.h>
 #include <WebCore/Path.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Deque.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/RefPtr.h>
@@ -44,6 +43,7 @@
 #include <wtf/Vector.h>
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace Inspector {

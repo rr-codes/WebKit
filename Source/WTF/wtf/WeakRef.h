@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <wtf/GetPtr.h>
 #include <wtf/HashTraits.h>
 #include <wtf/SingleThreadIntegralWrapper.h>
 #include <wtf/ThreadSafeRefCounted.h>
@@ -33,6 +32,7 @@
 #include <wtf/TypeCasts.h>
 #include <wtf/TypeTraits.h>
 #include <wtf/WeakPtrImpl.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WTF {
 // Classes that offer weak pointers should also offer RefPtr or CheckedPtr. Please do not add new exceptions.

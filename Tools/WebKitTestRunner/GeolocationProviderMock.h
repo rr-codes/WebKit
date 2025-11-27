@@ -27,7 +27,7 @@
 
 #include <WebKit/WKRetainPtr.h>
 #include <optional>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTR {
 

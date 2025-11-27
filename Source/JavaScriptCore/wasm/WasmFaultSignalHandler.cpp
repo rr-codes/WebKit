@@ -40,10 +40,10 @@
 #include "WasmExceptionType.h"
 #include "WasmMemory.h"
 #include "WasmThunks.h"
-#include <wtf/CodePtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
-#include <wtf/threads/Signals.h>
+#include <wtf/concurrency/Signals.h>
+#include <wtf/memory/CodePtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

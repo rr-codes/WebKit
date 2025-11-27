@@ -38,13 +38,10 @@
 #include <new>
 #include <tuple>
 #include <wtf/Assertions.h>
-#include <wtf/CheckedPtr.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Condition.h>
 #include <wtf/Deque.h>
 #include <wtf/Expected.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/FunctionDispatcher.h>
 #include <wtf/HashMap.h>
@@ -66,6 +63,9 @@
 #include <wtf/Unexpected.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/ASCIILiteral.h>
 #include <wtf/text/CString.h>
 

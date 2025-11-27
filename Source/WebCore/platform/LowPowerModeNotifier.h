@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/Function.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if HAVE(APPLE_LOW_POWER_MODE_SUPPORT)
 #include <wtf/RetainPtr.h>

@@ -21,11 +21,11 @@
 
 #pragma once
 
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

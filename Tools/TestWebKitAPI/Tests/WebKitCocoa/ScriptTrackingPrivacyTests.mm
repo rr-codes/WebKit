@@ -38,13 +38,13 @@
 #import <WebKit/WKWebpagePreferencesPrivate.h>
 #import <WebKit/WKWebsiteDataStorePrivate.h>
 #import <WebKit/_WKFeature.h>
-#import <wtf/BlockPtr.h>
+#import <pal/cocoa/WebPrivacySoftLink.h>
 #import <wtf/RunLoop.h>
 #import <wtf/Seconds.h>
 #import <wtf/Vector.h>
-#import <wtf/text/MakeString.h>
+#import <wtf/memory/BlockPtr.h>
 
-#import <pal/cocoa/WebPrivacySoftLink.h>
+#import <wtf/text/MakeString.h>
 
 @interface WKWebsiteDataStore (ScriptTrackingPrivacyTests)
 - (void)deleteAllCookiesAndLocalStorage;

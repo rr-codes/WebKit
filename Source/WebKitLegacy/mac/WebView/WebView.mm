@@ -28,11 +28,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "WebViewInternal.h"
-#import "WebViewData.h"
-
 #import "BackForwardList.h"
 #import "DOMCSSStyleDeclarationInternal.h"
+
 #import "DOMDocumentInternal.h"
 #import "DOMInternal.h"
 #import "DOMNodeInternal.h"
@@ -49,10 +47,9 @@
 #import "WebCache.h"
 #import "WebChromeClient.h"
 #import "WebCryptoClient.h"
-#import "WebDOMOperationsPrivate.h"
-#import "WebDataSourceInternal.h"
 #import "WebDatabaseManagerPrivate.h"
 #import "WebDatabaseProvider.h"
+#import "WebDataSourceInternal.h"
 #import "WebDefaultEditingDelegate.h"
 #import "WebDefaultPolicyDelegate.h"
 #import "WebDefaultUIDelegate.h"
@@ -60,6 +57,7 @@
 #import "WebDeviceOrientationProvider.h"
 #import "WebDocument.h"
 #import "WebDocumentInternal.h"
+#import "WebDOMOperationsPrivate.h"
 #import "WebDownload.h"
 #import "WebDragClient.h"
 #import "WebDynamicScrollBarsViewInternal.h"
@@ -73,31 +71,31 @@
 #import "WebFrameViewInternal.h"
 #import "WebGeolocationClient.h"
 #import "WebGeolocationPositionInternal.h"
-#import "WebHTMLRepresentation.h"
-#import "WebHTMLViewInternal.h"
 #import "WebHistoryDelegate.h"
 #import "WebHistoryItemInternal.h"
+#import "WebHTMLRepresentation.h"
+#import "WebHTMLViewInternal.h"
 #import "WebIconDatabase.h"
 #import "WebInspector.h"
 #import "WebInspectorClient.h"
 #import "WebKitErrors.h"
 #import "WebKitFullScreenListener.h"
-#import "WebKitLogInitialization.h"
 #import "WebKitLogging.h"
+#import "WebKitLogInitialization.h"
 #import "WebKitNSStringExtras.h"
 #import "WebKitStatisticsPrivate.h"
 #import "WebKitVersionChecks.h"
 #import "WebLocalizableStrings.h"
 #import "WebMediaKeySystemClient.h"
+#import "WebNodeHighlight.h"
+#import "WebNotificationClient.h"
 #import "WebNSDataExtras.h"
 #import "WebNSDictionaryExtras.h"
 #import "WebNSURLExtras.h"
 #import "WebNSURLRequestExtras.h"
 #import "WebNSViewExtras.h"
-#import "WebNodeHighlight.h"
-#import "WebNotificationClient.h"
-#import "WebPDFView.h"
 #import "WebPaymentCoordinatorClient.h"
+#import "WebPDFView.h"
 #import "WebPlatformStrategies.h"
 #import "WebPluginDatabase.h"
 #import "WebPluginInfoProvider.h"
@@ -117,7 +115,9 @@
 #import "WebTextIterator.h"
 #import "WebUIDelegatePrivate.h"
 #import "WebValidationMessageClient.h"
+#import "WebViewData.h"
 #import "WebViewGroup.h"
+#import "WebViewInternal.h"
 #import "WebViewRenderingUpdateScheduler.h"
 #import "WebVisitedLinkStore.h"
 #import <CoreFoundation/CFSet.h>
@@ -267,8 +267,6 @@
 #import <pal/spi/mac/NSViewSPI.h>
 #import <pal/spi/mac/NSWindowSPI.h>
 #import <wtf/Assertions.h>
-#import <wtf/Atomics.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/HashTraits.h>
 #import <wtf/Language.h>
@@ -287,6 +285,8 @@
 #import <wtf/WorkQueue.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/concurrency/Atomics.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/darwin/ReasonSPI.h>
 #import <wtf/spi/darwin/dyldSPI.h>
 
@@ -341,7 +341,7 @@
 #import <WebCore/WebVideoFullscreenControllerAVKit.h>
 #import <pal/spi/ios/ManagedConfigurationSPI.h>
 #import <pal/spi/ios/MobileGestaltSPI.h>
-#import <wtf/FastMalloc.h>
+#import <wtf/memory/FastMalloc.h>
 #endif
 
 #if ENABLE(REMOTE_INSPECTOR)

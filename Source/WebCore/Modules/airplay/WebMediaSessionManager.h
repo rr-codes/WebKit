@@ -32,10 +32,10 @@
 #include <WebCore/MediaPlaybackTargetPickerMock.h>
 #include <WebCore/MediaProducer.h>
 #include <WebCore/PlaybackTargetClientContextIdentifier.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Ref.h>
 #include <wtf/RefPtr.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

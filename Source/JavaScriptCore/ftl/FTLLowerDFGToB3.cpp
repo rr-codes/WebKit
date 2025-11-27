@@ -38,12 +38,12 @@
 #include "B3StackmapGenerationParams.h"
 #include "B3ValueInlines.h"
 #include "ButterflyInlines.h"
-#include "CPUInlines.h"
 #include "CallFrameShuffler.h"
 #include "ClonedArguments.h"
+#include "CPUInlines.h"
 #include "DFGAbstractInterpreterInlines.h"
-#include "DFGCFAPhase.h"
 #include "DFGCapabilities.h"
+#include "DFGCFAPhase.h"
 #include "DFGClobberize.h"
 #include "DFGDoesGC.h"
 #include "DFGDominators.h"
@@ -54,8 +54,8 @@
 #include "DFGOSRExitFuzz.h"
 #include "DirectArguments.h"
 #include "FTLExceptionTarget.h"
-#include "FTLForOSREntryJITCode.h"
 #include "FTLFormattedValue.h"
+#include "FTLForOSREntryJITCode.h"
 #include "FTLLazySlowPathCall.h"
 #include "FTLLoweredNodeValue.h"
 #include "FTLOperations.h"
@@ -83,8 +83,8 @@
 #include "JSAsyncGenerator.h"
 #include "JSAsyncGeneratorFunction.h"
 #include "JSBoundFunction.h"
-#include "JSCInlines.h"
 #include "JSCellButterfly.h"
+#include "JSCInlines.h"
 #include "JSGenerator.h"
 #include "JSGeneratorFunction.h"
 #include "JSInternalPromise.h"
@@ -116,9 +116,9 @@
 #include "WebAssemblyFunction.h"
 #include "YarrJITRegisters.h"
 #include <atomic>
-#include <wtf/Box.h>
 #include <wtf/GenericHashKey.h>
 #include <wtf/RecursableLambda.h>
+#include <wtf/memory/Box.h>
 #include <wtf/text/MakeString.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

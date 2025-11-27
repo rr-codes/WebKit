@@ -34,10 +34,10 @@
 #include <WebCore/FidoConstants.h>
 #include <WebCore/Pin.h>
 #include <WebCore/WebAuthenticationConstants.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/RunLoop.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 #include <wtf/text/Base64.h>
 
 namespace WebKit {

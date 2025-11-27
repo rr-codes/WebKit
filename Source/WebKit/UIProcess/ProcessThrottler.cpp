@@ -24,17 +24,17 @@
  */
 
 #include "config.h"
-#include "ProcessThrottler.h"
-
 #include "AuxiliaryProcessProxy.h"
+
 #include "Logging.h"
+#include "ProcessThrottler.h"
 #include <optional>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/EnumTraits.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/TextStream.h>
 

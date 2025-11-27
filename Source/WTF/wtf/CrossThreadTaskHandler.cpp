@@ -26,7 +26,7 @@
 #include "config.h"
 #include <wtf/CrossThreadTaskHandler.h>
 
-#include <wtf/AutodrainedPool.h>
+#include <wtf/memory/AutodrainedPool.h>
 
 namespace WTF {
 

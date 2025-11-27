@@ -28,7 +28,6 @@
 #include <WebCore/TaskSource.h>
 #include <optional>
 #include <wtf/ApproximateTime.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/Markable.h>
 #include <wtf/MonotonicTime.h>
@@ -37,6 +36,7 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace JSC {
 class JSGlobalObject;

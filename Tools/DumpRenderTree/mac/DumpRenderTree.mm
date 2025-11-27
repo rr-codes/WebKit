@@ -28,10 +28,10 @@
  */
 
 #import "config.h"
-#import "DumpRenderTree.h"
-
 #import "AccessibilityController.h"
+
 #import "DefaultPolicyDelegate.h"
+#import "DumpRenderTree.h"
 #import "DumpRenderTreeDraggingInfo.h"
 #import "DumpRenderTreePasteboard.h"
 #import "DumpRenderTreeWindow.h"
@@ -98,7 +98,6 @@
 #import <getopt.h>
 #import <objc/runtime.h>
 #import <wtf/Assertions.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/OSObjectPtr.h>
 #import <wtf/ProcessPrivilege.h>
@@ -112,6 +111,7 @@
 #import <wtf/cocoa/CrashReporter.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/FastMalloc.h>
 #import <wtf/text/MakeString.h>
 #import <wtf/text/StringBuilder.h>
 #import <wtf/text/WTFString.h>

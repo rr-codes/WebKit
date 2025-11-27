@@ -45,8 +45,8 @@
 #include <pthread.h>
 #endif // !OS(WINDOWS)
 
-#include <sys/types.h>
 #include <fcntl.h>
+#include <sys/types.h>
 #if HAVE(REGEX_H)
 #include <regex.h>
 #endif
@@ -83,8 +83,8 @@
 #endif
 #include <sys/stat.h>
 #if defined(__APPLE__)
-#include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/time.h>
 #endif
 
 #if USE(CF)
@@ -162,11 +162,11 @@
 #ifdef __cplusplus
 
 #if !PLATFORM(WIN)
-#include <wtf/FastMalloc.h>
 #include <wtf/HashMap.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/AtomString.h>
 #include <wtf/text/WTFString.h>
 #endif

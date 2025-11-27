@@ -27,10 +27,10 @@
 
 #include <wtf/CommaPrinter.h>
 #include <wtf/DataLog.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/MathExtras.h>
 #include <wtf/Range.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

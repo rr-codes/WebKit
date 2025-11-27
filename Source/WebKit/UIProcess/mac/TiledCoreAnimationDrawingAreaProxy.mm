@@ -36,9 +36,9 @@
 #import "WebPageProxyMessages.h"
 #import "WebProcessProxy.h"
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MachSendRight.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 using namespace IPC;

@@ -30,10 +30,10 @@
 #include "MessageReceiver.h"
 #include "VisibleContentRectUpdateInfo.h"
 #include <WebCore/PageIdentifier.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/Lock.h>
 #include <wtf/Ref.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WTF {
 class WorkQueue;

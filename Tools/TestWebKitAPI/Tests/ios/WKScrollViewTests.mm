@@ -42,8 +42,8 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WKWebViewPrivateForTesting.h>
 #import <WebKit/_WKFeature.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 constexpr CGFloat blackColorComponents[4] = { 0, 0, 0, 1 };
 constexpr CGFloat whiteColorComponents[4] = { 1, 1, 1, 1 };

@@ -27,12 +27,12 @@
 #include "config.h"
 
 #if ENABLE(WEBGL)
-#include "GraphicsContextGLANGLE.h"
-
 #include "ANGLEHeaders.h"
+
 #include "ANGLEUtilities.h"
 #include "ByteArrayPixelBuffer.h"
 #include "GraphicsContext.h"
+#include "GraphicsContextGLANGLE.h"
 #include "ImageBuffer.h"
 #include "IntRect.h"
 #include "IntSize.h"
@@ -43,11 +43,11 @@
 #include <cstring>
 #include <sstream>
 #include <string>
-#include <wtf/MallocSpan.h>
 #include <wtf/RuntimeApplicationChecks.h>
 #include <wtf/Seconds.h>
 #include <wtf/SortedArrayMap.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/CStringView.h>
 #include <wtf/text/StringBuilder.h>

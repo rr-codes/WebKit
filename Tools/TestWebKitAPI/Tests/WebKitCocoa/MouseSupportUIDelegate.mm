@@ -30,7 +30,7 @@
 
 #import "UIKitSPIForTesting.h"
 #import <WebKit/_WKHitTestResult.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation MouseSupportUIDelegate {
     BlockPtr<void(_WKHitTestResult *)> _mouseDidMoveOverElementHandler;

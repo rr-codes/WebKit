@@ -27,7 +27,7 @@
 #pragma once
 
 #include <WebCore/FontTaggedSettings.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/text/AtomString.h>

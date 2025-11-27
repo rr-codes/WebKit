@@ -32,8 +32,8 @@
 #include <WebCore/ResourceLoaderIdentifier.h>
 #include <WebCore/ResourceLoaderOptions.h>
 #include <WebCore/StoredCredentialsPolicy.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

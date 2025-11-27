@@ -26,7 +26,7 @@
 #import "APIResourceLoadStatisticsFirstParty.h"
 #import "WKObject.h"
 #import "_WKResourceLoadStatisticsFirstParty.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

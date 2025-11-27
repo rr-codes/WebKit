@@ -32,11 +32,11 @@
 #include <JavaScriptCore/LocalAllocator.h>
 #include <JavaScriptCore/MarkedBlock.h>
 #include <wtf/DataLog.h>
-#include <wtf/DebugHeap.h>
 #include <wtf/FastBitVector.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/SharedTask.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/DebugHeap.h>
 
 namespace WTF {
 class SimpleStats;

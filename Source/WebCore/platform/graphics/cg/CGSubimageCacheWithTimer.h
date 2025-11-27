@@ -29,7 +29,6 @@
 #include "Timer.h"
 
 #include <CoreGraphics/CoreGraphics.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/HashSet.h>
 #include <wtf/HashTraits.h>
@@ -37,6 +36,7 @@
 #include <wtf/RetainPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #define CACHE_SUBIMAGES 1
 

@@ -27,7 +27,7 @@
 
 #import "APINavigationResponse.h"
 #import "WKObject.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

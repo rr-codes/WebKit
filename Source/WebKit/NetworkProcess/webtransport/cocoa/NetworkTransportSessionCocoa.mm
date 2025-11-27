@@ -24,14 +24,14 @@
  */
 
 #import "config.h"
-#import "NetworkTransportSession.h"
-
 #import "AuthenticationChallengeDisposition.h"
+
 #import "AuthenticationManager.h"
 #import "MessageSenderInlines.h"
 #import "NetworkConnectionToWebProcess.h"
 #import "NetworkProcess.h"
 #import "NetworkSessionCocoa.h"
+#import "NetworkTransportSession.h"
 #import "NetworkTransportStream.h"
 #import "WebTransportSessionMessages.h"
 #import <Security/Security.h>
@@ -44,12 +44,12 @@
 #import <WebCore/WebTransportReceiveStreamStats.h>
 #import <WebCore/WebTransportSendStreamStats.h>
 #import <pal/spi/cocoa/NetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import "NetworkSoftLink.h"
 

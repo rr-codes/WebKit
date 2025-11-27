@@ -32,7 +32,7 @@
 #include "JSTypedArrays.h"
 #include "TypedArrayController.h"
 #include "TypedArrays.h"
-#include <wtf/Gigacage.h>
+#include <wtf/memory/Gigacage.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

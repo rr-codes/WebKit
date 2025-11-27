@@ -29,7 +29,7 @@
 
 #include <JavaScriptCore/WasmFormat.h>
 
-#include <wtf/ForbidHeapAllocation.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace JSC {
 

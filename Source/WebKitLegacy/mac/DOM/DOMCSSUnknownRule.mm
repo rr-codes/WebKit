@@ -31,7 +31,7 @@
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::CSSUnknownRule*>(reinterpret_cast<WebCore::CSSRule*>(_internal))
 

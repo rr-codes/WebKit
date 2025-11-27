@@ -37,10 +37,10 @@
 #include <WebCore/WindowFeatures.h>
 #include <WebCore/WritingToolsTypes.h>
 #include <wtf/Forward.h>
-#include <wtf/GetPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/Markable.h>
 #include <wtf/RobinHoodHashSet.h>
+#include <wtf/memory/GetPtr.h>
 #include <wtf/text/WTFString.h>
 
 #if PLATFORM(COCOA)

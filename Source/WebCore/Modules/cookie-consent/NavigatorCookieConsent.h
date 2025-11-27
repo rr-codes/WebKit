@@ -26,10 +26,10 @@
 #pragma once
 
 #include "Supplementable.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

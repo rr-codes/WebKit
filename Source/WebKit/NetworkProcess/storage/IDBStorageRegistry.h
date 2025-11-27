@@ -28,9 +28,9 @@
 #include "Connection.h"
 #include <WebCore/IDBDatabaseConnectionIdentifier.h>
 #include <WebCore/IDBResourceIdentifier.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 namespace IDBServer {

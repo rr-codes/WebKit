@@ -29,7 +29,7 @@
 #include <WebCore/PlatformVideoMatrixCoefficients.h>
 #include <WebCore/PlatformVideoTransferCharacteristics.h>
 #include <optional>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

@@ -30,9 +30,9 @@
 #include <WebCore/LocalDOMWindow.h>
 #include <WebCore/Supplementable.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

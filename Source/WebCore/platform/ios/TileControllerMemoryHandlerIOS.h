@@ -28,9 +28,9 @@
 #include <wtf/Platform.h>
 #if PLATFORM(IOS_FAMILY)
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/ListHashSet.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

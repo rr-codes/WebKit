@@ -45,7 +45,6 @@
 #import <mach/mach_port.h>
 #import <mach/task.h>
 #import <mach/task_info.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MonotonicTime.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/Scope.h>
@@ -53,6 +52,7 @@
 #import <wtf/UUID.h>
 #import <wtf/Vector.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 TEST(NetworkProcess, Entitlements)

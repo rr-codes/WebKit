@@ -31,7 +31,7 @@
 #include <WebCore/IntSize.h>
 #include <WebCore/MediaPlayerEnums.h>
 #include <WebCore/PlatformLayer.h>
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 
 #if PLATFORM(COCOA)
 namespace WTF {

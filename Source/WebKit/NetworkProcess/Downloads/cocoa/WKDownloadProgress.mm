@@ -24,14 +24,14 @@
  */
 
 #import "config.h"
-#import "WKDownloadProgress.h"
-
 #import "Download.h"
+
 #import "Logging.h"
+#import "WKDownloadProgress.h"
 #import <pal/spi/cocoa/NSProgressSPI.h>
 #import <sys/xattr.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if HAVE(MODERN_DOWNLOADPROGRESS)
 #import <BrowserEngineKit/BrowserEngineKit.h>

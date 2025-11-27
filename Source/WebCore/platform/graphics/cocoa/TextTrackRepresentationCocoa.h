@@ -30,10 +30,10 @@
 
 #include <QuartzCore/CALayer.h>
 #include <WebCore/TextTrackRepresentation.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class TextTrackRepresentationCocoa;

@@ -29,7 +29,7 @@
 #import "TestNavigationDelegate.h"
 #import "TestWKWebView.h"
 #import <WebKit/WKNavigationDelegatePrivate.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface MissingResourceSchemeHandler : NSObject<WKURLSchemeHandler>
 @end

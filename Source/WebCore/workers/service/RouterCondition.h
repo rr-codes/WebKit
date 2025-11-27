@@ -29,8 +29,8 @@
 #include <WebCore/FetchRequestMode.h>
 #include <WebCore/RunningStatus.h>
 #include <WebCore/URLPattern.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

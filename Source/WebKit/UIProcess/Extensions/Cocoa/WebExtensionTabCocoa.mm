@@ -47,7 +47,7 @@
 #import "WebExtensionUtilities.h"
 #import "WebExtensionWindowIdentifier.h"
 #import "WebPageProxy.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {

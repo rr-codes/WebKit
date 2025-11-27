@@ -28,20 +28,20 @@
 #endif
 
 #import "config.h"
-#import "WKWebExtensionControllerInternal.h"
+#import "WebExtensionContext.h"
 
+#import "WebExtensionController.h"
+#import "WebExtensionDataType.h"
 #import "WKNSError.h"
 #import "WKWebExtensionContextInternal.h"
 #import "WKWebExtensionControllerConfigurationInternal.h"
+#import "WKWebExtensionControllerInternal.h"
 #import "WKWebExtensionDataRecordInternal.h"
 #import "WKWebExtensionDataTypeInternal.h"
 #import "WKWebExtensionInternal.h"
-#import "WebExtensionContext.h"
-#import "WebExtensionController.h"
-#import "WebExtensionDataType.h"
 #import <WebCore/EventRegion.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation WKWebExtensionController
 

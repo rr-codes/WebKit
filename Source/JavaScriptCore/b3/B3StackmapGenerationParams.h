@@ -31,7 +31,7 @@
 #include "B3ValueRep.h"
 #include "MacroAssembler.h"
 #include "RegisterSet.h"
-#include <wtf/Box.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

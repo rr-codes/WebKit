@@ -27,7 +27,7 @@
 #include "StreamConnectionWorkQueue.h"
 
 #if USE(FOUNDATION)
-#include <wtf/AutodrainedPool.h>
+#include <wtf/memory/AutodrainedPool.h>
 #endif
 
 namespace IPC {

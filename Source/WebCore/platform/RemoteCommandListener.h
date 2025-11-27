@@ -27,7 +27,7 @@
 
 #include <WebCore/DeferrableTask.h>
 #include <WebCore/PlatformMediaSession.h>
-#include <wtf/AbstractRefCounted.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

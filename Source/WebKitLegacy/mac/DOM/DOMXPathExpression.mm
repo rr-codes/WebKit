@@ -36,7 +36,7 @@
 #import <WebCore/WebScriptObjectPrivate.h>
 #import <WebCore/XPathExpression.h>
 #import <WebCore/XPathResult.h>
-#import <wtf/GetPtr.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL reinterpret_cast<WebCore::XPathExpression*>(_internal)
 

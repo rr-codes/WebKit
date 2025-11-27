@@ -29,10 +29,10 @@
 #include <concepts>
 #include <functional>
 #include <type_traits>
-#include <wtf/GetPtr.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/Variant.h>
 #include <wtf/VariantExtras.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WTF {
 

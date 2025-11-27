@@ -36,8 +36,8 @@
 #include <WebCore/LocalDOMWindow.h>
 #include <cstddef>
 #include <wtf/Forward.h>
-#include <wtf/GetPtr.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WebCore {
 

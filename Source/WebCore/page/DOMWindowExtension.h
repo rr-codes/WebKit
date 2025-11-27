@@ -26,10 +26,10 @@
 #pragma once
 
 #include <WebCore/LocalDOMWindow.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

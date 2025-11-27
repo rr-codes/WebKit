@@ -28,8 +28,8 @@
 #include "IDBCursorInfo.h"
 #include "IndexValueStore.h"
 #include "MemoryCursor.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 namespace IDBServer {

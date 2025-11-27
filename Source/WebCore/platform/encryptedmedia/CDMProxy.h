@@ -33,11 +33,11 @@
 #include <WebCore/CDMInstance.h>
 #include <WebCore/CDMInstanceSession.h>
 #include <WebCore/SharedBuffer.h>
-#include <wtf/BoxPtr.h>
 #include <wtf/Condition.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
+#include <wtf/memory/BoxPtr.h>
 
 #if ENABLE(THUNDER)
 #include "CDMOpenCDMTypes.h"

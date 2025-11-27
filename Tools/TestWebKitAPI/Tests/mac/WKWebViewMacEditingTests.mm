@@ -41,9 +41,9 @@
 #import <WebKit/_WKFeature.h>
 #import <WebKit/_WKProcessPoolConfiguration.h>
 #import <pal/spi/mac/NSTextInputContextSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface SlowTextInputContext : NSTextInputContext
 @property (nonatomic) BlockPtr<void()> handledInputMethodEventBlock;

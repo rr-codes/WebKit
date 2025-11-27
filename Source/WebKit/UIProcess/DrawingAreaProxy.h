@@ -35,13 +35,13 @@
 #include <WebCore/IntSize.h>
 #include <WebCore/ProcessIdentifier.h>
 #include <stdint.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/Identified.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/TypeCasts.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 #if PLATFORM(COCOA)
 namespace WTF {

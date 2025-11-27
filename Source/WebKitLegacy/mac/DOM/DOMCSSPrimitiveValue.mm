@@ -23,23 +23,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMCSSPrimitiveValueInternal.h"
+#import "DOMCounterInternal.h"
 
+#import "DOMCSSPrimitiveValueInternal.h"
+#import "DOMCSSValueInternal.h"
+#import "DOMNodeInternal.h"
+#import "DOMRectInternal.h"
+#import "DOMRGBColorInternal.h"
+#import "ExceptionHandlers.h"
 #import <WebCore/DeprecatedCSSOMCounter.h>
 #import <WebCore/DeprecatedCSSOMPrimitiveValue.h>
 #import <WebCore/DeprecatedCSSOMRGBColor.h>
 #import <WebCore/DeprecatedCSSOMRect.h>
-#import "DOMCSSValueInternal.h"
-#import "DOMCounterInternal.h"
-#import "DOMNodeInternal.h"
-#import "DOMRGBColorInternal.h"
-#import "DOMRectInternal.h"
-#import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::DeprecatedCSSOMPrimitiveValue*>(reinterpret_cast<WebCore::DeprecatedCSSOMValue*>(_internal))
 

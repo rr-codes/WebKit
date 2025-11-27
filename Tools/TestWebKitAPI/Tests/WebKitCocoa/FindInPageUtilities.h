@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/BlockPtr.h>
 #include <wtf/RetainPtr.h>
+#include <wtf/memory/BlockPtr.h>
 
 #if HAVE(UIFINDINTERACTION)
 

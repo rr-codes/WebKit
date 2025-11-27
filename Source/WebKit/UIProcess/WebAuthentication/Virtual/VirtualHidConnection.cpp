@@ -34,10 +34,10 @@
 #include <WebCore/CBORWriter.h>
 #include <WebCore/FidoConstants.h>
 #include <WebCore/WebAuthenticationUtils.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/RunLoop.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 using namespace cbor;

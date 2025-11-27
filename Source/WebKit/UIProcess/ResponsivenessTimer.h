@@ -26,11 +26,11 @@
 #ifndef ResponsivenessTimer_h
 #define ResponsivenessTimer_h
 
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebKit {
 

@@ -27,10 +27,10 @@
 
 #include "NestingLevelIncrementer.h"
 #include "Timer.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #include "WebCoreThread.h"

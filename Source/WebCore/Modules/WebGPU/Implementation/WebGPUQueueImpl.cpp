@@ -33,7 +33,7 @@
 #include "WebGPUConvertToBackingContext.h"
 #include "WebGPUTextureImpl.h"
 #include <WebGPU/WebGPUExt.h>
-#include <wtf/BlockPtr.h>
+#include <wtf/memory/BlockPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore::WebGPU {

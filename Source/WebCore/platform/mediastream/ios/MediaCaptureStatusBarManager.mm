@@ -30,9 +30,9 @@
 
 #include "Logging.h"
 #include <pal/spi/ios/SBSStatusBarSPI.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/RuntimeApplicationChecks.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/BlockPtr.h>
 
 #include <pal/cocoa/AVFoundationSoftLink.h>
 

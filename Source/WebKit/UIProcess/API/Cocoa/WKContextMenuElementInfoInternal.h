@@ -27,7 +27,7 @@
 #import "WKContextMenuElementInfo.h"
 #import "WKObject.h"
 
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 #if PLATFORM(IOS_FAMILY)
 

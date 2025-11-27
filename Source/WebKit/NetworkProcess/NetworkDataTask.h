@@ -36,10 +36,10 @@
 #include <WebCore/ResourceRequest.h>
 #include <WebCore/StoredCredentialsPolicy.h>
 #include <pal/SessionID.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

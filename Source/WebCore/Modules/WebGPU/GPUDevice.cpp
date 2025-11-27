@@ -75,7 +75,7 @@
 #include "RequestAnimationFrameCallback.h"
 #include "WebGPUXRBinding.h"
 #include "XRGPUBinding.h"
-#include <wtf/IsoMallocInlines.h>
+#include <wtf/memory/IsoMallocInlines.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

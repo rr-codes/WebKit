@@ -26,11 +26,11 @@
 #pragma once
 
 #include "GeolocationIdentifier.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class Geolocation;

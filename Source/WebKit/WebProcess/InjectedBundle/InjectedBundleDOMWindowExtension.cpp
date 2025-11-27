@@ -33,9 +33,9 @@
 #include <WebCore/DOMWrapperWorld.h>
 #include <WebCore/FrameLoader.h>
 #include <WebCore/LocalFrame.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 using namespace WebCore;

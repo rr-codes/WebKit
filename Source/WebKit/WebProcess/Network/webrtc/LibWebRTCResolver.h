@@ -30,10 +30,10 @@
 #include "LibWebRTCDnsResolverFactory.h"
 #include "LibWebRTCResolverIdentifier.h"
 #include <WebCore/LibWebRTCMacros.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Identified.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace IPC {
 class Connection;

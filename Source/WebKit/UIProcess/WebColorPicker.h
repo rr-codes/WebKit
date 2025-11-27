@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class Color;

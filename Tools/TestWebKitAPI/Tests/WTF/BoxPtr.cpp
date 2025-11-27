@@ -26,9 +26,9 @@
  */
 
 #include "config.h"
+#include <wtf/memory/BoxPtr.h>
 
 #include "Logger.h"
-#include <wtf/BoxPtr.h>
 
 namespace TestWebKitAPI {
 

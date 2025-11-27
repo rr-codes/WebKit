@@ -27,7 +27,7 @@
 
 #import "APIContentWorld.h"
 #import "WKObject.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 #import <wtf/text/WTFString.h>
 
 namespace WebKit {

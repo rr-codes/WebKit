@@ -27,7 +27,7 @@
 #import "TestContextMenuDriver.h"
 
 #import "UIKitSPIForTesting.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if USE(UICONTEXTMENU)
 

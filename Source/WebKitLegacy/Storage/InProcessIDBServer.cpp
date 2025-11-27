@@ -38,7 +38,7 @@
 #include <WebCore/IDBTransactionInfo.h>
 #include <WebCore/IDBValue.h>
 #include <wtf/WorkQueue.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 using namespace WebCore;
 

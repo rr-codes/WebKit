@@ -24,17 +24,17 @@
  */
 
 #include "config.h"
-#include <wtf/OSAllocator.h>
-
 #include <errno.h>
+
 #include <sys/mman.h>
 #include <wtf/Assertions.h>
 #include <wtf/DataLog.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/MathExtras.h>
 #include <wtf/Mmap.h>
+#include <wtf/OSAllocator.h>
 #include <wtf/PageBlock.h>
 #include <wtf/SafeStrerror.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/CString.h>
 
 #if ENABLE(JIT_CAGE)

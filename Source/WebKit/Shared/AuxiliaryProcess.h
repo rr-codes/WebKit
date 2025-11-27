@@ -34,10 +34,10 @@
 #include <WebCore/LLVMProfiling.h>
 #include <WebCore/ProcessIdentifier.h>
 #include <WebCore/UserActivity.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/HashMap.h>
 #include <wtf/RunLoop.h>
 #include <wtf/RuntimeApplicationChecks.h>
+#include <wtf/memory/AbstractRefCounted.h>
 #include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 

@@ -29,8 +29,8 @@
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSRetainPtr.h>
 #include <wtf/Condition.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Platform.h>
+#include <wtf/memory/FastMalloc.h>
 #if PLATFORM(COCOA)
 #include <wtf/RetainPtr.h>
 #endif

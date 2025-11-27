@@ -27,10 +27,10 @@
 
 #include "Decoder.h"
 #include "Encoder.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/CrossThreadCopier.h>
 #include <wtf/HashTraits.h>
 #include <wtf/RobinHoodHashMap.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 

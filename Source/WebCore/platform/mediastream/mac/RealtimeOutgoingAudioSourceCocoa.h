@@ -29,8 +29,8 @@
 
 #include "AudioSampleDataSource.h"
 #include "RealtimeOutgoingAudioSource.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace webrtc {
 class AudioTrackInterface;

@@ -39,7 +39,6 @@
 #include <WebCore/Timer.h>
 #include <array>
 #include <limits.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CrossThreadCopier.h>
 #include <wtf/Forward.h>
 #include <wtf/HashFunctions.h>
@@ -53,6 +52,7 @@
 #include <wtf/UniqueRef.h>
 #include <wtf/Vector.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/AtomStringHash.h>
 #include <wtf/text/WTFString.h>
 
@@ -69,9 +69,9 @@
 #endif
 
 #if OS(WINDOWS)
-#include <windows.h>
-#include <objidl.h>
 #include <mlang.h>
+#include <objidl.h>
+#include <windows.h>
 struct IDWriteFactory;
 struct IDWriteFontCollection;
 #endif

@@ -41,7 +41,7 @@
 #import <WebKit/WKWebViewPrivateForTesting.h>
 #import <WebKit/_WKContextMenuElementInfo.h>
 #import <WebKit/_WKHitTestResult.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface PopoverNotificationListener : NSObject
 - (instancetype)initWithCallback:(Function<void(NSNotification *)>&&)callback;

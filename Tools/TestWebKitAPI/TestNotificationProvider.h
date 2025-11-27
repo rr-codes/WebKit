@@ -28,9 +28,9 @@
 #include <WebKit/WKNotificationManager.h>
 #include <WebKit/WKNotificationProvider.h>
 #include <WebKit/WKRetainPtr.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashMap.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace TestWebKitAPI {
 

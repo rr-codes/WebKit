@@ -31,8 +31,8 @@
 #include <WebCore/GraphicsContextGLCocoa.h>
 #include <WebCore/ImageOrientation.h>
 #include <memory>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 typedef struct CF_BRIDGED_TYPE(id) __CVBuffer* CVPixelBufferRef;
 

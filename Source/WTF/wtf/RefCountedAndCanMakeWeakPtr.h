@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/RefCounted.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WTF {
 

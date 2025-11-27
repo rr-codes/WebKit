@@ -27,7 +27,7 @@
 
 #include <memory>
 #include <wtf/EmbeddedFixedVector.h>
-#include <wtf/MallocCommon.h>
+#include <wtf/memory/MallocCommon.h>
 
 namespace WTF {
 

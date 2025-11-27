@@ -28,8 +28,8 @@
 #import "PlatformUtilities.h"
 #import "TestNavigationDelegate.h"
 #import <WebKit/WKWebViewPrivate.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(MAC)
 

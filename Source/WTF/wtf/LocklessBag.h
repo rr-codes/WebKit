@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WTF {
 

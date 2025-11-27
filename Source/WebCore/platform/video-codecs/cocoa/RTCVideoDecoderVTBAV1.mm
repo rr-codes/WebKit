@@ -32,11 +32,11 @@
 #import "Logging.h"
 #import <span>
 #import <webrtc/modules/video_coding/include/video_error_codes.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CheckedArithmetic.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/cf/VectorCF.h>
+#import <wtf/memory/BlockPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 #import "CoreVideoSoftLink.h"
 #import "VideoToolboxSoftLink.h"

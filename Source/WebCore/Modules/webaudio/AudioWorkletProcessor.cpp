@@ -29,11 +29,11 @@
 #include "config.h"
 
 #if ENABLE(WEB_AUDIO)
-#include "AudioWorkletProcessor.h"
-
 #include "AudioBus.h"
+
 #include "AudioChannel.h"
 #include "AudioWorkletGlobalScope.h"
+#include "AudioWorkletProcessor.h"
 #include "AudioWorkletProcessorConstructionData.h"
 #include "JSCallbackData.h"
 #include "JSDOMExceptionHandling.h"
@@ -41,9 +41,9 @@
 #include "ScriptWrappableInlines.h"
 #include "WebCoreOpaqueRoot.h"
 #include <JavaScriptCore/JSTypedArrays.h>
-#include <wtf/GetPtr.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WebCore {
 

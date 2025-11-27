@@ -27,10 +27,10 @@
 
 #if ENABLE(GAMEPAD)
 
-#include <wtf/FastMalloc.h>
 #include <wtf/Nonmovable.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

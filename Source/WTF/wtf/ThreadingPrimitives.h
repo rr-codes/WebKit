@@ -31,10 +31,10 @@
 #pragma once
 
 #include <limits.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Locker.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/WallTime.h>
+#include <wtf/memory/FastMalloc.h>
 
 #if OS(WINDOWS)
 #include <windows.h>

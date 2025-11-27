@@ -32,7 +32,6 @@
 #include <JavaScriptCore/PageCount.h>
 #include <JavaScriptCore/WeakGCSet.h>
 
-#include <wtf/CagedPtr.h>
 #include <wtf/Expected.h>
 #include <wtf/Function.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
@@ -40,6 +39,7 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CagedPtr.h>
 
 namespace WTF {
 class PrintStream;

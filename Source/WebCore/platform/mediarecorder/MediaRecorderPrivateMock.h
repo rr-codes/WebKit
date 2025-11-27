@@ -27,10 +27,10 @@
 #if ENABLE(MEDIA_RECORDER)
 
 #include "MediaRecorderPrivate.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Lock.h>
 #include <wtf/MediaTime.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringBuilder.h>
 
 namespace WebCore {

@@ -28,10 +28,10 @@
 #if ENABLE(PDF_PLUGIN)
 
 #include <WebCore/EventListener.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class Document;

@@ -34,15 +34,15 @@
 
 #import "APIError.h"
 #import "CocoaHelpers.h"
-#import "WKNSError.h"
-#import "WKWebExtensionContextPrivate.h"
 #import "WebExtensionContext.h"
 #import "WebExtensionContextProxyMessages.h"
 #import "WebExtensionMenuItemContextParameters.h"
 #import "WebExtensionMenuItemParameters.h"
+#import "WKNSError.h"
+#import "WKWebExtensionContextPrivate.h"
 #import <WebCore/LocalizedStrings.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 #if PLATFORM(IOS_FAMILY)

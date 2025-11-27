@@ -34,12 +34,11 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 
 #include <mutex>
 #include <wtf/Assertions.h>
-#include <wtf/Atomics.h>
-#include <wtf/Compiler.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/ThreadSafetyAnalysis.h>
 #include <wtf/ThreadSanitizerSupport.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 

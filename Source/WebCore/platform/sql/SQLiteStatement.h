@@ -28,8 +28,8 @@
 #include <WebCore/SQLValue.h>
 #include <WebCore/SQLiteDatabase.h>
 #include <span>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 struct sqlite3_stmt;
 

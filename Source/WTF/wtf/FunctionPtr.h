@@ -26,11 +26,11 @@
 #pragma once
 
 #include <memory>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/FunctionTraits.h>
 #include <wtf/Hasher.h>
 #include <wtf/PtrTag.h>
+#include <wtf/memory/FastMalloc.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -25,19 +25,19 @@
 
 #import "DOMCSSMediaRule.h"
 
-#import <WebCore/CSSMediaRule.h>
-#import <WebCore/CSSRuleList.h>
 #import "DOMCSSRuleInternal.h"
 #import "DOMCSSRuleListInternal.h"
 #import "DOMMediaListInternal.h"
 #import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
+#import <WebCore/CSSMediaRule.h>
+#import <WebCore/CSSRuleList.h>
 #import <WebCore/JSExecState.h>
 #import <WebCore/MediaList.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::CSSMediaRule*>(reinterpret_cast<WebCore::CSSRule*>(_internal))
 

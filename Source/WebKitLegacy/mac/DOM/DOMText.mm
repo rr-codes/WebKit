@@ -23,16 +23,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMTextInternal.h"
-
 #import "DOMNodeInternal.h"
+
+#import "DOMTextInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/Text.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::Text*>(reinterpret_cast<WebCore::Node*>(_internal))
 

@@ -30,8 +30,8 @@
 
 #import "AuthenticatorPresenterCoordinator.h"
 
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
+#import <wtf/memory/BlockPtr.h>
 #import "AuthenticationServicesCoreSoftLink.h"
 
 NS_ASSUME_NONNULL_BEGIN

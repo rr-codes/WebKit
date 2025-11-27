@@ -248,7 +248,7 @@ EOF
 
     push(@contents, <<EOF);
 #include <JavaScriptCore/JSRetainPtr.h>
-#include <wtf/GetPtr.h>
+#include <wtf/memory/GetPtr.h>
 #include <wtf/MathExtras.h>
 
 namespace WTR {

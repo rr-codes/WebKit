@@ -35,7 +35,7 @@
 #import "WKBrowserEngineDefinitions.h"
 #import <WebKit/WKWebViewPrivate.h>
 #import <pal/spi/ios/BrowserEngineKitSPI.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface CustomTextSuggestion : UITextSuggestion
 @end

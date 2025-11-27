@@ -32,7 +32,6 @@
 #include <dns_sd.h>
 #include <pal/spi/cf/CFNetworkSPI.h>
 #include <pal/spi/cocoa/NetworkSPI.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/HashSet.h>
 #include <wtf/MainThread.h>
@@ -42,6 +41,7 @@
 #include <wtf/cf/VectorCF.h>
 #include <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 #include <wtf/posix/SocketPOSIX.h>
 #include <wtf/text/StringHash.h>
 

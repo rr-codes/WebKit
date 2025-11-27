@@ -34,12 +34,12 @@
 #include <WebCore/MixedContentChecker.h>
 #include <WebCore/ResourceTimingInformation.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Expected.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RobinHoodHashSet.h>
 #include <wtf/WeakListHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/StringHash.h>
 
 namespace WebCore {

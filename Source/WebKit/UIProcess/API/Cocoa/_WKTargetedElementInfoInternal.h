@@ -28,7 +28,7 @@
 #import "APITargetedElementInfo.h"
 #import "WKObject.h"
 #import "_WKTargetedElementInfo.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

@@ -28,7 +28,6 @@
 
 #include <functional>
 #include <sqlite3.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Expected.h>
 #include <wtf/Lock.h>
 #include <wtf/OptionSet.h>
@@ -36,6 +35,7 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Threading.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/WTFString.h>
 

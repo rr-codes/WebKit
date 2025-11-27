@@ -44,10 +44,10 @@
 #import <QuartzCore/CoreAnimation.h>
 #import <UIKit/UIView.h>
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
-#import <wtf/CheckedRef.h>
 #import <wtf/CrossThreadCopier.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/WorkQueue.h>
+#import <wtf/memory/CheckedRef.h>
 
 #import <pal/ios/UIKitSoftLink.h>
 

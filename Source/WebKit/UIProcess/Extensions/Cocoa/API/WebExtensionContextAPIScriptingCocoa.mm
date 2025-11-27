@@ -32,12 +32,10 @@
 
 #if ENABLE(WK_WEB_EXTENSIONS)
 
+#import "_WKFrameHandle.h"
+#import "_WKFrameTreeNode.h"
 #import "APIError.h"
 #import "CocoaHelpers.h"
-#import "WKFrameInfoPrivate.h"
-#import "WKNSError.h"
-#import "WKWebViewInternal.h"
-#import "WKWebViewPrivate.h"
 #import "WebExtensionAPIScripting.h"
 #import "WebExtensionContextProxy.h"
 #import "WebExtensionContextProxyMessages.h"
@@ -47,11 +45,13 @@
 #import "WebExtensionTab.h"
 #import "WebExtensionTabIdentifier.h"
 #import "WebExtensionUtilities.h"
-#import "_WKFrameHandle.h"
-#import "_WKFrameTreeNode.h"
+#import "WKFrameInfoPrivate.h"
+#import "WKNSError.h"
+#import "WKWebViewInternal.h"
+#import "WKWebViewPrivate.h"
 #import <WebCore/UserStyleSheet.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

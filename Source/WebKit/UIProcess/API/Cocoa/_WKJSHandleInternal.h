@@ -26,7 +26,7 @@
 #import "APIJSHandle.h"
 #import "WKObject.h"
 #import "_WKJSHandle.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 template<> struct WrapperTraits<API::JSHandle> {

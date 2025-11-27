@@ -33,8 +33,6 @@
 #include <WebCore/ShouldRelaxThirdPartyCookieBlocking.h>
 #include <optional>
 #include <pal/SessionID.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Deque.h>
 #include <wtf/Function.h>
@@ -46,6 +44,8 @@
 #include <wtf/WallTime.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 #if PLATFORM(COCOA)

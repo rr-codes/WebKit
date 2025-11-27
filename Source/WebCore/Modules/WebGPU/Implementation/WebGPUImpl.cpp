@@ -41,7 +41,7 @@
 #include <WebCore/IntSize.h>
 #include <WebCore/NativeImage.h>
 #include <WebGPU/WebGPUExt.h>
-#include <wtf/BlockPtr.h>
+#include <wtf/memory/BlockPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore::WebGPU {

@@ -26,7 +26,7 @@
 #pragma once
 
 #include <optional>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
 
 namespace WebCore {
 

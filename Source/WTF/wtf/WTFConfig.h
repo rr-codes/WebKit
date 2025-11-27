@@ -30,12 +30,12 @@
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 
 #include <wtf/Assertions.h>
-#include <wtf/Atomics.h>
 #include <wtf/ExportMacros.h>
 #include <wtf/PageBlock.h>
 #include <wtf/PtrTag.h>
 #include <wtf/StdLibExtras.h>
-#include <wtf/threads/Signals.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/concurrency/Signals.h>
 
 #if USE(SYSTEM_MALLOC)
 namespace Gigacage {

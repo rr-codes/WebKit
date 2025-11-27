@@ -33,6 +33,10 @@
 #if ENABLE(WK_WEB_EXTENSIONS)
 
 #import "CocoaHelpers.h"
+#import "WebExtensionContextProxy.h"
+#import "WebExtensionContextProxyMessages.h"
+#import "WebExtensionController.h"
+#import "WebExtensionMatchPattern.h"
 #import "WKWebExtensionContext.h"
 #import "WKWebExtensionControllerDelegatePrivate.h"
 #import "WKWebExtensionControllerInternal.h"
@@ -40,12 +44,8 @@
 #import "WKWebExtensionMatchPatternInternal.h"
 #import "WKWebExtensionPermission.h"
 #import "WKWebViewInternal.h"
-#import "WebExtensionContextProxy.h"
-#import "WebExtensionContextProxyMessages.h"
-#import "WebExtensionController.h"
-#import "WebExtensionMatchPattern.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

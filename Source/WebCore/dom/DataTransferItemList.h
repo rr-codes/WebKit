@@ -34,11 +34,11 @@
 #include "ContextDestructionObserver.h"
 #include "DataTransfer.h"
 #include "ScriptWrappable.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

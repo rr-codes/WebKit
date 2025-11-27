@@ -26,9 +26,9 @@
 #pragma once
 
 #include <memory>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/SwiftBridging.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

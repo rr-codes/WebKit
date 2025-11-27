@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include <wtf/AutomaticThread.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Deque.h>
 #include <wtf/Function.h>
 #include <wtf/NumberOfCores.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/concurrency/AutomaticThread.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WTF {

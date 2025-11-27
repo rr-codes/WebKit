@@ -40,8 +40,8 @@
 #include <JavaScriptCore/Watchpoint.h>
 #include <JavaScriptCore/WebAssemblyGCStructure.h>
 #include <JavaScriptCore/WriteBarrierInlines.h>
-#include <wtf/CompactRefPtr.h>
 #include <wtf/Threading.h>
+#include <wtf/memory/CompactRefPtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -29,7 +29,6 @@
 #import <WebGPU/WebGPUExt.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/Deque.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/Lock.h>
 #import <wtf/MachSendRight.h>
 #import <wtf/Ref.h>
@@ -38,6 +37,7 @@
 #import <wtf/ThreadSafetyAnalysis.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUInstanceImpl {
 };

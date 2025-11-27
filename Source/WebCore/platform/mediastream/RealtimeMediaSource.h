@@ -48,9 +48,6 @@
 #include <WebCore/RealtimeMediaSourceFactory.h>
 #include <WebCore/RealtimeMediaSourceIdentifier.h>
 #include <WebCore/VideoFrameTimeMetadata.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
 #include <wtf/Lock.h>
@@ -59,6 +56,9 @@
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 #if USE(GSTREAMER)

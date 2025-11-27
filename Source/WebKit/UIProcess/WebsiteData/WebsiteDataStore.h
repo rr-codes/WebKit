@@ -41,7 +41,6 @@
 #include <WebCore/SecurityOriginData.h>
 #include <WebCore/SecurityOriginHash.h>
 #include <pal/SessionID.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/HashSet.h>
 #include <wtf/OptionSet.h>
@@ -53,6 +52,7 @@
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 #if PLATFORM(COCOA)

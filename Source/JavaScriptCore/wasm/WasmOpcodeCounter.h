@@ -27,7 +27,7 @@
 #if ENABLE(WEBASSEMBLY) && ENABLE(B3_JIT)
 
 #include "WasmTypeDefinition.h"
-#include <wtf/Atomics.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace JSC {
 namespace Wasm {

@@ -28,7 +28,6 @@
 #import "WebGPU.h"
 #import "WebGPUExt.h"
 #import <optional>
-#import <wtf/FastMalloc.h>
 #import <wtf/Range.h>
 #import <wtf/RangeSet.h>
 #import <wtf/Ref.h>
@@ -38,6 +37,7 @@
 #import <wtf/Vector.h>
 #import <wtf/WeakHashSet.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 // FIXME(rdar://155970441): this annotation should be in WebGPU.h, move it once we support
 // annotating incomplete types

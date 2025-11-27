@@ -24,11 +24,11 @@
  */
 
 #import "config.h"
-#import "ProcessLauncher.h"
-
 #import "AuxiliaryProcess.h"
+
 #import "Logging.h"
 #import "MachPort.h"
+#import "ProcessLauncher.h"
 #import "WebPreferencesDefaultValues.h"
 #import "XPCUtilities.h"
 #import <crt_externs.h>
@@ -41,7 +41,6 @@
 #import <spawn.h>
 #import <sys/param.h>
 #import <sys/stat.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/MachSendRight.h>
 #import <wtf/RunLoop.h>
@@ -51,6 +50,7 @@
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
 #import <wtf/darwin/XPCExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cf/CFBundleSPI.h>
 #import <wtf/text/CString.h>
 #import <wtf/text/WTFString.h>

@@ -30,8 +30,8 @@
 #include "ImageOrientation.h"
 #include "ImageTypes.h"
 #include "IntPoint.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/OptionSet.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

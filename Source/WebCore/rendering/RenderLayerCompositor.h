@@ -30,12 +30,12 @@
 #include <WebCore/LayerAncestorClippingStack.h>
 #include <WebCore/RenderLayer.h>
 #include <pal/HysteresisActivity.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/OptionSet.h>
 #include <wtf/Platform.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

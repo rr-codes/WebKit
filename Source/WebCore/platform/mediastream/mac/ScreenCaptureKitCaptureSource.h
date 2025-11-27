@@ -30,12 +30,12 @@
 #include <WebCore/DisplayCaptureManager.h>
 #include <WebCore/DisplayCaptureSourceCocoa.h>
 #include <WebCore/ScreenCaptureKitSharingSessionManager.h>
-#include <wtf/BlockPtr.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
 #include <wtf/OSObjectPtr.h>
 #include <wtf/RetainPtr.h>
+#include <wtf/memory/BlockPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 OBJC_CLASS NSDictionary;
 OBJC_CLASS NSError;

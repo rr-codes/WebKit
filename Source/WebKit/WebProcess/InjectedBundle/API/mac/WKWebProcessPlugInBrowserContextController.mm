@@ -24,13 +24,18 @@
  */
 
 #import "config.h"
-#import "WKWebProcessPlugInBrowserContextControllerInternal.h"
+#import "_WKRemoteObjectRegistryInternal.h"
 
+#import "_WKRenderingProgressEventsInternal.h"
+#import "_WKSameDocumentNavigationTypeInternal.h"
 #import "APIData.h"
 #import "APIInjectedBundleEditorClient.h"
 #import "APIInjectedBundleFormClient.h"
 #import "RemoteObjectRegistry.h"
 #import "RemoteObjectRegistryMessages.h"
+#import "WebPage.h"
+#import "WebPageGroupProxy.h"
+#import "WebProcess.h"
 #import "WKBrowsingContextHandleInternal.h"
 #import "WKBundleAPICast.h"
 #import "WKBundlePage.h"
@@ -44,31 +49,26 @@
 #import "WKRetainPtr.h"
 #import "WKStringCF.h"
 #import "WKURLRequestNS.h"
+#import "WKWebProcessPlugInBrowserContextControllerInternal.h"
 #import "WKWebProcessPlugInEditingDelegate.h"
+#import "WKWebProcessPlugInFormDelegatePrivate.h"
 #import "WKWebProcessPlugInFrameInternal.h"
 #import "WKWebProcessPlugInInternal.h"
-#import "WKWebProcessPlugInFormDelegatePrivate.h"
 #import "WKWebProcessPlugInLoadDelegate.h"
 #import "WKWebProcessPlugInNodeHandleInternal.h"
 #import "WKWebProcessPlugInRangeHandleInternal.h"
 #import "WKWebProcessPlugInScriptWorldInternal.h"
-#import "WebPage.h"
-#import "WebPageGroupProxy.h"
-#import "WebProcess.h"
-#import "_WKRemoteObjectRegistryInternal.h"
-#import "_WKRenderingProgressEventsInternal.h"
-#import "_WKSameDocumentNavigationTypeInternal.h"
 #import <WebCore/Document.h>
 #import <WebCore/DocumentFragment.h>
 #import <WebCore/HTMLFormElement.h>
 #import <WebCore/HTMLInputElement.h>
 #import <WebCore/LocalFrameInlines.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @interface NSObject (WKDeprecatedDelegateMethods)
 - (void)webProcessPlugInBrowserContextController:(WKWebProcessPlugInBrowserContextController *)controller didSameDocumentNavigationForFrame:(WKWebProcessPlugInFrame *)frame;

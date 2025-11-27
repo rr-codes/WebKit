@@ -26,11 +26,11 @@
 #pragma once
 
 #include "CSSFontFace.h"
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/Observer.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/StringHash.h>
 
 namespace WebCore {

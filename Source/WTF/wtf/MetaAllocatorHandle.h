@@ -29,9 +29,9 @@
 #pragma once
 
 #include <wtf/Assertions.h>
-#include <wtf/CodePtr.h>
 #include <wtf/RedBlackTree.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/CodePtr.h>
 
 namespace WTF {
 

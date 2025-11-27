@@ -29,11 +29,11 @@
 #include <WebCore/Element.h>
 #include <WebCore/GCReachableRef.h>
 #include <WebCore/QualifiedName.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomString.h>
 
 namespace JSC {

@@ -29,7 +29,6 @@
 #include "ContentWorldShared.h"
 #include "ScriptMessageHandlerIdentifier.h"
 #include "UserContentControllerIdentifier.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/HashMap.h>
@@ -39,6 +38,7 @@
 #include <wtf/URL.h>
 #include <wtf/URLHash.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringHash.h>
 
 namespace API {

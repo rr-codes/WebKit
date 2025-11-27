@@ -29,8 +29,8 @@
 #include "CAAudioStreamDescription.h"
 #include "MediaRecorderPrivate.h"
 #include "MediaRecorderPrivateEncoder.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 typedef struct CF_BRIDGED_TYPE(id) __CVBuffer *CVPixelBufferRef;
 typedef const struct opaqueCMFormatDescription* CMFormatDescriptionRef;

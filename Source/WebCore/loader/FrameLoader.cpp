@@ -39,8 +39,8 @@
 #include "BackForwardCache.h"
 #include "BackForwardController.h"
 #include "BeforeUnloadEvent.h"
-#include "CachePolicy.h"
 #include "CachedPage.h"
+#include "CachePolicy.h"
 #include "Chrome.h"
 #include "ChromeClient.h"
 #include "CommonVM.h"
@@ -50,11 +50,11 @@
 #include "ContentSecurityPolicy.h"
 #include "CrossOriginAccessControl.h"
 #include "CrossOriginEmbedderPolicy.h"
-#include "DNS.h"
 #include "DatabaseManager.h"
 #include "DiagnosticLoggingClient.h"
 #include "DiagnosticLoggingKeys.h"
 #include "DiagnosticLoggingResultType.h"
+#include "DNS.h"
 #include "DocumentInlines.h"
 #include "DocumentLoader.h"
 #include "DocumentPage.h"
@@ -78,6 +78,8 @@
 #include "FrameNetworkingContext.h"
 #include "FrameTree.h"
 #include "GarbageCollectionController.h"
+#include "HistoryController.h"
+#include "HistoryItem.h"
 #include "HTMLAnchorElement.h"
 #include "HTMLFormElement.h"
 #include "HTMLIFrameElement.h"
@@ -88,8 +90,6 @@
 #include "HTTPHeaderNames.h"
 #include "HTTPHeaderValues.h"
 #include "HTTPParsers.h"
-#include "HistoryController.h"
-#include "HistoryItem.h"
 #include "InspectorInstrumentation.h"
 #include "IntegrityPolicy.h"
 #include "LinkLoader.h"
@@ -125,10 +125,6 @@
 #include "ResourceLoadInfo.h"
 #include "ResourceLoadObserver.h"
 #include "ResourceRequest.h"
-#include "SVGLocatable.h"
-#include "SVGNames.h"
-#include "SVGViewElement.h"
-#include "SVGViewSpec.h"
 #include "ScriptController.h"
 #include "ScriptDisallowedScope.h"
 #include "ScriptSourceCode.h"
@@ -142,6 +138,10 @@
 #include "StyleTreeResolver.h"
 #include "SubframeLoader.h"
 #include "SubresourceLoader.h"
+#include "SVGLocatable.h"
+#include "SVGNames.h"
+#include "SVGViewElement.h"
+#include "SVGViewSpec.h"
 #include "TextResourceDecoder.h"
 #include "UnloadCountIncrementer.h"
 #include "UserContentController.h"
@@ -149,13 +149,13 @@
 #include "WindowFeatures.h"
 #include "XMLDocumentParser.h"
 #include <ranges>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Ref.h>
 #include <wtf/SetForScope.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/SystemTracing.h>
 #include <wtf/URL.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/WTFString.h>

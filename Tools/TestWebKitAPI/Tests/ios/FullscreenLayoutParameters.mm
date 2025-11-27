@@ -34,8 +34,8 @@
 #import "WKWebViewConfigurationExtras.h"
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/_WKFullscreenDelegate.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
+#import <wtf/memory/BlockPtr.h>
 
 static void swizzledPresentViewController(UIViewController *, SEL, UIViewController *, BOOL, dispatch_block_t completion)
 {

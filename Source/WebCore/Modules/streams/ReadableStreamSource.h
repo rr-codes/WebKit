@@ -30,8 +30,8 @@
 
 #include "ReadableStreamDefaultController.h"
 #include <WebCore/JSDOMPromiseDeferredForward.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

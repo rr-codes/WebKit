@@ -28,8 +28,8 @@
 
 #include <functional>
 #include <stdio.h>
-#include <wtf/Atomics.h>
 #include <wtf/Threading.h>
+#include <wtf/concurrency/Atomics.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

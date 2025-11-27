@@ -26,8 +26,8 @@
 
 #pragma once
 
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

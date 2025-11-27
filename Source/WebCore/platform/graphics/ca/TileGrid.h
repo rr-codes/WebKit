@@ -30,12 +30,12 @@
 #include "PlatformCALayerClient.h"
 #include "TileGridIdentifier.h"
 #include "Timer.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/Deque.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/HashMap.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if ENABLE(RE_DYNAMIC_CONTENT_SCALING)
 #include "DynamicContentScalingDisplayList.h"

@@ -23,8 +23,8 @@
 
 #include <array>
 #include <unicode/utypes.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/Latin1Character.h>
 
 namespace WTF {

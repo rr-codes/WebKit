@@ -24,9 +24,8 @@
  */
 
 #import "config.h"
-#import <WebKit/WKFoundation.h>
-
 #import "DeprecatedGlobalValues.h"
+
 #import "HTTPServer.h"
 #import "PlatformUtilities.h"
 #import "Test.h"
@@ -40,6 +39,7 @@
 #import <WebKit/WKDownload.h>
 #import <WebKit/WKDownloadDelegate.h>
 #import <WebKit/WKErrorPrivate.h>
+#import <WebKit/WKFoundation.h>
 #import <WebKit/WKNavigationDelegatePrivate.h>
 #import <WebKit/WKNavigationResponsePrivate.h>
 #import <WebKit/WKProcessPoolPrivate.h>
@@ -55,7 +55,6 @@
 #import <WebKit/_WKFrameTreeNode.h>
 #import <WebKit/_WKProcessPoolConfiguration.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/MainThread.h>
 #import <wtf/MonotonicTime.h>
@@ -63,6 +62,7 @@
 #import <wtf/StdLibExtras.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 #import <wtf/text/WTFString.h>
 

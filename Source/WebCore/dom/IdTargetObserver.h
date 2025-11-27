@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/AtomString.h>
 
 namespace WebCore {

@@ -34,10 +34,10 @@
 #include <WebCore/ImageBufferResourceLimits.h>
 #include <WebCore/ProcessIdentity.h>
 #include <WebCore/RenderingResourceIdentifier.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/FastMalloc.h>
 
 #if USE(IOSURFACE)
 #include <WebCore/IOSurfacePool.h>

@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WeakPtr.h>
 

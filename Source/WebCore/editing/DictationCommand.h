@@ -27,7 +27,7 @@
 
 #include "DictationAlternative.h"
 #include "TextInsertionBaseCommand.h"
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

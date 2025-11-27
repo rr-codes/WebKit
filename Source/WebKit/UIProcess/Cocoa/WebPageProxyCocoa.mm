@@ -24,9 +24,8 @@
  */
 
 #import "config.h"
-#import "WebPageProxy.h"
-
 #import "APIAttachment.h"
+
 #import "APINavigation.h"
 #import "APIPageConfiguration.h"
 #import "APIUIClient.h"
@@ -51,17 +50,15 @@
 #import "RemoteLayerTreeCommitBundle.h"
 #import "RemoteLayerTreeTransaction.h"
 #import "SafeBrowsingSPI.h"
-#import "SafeBrowsingSoftLink.h"
 #import "SharedBufferReference.h"
 #import "SynapseSPI.h"
 #import "VideoPresentationManagerProxy.h"
-#import "WKErrorInternal.h"
-#import "WKWebView.h"
 #import "WebContextMenuProxy.h"
 #import "WebFrameProxy.h"
 #import "WebPage.h"
 #import "WebPageLoadTiming.h"
 #import "WebPageMessages.h"
+#import "WebPageProxy.h"
 #import "WebPageProxyInternals.h"
 #import "WebPasteboardProxy.h"
 #import "WebPrivacyHelpers.h"
@@ -70,6 +67,8 @@
 #import "WebProcessProxy.h"
 #import "WebScreenOrientationManagerProxy.h"
 #import "WebsiteDataStore.h"
+#import "WKErrorInternal.h"
+#import "WKWebView.h"
 #import <Foundation/NSURLRequest.h>
 #import <WebCore/AXObjectCache.h>
 #import <WebCore/AppHighlight.h>
@@ -100,12 +99,13 @@
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
 #import <pal/spi/ios/BrowserEngineKitSPI.h>
 #import <pal/spi/mac/QuarantineSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/SoftLinking.h>
 #import <wtf/cf/TypeCastsCF.h>
 #import <wtf/cf/VectorCF.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
+#import "SafeBrowsingSoftLink.h"
 
 #if ENABLE(MEDIA_USAGE)
 #import "MediaUsageManagerCocoa.h"
@@ -123,8 +123,8 @@ SOFT_LINK_CLASS_OPTIONAL(Synapse, SYNotesActivationObserver)
 #endif
 
 #if PLATFORM(IOS_FAMILY)
-#import <WebCore/RenderThemeIOS.h>
 #import "UIKitSPI.h"
+#import <WebCore/RenderThemeIOS.h>
 #else
 #import <WebCore/RenderThemeMac.h>
 #endif

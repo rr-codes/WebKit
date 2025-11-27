@@ -25,19 +25,19 @@
 
 #import "DOMCSSRuleInternal.h"
 
+#import "DOMCSSStyleSheetInternal.h"
+#import "DOMInternal.h"
+#import "DOMNodeInternal.h"
+#import "ExceptionHandlers.h"
 #import <WebCore/CSSImportRule.h>
 #import <WebCore/CSSRule.h>
 #import <WebCore/CSSStyleSheet.h>
-#import "DOMInternal.h"
-#import "DOMCSSStyleSheetInternal.h"
-#import "DOMNodeInternal.h"
-#import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebCoreObjCExtras.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL reinterpret_cast<WebCore::CSSRule*>(_internal)
 

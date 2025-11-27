@@ -30,11 +30,11 @@
 #include <WebCore/Logging.h>
 #include <WebCore/MediaSourceConfiguration.h>
 #include <WebCore/SourceBufferParser.h>
-#include <wtf/Box.h>
 #include <wtf/LoggerHelper.h>
 #include <wtf/TypeCasts.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/Box.h>
 
 OBJC_CLASS AVAsset;
 OBJC_CLASS AVStreamDataParser;

@@ -28,6 +28,8 @@
 
 #if PLATFORM(IOS_FAMILY)
 
+#import "_WKActivatedElementInfoInternal.h"
+#import "_WKWarningView.h"
 #import "APIFindClient.h"
 #import "FrontBoardServicesSPI.h"
 #import "LayerProperties.h"
@@ -46,6 +48,12 @@
 #import "VideoPresentationManagerProxy.h"
 #import "ViewGestureController.h"
 #import "VisibleContentRectUpdateInfo.h"
+#import "WebBackForwardList.h"
+#import "WebIOSEventFactory.h"
+#import "WebPage.h"
+#import "WebPageProxy.h"
+#import "WebPreferences.h"
+#import "WebProcessPool.h"
 #import "WKBackForwardListItemInternal.h"
 #import "WKColorExtensionView.h"
 #import "WKContentViewInteraction.h"
@@ -60,14 +68,6 @@
 #import "WKWebViewContentProviderRegistry.h"
 #import "WKWebViewPrivate.h"
 #import "WKWebViewPrivateForTestingIOS.h"
-#import "WebBackForwardList.h"
-#import "WebIOSEventFactory.h"
-#import "WebPage.h"
-#import "WebPageProxy.h"
-#import "WebPreferences.h"
-#import "WebProcessPool.h"
-#import "_WKActivatedElementInfoInternal.h"
-#import "_WKWarningView.h"
 #import <WebCore/BoxSides.h>
 #import <WebCore/ColorCocoa.h>
 #import <WebCore/ContentsFormatCocoa.h>
@@ -80,8 +80,6 @@
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
 #import <pal/spi/ios/GraphicsServicesSPI.h>
 #import <ranges>
-#import <wtf/BlockPtr.h>
-#import <wtf/Box.h>
 #import <wtf/EnumTraits.h>
 #import <wtf/FixedVector.h>
 #import <wtf/NeverDestroyed.h>
@@ -92,6 +90,8 @@
 #import <wtf/cocoa/Entitlements.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
+#import <wtf/memory/Box.h>
 #import <wtf/text/MakeString.h>
 
 #if ENABLE(LOCKDOWN_MODE_API)

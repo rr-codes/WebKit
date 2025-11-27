@@ -31,7 +31,7 @@
 #include "Yarr.h"
 #include "YarrInterpreter.h"
 #include <wtf/Assertions.h>
-#include <wtf/BumpPointerAllocator.h>
+#include <wtf/memory/BumpPointerAllocator.h>
 #include <wtf/TZoneMallocInlines.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

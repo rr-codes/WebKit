@@ -33,7 +33,7 @@
 #import "UserInterfaceSwizzler.h"
 #import <WebKit/WKWebpagePreferences.h>
 #import <WebKit/WKWebpagePreferencesPrivate.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/WTFString.h>
 
 @interface ContentModeNavigationDelegate : TestNavigationDelegate

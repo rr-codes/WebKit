@@ -26,10 +26,10 @@
 #pragma once
 
 #include <WebCore/DiagnosticLoggingDomain.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

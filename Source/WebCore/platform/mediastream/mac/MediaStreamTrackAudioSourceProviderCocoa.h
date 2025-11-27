@@ -30,9 +30,9 @@
 #include "MediaStreamTrackPrivate.h"
 #include "RealtimeMediaSource.h"
 #include "WebAudioSourceProviderCocoa.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/MediaTime.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

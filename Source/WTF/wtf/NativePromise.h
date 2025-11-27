@@ -36,7 +36,6 @@
 #include <wtf/Assertions.h>
 #include <wtf/CrossThreadCopier.h>
 #include <wtf/Expected.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/FunctionDispatcher.h>
 #include <wtf/Lock.h>
@@ -51,6 +50,7 @@
 #include <wtf/Unexpected.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/MakeString.h>
 
 namespace WTF {

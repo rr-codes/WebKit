@@ -26,8 +26,8 @@
 #import "config.h"
 #import "MainThreadSharedTimer.h"
 
-#include <wtf/AutodrainedPool.h>
 #include <wtf/cf/NotificationCenterCF.h>
+#include <wtf/memory/AutodrainedPool.h>
 
 #if PLATFORM(MAC)
 #import "PowerObserverMac.h"

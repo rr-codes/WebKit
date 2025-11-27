@@ -26,11 +26,11 @@
 #pragma once
 
 #include <atomic>
-#include <wtf/FastMalloc.h>
 #include <wtf/MainThread.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefCounted.h>
 #include <wtf/SwiftBridging.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

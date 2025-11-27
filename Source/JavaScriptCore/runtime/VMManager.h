@@ -27,7 +27,6 @@
 
 #include <JavaScriptCore/StopTheWorldCallback.h>
 #include <JavaScriptCore/VMThreadContext.h>
-#include <wtf/Atomics.h>
 #include <wtf/Condition.h>
 #include <wtf/DoublyLinkedList.h>
 #include <wtf/Lock.h>
@@ -35,6 +34,7 @@
 #include <wtf/ScopedLambda.h>
 #include <wtf/Seconds.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace JSC {
 

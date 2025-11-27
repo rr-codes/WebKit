@@ -44,8 +44,8 @@
 #include <wtf/Scope.h>
 #include <wtf/SystemTracing.h>
 #include <wtf/WTFProcess.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/WTFString.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 #if PLATFORM(COCOA)
 #include "MachMessage.h"

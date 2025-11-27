@@ -27,7 +27,6 @@
 
 #import "CommandsMixin.h"
 #import "RenderBundle.h"
-#import <wtf/FastMalloc.h>
 #import <wtf/Function.h>
 #import <wtf/HashMap.h>
 #import <wtf/Ref.h>
@@ -35,6 +34,7 @@
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/Vector.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 namespace WebGPU {
 class RenderPipeline;

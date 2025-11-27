@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class SQLiteStatement;

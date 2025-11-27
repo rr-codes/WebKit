@@ -26,11 +26,11 @@
 #ifndef SharedTimer_h
 #define SharedTimer_h
 
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Seconds.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

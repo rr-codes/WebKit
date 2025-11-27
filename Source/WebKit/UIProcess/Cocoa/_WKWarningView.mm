@@ -31,10 +31,10 @@
 #import <WebCore/FontCocoa.h>
 #import <WebCore/LocalizedStrings.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Language.h>
 #import <wtf/MainThread.h>
 #import <wtf/URL.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(WATCHOS)
 #import "PepperUICoreSPI.h"

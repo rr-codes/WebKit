@@ -37,10 +37,10 @@
 
 #include <WebCore/MediaStreamRequest.h>
 #include <WebCore/RealtimeMediaSource.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Function.h>
 #include <wtf/RefPtr.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 #if PLATFORM(COCOA)

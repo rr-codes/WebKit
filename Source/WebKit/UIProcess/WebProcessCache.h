@@ -29,12 +29,12 @@
 #include "WebProcessProxy.h"
 #include <WebCore/Site.h>
 #include <pal/SessionID.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebKit {

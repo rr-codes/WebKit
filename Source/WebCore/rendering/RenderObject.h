@@ -31,10 +31,10 @@
 #include <WebCore/RenderObjectEnums.h>
 #include <WebCore/RenderStyleConstants.h>
 #include <WebCore/RepaintRectCalculation.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/EnumSet.h>
 #include <wtf/Platform.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WTF {
 class TextStream;

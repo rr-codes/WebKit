@@ -27,8 +27,8 @@
 
 #include <WebCore/IDBKeyPath.h>
 #include <WebCore/IDBResourceIdentifier.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

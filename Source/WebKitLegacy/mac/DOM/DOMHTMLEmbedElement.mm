@@ -32,8 +32,8 @@
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::HTMLEmbedElement*>(reinterpret_cast<WebCore::Node*>(_internal))
 

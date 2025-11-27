@@ -30,7 +30,7 @@
 #include "JITCodeMap.h"
 #include "StructureStubInfo.h"
 #include <wtf/ButterflyArray.h>
-#include <wtf/CompactPointerTuple.h>
+#include <wtf/memory/CompactPointerTuple.h>
 
 #if ENABLE(JIT)
 

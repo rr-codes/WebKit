@@ -32,12 +32,12 @@
 #include <WebCore/RealtimeMediaSource.h>
 #include <WebCore/RealtimeMediaSourceSettings.h>
 #include <WebCore/UserActivity.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Observer.h>
 #include <wtf/RefPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 using CGImageRef = CGImage*;

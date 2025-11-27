@@ -28,10 +28,10 @@
 #include "IDBIndexInfo.h"
 #include "IDBKeyData.h"
 #include "IDBResourceIdentifier.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

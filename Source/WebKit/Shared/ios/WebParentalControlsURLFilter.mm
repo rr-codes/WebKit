@@ -31,10 +31,10 @@
 #import "Logging.h"
 #import <WebCore/ParentalControlsContentFilter.h>
 #import <pal/spi/ios/BrowserEngineKitSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/CrossThreadCopier.h>
 #import <wtf/WorkQueue.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

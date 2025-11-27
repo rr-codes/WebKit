@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/Hasher.h>
 #include <wtf/Platform.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

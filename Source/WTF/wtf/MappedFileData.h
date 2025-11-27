@@ -29,8 +29,8 @@
 #include <wtf/Forward.h>
 
 #if HAVE(MMAP)
-#include <wtf/MallocSpan.h>
 #include <wtf/Mmap.h>
+#include <wtf/memory/MallocSpan.h>
 #endif
 
 #if OS(WINDOWS)

@@ -29,7 +29,7 @@
 #include "ExceptionHelpers.h"
 #include "HashMapHelper.h"
 #include "JSObject.h"
-#include <wtf/MallocPtr.h>
+#include <wtf/memory/MallocPtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

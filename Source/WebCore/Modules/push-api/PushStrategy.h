@@ -29,8 +29,8 @@
 #include <WebCore/PushPermissionState.h>
 #include <WebCore/PushSubscriptionData.h>
 #include <WebCore/PushSubscriptionIdentifier.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

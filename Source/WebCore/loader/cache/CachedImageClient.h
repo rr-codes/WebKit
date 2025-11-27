@@ -24,7 +24,7 @@
 
 #include <WebCore/CachedResourceClient.h>
 #include <WebCore/ImageTypes.h>
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -33,6 +33,6 @@
 #ifdef __cplusplus
 #undef new
 #undef delete
-#include <wtf/FastMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #endif

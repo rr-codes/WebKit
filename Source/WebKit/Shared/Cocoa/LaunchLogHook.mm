@@ -29,8 +29,8 @@
 #import "LaunchLogMessages.h"
 #import "Logging.h"
 #import "XPCEndpoint.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/SystemFree.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cocoa/OSLogSPI.h>
 
 #if ENABLE(LOGD_BLOCKING_IN_WEBCONTENT)

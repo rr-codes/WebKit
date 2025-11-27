@@ -31,10 +31,10 @@
 #include "WebAuthenticationRequestData.h"
 #include <WebCore/AuthenticatorResponse.h>
 #include <WebCore/ExceptionData.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/spi/cocoa/SecuritySPI.h>
 
 OBJC_CLASS LAContext;

@@ -25,15 +25,15 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
-#include <wtf/DebugHeap.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Nonmovable.h>
 #include <wtf/PrintStream.h>
 #include <wtf/ScopedLambda.h>
 #include <wtf/SentinelLinkedList.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/DebugHeap.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace JSC {
 

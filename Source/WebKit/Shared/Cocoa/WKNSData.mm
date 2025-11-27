@@ -27,7 +27,7 @@
 #import "WKNSData.h"
 
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKNSData {
     AlignedStorage<API::Data> _data;

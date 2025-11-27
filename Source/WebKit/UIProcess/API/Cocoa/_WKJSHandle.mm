@@ -31,7 +31,7 @@
 #import "WebFrameProxy.h"
 #import "WebPageProxy.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation _WKJSHandle
 

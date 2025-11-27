@@ -31,7 +31,7 @@
 #include "HTMLTokenizer.h"
 #include "PendingScriptClient.h"
 #include "ScriptableDocumentParser.h"
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -28,10 +28,10 @@
 #include <WebCore/BackgroundFetchRecordLoader.h>
 #include <WebCore/ProcessIdentifier.h>
 #include <WebCore/ScriptExecutionContextIdentifier.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/HashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
 
 namespace WebCore {
 

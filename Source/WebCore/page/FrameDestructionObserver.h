@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/CheckedRef.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class FrameDestructionObserver;

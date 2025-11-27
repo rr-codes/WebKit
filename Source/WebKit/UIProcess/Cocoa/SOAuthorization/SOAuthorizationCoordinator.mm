@@ -34,16 +34,16 @@
 #import "PopUpSOAuthorizationSession.h"
 #import "RedirectSOAuthorizationSession.h"
 #import "SubFrameSOAuthorizationSession.h"
-#import "WKSOAuthorizationDelegate.h"
 #import "WebFrameProxy.h"
 #import "WebPageProxy.h"
+#import "WKSOAuthorizationDelegate.h"
 #import <WebCore/ResourceRequest.h>
 #import <pal/spi/cf/CFNetworkSPI.h>
 #import <pal/spi/cocoa/AuthKitSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Function.h>
-#import <wtf/ThreadAssertions.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/ThreadAssertions.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import <pal/cocoa/AppSSOSoftLink.h>
 

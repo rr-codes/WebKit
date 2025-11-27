@@ -43,7 +43,7 @@
 #import "WKError.h"
 #import "WebInspectorUIExtensionControllerProxy.h"
 #import "_WKInspectorExtensionInternal.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #endif
 
 

@@ -24,9 +24,8 @@
  */
 
 #include "config.h"
-#include "SVGToOTFFontConversion.h"
-
 #include "CSSStyleDeclaration.h"
+
 #include "ElementChildIteratorInlines.h"
 #include "Glyph.h"
 #include "HTMLParserIdioms.h"
@@ -38,10 +37,11 @@
 #include "SVGMissingGlyphElement.h"
 #include "SVGPathParser.h"
 #include "SVGPathStringViewSource.h"
+#include "SVGToOTFFontConversion.h"
 #include "SVGVKernElement.h"
 #include <ranges>
-#include <wtf/CheckedRef.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringToIntegerConversion.h>
 #include <wtf/text/StringView.h>
 

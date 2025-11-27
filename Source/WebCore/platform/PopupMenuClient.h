@@ -25,8 +25,8 @@
 #include <WebCore/LayoutUnit.h>
 #include <WebCore/PopupMenuStyle.h>
 #include <WebCore/ScrollTypes.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
 
 namespace WebCore {
 

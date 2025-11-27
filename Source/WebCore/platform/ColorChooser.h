@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include <wtf/AbstractRefCounted.h>
+#include <wtf/memory/AbstractRefCounted.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

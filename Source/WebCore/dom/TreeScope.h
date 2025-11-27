@@ -28,12 +28,12 @@
 
 #include <WebCore/HitTestSource.h>
 #include <memory>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/NoVirtualDestructorBase.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomString.h>
 
 namespace JSC {

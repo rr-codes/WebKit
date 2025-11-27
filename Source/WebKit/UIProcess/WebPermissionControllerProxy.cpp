@@ -35,7 +35,7 @@
 #include <WebCore/PermissionState.h>
 #include <WebCore/SecurityOriginData.h>
 #include <optional>
-#include <wtf/GetPtr.h>
+#include <wtf/memory/GetPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>

@@ -28,9 +28,9 @@
 #if ENABLE(ROUTING_ARBITRATION) && HAVE(AVAUDIO_ROUTING_ARBITER)
 
 #include <WebCore/AudioSession.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WTF {
 class Logger;

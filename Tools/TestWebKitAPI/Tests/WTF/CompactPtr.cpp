@@ -24,7 +24,7 @@
  */
 
 #include "config.h"
-#include <wtf/CompactPtr.h>
+#include <wtf/memory/CompactPtr.h>
 
 #include "AlignedRefLogger.h"
 #include "Utilities.h"

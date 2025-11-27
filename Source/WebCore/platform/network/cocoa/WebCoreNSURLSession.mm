@@ -24,16 +24,15 @@
  */
 
 #import "config.h"
-#import "WebCoreNSURLSession.h"
-
 #import "CachedResourceRequest.h"
+
 #import "ParsedRequestRange.h"
 #import "PlatformMediaResourceLoader.h"
 #import "SharedBuffer.h"
 #import "SubresourceLoader.h"
+#import "WebCoreNSURLSession.h"
 #import "WebCoreObjCExtras.h"
 #import <pal/spi/cf/CFNetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/FunctionDispatcher.h>
 #import <wtf/Lock.h>
@@ -41,6 +40,7 @@
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/WorkQueue.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 using namespace WebCore;
 using namespace WTF;

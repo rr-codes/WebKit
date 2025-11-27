@@ -49,12 +49,12 @@
 #include <WebCore/TimingFunction.h>
 #include <WebCore/TransformOperations.h>
 #include <WebCore/WindRule.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/Platform.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/TypeCasts.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if ENABLE(THREADED_ANIMATIONS)
 #include <WebCore/AcceleratedEffectStack.h>

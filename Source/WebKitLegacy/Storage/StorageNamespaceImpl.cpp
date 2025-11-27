@@ -23,17 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "StorageNamespaceImpl.h"
-
 #include "StorageAreaImpl.h"
+
+#include "StorageNamespaceImpl.h"
 #include "StorageSyncManager.h"
 #include "StorageTracker.h"
 #include <WebCore/SecurityOrigin.h>
 #include <WebCore/StorageMap.h>
 #include <WebCore/StorageType.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/MainThread.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/StringHash.h>
 
 using namespace WebCore;

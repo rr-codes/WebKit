@@ -27,7 +27,6 @@
 
 #import "ShaderStage.h"
 #import <wtf/EnumeratedArray.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/HashMap.h>
 #import <wtf/HashTraits.h>
 #import <wtf/Ref.h>
@@ -35,6 +34,7 @@
 #import <wtf/TZoneMalloc.h>
 #import <wtf/Vector.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUBindGroupLayoutImpl {
 };

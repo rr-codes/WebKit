@@ -24,9 +24,9 @@
  */
 
 #import <WebCore/RunLoopObserver.h>
-#import <wtf/CheckedPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 @class WebView;
 

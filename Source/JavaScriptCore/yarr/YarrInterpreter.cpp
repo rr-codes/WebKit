@@ -25,20 +25,20 @@
  */
 
 #include "config.h"
-#include "YarrInterpreter.h"
-
 #include "ConcurrentJSLock.h"
+
 #include "Options.h"
 #include "SuperSampler.h"
 #include "Yarr.h"
 #include "YarrCanonicalize.h"
+#include "YarrInterpreter.h"
 #include <numeric>
 #include <wtf/BitVector.h>
-#include <wtf/BumpPointerAllocator.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/DataLog.h>
 #include <wtf/StackCheck.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/BumpPointerAllocator.h>
 #include <wtf/text/WTFString.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

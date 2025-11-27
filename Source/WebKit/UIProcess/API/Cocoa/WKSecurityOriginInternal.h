@@ -26,7 +26,7 @@
 #import <WebKit/WKSecurityOrigin.h>
 
 #import "APISecurityOrigin.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

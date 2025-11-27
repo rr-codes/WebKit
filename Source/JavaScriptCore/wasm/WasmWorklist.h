@@ -29,11 +29,11 @@
 
 #include <queue>
 
-#include <wtf/AutomaticThread.h>
 #include <wtf/PrintStream.h>
 #include <wtf/PriorityQueue.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/concurrency/AutomaticThread.h>
 
 namespace JSC {
 

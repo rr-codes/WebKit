@@ -29,9 +29,9 @@
 #include "LibWebRTCMacros.h"
 #include "LibWebRTCRefWrappers.h"
 #include "RTCDTMFSenderBackend.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

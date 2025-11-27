@@ -35,9 +35,9 @@
 #include "Styleable.h"
 #include "ViewTransitionUpdateCallback.h"
 #include "VisibilityChangeClient.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomString.h>
 
 namespace JSC {

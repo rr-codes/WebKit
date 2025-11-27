@@ -33,10 +33,10 @@
 #include "ActiveDOMObject.h"
 #include "EventTarget.h"
 #include "WebSocketChannelClient.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/URL.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace JSC {
 class ArrayBuffer;

@@ -28,9 +28,9 @@
 #if ENABLE(VIDEO)
 
 #include <WebCore/Supplementable.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/TypeCasts.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace JSC {
 class JSGlobalObject;

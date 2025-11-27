@@ -24,9 +24,8 @@
  */
 
 #import "config.h"
-#import "NetworkSessionCocoa.h"
-
 #import "AppStoreDaemonSPI.h"
+
 #import "AuthenticationChallengeDisposition.h"
 #import "AuthenticationManager.h"
 #import "DefaultWebBrowserChecks.h"
@@ -38,12 +37,13 @@
 #import "NetworkLoad.h"
 #import "NetworkProcess.h"
 #import "NetworkProcessProxyMessages.h"
+#import "NetworkSessionCocoa.h"
 #import "NetworkSessionCreationParameters.h"
 #import "PrivateRelayed.h"
-#import "WKURLSessionTaskDelegate.h"
 #import "WebErrors.h"
 #import "WebPageNetworkParameters.h"
 #import "WebSocketTask.h"
+#import "WKURLSessionTaskDelegate.h"
 #import <Foundation/NSURLSession.h>
 #import <WebCore/AdvancedPrivacyProtections.h>
 #import <WebCore/Credential.h>
@@ -59,7 +59,6 @@
 #import <WebCore/ThreadableWebSocketChannel.h>
 #import <WebCore/WebCoreURLResponse.h>
 #import <pal/spi/cf/CFNetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/ObjCRuntimeExtras.h>
@@ -74,6 +73,7 @@
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/darwin/WeakLinking.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 #import <wtf/text/WTFString.h>
 

@@ -29,7 +29,7 @@
 #include <JavaScriptCore/CommonIdentifiers.h>
 #include <JavaScriptCore/DirectArgumentsOffset.h>
 #include <JavaScriptCore/GenericArgumentsImpl.h>
-#include <wtf/CagedPtr.h>
+#include <wtf/memory/CagedPtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

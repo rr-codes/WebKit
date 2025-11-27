@@ -26,7 +26,7 @@
 #import "APIWebPushDaemonConnection.h"
 #import "WKObject.h"
 #import "_WKWebPushDaemonConnection.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

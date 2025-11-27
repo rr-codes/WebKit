@@ -32,7 +32,7 @@
 #include <wtf/Deque.h>
 #include <wtf/Forward.h>
 #include <wtf/TZoneMalloc.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 namespace TestWebKitAPI {
 

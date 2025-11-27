@@ -47,7 +47,7 @@
 #include "WebCodecsVideoFrame.h"
 #include "WebGPUDevice.h"
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/MallocSpan.h>
+#include <wtf/memory/MallocSpan.h>
 
 #if PLATFORM(COCOA)
 #include <Accelerate/Accelerate.h>

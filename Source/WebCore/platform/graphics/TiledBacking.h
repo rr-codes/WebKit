@@ -29,9 +29,9 @@
 #include <WebCore/IntPoint.h>
 #include <WebCore/PlatformLayerIdentifier.h>
 #include <WebCore/TileGridIdentifier.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if ENABLE(RE_DYNAMIC_CONTENT_SCALING)
 #include <WebCore/DynamicContentScalingDisplayList.h>

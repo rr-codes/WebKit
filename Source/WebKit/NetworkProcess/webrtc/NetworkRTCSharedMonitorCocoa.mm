@@ -28,9 +28,9 @@
 #if USE(LIBWEBRTC)
 #import "NetworkRTCSharedMonitor.h"
 
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

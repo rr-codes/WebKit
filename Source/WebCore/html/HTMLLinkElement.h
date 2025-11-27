@@ -31,7 +31,7 @@
 #include <WebCore/LinkLoader.h>
 #include <WebCore/LinkLoaderClient.h>
 #include <WebCore/LinkRelAttribute.h>
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

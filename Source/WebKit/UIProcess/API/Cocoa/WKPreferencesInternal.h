@@ -31,7 +31,7 @@
 
 #import "WKObject.h"
 #import "WebPreferences.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

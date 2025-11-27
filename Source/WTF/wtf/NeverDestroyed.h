@@ -27,10 +27,10 @@
 
 #include <type_traits>
 #include <utility>
-#include <wtf/AlignedStorage.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/MainThread.h>
 #include <wtf/RefCounted.h>
+#include <wtf/memory/AlignedStorage.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 // NeverDestroyed is a smart-pointer-like class that ensures that the destructor
 // for the given object is never called, but doesn't use the heap to allocate it.

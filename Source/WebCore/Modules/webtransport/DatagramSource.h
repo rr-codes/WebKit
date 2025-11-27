@@ -26,7 +26,7 @@
 #pragma once
 
 #include "ReadableStreamSource.h"
-#include <wtf/AbstractRefCounted.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

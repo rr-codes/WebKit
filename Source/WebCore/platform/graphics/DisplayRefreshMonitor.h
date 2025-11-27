@@ -28,11 +28,11 @@
 #include <WebCore/AnimationFrameRate.h>
 #include <WebCore/DisplayUpdate.h>
 #include <WebCore/PlatformScreen.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
-#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/RefPtr.h>
+#include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

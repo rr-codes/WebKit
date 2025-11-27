@@ -29,7 +29,7 @@
 #import "WKBackForwardListItemInternal.h"
 #import "WKNSArray.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKBackForwardList {
     AlignedStorage<WebKit::WebBackForwardList> _list;

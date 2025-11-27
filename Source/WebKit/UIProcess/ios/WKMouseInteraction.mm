@@ -32,12 +32,12 @@
 #import "UIKitSPI.h"
 #import "WebIOSEventFactory.h"
 #import <pal/spi/ios/GraphicsServicesSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Compiler.h>
 #import <wtf/MonotonicTime.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if ENABLE(POINTER_LOCK)
 

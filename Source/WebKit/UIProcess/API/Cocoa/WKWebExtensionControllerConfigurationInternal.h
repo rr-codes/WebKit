@@ -29,7 +29,7 @@
 
 #import "WKObject.h"
 #import "WebExtensionControllerConfiguration.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 template<> struct WrapperTraits<WebExtensionControllerConfiguration> {

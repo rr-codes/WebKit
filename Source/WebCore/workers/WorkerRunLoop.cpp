@@ -48,8 +48,8 @@
 #include <JavaScriptCore/CatchScope.h>
 #include <JavaScriptCore/JSCJSValueInlines.h>
 #include <JavaScriptCore/JSRunLoopTimer.h>
-#include <wtf/AutodrainedPool.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/AutodrainedPool.h>
 
 #if PLATFORM(COCOA)
 #include <wtf/cocoa/RuntimeApplicationChecksCocoa.h>

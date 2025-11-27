@@ -40,10 +40,10 @@
 #import <WebKit/_WKFeature.h>
 #import <WebKit/_WKRemoteObjectInterface.h>
 #import <WebKit/_WKRemoteObjectRegistry.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RefCounted.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 TEST(RemoteObjectRegistry, Basic)
 {

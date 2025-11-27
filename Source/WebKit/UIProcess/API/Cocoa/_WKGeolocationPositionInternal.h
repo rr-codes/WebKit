@@ -28,7 +28,7 @@
 #if TARGET_OS_IPHONE
 
 #import "WebGeolocationPosition.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

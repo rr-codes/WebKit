@@ -27,8 +27,8 @@
 
 #include <JavaScriptCore/SourceID.h>
 #include <JavaScriptCore/TypeLocation.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/GenericHashKey.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace JSC {
 

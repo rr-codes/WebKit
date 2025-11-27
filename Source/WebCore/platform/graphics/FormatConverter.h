@@ -31,8 +31,8 @@
 
 #include "GraphicsContextGL.h"
 #include "IntRect.h"
-#include <wtf/MallocSpan.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WebCore {
 

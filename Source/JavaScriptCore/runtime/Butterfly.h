@@ -28,8 +28,8 @@
 #include <JavaScriptCore/IndexingHeader.h>
 #include <JavaScriptCore/IndexingType.h>
 #include <JavaScriptCore/PropertyStorage.h>
-#include <wtf/Gigacage.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/Gigacage.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

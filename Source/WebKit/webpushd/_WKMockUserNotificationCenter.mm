@@ -26,9 +26,9 @@
 #import "config.h"
 #import "_WKMockUserNotificationCenter.h"
 
-#import <wtf/BlockPtr.h>
 #import <wtf/OSObjectPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if HAVE(FULL_FEATURED_USER_NOTIFICATIONS)
 

@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
 #include <wtf/Lock.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

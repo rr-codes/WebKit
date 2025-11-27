@@ -23,12 +23,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMHTMLSelectElementInternal.h"
-
 #import "DOMHTMLCollectionInternal.h"
+
 #import "DOMHTMLElementInternal.h"
 #import "DOMHTMLFormElementInternal.h"
 #import "DOMHTMLOptionsCollectionInternal.h"
+#import "DOMHTMLSelectElementInternal.h"
 #import "DOMNodeInternal.h"
 #import "DOMNodeListInternal.h"
 #import "ExceptionHandlers.h"
@@ -45,8 +45,8 @@
 #import <WebCore/NodeList.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::HTMLSelectElement*>(reinterpret_cast<WebCore::Node*>(_internal))
 

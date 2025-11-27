@@ -31,11 +31,11 @@
 #include <WebCore/ScrollingCoordinator.h>
 #include <WebCore/ScrollingPlatformLayer.h>
 #include <stdint.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/TypeCasts.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WTF {
 class TextStream;

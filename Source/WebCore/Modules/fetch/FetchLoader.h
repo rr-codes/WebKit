@@ -31,8 +31,8 @@
 #include <WebCore/ThreadableLoader.h>
 #include <WebCore/ThreadableLoaderClient.h>
 #include <WebCore/URLKeepingBlobAlive.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/URL.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -29,7 +29,7 @@
 #if ENABLE(SCREEN_TIME)
 
 #import "WebsiteDataStoreConfiguration.h"
-#import <wtf/BlockPtr.h>
+#import <pal/cocoa/ScreenTimeSoftLink.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/HashSet.h>
 #import <wtf/URL.h>
@@ -37,7 +37,7 @@
 #import <wtf/UUID.h>
 #import <wtf/WallTime.h>
 
-#import <pal/cocoa/ScreenTimeSoftLink.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit::ScreenTimeWebsiteDataSupport {
 

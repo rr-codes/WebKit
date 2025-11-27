@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
 #include <wtf/Compiler.h>
 #include <wtf/Locker.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/ThreadSafetyAnalysis.h>
 #include <wtf/ThreadSanitizerSupport.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace TestWebKitAPI {
 struct LockInspector;

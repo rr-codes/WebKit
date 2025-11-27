@@ -31,9 +31,9 @@
 #include <WebCore/GlobalWindowIdentifier.h>
 #include <WebCore/ImageBitmap.h>
 #include <WebCore/ScrollTypes.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefCounted.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -23,10 +23,10 @@
 #include <initializer_list>
 #include <wtf/Compiler.h>
 #include <wtf/Forward.h>
-#include <wtf/GetPtr.h>
 #include <wtf/HashTable.h>
 #include <wtf/HashTraits.h>
 #include <wtf/RobinHoodHashTable.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WTF {
 

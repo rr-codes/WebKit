@@ -26,11 +26,11 @@
 #pragma once
 
 #include "FloatRect.h"
-#include <wtf/FastMalloc.h>
 #include <wtf/Markable.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

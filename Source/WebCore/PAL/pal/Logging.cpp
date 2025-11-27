@@ -30,8 +30,8 @@
 
 #if PLATFORM(COCOA)
 #include <notify.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 #endif
 
 namespace PAL {

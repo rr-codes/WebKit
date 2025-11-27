@@ -29,7 +29,7 @@
 #include <WebCore/CaptureDevice.h>
 #include <WebCore/MediaStreamTrackHintValue.h>
 #include <WebCore/RealtimeMediaSource.h>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

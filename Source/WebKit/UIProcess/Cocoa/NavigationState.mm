@@ -24,8 +24,13 @@
  */
 
 #import "config.h"
-#import "NavigationState.h"
+#import "_WKContentRuleListActionInternal.h"
 
+#import "_WKErrorRecoveryAttempting.h"
+#import "_WKFrameHandleInternal.h"
+#import "_WKPageLoadTimingInternal.h"
+#import "_WKRenderingProgressEventsInternal.h"
+#import "_WKSameDocumentNavigationTypeInternal.h"
 #import "APIContentRuleListAction.h"
 #import "APIFrameInfo.h"
 #import "APINavigationData.h"
@@ -39,27 +44,10 @@
 #import "CompletionHandlerCallChecker.h"
 #import "Logging.h"
 #import "NavigationActionData.h"
+#import "NavigationState.h"
 #import "PageLoadState.h"
 #import "ProcessTerminationReason.h"
 #import "SOAuthorizationCoordinator.h"
-#import "WKBackForwardListInternal.h"
-#import "WKBackForwardListItemInternal.h"
-#import "WKDownloadInternal.h"
-#import "WKFrameInfoInternal.h"
-#import "WKHistoryDelegatePrivate.h"
-#import "WKMarketplaceKit.h"
-#import "WKNSDictionary.h"
-#import "WKNSURLAuthenticationChallenge.h"
-#import "WKNSURLExtras.h"
-#import "WKNSURLRequest.h"
-#import "WKNavigationActionInternal.h"
-#import "WKNavigationDataInternal.h"
-#import "WKNavigationDelegatePrivate.h"
-#import "WKNavigationInternal.h"
-#import "WKNavigationResponseInternal.h"
-#import "WKReloadFrameErrorRecoveryAttempter.h"
-#import "WKWebViewInternal.h"
-#import "WKWebpagePreferencesInternal.h"
 #import "WebCredential.h"
 #import "WebFrameProxy.h"
 #import "WebNavigationState.h"
@@ -67,12 +55,24 @@
 #import "WebProcessProxy.h"
 #import "WebProtectionSpace.h"
 #import "WebsiteDataStore.h"
-#import "_WKContentRuleListActionInternal.h"
-#import "_WKErrorRecoveryAttempting.h"
-#import "_WKFrameHandleInternal.h"
-#import "_WKPageLoadTimingInternal.h"
-#import "_WKRenderingProgressEventsInternal.h"
-#import "_WKSameDocumentNavigationTypeInternal.h"
+#import "WKBackForwardListInternal.h"
+#import "WKBackForwardListItemInternal.h"
+#import "WKDownloadInternal.h"
+#import "WKFrameInfoInternal.h"
+#import "WKHistoryDelegatePrivate.h"
+#import "WKMarketplaceKit.h"
+#import "WKNavigationActionInternal.h"
+#import "WKNavigationDataInternal.h"
+#import "WKNavigationDelegatePrivate.h"
+#import "WKNavigationInternal.h"
+#import "WKNavigationResponseInternal.h"
+#import "WKNSDictionary.h"
+#import "WKNSURLAuthenticationChallenge.h"
+#import "WKNSURLExtras.h"
+#import "WKNSURLRequest.h"
+#import "WKReloadFrameErrorRecoveryAttempter.h"
+#import "WKWebpagePreferencesInternal.h"
+#import "WKWebViewInternal.h"
 #import <JavaScriptCore/ConsoleTypes.h>
 #import <WebCore/AuthenticationMac.h>
 #import <WebCore/ContentRuleListMatchedRule.h>
@@ -80,18 +80,18 @@
 #import <WebCore/Credential.h>
 #import <WebCore/SecurityOriginData.h>
 #import <WebCore/SerializedCryptoKeyWrap.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/Scope.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/URL.h>
 #import <wtf/WeakHashMap.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 #if ENABLE(WK_WEB_EXTENSIONS)
-#import "WKWebViewConfigurationPrivate.h"
 #import "WebExtensionController.h"
+#import "WKWebViewConfigurationPrivate.h"
 #endif
 
 #if PLATFORM(IOS_FAMILY) && !PLATFORM(MACCATALYST)

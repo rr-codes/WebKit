@@ -28,8 +28,8 @@
 #include "SharedStringHashTable.h"
 #include <WebCore/SharedMemory.h>
 #include <WebCore/SharedStringHash.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 

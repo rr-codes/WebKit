@@ -25,10 +25,10 @@
 
 #import "_WKInspectorPrivate.h"
 
-#import "WKObject.h"
 #import "WebInspectorUIProxy.h"
-#import <wtf/AlignedStorage.h>
+#import "WKObject.h"
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

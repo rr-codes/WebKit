@@ -32,6 +32,8 @@
 
 #if ENABLE(WK_WEB_EXTENSIONS)
 
+#import "_WKWebExtensionDeclarativeNetRequestRule.h"
+#import "_WKWebExtensionDeclarativeNetRequestTranslator.h"
 #import "APIArray.h"
 #import "APIContentRuleList.h"
 #import "APIContentRuleListStore.h"
@@ -43,26 +45,6 @@
 #import "Logging.h"
 #import "PageLoadStateObserver.h"
 #import "ResourceLoadInfo.h"
-#import "WKNSArray.h"
-#import "WKNSData.h"
-#import "WKNSError.h"
-#import "WKNavigationActionPrivate.h"
-#import "WKNavigationDelegatePrivate.h"
-#import "WKOpenPanelParametersPrivate.h"
-#import "WKPreferencesPrivate.h"
-#import "WKUIDelegatePrivate.h"
-#import "WKWebExtensionContextInternal.h"
-#import "WKWebExtensionControllerDelegatePrivate.h"
-#import "WKWebExtensionControllerInternal.h"
-#import "WKWebExtensionMatchPatternInternal.h"
-#import "WKWebExtensionPermission.h"
-#import "WKWebExtensionTab.h"
-#import "WKWebExtensionWindow.h"
-#import "WKWebViewConfigurationInternal.h"
-#import "WKWebViewInternal.h"
-#import "WKWebpagePreferencesPrivate.h"
-#import "WKWebsiteDataStorePrivate.h"
-#import "WKWindowFeaturesPrivate.h"
 #import "WebExtensionAction.h"
 #import "WebExtensionConstants.h"
 #import "WebExtensionContextProxyMessages.h"
@@ -78,14 +60,31 @@
 #import "WebPreferences.h"
 #import "WebScriptMessageHandler.h"
 #import "WebUserContentControllerProxy.h"
-#import "_WKWebExtensionDeclarativeNetRequestRule.h"
-#import "_WKWebExtensionDeclarativeNetRequestTranslator.h"
+#import "WKNavigationActionPrivate.h"
+#import "WKNavigationDelegatePrivate.h"
+#import "WKNSArray.h"
+#import "WKNSData.h"
+#import "WKNSError.h"
+#import "WKOpenPanelParametersPrivate.h"
+#import "WKPreferencesPrivate.h"
+#import "WKUIDelegatePrivate.h"
+#import "WKWebExtensionContextInternal.h"
+#import "WKWebExtensionControllerDelegatePrivate.h"
+#import "WKWebExtensionControllerInternal.h"
+#import "WKWebExtensionMatchPatternInternal.h"
+#import "WKWebExtensionPermission.h"
+#import "WKWebExtensionTab.h"
+#import "WKWebExtensionWindow.h"
+#import "WKWebpagePreferencesPrivate.h"
+#import "WKWebsiteDataStorePrivate.h"
+#import "WKWebViewConfigurationInternal.h"
+#import "WKWebViewInternal.h"
+#import "WKWindowFeaturesPrivate.h"
 #import <UniformTypeIdentifiers/UTType.h>
 #import <WebCore/LocalizedStrings.h>
 #import <WebCore/TextResourceDecoder.h>
 #import <WebCore/UserScript.h>
 #import <pal/spi/cocoa/NSKeyedUnarchiverSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/EnumTraits.h>
 #import <wtf/FileSystem.h>
@@ -93,11 +92,12 @@
 #import <wtf/URLParser.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 #if ENABLE(INSPECTOR_EXTENSIONS)
-#import "WebInspectorUIExtensionControllerProxy.h"
 #import "_WKInspectorInternal.h"
+#import "WebInspectorUIExtensionControllerProxy.h"
 #endif
 
 #if ENABLE(DNR_ON_RULE_MATCHED_DEBUG)

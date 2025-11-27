@@ -24,9 +24,8 @@
  */
 
 #import "config.h"
-#import "WebCoreResourceHandleAsOperationQueueDelegate.h"
-
 #import "AuthenticationChallenge.h"
+
 #import "AuthenticationMac.h"
 #import "Logging.h"
 #import "NetworkingContext.h"
@@ -38,12 +37,13 @@
 #import "SecurityOrigin.h"
 #import "SharedBuffer.h"
 #import "SynchronousLoaderClient.h"
+#import "WebCoreResourceHandleAsOperationQueueDelegate.h"
 #import "WebCoreURLResponse.h"
 #import <pal/spi/cf/CFNetworkSPI.h>
 #import <pal/spi/cocoa/NSURLConnectionSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 using namespace WebCore;
 

@@ -26,8 +26,8 @@
 #pragma once
 
 #include "MessageReceiver.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Ref.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WTF {
 class WorkQueue;

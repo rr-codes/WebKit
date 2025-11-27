@@ -25,11 +25,11 @@
 #pragma once
 
 #include "AudioBus.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

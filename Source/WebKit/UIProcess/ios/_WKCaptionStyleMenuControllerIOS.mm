@@ -32,16 +32,16 @@
 #import <UIKit/UIKit.h>
 #import <WebCore/CaptionUserPreferencesMediaAF.h>
 #import <WebCore/LocalizedStrings.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Vector.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/WTFString.h>
 
 #if HAVE(AVLEGIBLEMEDIAOPTIONSMENUCONTROLLER)
 #import "_WKCaptionStyleMenuControllerAVKit.h"
 
-#import <pal/spi/cocoa/AVKitSPI.h>
 #import <pal/cf/CoreMediaSoftLink.h>
+#import <pal/spi/cocoa/AVKitSPI.h>
 
 SOFTLINK_AVKIT_FRAMEWORK()
 SOFT_LINK_CLASS_OPTIONAL(AVKit, AVLegibleMediaOptionsMenuController)

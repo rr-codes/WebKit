@@ -30,15 +30,15 @@
  */
 
 #include "config.h"
-#include "ThreadableBlobRegistry.h"
-
 #include "BlobDataFileReference.h"
+
 #include "BlobPart.h"
 #include "BlobRegistry.h"
 #include "BlobURL.h"
 #include "CrossOriginOpenerPolicy.h"
 #include "PolicyContainer.h"
 #include "SecurityOrigin.h"
+#include "ThreadableBlobRegistry.h"
 #include "URLKeepingBlobAlive.h"
 #include <mutex>
 #include <wtf/CrossThreadQueue.h>
@@ -49,8 +49,8 @@
 #include <wtf/NeverDestroyed.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSpecific.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/StringHash.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 namespace WebCore {
 

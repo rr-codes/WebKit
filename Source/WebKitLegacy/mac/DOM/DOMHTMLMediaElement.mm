@@ -41,8 +41,8 @@
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/TimeRanges.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL RefPtr { static_cast<WebCore::HTMLMediaElement*>(reinterpret_cast<WebCore::Node*>(_internal)) }
 

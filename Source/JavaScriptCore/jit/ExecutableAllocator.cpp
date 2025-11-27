@@ -32,13 +32,11 @@
 #include "JITOperationValidation.h"
 #include "LinkBuffer.h"
 #include <bit>
-#include <wtf/ByteOrder.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/FastBitVector.h>
 #include <wtf/FileSystem.h>
 #include <wtf/FixedVector.h>
 #include <wtf/IterationStatus.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/PageReservation.h>
 #include <wtf/ProcessID.h>
 #include <wtf/RedBlackTree.h>
@@ -48,6 +46,8 @@
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/UUID.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/memory/ByteOrder.h>
+#include <wtf/memory/MallocSpan.h>
 
 #if ENABLE(LIBPAS_JIT_HEAP)
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

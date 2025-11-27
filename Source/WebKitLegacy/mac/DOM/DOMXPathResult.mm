@@ -23,10 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMXPathResultInternal.h"
-
 #import "DOMInternal.h"
+
 #import "DOMNodeInternal.h"
+#import "DOMXPathResultInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/Node.h>
@@ -34,8 +34,8 @@
 #import <WebCore/WebCoreObjCExtras.h>
 #import <WebCore/WebScriptObjectPrivate.h>
 #import <WebCore/XPathResult.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL reinterpret_cast<WebCore::XPathResult*>(_internal)
 

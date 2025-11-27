@@ -28,6 +28,7 @@
 #ifdef __cplusplus
 
 #include <WebKit/WKType.h>
+#include <wtf/RetainPtr.h>
 
 namespace detail {
 template<typename> struct TypeCheckHelper;

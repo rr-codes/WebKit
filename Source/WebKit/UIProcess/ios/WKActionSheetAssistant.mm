@@ -28,16 +28,16 @@
 
 #if PLATFORM(IOS_FAMILY)
 
-#import "APIUIClient.h"
-#import "CompactContextMenuPresenter.h"
-#import "ImageAnalysisUtilities.h"
-#import "WKActionSheet.h"
-#import "WKContentViewInteraction.h"
-#import "WKNSURLExtras.h"
-#import "WebPageProxy.h"
 #import "_WKActivatedElementInfoInternal.h"
 #import "_WKCaptionStyleMenuController.h"
 #import "_WKElementActionInternal.h"
+#import "APIUIClient.h"
+#import "CompactContextMenuPresenter.h"
+#import "ImageAnalysisUtilities.h"
+#import "WebPageProxy.h"
+#import "WKActionSheet.h"
+#import "WKContentViewInteraction.h"
+#import "WKNSURLExtras.h"
 #import <UIKit/UIView.h>
 #import <WebCore/CaptionDisplaySettingsOptions.h>
 #import <WebCore/DataDetection.h>
@@ -54,8 +54,8 @@
 #import <wtf/cocoa/Entitlements.h>
 #import <wtf/cocoa/NSURLExtras.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/concurrency/BinarySemaphore.h>
 #import <wtf/text/WTFString.h>
-#import <wtf/threads/BinarySemaphore.h>
 
 #if HAVE(APP_LINKS)
 #import <pal/spi/cocoa/LaunchServicesSPI.h>

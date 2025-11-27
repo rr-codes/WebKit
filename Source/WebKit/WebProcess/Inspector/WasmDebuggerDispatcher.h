@@ -27,8 +27,8 @@
 #if ENABLE(REMOTE_INSPECTOR) && ENABLE(WEBASSEMBLY)
 
 #include "MessageReceiver.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Ref.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WTF {

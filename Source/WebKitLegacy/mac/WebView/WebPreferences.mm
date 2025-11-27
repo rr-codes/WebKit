@@ -27,9 +27,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "WebPreferencesInternal.h"
-
 #import "NetworkStorageSessionMap.h"
+
 #import "TestingFunctions.h"
 #import "WebFeature.h"
 #import "WebFrameNetworkingContext.h"
@@ -40,6 +39,7 @@
 #import "WebNSURLExtras.h"
 #import "WebPreferenceKeysPrivate.h"
 #import "WebPreferencesDefinitions.h"
+#import "WebPreferencesInternal.h"
 #import <JavaScriptCore/InitializeThreading.h>
 #import <WebCore/AudioSession.h>
 #import <WebCore/MediaPlayerEnums.h>
@@ -49,7 +49,6 @@
 #import <WebCore/WebCoreMainThread.h>
 #import <pal/spi/cf/CFNetworkSPI.h>
 #import <pal/text/TextEncodingRegistry.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Compiler.h>
 #import <wtf/MainThread.h>
 #import <wtf/OSObjectPtr.h>
@@ -58,6 +57,7 @@
 #import <wtf/RunLoop.h>
 #import <wtf/RuntimeApplicationChecks.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 using namespace WebCore;
 

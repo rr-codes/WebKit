@@ -26,9 +26,9 @@
 #ifndef SQLiteTransaction_h
 #define SQLiteTransaction_h
 
-#include <wtf/CheckedRef.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

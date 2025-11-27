@@ -20,12 +20,12 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

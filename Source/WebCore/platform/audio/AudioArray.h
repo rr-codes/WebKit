@@ -33,8 +33,8 @@
 #include <span>
 #include <string.h>
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WebCore {
 

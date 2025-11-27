@@ -29,9 +29,9 @@
 
 #include "LegacyCDM.h"
 #include <JavaScriptCore/Forward.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

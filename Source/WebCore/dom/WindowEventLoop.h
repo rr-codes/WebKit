@@ -28,10 +28,10 @@
 #include <WebCore/EventLoop.h>
 #include <WebCore/GCReachableRef.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashMap.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

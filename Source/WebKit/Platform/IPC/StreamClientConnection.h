@@ -32,12 +32,12 @@
 #include "MessageNames.h"
 #include "StreamClientConnectionBuffer.h"
 #include "StreamServerConnection.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/Scope.h>
 #include <wtf/SystemTracing.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Threading.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 namespace IPCTestingAPI {

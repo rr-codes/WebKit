@@ -35,7 +35,7 @@
 #include <optional>
 #include <wtf/Lock.h>
 #include <wtf/Scope.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 namespace TestWebKitAPI {
 

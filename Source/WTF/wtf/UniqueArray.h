@@ -26,9 +26,9 @@
 #pragma once
 
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/FastMalloc.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WTF {
 

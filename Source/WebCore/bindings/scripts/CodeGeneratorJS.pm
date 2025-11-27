@@ -4577,7 +4577,7 @@ sub GenerateImplementation
     AddToImplIncludes("JSDOMBinding.h");
     AddToImplIncludes("JSDOMExceptionHandling.h");
     AddToImplIncludes("JSDOMWrapperCache.h");
-    AddToImplIncludes("<wtf/GetPtr.h>");
+    AddToImplIncludes("<wtf/memory/GetPtr.h>");
     AddToImplIncludes("<wtf/PointerPreparations.h>");
     AddToImplIncludes("<JavaScriptCore/PropertyNameArray.h>") if $indexedGetterOperation;
     AddToImplIncludes("JSDOMMapLike.h") if $interface->mapLike;
@@ -5294,7 +5294,7 @@ sub GenerateImplementation
         push(@implContent, "    Base::visitChildren(thisObject, visitor);\n");
         push(@implContent, "    thisObject->visitAdditionalChildren(visitor);\n") if $interface->extendedAttributes->{JSCustomMarkFunction};
         if ($interface->extendedAttributes->{GenerateAddOpaqueRoot}) {
-            AddToImplIncludes("<wtf/GetPtr.h>");
+            AddToImplIncludes("<wtf/memory/GetPtr.h>");
             AddToImplIncludes("WebCoreOpaqueRootInlines.h");
             my $functionName = $interface->extendedAttributes->{GenerateAddOpaqueRoot};
             $functionName = "opaqueRoot" if $functionName eq "VALUE_IS_MISSING";

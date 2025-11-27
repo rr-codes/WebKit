@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -24,13 +24,13 @@
  */
 
 #include "config.h"
-#include <wtf/RunLoop.h>
-
 #include <wtf/NeverDestroyed.h>
+
 #include <wtf/Ref.h>
+#include <wtf/RunLoop.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/StringBuilder.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 namespace WTF {
 

@@ -29,9 +29,9 @@
 #include <WebCore/StorageArea.h>
 #include <WebCore/StorageNamespace.h>
 #include <pal/SessionID.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebKit {

@@ -26,8 +26,8 @@
 #pragma once
 
 #include <objc/runtime.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/FastMalloc.h>
 
 class ClassMethodSwizzler {
     WTF_DEPRECATED_MAKE_FAST_ALLOCATED(ClassMethodSwizzler);

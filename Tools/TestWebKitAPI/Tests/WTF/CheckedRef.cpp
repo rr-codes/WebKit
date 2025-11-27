@@ -26,10 +26,10 @@
 #include "config.h"
 
 #include "Utilities.h"
-#include <wtf/CheckedRef.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashSet.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace TestWebKitAPI {
 

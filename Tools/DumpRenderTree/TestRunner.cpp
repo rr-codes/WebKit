@@ -58,7 +58,7 @@
 
 #if PLATFORM(IOS_FAMILY)
 #include <WebCore/WebCoreThreadRun.h>
-#include <wtf/BlockPtr.h>
+#include <wtf/memory/BlockPtr.h>
 #endif
 
 #if PLATFORM(MAC) && !PLATFORM(IOS_FAMILY)

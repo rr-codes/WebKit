@@ -28,9 +28,9 @@
 #include "BitmapImageDescriptor.h"
 #include "ImageFrameWorkQueue.h"
 #include "ImageSource.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/Expected.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

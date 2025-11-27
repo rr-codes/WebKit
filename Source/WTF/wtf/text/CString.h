@@ -26,13 +26,13 @@
 #pragma once
 
 #include <span>
-#include <wtf/DebugHeap.h>
 #include <wtf/HashFunctions.h>
 #include <wtf/HashTraits.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/SwiftBridging.h>
+#include <wtf/memory/DebugHeap.h>
 
 namespace WTF {
 

@@ -32,9 +32,9 @@
 #import "UIScriptContext.h"
 #import <JavaScriptCore/OpaqueJSString.h>
 #import <WebCore/FloatRect.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/WorkQueue.h>
+#import <wtf/memory/BlockPtr.h>
 
 extern RetainPtr<DumpRenderTreeBrowserView> gWebBrowserView;
 extern RetainPtr<DumpRenderTreeWebScrollView> gWebScrollView;

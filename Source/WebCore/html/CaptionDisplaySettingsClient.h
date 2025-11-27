@@ -26,8 +26,8 @@
 #pragma once
 
 #include <WebCore/FloatRect.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

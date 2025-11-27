@@ -31,9 +31,9 @@
 #import "CtapNfcDriver.h"
 #import "NearFieldSPI.h"
 #import "NfcConnection.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RunLoop.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import "NearFieldSoftLink.h"
 

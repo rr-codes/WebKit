@@ -24,14 +24,14 @@
  */
 
 #import <dispatch/dispatch.h>
-#import <wtf/Box.h>
 #import <wtf/Function.h>
 #import <wtf/Lock.h>
 #import <wtf/MessageQueue.h>
 #import <wtf/RefPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/SchedulePair.h>
-#import <wtf/threads/BinarySemaphore.h>
+#import <wtf/concurrency/BinarySemaphore.h>
+#import <wtf/memory/Box.h>
 
 namespace WebCore {
 class NetworkLoadMetrics;

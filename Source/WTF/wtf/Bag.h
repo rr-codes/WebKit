@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
-#include <wtf/MallocCommon.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Packed.h>
 #include <wtf/RawPtrTraits.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/MallocCommon.h>
 
 namespace WTF {
 

@@ -35,17 +35,16 @@
 #import "Logging.h"
 #import "ThreadGlobalData.h"
 #import "WAKWindow.h"
-#import "WKUtilities.h"
 #import "WebCoreJITOperations.h"
 #import "WebCoreThreadInternal.h"
 #import "WebCoreThreadMessage.h"
 #import "WebCoreThreadRun.h"
+#import "WKUtilities.h"
 #import <Foundation/NSInvocation.h>
 #import <JavaScriptCore/InitializeThreading.h>
 #import <JavaScriptCore/JSLock.h>
 #import <objc/runtime.h>
 #import <wtf/Assertions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/RecursiveLockAdapter.h>
@@ -54,6 +53,7 @@
 #import <wtf/Threading.h>
 #import <wtf/WorkQueue.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cf/CFRunLoopSPI.h>
 #import <wtf/spi/cocoa/objcSPI.h>
 #import <wtf/spi/darwin/ReasonSPI.h>

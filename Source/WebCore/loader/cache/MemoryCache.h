@@ -28,7 +28,6 @@
 #include <WebCore/SecurityOriginHash.h>
 #include <WebCore/Timer.h>
 #include <pal/SessionID.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
 #include <wtf/HashMap.h>
@@ -36,6 +35,7 @@
 #include <wtf/Noncopyable.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakListHashSet.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 

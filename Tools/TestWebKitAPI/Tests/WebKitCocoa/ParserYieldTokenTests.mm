@@ -33,9 +33,9 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/_WKRemoteObjectInterface.h>
 #import <WebKit/_WKRemoteObjectRegistry.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Seconds.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface ParserYieldTokenTestWebView : TestWKWebView <ParserYieldTokenTestRunner>
 @property (nonatomic, readonly) BOOL finishedDocumentLoad;

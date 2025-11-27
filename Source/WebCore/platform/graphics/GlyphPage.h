@@ -34,9 +34,9 @@
 #include <WebCore/TextFlags.h>
 #include <unicode/utypes.h>
 #include <wtf/BitSet.h>
-#include <wtf/CheckedPtr.h>
-#include <wtf/RefCounted.h>
 #include <wtf/Ref.h>
+#include <wtf/RefCounted.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

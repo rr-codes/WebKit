@@ -63,7 +63,7 @@
 #import <WebKit/_WKTextManipulationItem.h>
 #import <WebKit/_WKTextManipulationToken.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 #if ENABLE(IMAGE_ANALYSIS)

@@ -32,7 +32,6 @@
 #include <atomic>
 #include <set>
 
-#include <wtf/CagedPtr.h>
 #include <wtf/Expected.h>
 #include <wtf/Function.h>
 #include <wtf/RAMSize.h>
@@ -42,6 +41,7 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CagedPtr.h>
 
 namespace WTF {
 class PrintStream;

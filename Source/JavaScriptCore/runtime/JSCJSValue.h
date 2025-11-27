@@ -31,7 +31,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <wtf/Assertions.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashTraits.h>
@@ -41,6 +40,7 @@
 #include <wtf/StdIntExtras.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TriState.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace JSC {
 

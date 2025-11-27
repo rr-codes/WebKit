@@ -28,9 +28,9 @@
 #include <JavaScriptCore/OSCheck.h>
 #include <JavaScriptCore/Options.h>
 #include <optional>
-#include <wtf/Atomics.h>
 #include <wtf/MathExtras.h>
 #include <wtf/OptionSet.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace JSC {
 

@@ -31,8 +31,8 @@
 #import "UIKitUtilities.h"
 #import <WebCore/LocalizedStrings.h>
 #import <pal/system/ios/UserInterfaceIdiom.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/WTFString.h>
 
 #if USE(UITOOLBAR_FOR_DATE_PICKER_ACCESSORY_VIEW)

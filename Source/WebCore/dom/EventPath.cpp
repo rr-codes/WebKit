@@ -35,7 +35,7 @@
 #include "ShadowRoot.h"
 #include "TouchEvent.h"
 #include "TreeScopeInlines.h"
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

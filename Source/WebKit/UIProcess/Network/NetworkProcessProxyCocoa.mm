@@ -24,16 +24,16 @@
  */
 
 #import "config.h"
-#import "NetworkProcessProxy.h"
-
 #import "LaunchServicesDatabaseXPCConstants.h"
+
 #import "NetworkProcessMessages.h"
+#import "NetworkProcessProxy.h"
 #import "PageClient.h"
-#import "WKUIDelegatePrivate.h"
-#import "WKWebViewInternal.h"
 #import "WebPageProxy.h"
 #import "WebProcessPool.h"
 #import "WebProcessProxy.h"
+#import "WKUIDelegatePrivate.h"
+#import "WKWebViewInternal.h"
 #import "XPCEndpoint.h"
 #import <wtf/EnumTraits.h>
 #import <wtf/RuntimeApplicationChecks.h>
@@ -41,8 +41,8 @@
 
 #if PLATFORM(IOS_FAMILY)
 #import <UIKit/UIKit.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #endif
 
 namespace WebKit {

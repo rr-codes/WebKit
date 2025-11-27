@@ -26,7 +26,7 @@
 #pragma once
 
 #include <WebCore/AXCoreObject.h>
-#include <wtf/DebugHeap.h>
+#include <wtf/memory/DebugHeap.h>
 
 namespace WebCore {
 

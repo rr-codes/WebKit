@@ -24,7 +24,7 @@
  */
 
 #import "config.h"
-#import "UIScriptControllerCocoa.h"
+#import "_WKTextExtractionInternal.h"
 
 #import "CocoaColorSerialization.h"
 #import "LayoutTestSpellChecker.h"
@@ -33,8 +33,8 @@
 #import "TestController.h"
 #import "TestRunnerWKWebView.h"
 #import "UIScriptContext.h"
+#import "UIScriptControllerCocoa.h"
 #import "WKTextExtractionTestingHelpers.h"
-#import "_WKTextExtractionInternal.h"
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <WebKit/WKURLCF.h>
 #import <WebKit/WKWebViewPrivate.h>
@@ -42,8 +42,8 @@
 #import <WebKit/_WKTargetedElementInfo.h>
 #import <WebKit/_WKTargetedElementRequest.h>
 #import <WebKit/_WKTextExtraction.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface WKWebView (WKWebViewInternal)
 - (void)paste:(id)sender;

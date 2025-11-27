@@ -36,8 +36,8 @@
 #import <WebKit/_WKTextManipulationExclusionRule.h>
 #import <WebKit/_WKTextManipulationItem.h>
 #import <WebKit/_WKTextManipulationToken.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 typedef void(^ItemCallback)(_WKTextManipulationItem *);

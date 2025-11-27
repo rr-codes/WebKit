@@ -28,15 +28,15 @@
 #endif
 
 #import "config.h"
-#import "WKWebExtensionActionInternal.h"
-
 #import "CocoaHelpers.h"
+
 #import "CocoaImage.h"
 #import "WebExtensionAction.h"
 #import "WebExtensionContext.h"
 #import "WebExtensionTab.h"
-#import <wtf/BlockPtr.h>
+#import "WKWebExtensionActionInternal.h"
 #import <wtf/CompletionHandler.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if USE(APPKIT)
 using CocoaMenuItem = NSMenuItem;

@@ -55,8 +55,8 @@
 #if defined(BUILDING_TestWebKit)
 #include <JavaScriptCore/JSExportMacros.h>
 #include <WebCore/PlatformExportMacros.h>
-#include <pal/ExportMacros.h>
 #include <WebKit/WebKit2_C.h>
+#include <pal/ExportMacros.h>
 #endif
 
 #else
@@ -98,8 +98,8 @@
 #include <wtf/Assertions.h>
 #undef new
 #undef delete
-#include <wtf/FastMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #endif
 
 #ifdef __clang__

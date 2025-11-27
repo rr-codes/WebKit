@@ -31,7 +31,7 @@
 #include "HTMLParserIdioms.h"
 #include "LocalFrame.h"
 #include "RenderFrame.h"
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

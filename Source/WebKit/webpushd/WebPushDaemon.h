@@ -38,7 +38,6 @@
 #include <WebCore/PushSubscriptionData.h>
 #include <WebCore/Timer.h>
 #include <span>
-#include <wtf/CheckedRef.h>
 #include <wtf/Deque.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
@@ -47,6 +46,7 @@
 #include <wtf/OSObjectPtr.h>
 #include <wtf/StdList.h>
 #include <wtf/darwin/XPCObjectPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/spi/darwin/XPCSPI.h>
 
 #if PLATFORM(IOS)

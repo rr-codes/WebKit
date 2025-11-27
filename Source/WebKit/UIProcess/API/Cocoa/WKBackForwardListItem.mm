@@ -28,7 +28,7 @@
 
 #import "WKNSURLExtras.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKBackForwardListItem {
     AlignedStorage<WebKit::WebBackForwardListItem> _item;

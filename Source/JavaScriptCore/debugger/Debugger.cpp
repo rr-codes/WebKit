@@ -20,9 +20,9 @@
  */
 
 #include "config.h"
-#include "Debugger.h"
-
 #include "CodeBlock.h"
+
+#include "Debugger.h"
 #include "DebuggerCallFrame.h"
 #include "DebuggerScope.h"
 #include "HeapIterationScope.h"
@@ -32,12 +32,12 @@
 #include "Microtask.h"
 #include "VMEntryScopeInlines.h"
 #include "VMTrapsInlines.h"
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 #include <wtf/text/TextPosition.h>
 
 namespace JSC {

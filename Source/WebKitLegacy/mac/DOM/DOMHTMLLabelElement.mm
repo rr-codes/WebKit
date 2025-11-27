@@ -23,10 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMHTMLLabelElement.h"
-
 #import "DOMHTMLElementInternal.h"
+
 #import "DOMHTMLFormElementInternal.h"
+#import "DOMHTMLLabelElement.h"
 #import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/HTMLElement.h>
@@ -36,8 +36,8 @@
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::HTMLLabelElement*>(reinterpret_cast<WebCore::Node*>(_internal))
 

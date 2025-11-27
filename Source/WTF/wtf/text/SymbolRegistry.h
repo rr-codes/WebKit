@@ -26,8 +26,8 @@
 
 #pragma once
 
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringHash.h>
 
 namespace WTF {

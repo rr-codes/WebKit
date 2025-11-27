@@ -24,13 +24,13 @@
  */
 
 #include "config.h"
-#include "SpeechRecognizer.h"
-
 #include "SpeechRecognitionRequest.h"
+
 #include "SpeechRecognitionUpdate.h"
-#include <wtf/CheckedPtr.h>
+#include "SpeechRecognizer.h"
 #include <wtf/MediaTime.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if PLATFORM(COCOA)
 #include "MediaUtilities.h"

@@ -24,14 +24,14 @@
  */
 
 #include "config.h"
-#include "LargestContentfulPaintData.h"
-
 #include "CachedImage.h"
+
 #include "ContainerNodeInlines.h"
 #include "DocumentView.h"
 #include "ElementInlines.h"
 #include "FloatQuad.h"
 #include "LargestContentfulPaint.h"
+#include "LargestContentfulPaintData.h"
 #include "LegacyRenderSVGImage.h"
 #include "LocalDOMWindow.h"
 #include "LocalFrameView.h"
@@ -51,8 +51,8 @@
 #include "RenderText.h"
 #include "RenderView.h"
 #include "VisibleRectContext.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Ref.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/TextStream.h>
 
 namespace WebCore {

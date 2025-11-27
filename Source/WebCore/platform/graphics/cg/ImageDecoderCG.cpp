@@ -42,7 +42,7 @@
 #include <pal/spi/cg/ImageIOSPI.h>
 #include <ImageIO/ImageIO.h>
 #include <pal/spi/cg/CoreGraphicsSPI.h>
-#include <wtf/FlipBytes.h>
+#include <wtf/memory/FlipBytes.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/cf/TypeCastsCF.h>
 

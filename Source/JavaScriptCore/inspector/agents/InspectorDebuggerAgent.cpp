@@ -28,9 +28,8 @@
  */
 
 #include "config.h"
-#include "InspectorDebuggerAgent.h"
-
 #include "AsyncStackTrace.h"
+
 #include "Debugger.h"
 #include "DebuggerScope.h"
 #include "DeferGC.h"
@@ -38,10 +37,11 @@
 #include "HeapIterationScope.h"
 #include "InjectedScript.h"
 #include "InjectedScriptManager.h"
+#include "InspectorDebuggerAgent.h"
+#include "JavaScriptCallFrame.h"
 #include "JITCode.h"
 #include "JITThunks.h"
 #include "JSJavaScriptCallFrame.h"
-#include "JavaScriptCallFrame.h"
 #include "MarkedSpaceInlines.h"
 #include "Microtask.h"
 #include "NativeExecutable.h"
@@ -49,11 +49,11 @@
 #include "ScriptCallStack.h"
 #include "ScriptCallStackFactory.h"
 #include "Weak.h"
-#include <wtf/Box.h>
 #include <wtf/Function.h>
 #include <wtf/JSONValues.h>
 #include <wtf/Stopwatch.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/Box.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringToIntegerConversion.h>
 #include <wtf/text/WTFString.h>

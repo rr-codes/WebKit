@@ -31,9 +31,9 @@
 #include <algorithm>
 #include <type_traits>
 #include <wtf/ExportMacros.h>
-#include <wtf/GetPtr.h>
 #include <wtf/HashFunctions.h>
 #include <wtf/HashTraits.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WebKit {
 

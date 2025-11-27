@@ -23,11 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMHTMLTableElement.h"
-
 #import "DOMHTMLCollectionInternal.h"
+
 #import "DOMHTMLElementInternal.h"
 #import "DOMHTMLTableCaptionElementInternal.h"
+#import "DOMHTMLTableElement.h"
 #import "DOMHTMLTableSectionElementInternal.h"
 #import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
@@ -40,8 +40,8 @@
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::HTMLTableElement*>(reinterpret_cast<WebCore::Node*>(_internal))
 

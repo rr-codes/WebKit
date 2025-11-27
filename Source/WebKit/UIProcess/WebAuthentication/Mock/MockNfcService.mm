@@ -31,13 +31,13 @@
 #import "NearFieldSPI.h"
 #import "NfcConnection.h"
 #import <WebCore/FidoConstants.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/Vector.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import "NearFieldSoftLink.h"
 

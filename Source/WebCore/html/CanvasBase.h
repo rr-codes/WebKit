@@ -32,10 +32,10 @@
 #include <WebCore/PixelBuffer.h>
 #include <WebCore/TaskSource.h>
 #include <atomic>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/TypeCasts.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

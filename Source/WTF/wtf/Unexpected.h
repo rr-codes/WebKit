@@ -66,6 +66,7 @@ inline namespace fundamentals_v3 {
 #include <cstdlib>
 #include <utility>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace std {
 namespace experimental {

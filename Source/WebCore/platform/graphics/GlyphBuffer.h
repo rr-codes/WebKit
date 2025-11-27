@@ -35,9 +35,9 @@
 #include <WebCore/GlyphBufferMembers.h>
 #include <climits>
 #include <limits>
-#include <wtf/CheckedRef.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

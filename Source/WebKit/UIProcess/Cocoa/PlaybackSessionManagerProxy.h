@@ -32,9 +32,10 @@
 #include <WebCore/MediaSelectionOption.h>
 #include <WebCore/PlatformPlaybackSessionInterface.h>
 #include <WebCore/PlaybackSessionModel.h>
+#include <WebCore/SpatialVideoMetadata.h>
 #include <WebCore/TimeRanges.h>
+#include <WebCore/VideoProjectionMetadata.h>
 #include <WebCore/VideoReceiverEndpoint.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
@@ -42,8 +43,7 @@
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashSet.h>
-#include <WebCore/SpatialVideoMetadata.h>
-#include <WebCore/VideoProjectionMetadata.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 

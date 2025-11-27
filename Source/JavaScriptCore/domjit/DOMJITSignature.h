@@ -28,7 +28,7 @@
 #include <JavaScriptCore/ClassInfo.h>
 #include <JavaScriptCore/DOMJITEffect.h>
 #include <JavaScriptCore/SpeculatedType.h>
-#include <wtf/CodePtr.h>
+#include <wtf/memory/CodePtr.h>
 
 namespace JSC { namespace DOMJIT {
 

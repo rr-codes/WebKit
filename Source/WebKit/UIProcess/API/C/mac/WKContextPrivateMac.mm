@@ -24,19 +24,19 @@
  */
 
 #import "config.h"
-#import "WKContextPrivateMac.h"
-
 #import "APIArray.h"
+
 #import "APIDictionary.h"
 #import "APINumber.h"
 #import "APIString.h"
+#import "WebProcessPool.h"
 #import "WKAPICast.h"
+#import "WKContextPrivateMac.h"
 #import "WKPluginInformation.h"
 #import "WKSharedAPICast.h"
 #import "WKStringCF.h"
-#import "WebProcessPool.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 bool WKContextIsPlugInUpdateAvailable(WKContextRef, WKStringRef)
 {

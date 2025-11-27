@@ -33,12 +33,12 @@
 #include "UseDownloadPlaceholder.h"
 #include <WebCore/LocalFrameLoaderClient.h>
 #include <WebCore/NotImplemented.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/AbstractRefCounted.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/AbstractRefCounted.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace PAL {
 class SessionID;

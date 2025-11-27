@@ -28,9 +28,9 @@
 #include "ExtensionCapability.h"
 #include "ExtensionCapabilityGrant.h"
 
-#include <wtf/BlockPtr.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/darwin/XPCObjectPtr.h>
+#include <wtf/memory/BlockPtr.h>
 
 #if USE(EXTENSIONKIT)
 OBJC_CLASS BEWebContentProcess;

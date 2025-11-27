@@ -26,8 +26,8 @@
 #pragma once
 
 #include <WebCore/StorageNamespaceProvider.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/WeakHashMap.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class SecurityOriginData;

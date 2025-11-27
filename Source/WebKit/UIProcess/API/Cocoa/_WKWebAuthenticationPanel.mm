@@ -24,15 +24,9 @@
  */
 
 #import "config.h"
-#import "_WKWebAuthenticationPanelInternal.h"
-
-
-#import "LocalAuthenticator.h"
-#import "LocalService.h"
-#import "Logging.h"
-#import "WKError.h"
-#import "WebAuthenticationPanelClient.h"
 #import "_WKAuthenticationExtensionsClientInputs.h"
+
+
 #import "_WKAuthenticationExtensionsClientOutputsInternal.h"
 #import "_WKAuthenticatorAssertionResponseInternal.h"
 #import "_WKAuthenticatorAttestationResponseInternal.h"
@@ -40,9 +34,15 @@
 #import "_WKPublicKeyCredentialCreationOptions.h"
 #import "_WKPublicKeyCredentialDescriptor.h"
 #import "_WKPublicKeyCredentialParameters.h"
-#import "_WKPublicKeyCredentialRequestOptions.h"
 #import "_WKPublicKeyCredentialRelyingPartyEntity.h"
+#import "_WKPublicKeyCredentialRequestOptions.h"
 #import "_WKPublicKeyCredentialUserEntity.h"
+#import "_WKWebAuthenticationPanelInternal.h"
+#import "LocalAuthenticator.h"
+#import "LocalService.h"
+#import "Logging.h"
+#import "WebAuthenticationPanelClient.h"
+#import "WKError.h"
 #import <WebCore/AuthenticationExtensionsClientInputs.h>
 #import <WebCore/AuthenticatorAttachment.h>
 #import <WebCore/AuthenticatorResponse.h>
@@ -63,10 +63,10 @@
 #import <WebCore/WebCoreObjCExtras.h>
 #import <objc/runtime.h>
 #import <pal/crypto/CryptoDigest.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/Base64.h>
 
 #if ENABLE(WEB_AUTHN)

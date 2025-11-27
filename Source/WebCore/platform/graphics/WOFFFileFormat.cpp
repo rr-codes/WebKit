@@ -29,7 +29,7 @@
 #include "SharedBuffer.h"
 
 #if !HAVE(WOFF_SUPPORT)
-#include <wtf/ByteOrder.h>
+#include <wtf/memory/ByteOrder.h>
 #include <zlib.h>
 #if USE(WOFF2)
 #include <woff2/decode.h>

@@ -30,7 +30,6 @@
 #include "APIObject.h"
 #include "MessageReceiver.h"
 #include <wtf/ApproximateTime.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/ObjectIdentifier.h>
 #include <wtf/OptionSet.h>
@@ -39,6 +38,7 @@
 #include <wtf/RunLoop.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace API {
 class Attachment;

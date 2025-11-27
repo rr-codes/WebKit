@@ -32,8 +32,8 @@
 #import "CtapCcidDriver.h"
 #import <CryptoTokenKit/TKSmartCard.h>
 #import <WebCore/AuthenticatorTransport.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface _WKSmartCardSlotObserver : NSObject {
     WeakPtr<WebKit::CcidService> m_service;

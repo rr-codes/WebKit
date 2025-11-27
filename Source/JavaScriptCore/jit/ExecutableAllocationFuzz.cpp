@@ -27,10 +27,10 @@
 #include "ExecutableAllocationFuzz.h"
 
 #include "TestRunnerUtils.h"
-#include <wtf/Atomics.h>
 #include <wtf/DataLog.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/WeakRandom.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace JSC {
 

@@ -24,15 +24,15 @@
  */
 
 #include "config.h"
-#include "CachedTypes.h"
-
 #include "BaselineJITCode.h"
+
 #include "BuiltinNames.h"
 #include "BytecodeCacheError.h"
 #include "BytecodeLivenessAnalysis.h"
+#include "CachedTypes.h"
 #include "JSCBytecodeCacheVersion.h"
-#include "JSCInlines.h"
 #include "JSCellButterfly.h"
+#include "JSCInlines.h"
 #include "JSTemplateObjectDescriptor.h"
 #include "ScopedArgumentsTable.h"
 #include "SourceCodeKey.h"
@@ -43,12 +43,12 @@
 #include "UnlinkedModuleProgramCodeBlock.h"
 #include "UnlinkedProgramCodeBlock.h"
 #include <wtf/FileHandle.h>
-#include <wtf/MallocPtr.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/Packed.h>
 #include <wtf/RobinHoodHashMap.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/UUID.h>
+#include <wtf/memory/MallocPtr.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/AtomStringImpl.h>
 #include <wtf/text/ParsingUtilities.h>
 

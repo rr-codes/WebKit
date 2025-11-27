@@ -34,11 +34,11 @@
 #include <WebCore/IDBResourceIdentifier.h>
 #include <WebCore/IndexKey.h>
 #include <pal/SessionID.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Function.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

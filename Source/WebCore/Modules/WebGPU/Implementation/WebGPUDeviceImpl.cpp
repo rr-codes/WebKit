@@ -64,9 +64,9 @@
 #include "WebGPUXRBindingImpl.h"
 #include <CoreGraphics/CGColorSpace.h>
 #include <WebGPU/WebGPUExt.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/SegmentedVector.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/BlockPtr.h>
 
 namespace WebCore::WebGPU {
 

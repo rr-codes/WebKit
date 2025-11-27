@@ -24,14 +24,14 @@
  */
 
 #include "config.h"
-#include "WebDatabaseProvider.h"
-
 #include "NetworkProcessConnection.h"
+
+#include "WebDatabaseProvider.h"
 #include "WebIDBConnectionToServer.h"
 #include "WebProcess.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 using namespace WebCore;

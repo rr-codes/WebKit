@@ -26,9 +26,9 @@
 #pragma once
 
 #include "ResponsivenessTimer.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 

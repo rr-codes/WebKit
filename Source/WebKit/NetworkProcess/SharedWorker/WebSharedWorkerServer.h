@@ -32,9 +32,9 @@
 #include <WebCore/SharedWorkerKey.h>
 #include <WebCore/SharedWorkerObjectIdentifier.h>
 #include <WebCore/TransferredMessagePort.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 class WebSharedWorkerServer;

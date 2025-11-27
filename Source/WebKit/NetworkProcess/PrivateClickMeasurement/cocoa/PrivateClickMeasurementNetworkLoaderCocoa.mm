@@ -24,16 +24,16 @@
  */
 
 #import "config.h"
-#import "PrivateClickMeasurementNetworkLoader.h"
-
 #import "NetworkDataTaskCocoa.h"
+
+#import "PrivateClickMeasurementNetworkLoader.h"
 #import <WebCore/HTTPHeaderValues.h>
 #import <WebCore/MIMETypeRegistry.h>
 #import <WebCore/UserAgent.h>
 #import <pal/spi/cf/CFNetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/cocoa/SpanCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 static RetainPtr<SecTrustRef>& allowedLocalTestServerTrust()
 {

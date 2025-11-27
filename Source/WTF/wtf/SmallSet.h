@@ -27,11 +27,11 @@
 
 #include <limits>
 #include <wtf/Assertions.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashFunctions.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WTF {
 

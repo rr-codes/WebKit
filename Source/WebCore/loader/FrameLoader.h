@@ -46,7 +46,6 @@
 #include <WebCore/SecurityContext.h>
 #include <WebCore/StoredCredentialsPolicy.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
 #include <wtf/HashSet.h>
@@ -56,6 +55,7 @@
 #include <wtf/WallTime.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -32,7 +32,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #if USE(JPEGXL)
 
 #include "PixelBufferConversion.h"
-#include <wtf/MallocSpan.h>
+#include <wtf/memory/MallocSpan.h>
 
 #if USE(LCMS)
 #include "LCMSUniquePtr.h"

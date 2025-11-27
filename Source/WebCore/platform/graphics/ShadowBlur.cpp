@@ -28,16 +28,15 @@
  */
 
 #include "config.h"
-#include "ShadowBlur.h"
-
 #include "AffineTransform.h"
+
 #include "FloatQuad.h"
 #include "GraphicsContext.h"
 #include "ImageBuffer.h"
 #include "PixelBuffer.h"
+#include "ShadowBlur.h"
 #include "Timer.h"
 #include <numbers>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Lock.h>
 #include <wtf/MathExtras.h>
 #include <wtf/NeverDestroyed.h>
@@ -45,6 +44,7 @@
 #include <wtf/RunLoop.h>
 #include <wtf/Scope.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/ParsingUtilities.h>
 
 namespace WebCore {

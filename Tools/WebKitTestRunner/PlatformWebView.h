@@ -26,7 +26,7 @@
 #pragma once
 
 #include "TestOptions.h"
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/WTFString.h>
 
 #if PLATFORM(COCOA) && !defined(BUILDING_GTK__)

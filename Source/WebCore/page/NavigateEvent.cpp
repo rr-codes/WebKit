@@ -38,7 +38,7 @@
 #include "LocalFrameView.h"
 #include "Navigation.h"
 #include "NavigationNavigationType.h"
-#include <wtf/IsoMallocInlines.h>
+#include <wtf/memory/IsoMallocInlines.h>
 
 namespace WebCore {
 

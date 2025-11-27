@@ -28,24 +28,24 @@
 #endif
 
 #import "config.h"
-#import "WKWebExtensionContextInternal.h"
-
 #import "CocoaHelpers.h"
-#import "WKNSError.h"
-#import "WKWebExtensionCommandInternal.h"
-#import "WKWebExtensionControllerInternal.h"
-#import "WKWebExtensionInternal.h"
-#import "WKWebExtensionMatchPatternInternal.h"
-#import "WKWebExtensionTab.h"
-#import "WKWebView.h"
+
 #import "WebExtension.h"
 #import "WebExtensionAction.h"
 #import "WebExtensionCommand.h"
 #import "WebExtensionContext.h"
 #import "WebExtensionMatchPattern.h"
-#import <wtf/BlockPtr.h>
+#import "WKNSError.h"
+#import "WKWebExtensionCommandInternal.h"
+#import "WKWebExtensionContextInternal.h"
+#import "WKWebExtensionControllerInternal.h"
+#import "WKWebExtensionInternal.h"
+#import "WKWebExtensionMatchPatternInternal.h"
+#import "WKWebExtensionTab.h"
+#import "WKWebView.h"
 #import <wtf/URLParser.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 NSErrorDomain const WKWebExtensionContextErrorDomain = @"WKWebExtensionContextErrorDomain";
 NSNotificationName const WKWebExtensionContextErrorsDidUpdateNotification = @"WKWebExtensionContextErrorsDidUpdate";

@@ -29,7 +29,7 @@
 #include <JavaScriptCore/ScopeOffset.h>
 #include <JavaScriptCore/VM.h>
 #include <wtf/Assertions.h>
-#include <wtf/CagedUniquePtr.h>
+#include <wtf/memory/CagedUniquePtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -28,13 +28,13 @@
 #include <WebCore/Page.h>
 #include <WebCore/ResourceLoaderIdentifier.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -30,9 +30,8 @@
  */
 
 #include "config.h"
-#include "WorkerThreadableWebSocketChannel.h"
-
 #include "Blob.h"
+
 #include "Document.h"
 #include "DocumentInlines.h"
 #include "FrameDestructionObserverInlines.h"
@@ -46,13 +45,14 @@
 #include "WorkerLoaderProxy.h"
 #include "WorkerRunLoop.h"
 #include "WorkerThread.h"
+#include "WorkerThreadableWebSocketChannel.h"
 #include <JavaScriptCore/ArrayBuffer.h>
 #include <wtf/MainThread.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/WTFString.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 namespace WebCore {
 

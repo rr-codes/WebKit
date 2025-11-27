@@ -37,13 +37,13 @@
 #include <WebCore/Path.h>
 #include <WebCore/TextIterator.h>
 #include <iterator>
-#include <wtf/CompactUniquePtrTuple.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
 #include <wtf/Platform.h>
 #include <wtf/RefPtr.h>
 #include <wtf/RuntimeApplicationChecks.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CompactUniquePtrTuple.h>
 
 #if PLATFORM(COCOA)
 #include <wtf/RetainPtr.h>

@@ -30,12 +30,12 @@
 #include <WebCore/RealtimeMediaSourceCapabilities.h>
 #include <WebCore/RealtimeMediaSourceCenter.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Function.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/MediaTime.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

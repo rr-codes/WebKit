@@ -24,14 +24,14 @@
  */
 
 #import "config.h"
-#import "IconLoadingDelegate.h"
-
-#import "WKNSData.h"
 #import "_WKIconLoadingDelegate.h"
+
 #import "_WKLinkIconParametersInternal.h"
-#import <wtf/BlockPtr.h>
+#import "IconLoadingDelegate.h"
+#import "WKNSData.h"
 #import <wtf/RunLoop.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

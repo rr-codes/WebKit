@@ -27,9 +27,9 @@
 
 #include <WebCore/Timer.h>
 #include <wtf/CPUTime.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Function.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

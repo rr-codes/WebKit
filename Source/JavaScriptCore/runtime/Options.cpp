@@ -24,13 +24,13 @@
  */
 
 #include "config.h"
-#include "Options.h"
-
 #include "CPU.h"
+
 #include "JITOperationValidation.h"
 #include "LLIntCommon.h"
 #include "MacroAssembler.h"
 #include "MinimumReservedZoneSize.h"
+#include "Options.h"
 #include <algorithm>
 #include <limits>
 #include <mutex>
@@ -40,14 +40,14 @@
 #include <wtf/BitSet.h>
 #include <wtf/Compiler.h>
 #include <wtf/DataLog.h>
-#include <wtf/Gigacage.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/NumberOfCores.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TranslatedProcess.h>
+#include <wtf/concurrency/Signals.h>
+#include <wtf/memory/Gigacage.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
-#include <wtf/threads/Signals.h>
 
 #if OS(DARWIN)
 #include <wtf/darwin/OSLogPrintStream.h>

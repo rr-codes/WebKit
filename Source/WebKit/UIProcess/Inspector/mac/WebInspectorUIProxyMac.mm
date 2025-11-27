@@ -28,23 +28,23 @@
 
 #if PLATFORM(MAC)
 
+#import "_WKInspectorConfigurationInternal.h"
+#import "_WKInspectorInternal.h"
+#import "_WKInspectorWindowInternal.h"
 #import "APIInspectorClient.h"
 #import "APIInspectorConfiguration.h"
 #import "APIUIClient.h"
 #import "GlobalFindInPageState.h"
 #import "Logging.h"
 #import "MessageSenderInlines.h"
+#import "WebInspectorUIMessages.h"
+#import "WebPageGroup.h"
+#import "WebPageProxy.h"
 #import "WKInspectorPrivateMac.h"
 #import "WKInspectorViewController.h"
 #import "WKObject.h"
 #import "WKViewInternal.h"
 #import "WKWebViewInternal.h"
-#import "WebInspectorUIMessages.h"
-#import "WebPageGroup.h"
-#import "WebPageProxy.h"
-#import "_WKInspectorConfigurationInternal.h"
-#import "_WKInspectorInternal.h"
-#import "_WKInspectorWindowInternal.h"
 #import <SecurityInterface/SFCertificatePanel.h>
 #import <SecurityInterface/SFCertificateView.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
@@ -53,11 +53,11 @@
 #import <WebCore/InspectorFrontendClientLocal.h>
 #import <WebCore/LocalizedStrings.h>
 #import <pal/spi/cf/CFUtilitiesSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/Base64.h>
 
 static const NSUInteger windowStyleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable | NSWindowStyleMaskFullSizeContentView;

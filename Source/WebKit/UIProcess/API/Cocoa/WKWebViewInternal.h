@@ -29,6 +29,9 @@
 #ifdef __cplusplus
 #if !__has_feature(modules)
 
+#import "_WKAttachmentInternal.h"
+#import "_WKTextExtractionInternal.h"
+#import "_WKWebViewPrintFormatterInternal.h"
 #import "PDFPluginIdentifier.h"
 #import <WebCore/CocoaView.h>
 #import <WebCore/CocoaWritingToolsTypes.h>
@@ -37,11 +40,7 @@
 #import <WebKit/WKShareSheet.h>
 #import <WebKit/WKWebViewConfiguration.h>
 #import <WebKit/WKWebViewPrivate.h>
-#import "_WKAttachmentInternal.h"
-#import "_WKTextExtractionInternal.h"
-#import "_WKWebViewPrintFormatterInternal.h"
 #import <pal/spi/cocoa/WritingToolsSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/HashMap.h>
 #import <wtf/NakedPtr.h>
@@ -49,6 +48,7 @@
 #import <wtf/RetainPtr.h>
 #import <wtf/Variant.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cocoa/NSObjCRuntimeSPI.h>
 
 #if ENABLE(SCREEN_TIME)

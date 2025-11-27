@@ -26,12 +26,12 @@
 #pragma once
 
 #include <wtf/Assertions.h>
-#include <wtf/Atomics.h>
 #include <wtf/BitVector.h>
 #include <wtf/HashTraits.h>
 #include <wtf/PrintStream.h>
 #include <wtf/StdIntExtras.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

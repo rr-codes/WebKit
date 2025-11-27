@@ -29,12 +29,12 @@
 #if ENABLE(ROUTING_ARBITRATION) && HAVE(AVAUDIO_ROUTING_ARBITER)
 
 #import "Logging.h"
-#import <wtf/CheckedPtr.h>
+#import <pal/cocoa/AVFoundationSoftLink.h>
 #import <wtf/LoggerHelper.h>
 #import <wtf/NeverDestroyed.h>
 #import <wtf/TZoneMallocInlines.h>
 
-#import <pal/cocoa/AVFoundationSoftLink.h>
+#import <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

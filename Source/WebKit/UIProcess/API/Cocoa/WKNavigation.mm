@@ -32,7 +32,7 @@
 #import "WKFrameInfoInternal.h"
 #import "WebFrameProxy.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKNavigation {
     AlignedStorage<API::Navigation> _navigation;

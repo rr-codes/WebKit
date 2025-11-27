@@ -34,11 +34,11 @@
 #include <WebCore/SecurityOrigin.h>
 #include <WebCore/SecurityOriginHash.h>
 #include <functional>
-#include <wtf/CheckedPtr.h>
 #include <wtf/FixedVector.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/OrdinalNumber.h>
 #include <wtf/text/TextPosition.h>
 

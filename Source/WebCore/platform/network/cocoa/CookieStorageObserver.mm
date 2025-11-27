@@ -27,10 +27,10 @@
 #import "CookieStorageObserver.h"
 
 #import <pal/spi/cocoa/NSURLConnectionSPI.h>
-#import <wtf/CheckedPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/ProcessPrivilege.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/CheckedPtr.h>
 
 @interface WebNSHTTPCookieStorageDummyForInternalAccess : NSObject {
 @public

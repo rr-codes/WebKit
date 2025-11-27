@@ -32,10 +32,10 @@
 #include <WebCore/PlatformImage.h>
 #include <WebCore/SharedMemory.h>
 #include <wtf/ArgumentCoder.h>
-#include <wtf/DebugHeap.h>
 #include <wtf/ExportMacros.h>
 #include <wtf/RefPtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/DebugHeap.h>
 
 #if USE(SKIA)
 #include <skia/core/SkImageInfo.h>

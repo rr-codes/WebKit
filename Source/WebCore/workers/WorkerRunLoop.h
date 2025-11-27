@@ -33,9 +33,9 @@
 
 #include <WebCore/ScriptExecutionContext.h>
 #include <memory>
-#include <wtf/CheckedRef.h>
 #include <wtf/MessageQueue.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

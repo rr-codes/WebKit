@@ -29,8 +29,8 @@
 #include <WebCore/ScrollAxis.h>
 #include <WebCore/StyleNameScope.h>
 #include <WebCore/Styleable.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomStringHash.h>
 
 namespace WebCore {

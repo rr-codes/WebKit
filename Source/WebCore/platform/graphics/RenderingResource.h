@@ -26,9 +26,9 @@
 #pragma once
 
 #include <WebCore/RenderingResourceIdentifier.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
 
 namespace WebCore {
 namespace DisplayList {

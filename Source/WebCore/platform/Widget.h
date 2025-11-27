@@ -36,11 +36,11 @@
 #include <WebCore/DoublePoint.h>
 #include <WebCore/IntRect.h>
 #include <WebCore/PlatformScreen.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TypeCasts.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if PLATFORM(COCOA)
 #include <wtf/RetainPtr.h>

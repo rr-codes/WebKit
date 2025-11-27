@@ -39,7 +39,7 @@
 #import "WebExtensionContext.h"
 #import "WebExtensionTabQueryParameters.h"
 #import "WebExtensionUtilities.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 
 namespace WebKit {

@@ -36,9 +36,9 @@
 #import <WebKit/WKSnapshotConfigurationPrivate.h>
 #import <WebKit/_WKContentWorldConfiguration.h>
 #import <WebKit/_WKJSHandle.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 static NSInteger getPixelIndex(NSInteger x, NSInteger y, NSInteger width)
 {

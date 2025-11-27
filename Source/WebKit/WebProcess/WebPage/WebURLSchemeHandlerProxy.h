@@ -27,9 +27,9 @@
 
 #include "WebURLSchemeHandlerIdentifier.h"
 #include "WebURLSchemeTaskProxy.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class ResourceError;

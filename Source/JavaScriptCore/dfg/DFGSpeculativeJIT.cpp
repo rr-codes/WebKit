@@ -31,8 +31,8 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #if ENABLE(DFG_JIT)
 
 #include "BinarySwitch.h"
-#include "CPUInlines.h"
 #include "CodeBlockWithJITType.h"
+#include "CPUInlines.h"
 #include "DFGAbstractInterpreterInlines.h"
 #include "DFGArrayifySlowPathGenerator.h"
 #include "DFGCallArrayAllocatorSlowPathGenerator.h"
@@ -60,8 +60,8 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include "JSAsyncFunction.h"
 #include "JSAsyncGeneratorFunction.h"
 #include "JSBoundFunction.h"
-#include "JSCInlines.h"
 #include "JSCellButterfly.h"
+#include "JSCInlines.h"
 #include "JSGeneratorFunction.h"
 #include "JSIteratorHelper.h"
 #include "JSLexicalEnvironment.h"
@@ -85,9 +85,9 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include "WeakMapImpl.h"
 #include "WebAssemblyModuleRecord.h"
 #include <wtf/BitVector.h>
-#include <wtf/Box.h>
 #include <wtf/MathExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/Box.h>
 #include <wtf/text/MakeString.h>
 
 namespace JSC { namespace DFG {

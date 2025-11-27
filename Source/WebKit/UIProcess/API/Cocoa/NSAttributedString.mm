@@ -28,9 +28,9 @@
 #import "NSAttributedStringPrivate.h"
 
 #import "ProcessThrottler.h"
+#import "WebProcessProxy.h"
 #import "WKErrorInternal.h"
 #import "WKWebViewInternal.h"
-#import "WebProcessProxy.h"
 #import <WebKit/WKNavigationActionPrivate.h>
 #import <WebKit/WKNavigationDelegate.h>
 #import <WebKit/WKPreferencesPrivate.h>
@@ -41,11 +41,11 @@
 #import <WebKit/WKWebsiteDataStorePrivate.h>
 #import <WebKit/_WKProcessPoolConfiguration.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
-#import <wtf/Box.h>
 #import <wtf/Deque.h>
 #import <wtf/MemoryPressureHandler.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/Box.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import <UIKitSPI.h>

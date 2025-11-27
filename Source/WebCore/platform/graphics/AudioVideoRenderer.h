@@ -33,11 +33,11 @@
 #include <WebCore/VideoPlaybackQualityMetrics.h>
 #include <WebCore/VideoTarget.h>
 #include <optional>
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/MediaTime.h>
 #include <wtf/NativePromise.h>
 #include <wtf/ObjectIdentifier.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

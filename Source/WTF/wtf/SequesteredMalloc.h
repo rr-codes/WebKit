@@ -26,11 +26,11 @@
 
 #include <cstdlib>
 #include <new>
-#include <wtf/DebugHeap.h>
-#include <wtf/FastMalloc.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Platform.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/DebugHeap.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 #if USE(PROTECTED_JIT)
 

@@ -24,7 +24,7 @@
 #include "PropertyAllowlist.h"
 #include "SelectorFilter.h"
 #include "StyleRule.h"
-#include <wtf/CompactRefPtrTuple.h>
+#include <wtf/memory/CompactRefPtrTuple.h>
 
 namespace WebCore {
 namespace Style {

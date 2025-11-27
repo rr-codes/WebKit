@@ -30,7 +30,7 @@
 
 #import "WKGroupSession.h"
 #import <WebCore/NotImplemented.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/darwin/DispatchExtras.h>
 

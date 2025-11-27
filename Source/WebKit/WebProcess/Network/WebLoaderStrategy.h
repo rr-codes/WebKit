@@ -31,12 +31,12 @@
 #include <WebCore/ResourceError.h>
 #include <WebCore/ResourceLoader.h>
 #include <WebCore/ResourceResponse.h>
-#include <wtf/CanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 struct FetchOptions;

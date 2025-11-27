@@ -28,14 +28,14 @@
 
 #if ENABLE(WEB_AUTHN)
 
+#import "_WKWebAuthenticationAssertionResponseInternal.h"
 #import "APIArray.h"
 #import "APIWebAuthenticationAssertionResponse.h"
 #import "CompletionHandlerCallChecker.h"
 #import "WKNSArray.h"
-#import "_WKWebAuthenticationAssertionResponseInternal.h"
 #import <WebKit/_WKWebAuthenticationPanel.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import "LocalAuthenticationSoftLink.h"
 

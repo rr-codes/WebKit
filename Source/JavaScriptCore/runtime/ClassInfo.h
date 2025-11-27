@@ -24,8 +24,8 @@
 
 #include <JavaScriptCore/ConstructData.h>
 #include <JavaScriptCore/JSCast.h>
-#include <wtf/CompactPtr.h>
 #include <wtf/PtrTag.h>
+#include <wtf/memory/CompactPtr.h>
 
 #if HAVE(36BIT_ADDRESS)
 #define CLASS_INFO_ALIGNMENT alignas(16)

@@ -29,7 +29,7 @@
 #include <JavaScriptCore/LLIntCommon.h>
 #include <JavaScriptCore/StructureID.h>
 #include <wtf/Assertions.h>
-#include <wtf/Gigacage.h>
+#include <wtf/memory/Gigacage.h>
 
 #define OFFLINE_ASM_UseCompressedHeap USE_COMPRESSED_HEAP
 

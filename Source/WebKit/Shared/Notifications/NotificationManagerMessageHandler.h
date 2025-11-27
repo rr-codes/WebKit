@@ -29,8 +29,8 @@
 #include "SharedPreferencesForWebProcess.h"
 #include "WebPageProxyIdentifier.h"
 #include <WebCore/NotificationDirection.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/UUID.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 enum class PushPermissionState : uint8_t;

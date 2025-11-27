@@ -27,10 +27,10 @@
 
 #if PLATFORM(IOS_FAMILY)
 
-#import <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakHashSet.h>
+#import <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 OBJC_CLASS NSSet;
 OBJC_CLASS RBSProcessMonitor;

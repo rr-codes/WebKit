@@ -26,12 +26,12 @@
 #pragma once
 
 #include <JavaScriptCore/JSExportMacros.h>
-#include <wtf/CodePtr.h>
 #include <wtf/RawPointer.h>
+#include <wtf/memory/CodePtr.h>
 
 #if ENABLE(LIBPAS_JIT_HEAP) && ENABLE(JIT)
-#include <wtf/CodePtr.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/CodePtr.h>
 #else
 #include <wtf/MetaAllocatorHandle.h>
 #endif

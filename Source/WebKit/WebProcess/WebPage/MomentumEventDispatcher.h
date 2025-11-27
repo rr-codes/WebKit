@@ -35,11 +35,11 @@
 #include <WebCore/PageIdentifier.h>
 #include <WebCore/RectEdges.h>
 #include <memory>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Deque.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 struct DisplayUpdate;

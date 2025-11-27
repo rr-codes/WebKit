@@ -31,8 +31,8 @@
 
 #include "CCallHelpers.h"
 #include "FTLOSRExitHandle.h"
-#include <wtf/Box.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC { namespace FTL {
 

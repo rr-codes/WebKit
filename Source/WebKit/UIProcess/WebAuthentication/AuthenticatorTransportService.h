@@ -29,10 +29,10 @@
 
 #include "WebAuthenticationFlags.h"
 #include <WebCore/AuthenticatorTransport.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 struct MockWebAuthenticationConfiguration;

@@ -34,12 +34,12 @@
 #include <WebCore/ScriptExecutionContextIdentifier.h>
 #include <WebCore/Timer.h>
 #include <wtf/ApproximateTime.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

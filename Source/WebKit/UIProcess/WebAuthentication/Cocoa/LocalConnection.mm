@@ -31,12 +31,12 @@
 #import <WebCore/LocalizedStrings.h>
 #import <WebCore/UserVerificationRequirement.h>
 #import <WebCore/WebAuthenticationConstants.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/cf/TypeCastsCF.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import "LocalAuthenticationSoftLink.h"
 

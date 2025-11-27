@@ -29,10 +29,10 @@
 
 #include "AirBasicBlock.h"
 #include "MacroAssembler.h"
-#include <wtf/Box.h>
 #include <wtf/IndexMap.h>
 #include <wtf/SharedTask.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC { namespace B3 { namespace Air {
 

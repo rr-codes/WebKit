@@ -27,9 +27,9 @@
 
 #include <WebCore/AffineTransform.h>
 #include <WebCore/IntRect.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

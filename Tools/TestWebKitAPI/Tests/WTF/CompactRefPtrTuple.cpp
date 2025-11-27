@@ -27,9 +27,9 @@
 
 #include "RefLogger.h"
 #include "Utilities.h"
-#include <wtf/CompactRefPtrTuple.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/CompactRefPtrTuple.h>
 
 namespace TestWebKitAPI {
 

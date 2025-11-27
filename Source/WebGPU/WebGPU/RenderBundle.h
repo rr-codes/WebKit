@@ -26,11 +26,11 @@
 #pragma once
 
 #import "BindableResource.h"
-#import <wtf/FastMalloc.h>
 #import <wtf/Ref.h>
 #import <wtf/RefCounted.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/Vector.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPURenderBundleImpl {
 };

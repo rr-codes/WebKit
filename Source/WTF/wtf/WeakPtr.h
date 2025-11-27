@@ -27,14 +27,14 @@
 #pragma once
 
 #include <type_traits>
-#include <wtf/CanMakeWeakPtr.h>
-#include <wtf/CompactRefPtrTuple.h>
-#include <wtf/GetPtr.h>
 #include <wtf/Packed.h>
 #include <wtf/SwiftBridging.h>
 #include <wtf/TypeTraits.h>
 #include <wtf/WeakPtrFactory.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
+#include <wtf/memory/CompactRefPtrTuple.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WTF {
 

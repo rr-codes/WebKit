@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include <wtf/Box.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/URL.h>
 #include <wtf/Variant.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/Box.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

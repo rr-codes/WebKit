@@ -34,7 +34,7 @@
 #include "JSWebAssemblyStruct.h"
 #include "WasmCallee.h"
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/MakeString.h>
 
 namespace JSC { namespace Wasm {

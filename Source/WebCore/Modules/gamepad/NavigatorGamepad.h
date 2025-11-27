@@ -29,10 +29,10 @@
 
 #include <WebCore/Navigator.h>
 #include <WebCore/Supplementable.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class NavigatorGamepad;

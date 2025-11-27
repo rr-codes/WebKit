@@ -28,7 +28,7 @@
 #include <JavaScriptCore/CodeBlock.h>
 #include <JavaScriptCore/Register.h>
 #include <JavaScriptCore/StackAlignment.h>
-#include <wtf/ForbidHeapAllocation.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 #if ENABLE(WEBASSEMBLY)
 #include <JavaScriptCore/JSWebAssemblyInstance.h>

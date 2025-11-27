@@ -41,7 +41,7 @@
 #import "WebExtensionUtilities.h"
 #import "WebFrame.h"
 #import "_WKFrameTreeNode.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

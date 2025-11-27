@@ -27,7 +27,7 @@
 
 #import "XPCEndpointClient.h"
 #import <wtf/NeverDestroyed.h>
-#import <wtf/threads/BinarySemaphore.h>
+#import <wtf/concurrency/BinarySemaphore.h>
 
 namespace WebKit {
 

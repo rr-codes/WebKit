@@ -66,14 +66,11 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include <JavaScriptCore/WasmDebugServerUtilities.h>
 #include <JavaScriptCore/WeakGCMap.h>
 #include <JavaScriptCore/WriteBarrier.h>
-#include <wtf/BumpPointerAllocator.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/Forward.h>
-#include <wtf/Gigacage.h>
 #include <wtf/HashMap.h>
 #include <wtf/LazyRef.h>
 #include <wtf/LazyUniqueRef.h>
-#include <wtf/MallocPtr.h>
 #include <wtf/SetForScope.h>
 #include <wtf/StackPointer.h>
 #include <wtf/Stopwatch.h>
@@ -82,6 +79,9 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include <wtf/ThreadSafeWeakHashSet.h>
 #include <wtf/UniqueArray.h>
 #include <wtf/WeakRandom.h>
+#include <wtf/memory/BumpPointerAllocator.h>
+#include <wtf/memory/Gigacage.h>
+#include <wtf/memory/MallocPtr.h>
 #include <wtf/text/AdaptiveStringSearcher.h>
 #include <wtf/text/StringImpl.h>
 #include <wtf/text/SymbolImpl.h>

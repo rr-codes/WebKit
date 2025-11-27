@@ -30,11 +30,11 @@
 #include <WebCore/DOMPasteAccess.h>
 #include <WebCore/Frame.h>
 #include <WebCore/ScrollbarMode.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/Platform.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if PLATFORM(WIN)
 #include "FrameWin.h"

@@ -316,7 +316,7 @@ EOF
     $contentsIncludes{"\"Logging.h\""} = 1;
     $contentsIncludes{"\"WebExtensionUtilities.h\""} = 1;
     $contentsIncludes{"\"WebPage.h\""} = 1;
-    $contentsIncludes{"<wtf/GetPtr.h>"} = 1;
+    $contentsIncludes{"<wtf/memory/GetPtr.h>"} = 1;
 
     push(@contents, <<EOF);
 

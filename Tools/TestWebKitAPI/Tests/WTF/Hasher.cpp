@@ -27,12 +27,12 @@
 
 #include <array>
 #include <limits>
-#include <wtf/CheckedRef.h>
 #include <wtf/Compiler.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Hasher.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace TestWebKitAPI {
 

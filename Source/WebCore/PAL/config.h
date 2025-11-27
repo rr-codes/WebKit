@@ -23,9 +23,9 @@
 #include "cmakeconfig.h"
 #endif
 
-#include <wtf/Platform.h>
-
 #include <pal/ExportMacros.h>
+
+#include <wtf/Platform.h>
 
 #ifdef __cplusplus
 
@@ -33,7 +33,7 @@
 // Helps us catch if anyone uses new or delete by accident in code and doesn't include "config.h".
 #undef new
 #undef delete
-#include <wtf/FastMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 #endif

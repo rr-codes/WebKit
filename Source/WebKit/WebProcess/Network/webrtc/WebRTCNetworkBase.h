@@ -29,9 +29,9 @@
 
 #include "MessageReceiver.h"
 #include "WebMDNSRegister.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebKit {
 class WebProcess;

@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/SymbolRegistry.h>
 #include <wtf/text/UniquedStringImpl.h>
 

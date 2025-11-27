@@ -26,9 +26,9 @@
 #pragma once
 
 #include "StorageAreaIdentifier.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 

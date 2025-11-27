@@ -25,13 +25,13 @@
 
 #pragma once
 
-#import <wtf/FastMalloc.h>
 #import <wtf/Ref.h>
 #import <wtf/RefCountedAndCanMakeWeakPtr.h>
 #import <wtf/RetainReleaseSwift.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakPtr.h>
-#import <wtf/threads/BinarySemaphore.h>
+#import <wtf/concurrency/BinarySemaphore.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUCommandBufferImpl {
 };

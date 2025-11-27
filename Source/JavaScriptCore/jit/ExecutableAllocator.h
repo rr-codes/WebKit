@@ -35,10 +35,10 @@
 #include <bit>
 #include <limits>
 #include <wtf/Assertions.h>
-#include <wtf/ForbidHeapAllocation.h>
-#include <wtf/Gigacage.h>
 #include <wtf/Lock.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
+#include <wtf/memory/Gigacage.h>
 
 #if !ENABLE(LIBPAS_JIT_HEAP)
 #include <wtf/MetaAllocator.h>

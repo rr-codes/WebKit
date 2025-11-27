@@ -27,11 +27,11 @@
 
 #include <array>
 #include <wtf/Forward.h>
-#include <wtf/GetPtr.h>
 #include <wtf/HashFunctions.h>
 #include <wtf/MathExtras.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/UnalignedAccess.h>
+#include <wtf/memory/GetPtr.h>
 
 #if OS(DARWIN)
 #include <mach/vm_param.h>

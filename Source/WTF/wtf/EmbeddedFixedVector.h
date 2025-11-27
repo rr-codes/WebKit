@@ -27,12 +27,12 @@
 
 #include <iterator>
 #include <memory>
-#include <wtf/MallocCommon.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Nonmovable.h>
 #include <wtf/SequesteredMalloc.h>
 #include <wtf/TrailingArray.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/MallocCommon.h>
 
 namespace WTF {
 

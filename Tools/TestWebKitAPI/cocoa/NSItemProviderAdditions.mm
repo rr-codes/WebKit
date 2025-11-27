@@ -26,9 +26,9 @@
 #import "config.h"
 #import "NSItemProviderAdditions.h"
 
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation NSItemProvider (NSItemProviderAdditions)
 

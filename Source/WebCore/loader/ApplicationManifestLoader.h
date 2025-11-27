@@ -31,9 +31,9 @@
 #include "CachedRawResourceClient.h"
 #include "CachedResourceHandle.h"
 #include "LoaderMalloc.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/URL.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

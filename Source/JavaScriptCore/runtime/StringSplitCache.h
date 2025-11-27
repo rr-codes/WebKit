@@ -27,8 +27,8 @@
 #pragma once
 
 #include <array>
-#include <wtf/DebugHeap.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/DebugHeap.h>
 
 namespace JSC {
 

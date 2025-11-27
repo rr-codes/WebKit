@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/Ref.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
     

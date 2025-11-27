@@ -33,13 +33,13 @@
 #include <WebCore/PlaybackSessionModel.h>
 #include <WebCore/SpatialVideoMetadata.h>
 #include <WebCore/VideoProjectionMetadata.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/Observer.h>
 #include <wtf/OptionSet.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

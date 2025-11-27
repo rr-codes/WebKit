@@ -24,9 +24,8 @@
  */
 
 #import "config.h"
-#import "PlatformCALayerCocoa.h"
-
 #import "AnimationUtilities.h"
+
 #import "ContentsFormatCocoa.h"
 #import "GraphicsContext.h"
 #import "GraphicsLayerCA.h"
@@ -37,6 +36,7 @@
 #import "PathCG.h"
 #import "PlatformCAAnimationCocoa.h"
 #import "PlatformCAFilters.h"
+#import "PlatformCALayerCocoa.h"
 #import "PlatformCALayerContentsDelayedReleaser.h"
 #import "PlatformCALayerDelegatedContents.h"
 #import "ScrollbarThemeMac.h"
@@ -44,28 +44,28 @@
 #import "TiledBacking.h"
 #import "WebActionDisablingCALayerDelegate.h"
 #import "WebCoreCALayerExtras.h"
-#import "WebVideoContainerLayer.h"
-#import <pal/spi/cocoa/QuartzCoreSPI.h>
-#import <wtf/SoftLinking.h>
 #import "WebLayer.h"
 #import "WebSystemBackdropLayer.h"
 #import "WebTiledBackingLayer.h"
+#import "WebVideoContainerLayer.h"
 #import <AVFoundation/AVPlayer.h>
 #import <AVFoundation/AVPlayerLayer.h>
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
+#import <pal/spi/cocoa/QuartzCoreSPI.h>
 #import <wtf/BlockObjCExceptions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Lock.h>
 #import <wtf/MachSendRight.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/SoftLinking.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import "FontAntialiasingStateSaver.h"
 #import "WAKWindow.h"
-#import "WKGraphics.h"
 #import "WebCoreThread.h"
+#import "WKGraphics.h"
 #endif
 
 #import <pal/cocoa/AVFoundationSoftLink.h>

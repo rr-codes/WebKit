@@ -23,8 +23,8 @@
 #include <WebCore/CSSProperty.h>
 #include <WebCore/CSSPropertyNames.h>
 #include <WebCore/ScriptWrappable.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

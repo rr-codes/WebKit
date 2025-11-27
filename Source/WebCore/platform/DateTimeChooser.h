@@ -30,7 +30,7 @@
 
 #pragma once
 
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WeakPtr.h>
 

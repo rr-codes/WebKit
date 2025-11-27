@@ -48,7 +48,7 @@
 #include <WebCore/WebGPUAdapter.h>
 #include <WebCore/WebGPUPresentationContext.h>
 #include <WebCore/WebGPUPresentationContextDescriptor.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 #if HAVE(WEBGPU_IMPLEMENTATION)
 #include <WebCore/ProcessIdentity.h>

@@ -31,12 +31,12 @@
 #include <optional>
 #include <type_traits>
 #include <wtf/Assertions.h>
-#include <wtf/Atomics.h>
 #include <wtf/EnumTraits.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/MathExtras.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

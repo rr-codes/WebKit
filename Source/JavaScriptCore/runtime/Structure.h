@@ -42,11 +42,11 @@
 #include <JavaScriptCore/StructureTransitionTable.h>
 #include <JavaScriptCore/TypeInfoBlob.h>
 #include <JavaScriptCore/Watchpoint.h>
-#include <wtf/Atomics.h>
-#include <wtf/CompactPointerTuple.h>
-#include <wtf/CompactPtr.h>
-#include <wtf/CompactRefPtr.h>
 #include <wtf/PrintStream.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/CompactPointerTuple.h>
+#include <wtf/memory/CompactPtr.h>
+#include <wtf/memory/CompactRefPtr.h>
 
 namespace WTF {
 

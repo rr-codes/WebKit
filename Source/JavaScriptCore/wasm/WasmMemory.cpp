@@ -33,21 +33,21 @@
 #include "Options.h"
 #include "WasmFaultSignalHandler.h"
 #include "WeakGCSetInlines.h"
+#include <cstring>
+#include <limits>
+#include <mutex>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/DataLog.h>
-#include <wtf/Gigacage.h>
 #include <wtf/Lock.h>
 #include <wtf/Platform.h>
 #include <wtf/PrintStream.h>
 #include <wtf/RAMSize.h>
 #include <wtf/SafeStrerror.h>
 #include <wtf/StdSet.h>
+
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/Vector.h>
-
-#include <cstring>
-#include <limits>
-#include <mutex>
+#include <wtf/memory/Gigacage.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

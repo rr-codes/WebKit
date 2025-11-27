@@ -24,17 +24,17 @@
  */
 
 #import "config.h"
-#import "WKContentRuleListInternal.h"
-#import "WKContentRuleListStoreInternal.h"
-
 #import "APIContentRuleListStore.h"
 #import "NetworkCacheFileSystem.h"
-#import "WKErrorInternal.h"
+
 #import "WebPrivacyHelpers.h"
+#import "WKContentRuleListInternal.h"
+#import "WKContentRuleListStoreInternal.h"
+#import "WKErrorInternal.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if ENABLE(CONTENT_EXTENSIONS)
 static WKErrorCode toWKErrorCode(const std::error_code& error)

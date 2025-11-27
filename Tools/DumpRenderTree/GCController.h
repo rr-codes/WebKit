@@ -29,7 +29,7 @@
 #pragma once
 
 #include <JavaScriptCore/JSRetainPtr.h>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 class GCController {
     WTF_DEPRECATED_MAKE_FAST_ALLOCATED(GCController);

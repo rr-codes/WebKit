@@ -26,13 +26,13 @@
 #include "config.h"
 
 #include "Utilities.h"
-#include <wtf/CheckedPtr.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/Threading.h>
 #include <wtf/Vector.h>
 #include <wtf/WallTime.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace TestWebKitAPI {
 

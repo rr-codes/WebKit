@@ -27,15 +27,15 @@
 
 #if ENABLE(EXTENSION_CAPABILITIES)
 
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebKit {
 

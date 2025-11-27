@@ -28,7 +28,7 @@
 
 #include "Document.h"
 #include "PseudoClassChangeInvalidation.h"
-#include <wtf/IsoMallocInlines.h>
+#include <wtf/memory/IsoMallocInlines.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

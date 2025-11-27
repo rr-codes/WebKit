@@ -24,9 +24,9 @@
  */
 
 #include "config.h"
-#include "InjectedBundleRangeHandle.h"
-
 #include "InjectedBundleNodeHandle.h"
+
+#include "InjectedBundleRangeHandle.h"
 #include "WebImage.h"
 #include <JavaScriptCore/APICast.h>
 #include <JavaScriptCore/HeapInlines.h>
@@ -50,9 +50,9 @@
 #include <WebCore/SimpleRange.h>
 #include <WebCore/TextIterator.h>
 #include <WebCore/VisibleSelection.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if PLATFORM(MAC)
 #include <WebCore/LocalDefaultSystemAppearance.h>

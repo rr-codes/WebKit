@@ -32,8 +32,8 @@
 #pragma once
 
 #include <optional>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

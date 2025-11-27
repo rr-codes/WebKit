@@ -30,7 +30,7 @@
 
 #import "DeprecatedGlobalSettings.h"
 #import "WebCoreThreadRun.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if USE(APPLE_INTERNAL_SDK)
 #import <AppSupport/CPNetworkObserver.h>

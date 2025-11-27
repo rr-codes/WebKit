@@ -31,8 +31,8 @@
 #include <wtf/TZoneMalloc.h>
 
 #if !USE(CF) && !OS(WINDOWS)
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 #endif
 
 namespace WebCore {

@@ -35,8 +35,8 @@
 #import "WebExtensionContext.h"
 #import "WebExtensionSidebar.h"
 #import "WebExtensionTab.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation _WKWebExtensionSidebar
 

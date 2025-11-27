@@ -23,19 +23,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMTextEvent.h"
-
 #import "DOMAbstractViewInternal.h"
+
 #import "DOMEventInternal.h"
 #import "DOMNodeInternal.h"
+#import "DOMTextEvent.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/LocalDOMWindow.h>
 #import <WebCore/TextEvent.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::TextEvent*>(reinterpret_cast<WebCore::Event*>(_internal))
 

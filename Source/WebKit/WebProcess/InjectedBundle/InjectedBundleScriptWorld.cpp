@@ -24,14 +24,14 @@
  */
 
 #include "config.h"
-#include "InjectedBundleScriptWorld.h"
-
 #include "ContentWorldShared.h"
+
+#include "InjectedBundleScriptWorld.h"
 #include <WebCore/DOMWrapperWorld.h>
 #include <WebCore/ScriptController.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/WTFString.h>
 

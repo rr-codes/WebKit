@@ -24,15 +24,15 @@
  */
 
 #include "config.h"
-#include "TestController.h"
-
 #include "DataFunctions.h"
+
 #include "DictionaryFunctions.h"
 #include "EventSenderProxy.h"
 #include "Options.h"
 #include "PlatformWebView.h"
 #include "StringFunctions.h"
 #include "TestCommand.h"
+#include "TestController.h"
 #include "TestInvocation.h"
 #include "WebCoreTestSupport.h"
 #include <JavaScriptCore/InitializeThreading.h>
@@ -89,14 +89,12 @@
 #include <fstream>
 #include <stdlib.h>
 #include <string>
-#include <wtf/AutodrainedPool.h>
 #include <wtf/Compiler.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/FileSystem.h>
 #include <wtf/Logging.h>
 #include <wtf/MainThread.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/ProcessPrivilege.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RunLoop.h>
@@ -106,6 +104,8 @@
 #include <wtf/UniqueArray.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WTFProcess.h>
+#include <wtf/memory/AutodrainedPool.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/TextStream.h>

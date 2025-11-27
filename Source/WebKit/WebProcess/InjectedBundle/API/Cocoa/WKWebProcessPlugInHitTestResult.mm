@@ -28,7 +28,7 @@
 
 #import "WKWebProcessPlugInNodeHandleInternal.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKWebProcessPlugInHitTestResult {
     AlignedStorage<WebKit::InjectedBundleHitTestResult> _hitTestResult;

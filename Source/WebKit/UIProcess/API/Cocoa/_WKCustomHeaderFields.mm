@@ -28,8 +28,8 @@
 
 #import "_WKCustomHeaderFieldsInternal.h"
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 static Ref<API::CustomHeaderFields> protectedFields(_WKCustomHeaderFields *fields)
 {

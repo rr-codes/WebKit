@@ -24,19 +24,19 @@
  */
 
 #import "config.h"
-#import "Instance.h"
+#import "Adapter.h"
 
 #import "APIConversions.h"
-#import "Adapter.h"
 #import "DDMesh.h"
 #import "HardwareCapabilities.h"
+#import "Instance.h"
 #import "PresentationContext.h"
 #import <cstring>
 #import <dlfcn.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MachSendRight.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if ENABLE(WEBGPU_SWIFT)
 #import "WebGPUSwiftInternal.h"

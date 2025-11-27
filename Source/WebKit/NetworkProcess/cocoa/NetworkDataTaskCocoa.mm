@@ -24,14 +24,14 @@
  */
 
 #import "config.h"
-#import "NetworkDataTaskCocoa.h"
-
 #import "AuthenticationChallengeDisposition.h"
+
 #import "AuthenticationManager.h"
 #import "DeviceManagementSPI.h"
 #import "Download.h"
 #import "DownloadProxyMessages.h"
 #import "Logging.h"
+#import "NetworkDataTaskCocoa.h"
 #import "NetworkIssueReporter.h"
 #import "NetworkProcess.h"
 #import "NetworkSessionCocoa.h"
@@ -47,13 +47,13 @@
 #import <WebCore/TimingAllowOrigin.h>
 #import <pal/spi/cf/CFNetworkSPI.h>
 #import <pal/spi/cocoa/NetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/MainThread.h>
 #import <wtf/ProcessPrivilege.h>
 #import <wtf/SystemTracing.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/Base64.h>
 
 #if HAVE(NW_ACTIVITY)

@@ -29,10 +29,10 @@
 #import "CallGraph.h"
 #import "WGSL.h"
 #import <variant>
-#import <wtf/FastMalloc.h>
 #import <wtf/Ref.h>
 #import <wtf/RefCounted.h>
 #import <wtf/TZoneMalloc.h>
+#import <wtf/memory/FastMalloc.h>
 #import <wtf/text/StringHash.h>
 #import <wtf/text/WTFString.h>
 

@@ -32,9 +32,9 @@
 #include <unicode/utypes.h>
 #include <wtf/Assertions.h>
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/DebugHeap.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/DebugHeap.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WTF {
 

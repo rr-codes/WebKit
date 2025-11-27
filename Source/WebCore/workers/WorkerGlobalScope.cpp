@@ -83,7 +83,7 @@
 #include <wtf/Lock.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WorkQueue.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 #if ENABLE(WEBDRIVER_BIDI)
 #include "AutomationInstrumentation.h"

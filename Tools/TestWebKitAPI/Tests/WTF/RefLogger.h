@@ -26,7 +26,7 @@
 #pragma once
 
 #include "Logger.h"
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace TestWebKitAPI {
 

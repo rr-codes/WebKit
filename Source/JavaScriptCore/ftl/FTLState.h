@@ -34,8 +34,8 @@
 #include "FTLAbbreviatedTypes.h"
 #include "FTLJITCode.h"
 #include "FTLJITFinalizer.h"
-#include <wtf/Box.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

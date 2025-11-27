@@ -33,10 +33,10 @@
 #include <WebCore/GradientColorStops.h>
 #include <WebCore/GraphicsTypes.h>
 #include <WebCore/RenderingResource.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if USE(SKIA)
 #include <skia/core/SkShader.h>

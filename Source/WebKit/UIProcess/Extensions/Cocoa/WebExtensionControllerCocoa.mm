@@ -32,16 +32,12 @@
 
 #if ENABLE(WK_WEB_EXTENSIONS)
 
+#import "_WKFeatureInternal.h"
 #import "APIWebsitePolicies.h"
 #import "CocoaHelpers.h"
 #import "ContextMenuContextData.h"
 #import "Logging.h"
 #import "SandboxUtilities.h"
-#import "WKFeature.h"
-#import "WKPreferences.h"
-#import "WKPreferencesPrivate.h"
-#import "WKWebViewConfigurationPrivate.h"
-#import "WKWebsiteDataStoreInternal.h"
 #import "WebExtensionContext.h"
 #import "WebExtensionContextMessages.h"
 #import "WebExtensionContextParameters.h"
@@ -53,14 +49,18 @@
 #import "WebExtensionStorageSQLiteStore.h"
 #import "WebPageProxy.h"
 #import "WebProcessPool.h"
-#import "_WKFeatureInternal.h"
+#import "WKFeature.h"
+#import "WKPreferences.h"
+#import "WKPreferencesPrivate.h"
+#import "WKWebsiteDataStoreInternal.h"
+#import "WKWebViewConfigurationPrivate.h"
 #import <WebCore/ContentRuleListResults.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/FileSystem.h>
 #import <wtf/HashMap.h>
 #import <wtf/HashSet.h>
 #import <wtf/NeverDestroyed.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/WTFString.h>
 
 #if PLATFORM(IOS_FAMILY)

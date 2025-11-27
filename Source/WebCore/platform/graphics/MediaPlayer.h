@@ -46,7 +46,6 @@
 #include <WebCore/Timer.h>
 #include <WebCore/VideoPlaybackQualityMetrics.h>
 #include <WebCore/VideoTarget.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Function.h>
 #include <wtf/HashSet.h>
@@ -57,6 +56,7 @@
 #include <wtf/URL.h>
 #include <wtf/WallTime.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/StringHash.h>
 
 OBJC_CLASS AVPlayer;

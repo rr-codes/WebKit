@@ -37,10 +37,10 @@
 #import <UIKit/UIKit.h>
 #import <WebCore/CaptionUserPreferencesMediaAF.h>
 #import <pal/spi/cocoa/AVKitSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/WTFString.h>
 
 #import <pal/cf/CoreMediaSoftLink.h>

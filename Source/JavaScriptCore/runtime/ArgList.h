@@ -24,9 +24,9 @@
 #include <JavaScriptCore/CallFrame.h>
 #include <JavaScriptCore/JSCast.h>
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -33,15 +33,15 @@
 #include <WebCore/FloatRect.h>
 #include <WebCore/FloatSize.h>
 #include <WebCore/PageIdentifier.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if PLATFORM(COCOA)
-#include <wtf/BlockPtr.h>
+#include <wtf/memory/BlockPtr.h>
 #endif
 
 #if PLATFORM(GTK)

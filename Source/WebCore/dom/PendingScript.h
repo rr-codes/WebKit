@@ -27,9 +27,9 @@
 
 #include <WebCore/LoadableScript.h>
 #include <WebCore/LoadableScriptClient.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/TextPosition.h>
 
 namespace WebCore {

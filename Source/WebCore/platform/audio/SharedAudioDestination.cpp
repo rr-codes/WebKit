@@ -34,7 +34,7 @@
 #include <wtf/WTFSemaphore.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/WorkQueue.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 namespace WebCore {
 

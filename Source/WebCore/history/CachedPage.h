@@ -26,10 +26,10 @@
 #pragma once
 
 #include <WebCore/CachedFrame.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

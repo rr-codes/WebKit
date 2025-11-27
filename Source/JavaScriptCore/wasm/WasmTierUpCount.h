@@ -31,10 +31,10 @@
 #include <JavaScriptCore/ExecutionCounter.h>
 #include <JavaScriptCore/Options.h>
 #include <JavaScriptCore/WasmOSREntryData.h>
-#include <wtf/Atomics.h>
 #include <wtf/SegmentedVector.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace JSC { namespace Wasm {
 

@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
 #include <wtf/Compiler.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WTF {
 

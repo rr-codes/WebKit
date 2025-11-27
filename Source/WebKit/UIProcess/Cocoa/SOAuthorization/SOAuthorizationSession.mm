@@ -36,21 +36,21 @@
 #import "Logging.h"
 #import "SOAuthorizationLoadPolicy.h"
 #import "UIKitUtilities.h"
-#import "WKSOAuthorizationDelegate.h"
-#import "WKUIDelegatePrivate.h"
-#import "WKWebViewInternal.h"
 #import "WebFrameProxy.h"
 #import "WebPageProxy.h"
 #import "WebsiteDataStore.h"
+#import "WKSOAuthorizationDelegate.h"
+#import "WKUIDelegatePrivate.h"
+#import "WKWebViewInternal.h"
 #import <WebCore/ContentSecurityPolicy.h>
 #import <WebCore/HTTPParsers.h>
 #import <WebCore/ResourceResponse.h>
 #import <WebCore/SecurityOrigin.h>
-#import <wtf/BlockPtr.h>
+#import <pal/cocoa/AppSSOSoftLink.h>
 #import <wtf/Vector.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 
-#import <pal/cocoa/AppSSOSoftLink.h>
+#import <wtf/memory/BlockPtr.h>
 
 #define AUTHORIZATIONSESSION_RELEASE_LOG(fmt, ...) RELEASE_LOG(AppSSO, "%p - [InitiatingAction=%s][State=%s] SOAuthorizationSession::" fmt, this, toString(m_action).characters(), stateString().characters(), ##__VA_ARGS__)
 #define AUTHORIZATIONSESSION_RELEASE_LOG_WITH_THIS(thisPtr, fmt, ...) RELEASE_LOG(AppSSO, "%p - [InitiatingAction=%s][State=%s] SOAuthorizationSession::" fmt, thisPtr.get(), toString(thisPtr->m_action).characters(), thisPtr->stateString().characters(), ##__VA_ARGS__)

@@ -28,7 +28,7 @@
 
 #include "RTCIceGatheringState.h"
 #include "RTCIceTransportState.h"
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

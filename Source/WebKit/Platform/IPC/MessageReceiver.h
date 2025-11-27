@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/Assertions.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCounted.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace IPC {
 

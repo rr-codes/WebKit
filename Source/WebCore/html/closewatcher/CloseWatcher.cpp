@@ -36,7 +36,7 @@
 #include "KeyboardEvent.h"
 #include "LocalDOMWindow.h"
 #include "ScriptExecutionContext.h"
-#include <wtf/IsoMallocInlines.h>
+#include <wtf/memory/IsoMallocInlines.h>
 
 namespace WebCore {
 

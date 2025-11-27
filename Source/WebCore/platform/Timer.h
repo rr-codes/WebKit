@@ -27,8 +27,6 @@
 
 #include <WebCore/ThreadTimers.h>
 #include <functional>
-#include <wtf/CheckedRef.h>
-#include <wtf/CompactRefPtrTuple.h>
 #include <wtf/Function.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/Noncopyable.h>
@@ -40,6 +38,8 @@
 #include <wtf/TypeTraits.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/CompactRefPtrTuple.h>
 
 #if PLATFORM(IOS_FAMILY)
 #include <WebCore/WebCoreThread.h>

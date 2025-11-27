@@ -28,13 +28,13 @@
 
 #include <WebCore/ContextDestructionObserver.h>
 #include <WebCore/TaskSource.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/Assertions.h>
 #include <wtf/CancellableTask.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Threading.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

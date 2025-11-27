@@ -30,9 +30,9 @@
 #if ENABLE(ENCRYPTED_MEDIA)
 
 #include <memory>
-#include <wtf/AbstractRefCounted.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/AbstractRefCounted.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 #if !RELEASE_LOG_DISABLED
 namespace WTF {

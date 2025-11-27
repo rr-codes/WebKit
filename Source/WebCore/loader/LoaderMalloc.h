@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 DECLARE_ALLOCATOR_WITH_HEAP_IDENTIFIER(Loader);

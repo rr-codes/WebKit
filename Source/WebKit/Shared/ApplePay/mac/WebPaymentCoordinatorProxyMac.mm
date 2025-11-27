@@ -31,8 +31,8 @@
 #import "AppKitSPI.h"
 #import "PaymentAuthorizationViewController.h"
 #import "WebPageProxy.h"
+#import <wtf/memory/BlockPtr.h>
 #import <pal/cocoa/PassKitSoftLink.h>
-#import <wtf/BlockPtr.h>
 
 namespace WebKit {
 

@@ -32,7 +32,7 @@
 #define AudioDSPKernel_h
 
 #include "AudioDSPKernelProcessor.h"
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

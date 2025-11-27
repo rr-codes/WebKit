@@ -24,13 +24,13 @@
  */
 
 #import "config.h"
-#import "TestController.h"
-
 #import "CrashReporterInfo.h"
+
 #import "LayoutTestSpellChecker.h"
 #import "Options.h"
 #import "PlatformWebView.h"
 #import "StringFunctions.h"
+#import "TestController.h"
 #import "TestInvocation.h"
 #import "TestRunnerWKWebView.h"
 #import "TestWebsiteDataStoreDelegate.h"
@@ -60,12 +60,12 @@
 #import <WebKit/_WKApplicationManifest.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
 #import <pal/spi/cocoa/LaunchServicesSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/MainThread.h>
 #import <wtf/RunLoop.h>
 #import <wtf/UniqueRef.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cocoa/SecuritySPI.h>
 #import <wtf/text/MakeString.h>
 

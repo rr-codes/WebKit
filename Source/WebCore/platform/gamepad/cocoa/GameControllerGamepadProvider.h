@@ -28,10 +28,10 @@
 #if ENABLE(GAMEPAD)
 
 #include <WebCore/GamepadProvider.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 OBJC_CLASS GCController;
 OBJC_CLASS NSObject;

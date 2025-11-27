@@ -28,9 +28,9 @@
 #include "DecodingOptions.h"
 #include "ImageTypes.h"
 #include "Timer.h"
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

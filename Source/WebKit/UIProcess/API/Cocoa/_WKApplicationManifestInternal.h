@@ -23,12 +23,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <WebKit/WKFoundation.h>
+#import "_WKApplicationManifest.h"
 
 #import "APIApplicationManifest.h"
-#import "_WKApplicationManifest.h"
-#import <wtf/AlignedStorage.h>
+#import <WebKit/WKFoundation.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

@@ -39,9 +39,9 @@
 #include "WasmMemory.h"
 #include "WasmModuleInformation.h"
 #include "WasmTierUpCount.h"
-#include <wtf/Box.h>
 #include <wtf/Expected.h>
 #include <wtf/SegmentedVector.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

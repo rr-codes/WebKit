@@ -27,7 +27,7 @@
 
 #include <WebCore/FetchOptions.h>
 #include <WebCore/ServiceWorkerTypes.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

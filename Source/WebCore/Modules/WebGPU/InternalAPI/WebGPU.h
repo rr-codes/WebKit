@@ -27,10 +27,10 @@
 
 #include <WebCore/WebGPURequestAdapterOptions.h>
 #include <optional>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 class NativeImage;

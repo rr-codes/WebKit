@@ -30,11 +30,11 @@
 #include <WebCore/PlatformExportMacros.h>
 #include <WebCore/SharedBuffer.h>
 #include <wtf/Forward.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/OptionSet.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/MallocSpan.h>
 
 #if OS(DARWIN)
 namespace WTF {

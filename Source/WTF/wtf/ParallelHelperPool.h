@@ -25,8 +25,6 @@
 
 #pragma once
 
-#include <wtf/Box.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Condition.h>
 #include <wtf/Lock.h>
 #include <wtf/RefPtr.h>
@@ -36,6 +34,8 @@
 #include <wtf/Threading.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRandom.h>
+#include <wtf/memory/Box.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/CString.h>
 
 namespace WTF {

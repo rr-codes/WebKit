@@ -31,10 +31,10 @@
 #include "PlatformCALayer.h"
 #include "PlatformCALayerClient.h"
 #include "Timer.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

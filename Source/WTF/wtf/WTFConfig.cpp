@@ -24,23 +24,23 @@
  */
 
 #include "config.h"
-#include <wtf/WTFConfig.h>
-
 #include <cstdio>
 
-#include <wtf/FastMalloc.h>
-#include <wtf/Gigacage.h>
 #include <wtf/Lock.h>
+
 #include <wtf/MathExtras.h>
 #include <wtf/PageBlock.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/WTFConfig.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/Gigacage.h>
 
 #if OS(DARWIN)
+#include "unistd.h"
 #include <dlfcn.h>
 #include <mach-o/getsect.h>
 #include <mach-o/ldsyms.h>
 #include <mach/vm_param.h>
-#include "unistd.h"
 #endif
 
 #if defined(__has_include)
@@ -50,8 +50,8 @@
 #endif // defined(__has_include)
 
 #if PLATFORM(COCOA)
-#include <wtf/spi/cocoa/MachVMSPI.h>
 #include <mach/mach.h>
+#include <wtf/spi/cocoa/MachVMSPI.h>
 #elif OS(LINUX)
 #include <sys/mman.h>
 #endif

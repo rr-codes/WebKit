@@ -30,13 +30,13 @@
 #include <WebCore/TextManipulationControllerExclusionRule.h>
 #include <WebCore/TextManipulationControllerManipulationFailure.h>
 #include <WebCore/TextManipulationItem.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Markable.h>
 #include <wtf/ObjectIdentifier.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

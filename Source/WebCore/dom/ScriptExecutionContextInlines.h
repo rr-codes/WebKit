@@ -28,9 +28,9 @@
 #include <WebCore/DOMTimer.h>
 #include <WebCore/EventLoop.h>
 #include <WebCore/ScriptExecutionContext.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CrossThreadTask.h>
 #include <wtf/NativePromise.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

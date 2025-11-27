@@ -31,8 +31,8 @@
 #include "DFGGraph.h"
 #include "JSCJSValueInlines.h"
 #include "TrackedReferences.h"
-#include <wtf/AlignedStorage.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/AlignedStorage.h>
 
 namespace JSC { namespace DFG {
 

@@ -28,11 +28,11 @@
 #include "NetworkCache.h"
 #include "NetworkCacheStorage.h"
 #include <WebCore/ResourceRequest.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebKit {
 namespace NetworkCache {

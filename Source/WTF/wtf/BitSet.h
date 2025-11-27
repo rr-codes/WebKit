@@ -20,15 +20,15 @@
 #pragma once
 
 #include <array>
-#include <wtf/Atomics.h>
+#include <string.h>
+#include <type_traits>
 #include <wtf/HashFunctions.h>
 #include <wtf/IterationStatus.h>
 #include <wtf/MathExtras.h>
 #include <wtf/PrintStream.h>
 #include <wtf/StdIntExtras.h>
 #include <wtf/StdLibExtras.h>
-#include <string.h>
-#include <type_traits>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WTF {
 

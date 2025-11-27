@@ -24,16 +24,16 @@
  */
 
 #import "config.h"
-#import <WebKit/_WKAttachment.h>
+#import "_WKAttachmentInternal.h"
 
 #import "APIAttachment.h"
 #import "WKErrorPrivate.h"
-#import "_WKAttachmentInternal.h"
 #import <WebCore/MIMETypeRegistry.h>
 #import <WebCore/SharedBuffer.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
+#import <WebKit/_WKAttachment.h>
 #import <wtf/CompletionHandler.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import <MobileCoreServices/MobileCoreServices.h>

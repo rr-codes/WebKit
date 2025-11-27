@@ -39,11 +39,11 @@
 #include <WebCore/CAAudioStreamDescription.h>
 #include <WebCore/CARingBuffer.h>
 #include <WebCore/WebAudioBufferList.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/Lock.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class ImageTransferSessionVT;

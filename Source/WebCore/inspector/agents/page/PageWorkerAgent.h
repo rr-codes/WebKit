@@ -26,8 +26,8 @@
 #pragma once
 
 #include "InspectorWorkerAgent.h"
-#include <wtf/FastMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

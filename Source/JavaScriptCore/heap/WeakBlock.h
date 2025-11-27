@@ -27,9 +27,9 @@
 
 #include <JavaScriptCore/CellContainer.h>
 #include <JavaScriptCore/WeakImpl.h>
-#include <wtf/DebugHeap.h>
 #include <wtf/DoublyLinkedList.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/DebugHeap.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -28,9 +28,9 @@
 #include <JavaScriptCore/JSCJSValue.h>
 #include <JavaScriptCore/Microtask.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
-#include <wtf/CompactRefPtrTuple.h>
 #include <wtf/Deque.h>
 #include <wtf/SentinelLinkedList.h>
+#include <wtf/memory/CompactRefPtrTuple.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

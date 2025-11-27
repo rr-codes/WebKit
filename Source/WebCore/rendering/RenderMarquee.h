@@ -45,8 +45,8 @@
 
 #include "RenderStyleConstants.h"
 #include "Timer.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -26,9 +26,9 @@
 #pragma once
 
 #include <WebCore/ActivityState.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

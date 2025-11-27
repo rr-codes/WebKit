@@ -28,9 +28,9 @@
 
 #import <Foundation/Foundation.h>
 #import <objc/message.h>
-#import <wtf/MallocSpan.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/SystemMalloc.h>
+#import <wtf/memory/MallocSpan.h>
 #import <wtf/text/StringCommon.h>
 
 #ifdef __cplusplus

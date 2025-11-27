@@ -31,7 +31,7 @@
 #include <WebCore/RenderBlockFlow.h>
 
 #include <optional>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 namespace Layout {

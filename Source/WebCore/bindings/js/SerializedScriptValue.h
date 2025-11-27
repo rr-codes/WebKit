@@ -33,7 +33,7 @@
 #include <WebCore/DetachedRTCDataChannel.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
-#include <wtf/Gigacage.h>
+#include <wtf/memory/Gigacage.h>
 #include <wtf/text/WTFString.h>
 
 #if ENABLE(MEDIA_STREAM)

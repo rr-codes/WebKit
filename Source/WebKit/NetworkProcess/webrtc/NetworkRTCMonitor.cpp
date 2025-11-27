@@ -48,8 +48,8 @@
 
 #if PLATFORM(COCOA)
 #include <pal/spi/cocoa/NetworkSPI.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 #endif
 
 namespace WebKit {

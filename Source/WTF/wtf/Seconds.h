@@ -26,8 +26,8 @@
 #pragma once
 
 #include <optional>
-#include <wtf/FastMalloc.h>
 #include <wtf/MathExtras.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

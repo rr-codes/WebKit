@@ -29,8 +29,8 @@
 #if HAVE(SPEECHRECOGNIZER)
 
 #import <pal/spi/cocoa/SpeechSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import <pal/cocoa/SpeechSoftLink.h>
 

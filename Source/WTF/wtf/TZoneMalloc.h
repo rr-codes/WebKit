@@ -25,14 +25,14 @@
 
 #pragma once
 
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Platform.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 #define WTF_NOEXPORT
 
 #if USE(SYSTEM_MALLOC) || !USE(TZONE_MALLOC)
 
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 // class allocators with FastMalloc fallback if TZoneHeap is disabled.
 #define WTF_MAKE_TZONE_ALLOCATED(name) WTF_DEPRECATED_MAKE_FAST_ALLOCATED(name)

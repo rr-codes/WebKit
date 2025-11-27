@@ -32,8 +32,8 @@
 #import <WebCore/Color.h>
 #import <WebCore/ColorSpace.h>
 #import <WebCore/ColorSpaceCG.h>
-#import <wtf/Box.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/Box.h>
 
 static const CFStringRef kCGIndexedBaseColorSpaceKey = CFSTR("kCGIndexedBaseColorSpaceKey");
 static const CFStringRef kCGLastIndexKey = CFSTR("kCGLastIndexKey");

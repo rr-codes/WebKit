@@ -33,8 +33,8 @@
 
 #include "BaseCheckableInputType.h"
 #include "SwitchTrigger.h"
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

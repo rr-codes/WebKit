@@ -29,8 +29,8 @@
 
 #import "ControlFactoryCocoa.h"
 #import "WebControlView.h"
-#import <wtf/CheckedRef.h>
 #import <wtf/TZoneMalloc.h>
+#import <wtf/memory/CheckedRef.h>
 
 OBJC_CLASS NSServicesRolloverButtonCell;
 

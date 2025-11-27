@@ -33,11 +33,11 @@
 #include "RemoteImageBufferSetConfiguration.h"
 #include "RenderingUpdateID.h"
 #include "WorkQueueMessageReceiver.h"
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Identified.h>
 #include <wtf/Lock.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if ENABLE(GPU_PROCESS)
 

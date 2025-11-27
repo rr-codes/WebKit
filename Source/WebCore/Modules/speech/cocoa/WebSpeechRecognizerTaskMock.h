@@ -26,7 +26,7 @@
 #if HAVE(SPEECHRECOGNIZER)
 
 #import "WebSpeechRecognizerTask.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

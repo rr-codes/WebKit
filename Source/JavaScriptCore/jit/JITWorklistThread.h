@@ -28,7 +28,7 @@
 #if ENABLE(JIT)
 
 #include "JITPlan.h"
-#include <wtf/AutomaticThread.h>
+#include <wtf/concurrency/AutomaticThread.h>
 
 namespace JSC {
 

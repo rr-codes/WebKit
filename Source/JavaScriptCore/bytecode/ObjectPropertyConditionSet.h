@@ -26,10 +26,10 @@
 #pragma once
 
 #include <JavaScriptCore/ObjectPropertyCondition.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Hasher.h>
 #include <wtf/RefCountedFixedVector.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/FastMalloc.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

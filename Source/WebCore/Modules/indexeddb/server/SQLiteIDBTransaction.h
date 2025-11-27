@@ -31,11 +31,11 @@
 #include <WebCore/IDBResourceIdentifier.h>
 #include <WebCore/IDBTransactionInfo.h>
 #include <WebCore/IndexedDB.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RobinHoodHashSet.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

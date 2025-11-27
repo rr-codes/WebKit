@@ -34,10 +34,10 @@
 #include <WebCore/ScrollBehavior.h>
 #include <WebCore/ScrollTypes.h>
 #include <WebCore/VisibleSelection.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Platform.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

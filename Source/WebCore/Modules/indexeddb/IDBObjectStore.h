@@ -25,16 +25,16 @@
 
 #pragma once
 
-#include <WebCore/ActiveDOMObject.h>
 #include "IDBCursorDirection.h"
+#include <WebCore/ActiveDOMObject.h>
 #include <WebCore/IDBIndexIdentifier.h>
 #include <WebCore/IDBKeyPath.h>
 #include <WebCore/IDBObjectStoreInfo.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Lock.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace JSC {
 class CallFrame;

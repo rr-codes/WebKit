@@ -39,7 +39,7 @@
 #include <mutex>
 #include <wtf/ProcessPrivilege.h>
 #include <wtf/cf/VectorCF.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 #if USE(APPLE_INTERNAL_SDK)
 #include <CFNetwork/CFURLConnectionPriv.h>

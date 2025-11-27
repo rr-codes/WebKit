@@ -26,8 +26,6 @@
 #pragma once
 
 #include <JavaScriptCore/StackManager.h>
-#include <wtf/AutomaticThread.h>
-#include <wtf/Box.h>
 #include <wtf/Expected.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
@@ -35,6 +33,8 @@
 #include <wtf/RefPtr.h>
 #include <wtf/StackBounds.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/concurrency/AutomaticThread.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

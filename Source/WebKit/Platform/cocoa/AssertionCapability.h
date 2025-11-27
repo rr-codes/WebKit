@@ -28,8 +28,8 @@
 #if ENABLE(EXTENSION_CAPABILITIES)
 
 #include "ExtensionCapability.h"
-#include <wtf/BlockPtr.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/BlockPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebKit {

@@ -31,10 +31,10 @@
 
 #include <WebCore/MediaStreamTrackHintValue.h>
 #include <WebCore/RealtimeMediaSource.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/LoggerHelper.h>
 #include <wtf/RefCounted.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

@@ -24,18 +24,17 @@
  */
 
 #include "config.h"
-#include "JSDollarVM.h"
-
 #include "ArrayPrototype.h"
+
 #include "BuiltinNames.h"
 #include "CachedCall.h"
 #include "CharacterPropertyDataGenerator.h"
 #include "CodeBlock.h"
 #include "Completion.h"
 #include "ControlFlowProfiler.h"
+#include "Debugger.h"
 #include "DOMAttributeGetterSetter.h"
 #include "DOMJITGetterSetter.h"
-#include "Debugger.h"
 #include "ExecutableBaseInlines.h"
 #include "FrameTracers.h"
 #include "FunctionCodeBlock.h"
@@ -46,6 +45,7 @@
 #include "JITSizeStatistics.h"
 #include "JSArray.h"
 #include "JSCInlines.h"
+#include "JSDollarVM.h"
 #include "JSGlobalProxyInlines.h"
 #include "JSONObject.h"
 #include "JSPromise.h"
@@ -68,7 +68,6 @@
 #include "WasmCapabilities.h"
 #include <unicode/uversion.h>
 #include <wtf/ApproximateTime.h>
-#include <wtf/Atomics.h>
 #include <wtf/CPUTime.h>
 #include <wtf/DataLog.h>
 #include <wtf/Language.h>
@@ -77,6 +76,7 @@
 #include <wtf/StringPrintStream.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WTFProcess.h>
+#include <wtf/concurrency/Atomics.h>
 #include <wtf/unicode/icu/ICUHelpers.h>
 
 #if !USE(SYSTEM_MALLOC)

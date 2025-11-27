@@ -30,11 +30,11 @@
 #include <WebCore/IDBTransactionInfo.h>
 #include <WebCore/IndexValueStore.h>
 #include <WebCore/ThreadSafeDataBuffer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 namespace IDBServer {

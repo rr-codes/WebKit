@@ -24,17 +24,17 @@
  */
 
 #import "config.h"
-#import "_WKTargetedElementInfo.h"
-
-#import "APIFrameTreeNode.h"
-#import "WKObject.h"
-#import "WebPageProxy.h"
 #import "_WKFrameTreeNodeInternal.h"
+
+#import "_WKTargetedElementInfo.h"
 #import "_WKTargetedElementInfoInternal.h"
+#import "APIFrameTreeNode.h"
+#import "WebPageProxy.h"
+#import "WKObject.h"
 #import <WebCore/ShareableBitmap.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 static Ref<API::TargetedElementInfo> protectedInfo(_WKTargetedElementInfo *info)
 {

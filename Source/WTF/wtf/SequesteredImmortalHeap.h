@@ -39,13 +39,13 @@
 #include <unistd.h>
 
 #include <wtf/Assertions.h>
-#include <wtf/Atomics.h>
 #include <wtf/Compiler.h>
 #include <wtf/DataLog.h>
 #include <wtf/DoublyLinkedList.h>
 #include <wtf/Lock.h>
 #include <wtf/PageBlock.h>
 #include <wtf/Threading.h>
+#include <wtf/concurrency/Atomics.h>
 
 #if OS(DARWIN)
 #include <pthread/tsd_private.h>

@@ -29,10 +29,10 @@
 
 #include "RTCNetwork.h"
 #include "SharedPreferencesForWebProcess.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/CrossThreadCopier.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebKit {
 class NetworkRTCMonitor;

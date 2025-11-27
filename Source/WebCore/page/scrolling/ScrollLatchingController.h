@@ -28,10 +28,10 @@
 #include "FloatSize.h"
 #include "ScrollTypes.h"
 #include "Timer.h"
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 #if ENABLE(WHEEL_EVENT_LATCHING)
 

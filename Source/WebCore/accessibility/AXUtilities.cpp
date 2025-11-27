@@ -23,10 +23,10 @@
  */
 
 #include "config.h"
-#include "AXUtilities.h"
-
 #include "AXLoggerBase.h"
+
 #include "AXObjectCache.h"
+#include "AXUtilities.h"
 #include "CSSPrimitiveValueMappings.h"
 #include "CSSProperty.h"
 #include "CSSValueList.h"
@@ -41,8 +41,8 @@
 #include "RenderStyleConstants.h"
 #include "RenderTreeBuilder.h"
 #include "StylePropertiesInlines.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

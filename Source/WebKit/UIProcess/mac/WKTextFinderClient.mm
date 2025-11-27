@@ -30,19 +30,19 @@
 
 #import "APIFindClient.h"
 #import "APIFindMatchesClient.h"
-#import "WKPageFindMatchesClient.h"
 #import "WebFindOptions.h"
 #import "WebImage.h"
 #import "WebPageProxy.h"
+#import "WKPageFindMatchesClient.h"
 #import <WebCore/NativeImage.h>
 #import <algorithm>
 #import <pal/spi/mac/NSTextFinderSPI.h>
-#import <wtf/BlockPtr.h>
-#import <wtf/CheckedPtr.h>
 #import <wtf/Deque.h>
 #import <wtf/NakedPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 // FIXME: Implement scrollFindMatchToVisible.
 // FIXME: The NSTextFinder overlay doesn't move with scrolling; we should have a mode where we manage the overlay.

@@ -28,9 +28,9 @@
 #include "MatchResult.h"
 #include "RenderStyle.h"
 #include "Timer.h"
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

@@ -32,24 +32,24 @@
 #import "NativeWebWheelEvent.h"
 #import "ScrollingAccelerationCurve.h"
 #import "ViewGestureController.h"
-#import "WKWebView.h"
 #import "WebEventModifier.h"
 #import "WebEventType.h"
 #import "WebPageProxy.h"
 #import "WebViewImpl.h"
 #import "WebWheelEvent.h"
+#import "WKWebView.h"
 #import <WebCore/FloatPoint.h>
 #import <WebCore/FloatSize.h>
 #import <WebCore/IntPoint.h>
 #import <WebCore/PlatformEventFactoryMac.h>
 #import <WebCore/Scrollbar.h>
 #import <source_location>
-#import <wtf/CheckedPtr.h>
 #import <wtf/MonotonicTime.h>
 #import <wtf/RefPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/UUID.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 #define WK_PAN_GESTURE_CONTROLLER_RELEASE_LOG(pageID, fmt, ...) RELEASE_LOG(ViewGestures, "[pageProxyID=%llu] %s: " fmt, pageID, std::source_location::current().function_name(), ##__VA_ARGS__)
 

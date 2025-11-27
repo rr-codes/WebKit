@@ -26,8 +26,8 @@
 #pragma once
 
 #include "ASTNode.h"
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/PrintStream.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 #include <wtf/text/WTFString.h>
 
 namespace WGSL::AST {

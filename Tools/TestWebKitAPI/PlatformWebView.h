@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/FastMalloc.h>
 
 #if USE(CG)
 #include <CoreGraphics/CGGeometry.h>

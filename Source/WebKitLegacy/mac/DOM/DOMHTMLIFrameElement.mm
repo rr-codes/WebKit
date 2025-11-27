@@ -23,10 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMHTMLIFrameElement.h"
-
 #import "DOMAbstractViewInternal.h"
+
 #import "DOMDocumentInternal.h"
+#import "DOMHTMLIFrameElement.h"
 #import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/Document.h>
@@ -36,8 +36,8 @@
 #import <WebCore/LocalDOMWindow.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::HTMLIFrameElement*>(reinterpret_cast<WebCore::Node*>(_internal))
 

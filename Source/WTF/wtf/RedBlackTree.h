@@ -29,10 +29,10 @@
 #pragma once
 
 #include <wtf/Assertions.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Noncopyable.h>
-#include <wtf/Vector.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/Vector.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WTF {
 

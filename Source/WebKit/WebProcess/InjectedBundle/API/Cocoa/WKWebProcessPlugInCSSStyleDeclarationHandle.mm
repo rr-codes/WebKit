@@ -28,7 +28,7 @@
 
 #import <WebCore/CSSStyleDeclaration.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKWebProcessPlugInCSSStyleDeclarationHandle {
     AlignedStorage<WebKit::InjectedBundleCSSStyleDeclarationHandle> _cssStyleDeclarationHandle;

@@ -23,11 +23,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import "_WKDataTask.h"
 #import "APIDataTask.h"
 #import "WKObject.h"
-#import "_WKDataTask.h"
-#import <wtf/AlignedStorage.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

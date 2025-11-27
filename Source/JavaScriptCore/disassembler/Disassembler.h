@@ -28,8 +28,8 @@
 #include <JavaScriptCore/JSCPtrTag.h>
 #include <JavaScriptCore/JSExportMacros.h>
 #include <functional>
-#include <wtf/CodePtr.h>
 #include <wtf/PrintStream.h>
+#include <wtf/memory/CodePtr.h>
 #include <wtf/text/CString.h>
 
 namespace JSC {

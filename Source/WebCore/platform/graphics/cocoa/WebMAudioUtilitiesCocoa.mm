@@ -38,9 +38,9 @@
 #import <AudioToolbox/AudioComponent.h>
 #import <AudioToolbox/AudioFormat.h>
 #import <dlfcn.h>
-#import <wtf/FlipBytes.h>
 #import <wtf/Seconds.h>
 #import <wtf/StdLibExtras.h>
+#import <wtf/memory/FlipBytes.h>
 #import <wtf/text/ParsingUtilities.h>
 
 #if ENABLE(OPUS)

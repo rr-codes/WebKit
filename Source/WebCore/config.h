@@ -44,9 +44,9 @@
 // Helps us catch if anyone uses new or delete by accident in code and doesn't include "config.h".
 #undef new
 #undef delete
-#include <wtf/FastMalloc.h>
-#include <wtf/IsoMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/IsoMalloc.h>
 
 #endif
 

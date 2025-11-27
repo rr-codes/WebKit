@@ -43,7 +43,7 @@
 #include "WebUserContentControllerMessages.h"
 #include <WebCore/SerializedScriptValue.h>
 #include <WebCore/SharedMemory.h>
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if ENABLE(CONTENT_EXTENSIONS)
 #include "APIContentRuleList.h"

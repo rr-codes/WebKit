@@ -36,8 +36,8 @@
 #include <WebCore/Settings.h>
 #include <WebCore/Timer.h>
 #include <WebCore/WorkerThread.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/OptionSet.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

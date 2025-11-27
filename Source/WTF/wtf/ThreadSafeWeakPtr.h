@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
 #include <wtf/Lock.h>
 #include <wtf/MainThread.h>
 #include <wtf/RefPtr.h>
 #include <wtf/SwiftBridging.h>
 #include <wtf/TaggedPtr.h>
 #include <wtf/WordLock.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WTF {
 

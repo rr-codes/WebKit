@@ -39,11 +39,11 @@
 #import <WebKit/WebKit.h>
 #import <WebKit/_WKErrorRecoveryAttempting.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Platform.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/cf/VectorCF.h>
 #import <wtf/cocoa/SpanCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cocoa/SecuritySPI.h>
 #import <wtf/text/Base64.h>
 

@@ -27,7 +27,7 @@
 
 #import "WKObject.h"
 #import "WebProcessPool.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 #if TARGET_OS_IPHONE
 @class WKGeolocationProviderIOS;

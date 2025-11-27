@@ -26,11 +26,11 @@
 #pragma once
 
 #include <WebCore/QualifiedName.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomString.h>
 
 namespace WebCore {

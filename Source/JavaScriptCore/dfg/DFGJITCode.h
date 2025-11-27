@@ -36,8 +36,8 @@
 #include "DFGVariableEventStream.h"
 #include "ExecutionCounter.h"
 #include "JITCode.h"
-#include <wtf/CompactPointerTuple.h>
 #include <wtf/SegmentedVector.h>
+#include <wtf/memory/CompactPointerTuple.h>
 
 namespace JSC {
 

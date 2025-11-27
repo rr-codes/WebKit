@@ -27,14 +27,14 @@
 
 #import "DOMNamedNodeMapInternal.h"
 #import "DOMNodeInternal.h"
-#import <WebCore/DocumentType.h>
 #import "ExceptionHandlers.h"
+#import <WebCore/DocumentType.h>
 #import <WebCore/JSExecState.h>
 #import <WebCore/NamedNodeMap.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::DocumentType*>(reinterpret_cast<WebCore::Node*>(_internal))
 

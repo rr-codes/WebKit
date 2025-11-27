@@ -51,12 +51,12 @@
 #import <WebKit/_WKTextInputContext.h>
 #import <objc/runtime.h>
 #import <pal/spi/ios/BrowserEngineKitSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Deque.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/Vector.h>
 #import <wtf/WeakObjCPtr.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #endif
 

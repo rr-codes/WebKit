@@ -36,7 +36,7 @@
 #include "PixelBuffer.h"
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/TZoneMallocInlines.h>
-#include <wtf/MallocSpan.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WebCore {
 

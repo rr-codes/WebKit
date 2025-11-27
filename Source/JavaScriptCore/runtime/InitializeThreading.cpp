@@ -46,7 +46,7 @@
 #include "WasmThunks.h"
 #include <mutex>
 #include <wtf/Threading.h>
-#include <wtf/threads/Signals.h>
+#include <wtf/concurrency/Signals.h>
 
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
 

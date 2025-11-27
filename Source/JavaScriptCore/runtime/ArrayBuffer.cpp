@@ -30,8 +30,8 @@
 #include "JSCellInlines.h"
 #include "WaiterListManager.h"
 #include "WeakInlines.h"
-#include <wtf/Gigacage.h>
 #include <wtf/SafeStrerror.h>
+#include <wtf/memory/Gigacage.h>
 
 #if ENABLE(WEBASSEMBLY)
 #include "WasmMemory.h"

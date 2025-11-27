@@ -29,10 +29,10 @@
 
 #include "MessageReceiver.h"
 #include <WebCore/AudioSession.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WallTime.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if HAVE(AVAUDIO_ROUTING_ARBITER)
 #import <WebCore/SharedRoutingArbitrator.h>

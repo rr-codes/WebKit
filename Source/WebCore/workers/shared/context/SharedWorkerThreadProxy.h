@@ -32,8 +32,8 @@
 #include <WebCore/WorkerLoaderProxy.h>
 #include <WebCore/WorkerObjectProxy.h>
 #include <WebCore/WorkerOptions.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -38,7 +38,7 @@
 #import <WebKit/WKWebViewConfigurationPrivate.h>
 #import <WebCore/HTTPStatusCodes.h>
 #import <WebCore/ResourceResponse.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface WKSOSecretDelegate : NSObject <WKNavigationDelegate, WKUIDelegate> {
 @private

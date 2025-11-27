@@ -24,9 +24,9 @@
  */
 
 #import "config.h"
+#import <wtf/memory/BlockPtr.h>
 
 #import "MoveOnly.h"
-#import <wtf/BlockPtr.h>
 
 namespace TestWebKitAPI {
 

@@ -34,9 +34,9 @@
 #include <WebCore/Site.h>
 #include <WebCore/Timer.h>
 #include <WebCore/TransferredMessagePort.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebKit {
 class WebSharedWorkerServerToContextConnection;

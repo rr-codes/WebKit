@@ -27,7 +27,7 @@
 #include "RenderView.h"
 #include "SVGGraphicsElement.h"
 #include "Settings.h"
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

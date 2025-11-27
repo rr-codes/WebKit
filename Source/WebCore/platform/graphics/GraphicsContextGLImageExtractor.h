@@ -29,7 +29,7 @@
 
 #include <WebCore/GraphicsContextGL.h>
 #include <WebCore/PlatformImage.h>
-#include <wtf/MallocSpan.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace WebCore {
 

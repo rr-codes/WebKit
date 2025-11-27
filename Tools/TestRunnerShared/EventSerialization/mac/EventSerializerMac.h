@@ -26,9 +26,9 @@
 #if PLATFORM(MAC)
 
 #import <AppKit/AppKit.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Forward.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface EventSerializer : NSObject
 

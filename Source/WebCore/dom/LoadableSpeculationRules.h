@@ -30,10 +30,10 @@
 #include <WebCore/FetchOptionsDestination.h>
 #include <WebCore/ResourceLoaderOptions.h>
 #include <WebCore/ResourceRequest.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/RefCounted.h>
 #include <wtf/URL.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

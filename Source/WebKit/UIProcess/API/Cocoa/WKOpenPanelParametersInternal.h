@@ -26,7 +26,7 @@
 #import "APIOpenPanelParameters.h"
 #import "WKObject.h"
 #import "WKOpenPanelParametersPrivate.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

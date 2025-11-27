@@ -32,10 +32,10 @@
 #include "SharedPreferencesForWebProcess.h"
 #include "WebProcess.h"
 #include <WebCore/ModelPlayerIdentifier.h>
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RefCounted.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebKit {

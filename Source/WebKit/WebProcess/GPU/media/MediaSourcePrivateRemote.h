@@ -36,11 +36,11 @@
 #include <WebCore/MediaSourcePrivateClient.h>
 #include <WebCore/SourceBufferPrivate.h>
 #include <atomic>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/LoggerHelper.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace IPC {
 class Connection;

@@ -34,12 +34,12 @@
 #import <dispatch/dispatch.h>
 #import <stdio.h>
 #import <wtf/Assertions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Logging.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/SchedulePair.h>
 #import <wtf/Threading.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if USE(WEB_THREAD)
 #import <wtf/ios/WebCoreThread.h>

@@ -31,7 +31,7 @@
 #include "XRDeviceIdentifier.h"
 #include "XRDeviceProxy.h"
 #include <WebCore/PlatformXR.h>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 class SecurityOriginData;

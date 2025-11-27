@@ -31,7 +31,6 @@
 #include "GeneratedSerializers.h"
 #include <utility>
 #include <wtf/ArgumentCoder.h>
-#include <wtf/Box.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/Expected.h>
 #include <wtf/Forward.h>
@@ -41,6 +40,7 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/Unexpected.h>
 #include <wtf/WallTime.h>
+#include <wtf/memory/Box.h>
 
 #if OS(ANDROID)
 #include "ArgumentCodersAndroid.h"

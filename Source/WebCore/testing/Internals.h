@@ -26,11 +26,11 @@
 
 #pragma once
 
-#include "AV1Utilities.h"
 #include "ActivityState.h"
-#include "CSSComputedStyleDeclaration.h"
+#include "AV1Utilities.h"
 #include "ContextDestructionObserver.h"
 #include "Cookie.h"
+#include "CSSComputedStyleDeclaration.h"
 #include "EpochTimeStamp.h"
 #include "EventTrackingRegions.h"
 #include "ExceptionOr.h"
@@ -47,8 +47,8 @@
 #include "TextIndicator.h"
 #include "VP9Utilities.h"
 #include <JavaScriptCore/Forward.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if ENABLE(VIDEO)
 #include "MediaElementSession.h"

@@ -37,9 +37,9 @@
 #include "WebProcessPool.h"
 #include "WebsiteDataStore.h"
 #include <pal/SessionID.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/StringBuilder.h>
 
 namespace WebKit {

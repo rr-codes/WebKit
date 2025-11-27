@@ -36,10 +36,10 @@
 #import <WebKit/_WKDownloadDelegate.h>
 #import <pal/spi/cocoa/NSProgressSPI.h>
 #import <sys/xattr.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @class DownloadProgressTestProtocol;
 

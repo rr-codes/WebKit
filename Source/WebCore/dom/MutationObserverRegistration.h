@@ -32,10 +32,10 @@
 
 #include "GCReachableRef.h"
 #include "MutationObserver.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/RobinHoodHashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomString.h>
 #include <wtf/text/AtomStringHash.h>
 

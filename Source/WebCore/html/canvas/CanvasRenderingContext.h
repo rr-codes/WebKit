@@ -29,11 +29,11 @@
 #include "GraphicsLayerContentsDisplayDelegate.h"
 #include "ImageBuffer.h"
 #include "ScriptWrappable.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Lock.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringHash.h>
 
 namespace WebCore {

@@ -25,12 +25,12 @@
 
 #pragma once
 
-#import <wtf/FastMalloc.h>
 #import <wtf/Ref.h>
 #import <wtf/RefCounted.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/TypeCasts.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUSurfaceImpl {
 };

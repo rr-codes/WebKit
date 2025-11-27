@@ -35,8 +35,8 @@
 #include <JavaScriptCore/VMEntryScope.h>
 #include <JavaScriptCore/VMEntryScopeInlines.h>
 #include <JavaScriptCore/VMInlines.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Scope.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace JSC {
 

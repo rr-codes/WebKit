@@ -27,8 +27,8 @@
 
 #include <memory>
 #include <wtf/Assertions.h>
-#include <wtf/GetPtr.h>
 #include <wtf/TypeCasts.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WTF {
 

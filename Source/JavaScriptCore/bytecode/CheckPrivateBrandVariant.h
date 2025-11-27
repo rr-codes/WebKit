@@ -28,8 +28,8 @@
 
 #include "CacheableIdentifier.h"
 #include "StructureSet.h"
-#include <wtf/Box.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

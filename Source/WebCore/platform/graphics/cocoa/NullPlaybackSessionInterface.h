@@ -30,7 +30,7 @@
 
 #include <WebCore/HTMLMediaElementEnums.h>
 #include <WebCore/PlaybackSessionModel.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 
 OBJC_CLASS AVPlayerViewController;

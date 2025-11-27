@@ -30,8 +30,8 @@
 #import "TestWKWebView.h"
 #import "WKWebViewConfigurationExtras.h"
 #import <WebKit/WKWebViewPrivate.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if HAVE(SPATIAL_TRACKING_LABEL)
 TEST(WKWebView, DefaultSTSLabel)

@@ -33,10 +33,10 @@
 #import "GamepadHapticEffectType.h"
 #import "Logging.h"
 #import <cmath>
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/RunLoop.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import "CoreHapticsSoftLink.h"
 

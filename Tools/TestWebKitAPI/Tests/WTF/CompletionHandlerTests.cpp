@@ -28,7 +28,7 @@
 #include "Test.h"
 #include <wtf/CompletionHandler.h>
 #include <wtf/Threading.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 namespace TestWebKitAPI {
 namespace {

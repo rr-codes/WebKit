@@ -32,7 +32,7 @@
 #pragma once
 
 #include "WorkerThread.h"
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -32,7 +32,7 @@
 
 #include <WebCore/ExceptionCode.h>
 #include <WebCore/SharedBuffer.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

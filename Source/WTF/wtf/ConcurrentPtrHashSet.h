@@ -25,13 +25,13 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashFunctions.h>
 #include <wtf/Lock.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TrailingArray.h>
 #include <wtf/Vector.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

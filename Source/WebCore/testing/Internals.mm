@@ -24,16 +24,16 @@
  */
 
 #import "config.h"
-#import "Internals.h"
-
-#import "DOMURL.h"
 #import "DeprecatedGlobalSettings.h"
+
 #import "DictionaryLookup.h"
 #import "DocumentView.h"
+#import "DOMURL.h"
 #import "EventHandler.h"
 #import "FrameDestructionObserverInlines.h"
-#import "HTMLMediaElement.h"
 #import "HitTestResult.h"
+#import "HTMLMediaElement.h"
+#import "Internals.h"
 #import "LocalFrameInlines.h"
 #import "LocalFrameView.h"
 #import "Logging.h"
@@ -43,8 +43,8 @@
 #import "SimpleRange.h"
 #import "UTIUtilities.h"
 #import <AVFoundation/AVPlayer.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(MAC)
 #import "NSScrollerImpDetails.h"

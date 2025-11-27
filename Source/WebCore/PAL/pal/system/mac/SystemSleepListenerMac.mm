@@ -29,9 +29,9 @@
 #if PLATFORM(MAC)
 
 #import <AppKit/AppKit.h>
-#import <wtf/CheckedPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/CheckedPtr.h>
 
 namespace PAL {
 

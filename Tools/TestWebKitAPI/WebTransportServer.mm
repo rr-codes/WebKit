@@ -31,8 +31,8 @@
 #import "HTTPServer.h"
 #import "Utilities.h"
 #import <pal/spi/cocoa/NetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace TestWebKitAPI {
 

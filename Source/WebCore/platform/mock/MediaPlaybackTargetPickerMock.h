@@ -28,9 +28,9 @@
 #if ENABLE(WIRELESS_PLAYBACK_TARGET) && !PLATFORM(IOS_FAMILY)
 
 #include <WebCore/MediaPlaybackTargetPicker.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

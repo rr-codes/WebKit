@@ -32,7 +32,6 @@
 
 #include <mutex>
 #include <stdint.h>
-#include <wtf/Atomics.h>
 #include <wtf/Compiler.h>
 #include <wtf/Expected.h>
 #include <wtf/FastTLS.h>
@@ -51,6 +50,7 @@
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/Vector.h>
 #include <wtf/WordLock.h>
+#include <wtf/concurrency/Atomics.h>
 #include <wtf/text/AtomStringTable.h>
 
 #if USE(PTHREADS) && !OS(DARWIN)

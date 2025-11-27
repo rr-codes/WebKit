@@ -47,7 +47,7 @@
 #import "APIInspectorExtension.h"
 #import "WebInspectorUIExtensionControllerProxy.h"
 #import "_WKInspectorExtensionInternal.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #endif
 
 class InspectorClient final : public API::InspectorClient {

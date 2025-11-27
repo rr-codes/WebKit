@@ -26,11 +26,11 @@
 #pragma once
 
 #include <wtf/CommaPrinter.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/GraphNodeWorklist.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/StringPrintStream.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

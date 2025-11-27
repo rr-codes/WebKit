@@ -27,7 +27,7 @@
 #if ENABLE(WEB_RTC)
 
 #include "RTCDtlsTransportState.h"
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace JSC {
 class ArrayBuffer;

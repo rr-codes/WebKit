@@ -24,9 +24,8 @@
  */
 
 #include "config.h"
-#include "WebFrameProxy.h"
-
 #include "APINavigation.h"
+
 #include "APIUIClient.h"
 #include "BrowsingContextGroup.h"
 #include "Connection.h"
@@ -46,6 +45,7 @@
 #include "WebFrameInspectorTarget.h"
 #include "WebFrameMessages.h"
 #include "WebFramePolicyListenerProxy.h"
+#include "WebFrameProxy.h"
 #include "WebNavigationState.h"
 #include "WebPageInspectorController.h"
 #include "WebPageMessages.h"
@@ -67,9 +67,9 @@
 #include <WebCore/WebKitJSHandle.h>
 #include <stdio.h>
 #include <wtf/CallbackAggregator.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 #if ENABLE(WEBDRIVER_BIDI)

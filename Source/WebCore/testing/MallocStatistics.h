@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

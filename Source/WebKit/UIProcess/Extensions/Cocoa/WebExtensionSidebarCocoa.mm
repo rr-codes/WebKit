@@ -47,7 +47,7 @@
 #import "WebExtensionWindowIdentifier.h"
 #import "_WKWebExtensionSidebar.h"
 
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 template <typename T>
 ALWAYS_INLINE std::optional<Ref<T>> toOptionalRef(RefPtr<T> ptr)

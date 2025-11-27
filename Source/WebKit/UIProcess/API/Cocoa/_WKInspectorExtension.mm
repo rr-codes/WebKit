@@ -35,8 +35,8 @@
 #import "WKWebViewInternal.h"
 #import <WebCore/ExceptionDetails.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/BlockPtr.h>
 
 static Ref<API::InspectorExtension> protectedExtension(_WKInspectorExtension *extension)
 {

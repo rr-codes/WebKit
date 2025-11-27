@@ -38,13 +38,13 @@
 #include <WebCore/Styleable.h>
 #include <WebCore/TimelineRangeValue.h>
 #include <WebCore/WebAnimationTypes.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/Markable.h>
 #include <wtf/RefCounted.h>
 #include <wtf/Seconds.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -22,9 +22,9 @@
 
 #pragma once
 
-#include <wtf/CompactPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/Packed.h>
+#include <wtf/memory/CompactPtr.h>
 #include <wtf/text/StringHash.h>
 #include <wtf/text/StringImpl.h>
 

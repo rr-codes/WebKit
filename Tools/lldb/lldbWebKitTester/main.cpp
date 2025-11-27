@@ -25,12 +25,12 @@
 
 #include "DumpClassLayoutTesting.h"
 #include <stdio.h>
-#include <wtf/CompactPointerTuple.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/OptionSet.h>
 #include <wtf/URL.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CompactPointerTuple.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/WTFString.h>
 

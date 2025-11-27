@@ -30,8 +30,8 @@
 #include <JavaScriptCore/ScopeOffset.h>
 #include <JavaScriptCore/Watchpoint.h>
 #include <wtf/Assertions.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/FunctionPtr.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace JSC {
 

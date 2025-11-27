@@ -28,8 +28,8 @@
 #if PLATFORM(IOS) || PLATFORM(MACCATALYST) || PLATFORM(VISION)
 
 #import "HTTPServer.h"
-#import "IOSMouseEventTestHarness.h"
 #import "InstanceMethodSwizzler.h"
+#import "IOSMouseEventTestHarness.h"
 #import "MouseSupportUIDelegate.h"
 #import "PlatformUtilities.h"
 #import "Test.h"
@@ -45,10 +45,10 @@
 #import <WebKit/WKWebpagePreferencesPrivate.h>
 #import <WebKit/WebKit.h>
 #import <pal/spi/cocoa/RevealSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MonotonicTime.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if HAVE(MOUSE_DEVICE_OBSERVATION)
 

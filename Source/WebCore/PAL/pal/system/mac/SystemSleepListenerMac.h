@@ -28,9 +28,9 @@
 #if PLATFORM(MAC)
 
 #include <pal/system/SystemSleepListener.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace PAL {
 

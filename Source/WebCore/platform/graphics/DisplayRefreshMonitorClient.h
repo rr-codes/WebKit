@@ -28,8 +28,8 @@
 #include <WebCore/AnimationFrameRate.h>
 #include <WebCore/PlatformScreen.h>
 #include <optional>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

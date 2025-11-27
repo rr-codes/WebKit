@@ -30,9 +30,9 @@
 #include "NetworkLoadClient.h"
 #include "NetworkLoadParameters.h"
 #include <WebCore/NavigationPreloadState.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class NetworkLoadMetrics;

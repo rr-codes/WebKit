@@ -27,7 +27,7 @@
 
 #include <WebCore/JSDOMPromiseDeferredForward.h>
 #include <WebCore/PushSubscriptionIdentifier.h>
-#include <wtf/AbstractRefCounted.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

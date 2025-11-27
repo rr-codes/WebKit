@@ -25,8 +25,8 @@
 
 #pragma once
 
-#import "API.h"
 #import "Adapter.h"
+#import "API.h"
 #import "BindableResource.h"
 #import "HardwareCapabilities.h"
 #import "Queue.h"
@@ -38,7 +38,6 @@
 #import <Metal/Metal.h>
 #import <simd/matrix_types.h>
 #import <wtf/CompletionHandler.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/Function.h>
 #import <wtf/HashIterators.h>
 #import <wtf/HashMap.h>
@@ -49,6 +48,7 @@
 #import <wtf/TZoneMalloc.h>
 #import <wtf/ThreadSafeWeakPtr.h>
 #import <wtf/Vector.h>
+#import <wtf/memory/FastMalloc.h>
 #import <wtf/text/WTFString.h>
 
 IGNORE_CLANG_WARNINGS_BEGIN("nullability-completeness")

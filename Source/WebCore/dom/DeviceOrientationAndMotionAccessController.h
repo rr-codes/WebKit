@@ -30,11 +30,11 @@
 #include "DeviceOrientationOrMotionPermissionState.h"
 #include "EventTarget.h"
 #include "SecurityOriginData.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

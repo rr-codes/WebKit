@@ -44,7 +44,7 @@
 #include <wtf/ProcessID.h>
 #include <wtf/Scope.h>
 #include <wtf/ThreadMessage.h>
-#include <wtf/threads/Signals.h>
+#include <wtf/concurrency/Signals.h>
 
 namespace JSC {
 

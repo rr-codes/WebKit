@@ -28,6 +28,13 @@
 
 #if PLATFORM(IOS_FAMILY)
 
+#import "_WKActivatedElementInfoInternal.h"
+#import "_WKDragActionsInternal.h"
+#import "_WKElementAction.h"
+#import "_WKElementActionInternal.h"
+#import "_WKFocusedElementInfo.h"
+#import "_WKInputDelegate.h"
+#import "_WKTextInputContextInternal.h"
 #import "APIUIClient.h"
 #import "CocoaImage.h"
 #import "CompletionHandlerCallChecker.h"
@@ -55,6 +62,16 @@
 #import "UIGamepadProvider.h"
 #import "UIKitSPI.h"
 #import "UIKitUtilities.h"
+#import "WebAutocorrectionContext.h"
+#import "WebAutocorrectionData.h"
+#import "WebDataListSuggestionsDropdownIOS.h"
+#import "WebEvent.h"
+#import "WebFoundTextRange.h"
+#import "WebIOSEventFactory.h"
+#import "WebPageMessages.h"
+#import "WebPageProxy.h"
+#import "WebPageProxyMessages.h"
+#import "WebProcessProxy.h"
 #import "WKActionSheetAssistant.h"
 #import "WKContextMenuElementInfoInternal.h"
 #import "WKContextMenuElementInfoPrivate.h"
@@ -88,27 +105,10 @@
 #import "WKUIDelegatePrivate.h"
 #import "WKWebViewConfiguration.h"
 #import "WKWebViewConfigurationPrivate.h"
-#import "WKWebViewIOS.h"
 #import "WKWebViewInternal.h"
+#import "WKWebViewIOS.h"
 #import "WKWebViewPrivate.h"
 #import "WKWebViewPrivateForTesting.h"
-#import "WebAutocorrectionContext.h"
-#import "WebAutocorrectionData.h"
-#import "WebDataListSuggestionsDropdownIOS.h"
-#import "WebEvent.h"
-#import "WebFoundTextRange.h"
-#import "WebIOSEventFactory.h"
-#import "WebPageMessages.h"
-#import "WebPageProxy.h"
-#import "WebPageProxyMessages.h"
-#import "WebProcessProxy.h"
-#import "_WKActivatedElementInfoInternal.h"
-#import "_WKDragActionsInternal.h"
-#import "_WKElementAction.h"
-#import "_WKElementActionInternal.h"
-#import "_WKFocusedElementInfo.h"
-#import "_WKInputDelegate.h"
-#import "_WKTextInputContextInternal.h"
 #import <CoreText/CTFont.h>
 #import <CoreText/CTFontDescriptor.h>
 #import <MobileCoreServices/UTCoreTypes.h>
@@ -163,7 +163,6 @@
 #import <pal/system/ios/UserInterfaceIdiom.h>
 #import <ranges>
 #import <wtf/BlockObjCExceptions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/RuntimeApplicationChecks.h>
 #import <wtf/Scope.h>
@@ -175,6 +174,7 @@
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 #import <wtf/text/TextStream.h>
 
@@ -216,8 +216,8 @@
 #import "WebKitSwiftSoftLink.h"
 #endif
 
-#import <pal/cocoa/VisionKitCoreSoftLink.h>
 #import <pal/cocoa/TranslationUIServicesSoftLink.h>
+#import <pal/cocoa/VisionKitCoreSoftLink.h>
 #import <pal/ios/ManagedConfigurationSoftLink.h>
 #import <pal/ios/QuickLookSoftLink.h>
 #import <pal/spi/ios/DataDetectorsUISoftLink.h>

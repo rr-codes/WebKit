@@ -40,7 +40,7 @@
 #import <WebCore/NetworkStorageSession.h>
 #import <WebCore/RegistrableDomain.h>
 #import <ranges>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(MAC)
 @interface _WKSSOSiteList : NSObject<NSTableViewDataSource, NSTableViewDelegate>

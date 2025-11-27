@@ -30,9 +30,9 @@
 #include "cmakeconfig.h"
 #endif
 
-#include <wtf/Platform.h>
-
 #include <TargetConditionals.h>
+
+#include <wtf/Platform.h>
 
 #ifdef __cplusplus
 #define NULL __null
@@ -93,6 +93,6 @@ typedef float CGFloat;
 #undef catch
 
 #ifdef __cplusplus
-#include <wtf/FastMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #endif

@@ -27,9 +27,9 @@
 
 #import "APIResourceLoadClient.h"
 #import "WKFoundation.h"
-#import <wtf/CheckedPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 @class WKWebView;
 

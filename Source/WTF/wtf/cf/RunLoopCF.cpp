@@ -28,7 +28,7 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <dispatch/dispatch.h>
-#include <wtf/AutodrainedPool.h>
+#include <wtf/memory/AutodrainedPool.h>
 #include <wtf/SchedulePair.h>
 
 namespace WTF {

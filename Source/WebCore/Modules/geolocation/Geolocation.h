@@ -38,10 +38,10 @@
 #include <WebCore/PositionOptions.h>
 #include <WebCore/ScriptWrappable.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

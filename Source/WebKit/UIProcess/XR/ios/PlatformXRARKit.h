@@ -33,7 +33,7 @@
 #import <wtf/RetainPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/Threading.h>
-#import <wtf/threads/BinarySemaphore.h>
+#import <wtf/concurrency/BinarySemaphore.h>
 
 @class ARSession;
 @protocol WKARPresentationSession;

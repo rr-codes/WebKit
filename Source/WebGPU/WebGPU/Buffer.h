@@ -33,7 +33,6 @@
 #import <utility>
 #import <wtf/Compiler.h>
 #import <wtf/CompletionHandler.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/HashMap.h>
 #import <wtf/Range.h>
 #import <wtf/RangeSet.h>
@@ -43,6 +42,7 @@
 #import <wtf/SwiftCXXThunk.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 IGNORE_CLANG_WARNINGS_BEGIN("nullability-completeness")
 

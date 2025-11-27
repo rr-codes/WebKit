@@ -24,8 +24,8 @@
 #include <WebCore/ScriptWrappable.h>
 #include <WebCore/ShareData.h>
 #include <WebCore/Supplementable.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

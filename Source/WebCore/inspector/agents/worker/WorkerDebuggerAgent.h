@@ -26,8 +26,8 @@
 #pragma once
 
 #include "WebDebuggerAgent.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

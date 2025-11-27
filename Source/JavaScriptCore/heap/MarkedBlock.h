@@ -27,14 +27,14 @@
 #include <JavaScriptCore/WeakSet.h>
 #include <algorithm>
 #include <type_traits>
-#include <wtf/Atomics.h>
 #include <wtf/BitSet.h>
 #include <wtf/CountingLock.h>
-#include <wtf/DebugHeap.h>
 #include <wtf/HashFunctions.h>
 #include <wtf/IterationStatus.h>
 #include <wtf/PageBlock.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/DebugHeap.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

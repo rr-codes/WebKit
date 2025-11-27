@@ -33,10 +33,10 @@
 #import <WebCore/Path.h>
 #import <WebCore/TextIndicator.h>
 #import <WebCore/WebItemProviderPasteboard.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/URL.h>
 #import <wtf/Vector.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebCore {
 struct DragItem;

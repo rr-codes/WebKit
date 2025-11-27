@@ -32,10 +32,10 @@
 #include <JavaScriptCore/WasmFormat.h>
 #include <JavaScriptCore/WasmLimits.h>
 #include <JavaScriptCore/WriteBarrier.h>
-#include <wtf/MallocPtr.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/MallocPtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

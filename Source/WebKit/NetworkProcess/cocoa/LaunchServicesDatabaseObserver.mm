@@ -28,7 +28,7 @@
 
 #import "LaunchServicesDatabaseXPCConstants.h"
 #import <pal/spi/cocoa/LaunchServicesSPI.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/cocoa/Entitlements.h>
 #import <wtf/darwin/XPCExtras.h>

@@ -35,7 +35,7 @@
 #include "WebGPUImpl.h"
 #include "WebGPUPtr.h"
 #include <WebGPU/WebGPUExt.h>
-#include <wtf/BlockPtr.h>
+#include <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(COCOA)
 #include <wtf/darwin/WeakLinking.h>

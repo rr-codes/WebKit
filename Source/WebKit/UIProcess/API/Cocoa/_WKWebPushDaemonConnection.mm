@@ -24,23 +24,23 @@
  */
 
 #import "config.h"
-#import "_WKWebPushDaemonConnectionInternal.h"
-
-#import "APIWebPushMessage.h"
-#import "APIWebPushSubscriptionData.h"
-#import "WKError.h"
-#import "WKSecurityOriginInternal.h"
-#import "WebPushDaemonConnectionConfiguration.h"
 #import "_WKNotificationDataInternal.h"
+
+#import "_WKWebPushDaemonConnectionInternal.h"
 #import "_WKWebPushMessageInternal.h"
 #import "_WKWebPushSubscriptionDataInternal.h"
+#import "APIWebPushMessage.h"
+#import "APIWebPushSubscriptionData.h"
+#import "WebPushDaemonConnectionConfiguration.h"
+#import "WKError.h"
+#import "WKSecurityOriginInternal.h"
 #import <WebCore/ExceptionData.h>
 #import <WebCore/PushPermissionState.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation _WKWebPushDaemonConnectionConfiguration
 

@@ -56,7 +56,6 @@
 #import <mach/mach_init.h>
 #import <mach/task.h>
 #import <ranges>
-#import <wtf/BlockPtr.h>
 #import <wtf/OSObjectPtr.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/UUID.h>
@@ -65,6 +64,7 @@
 #import <wtf/darwin/DispatchExtras.h>
 #import <wtf/darwin/XPCExtras.h>
 #import <wtf/darwin/XPCObjectPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/Base64.h>
 #import <wtf/text/MakeString.h>
 

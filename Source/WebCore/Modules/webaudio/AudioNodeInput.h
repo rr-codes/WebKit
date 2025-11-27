@@ -27,10 +27,10 @@
 #include "AudioBus.h"
 #include "AudioNode.h"
 #include "AudioSummingJunction.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

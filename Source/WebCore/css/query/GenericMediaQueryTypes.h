@@ -27,8 +27,8 @@
 #include <WebCore/CSSToLengthConversionData.h>
 #include <WebCore/CSSValue.h>
 #include <WebCore/CSSValueKeywords.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/OptionSet.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/AtomString.h>
 
 namespace WebCore {

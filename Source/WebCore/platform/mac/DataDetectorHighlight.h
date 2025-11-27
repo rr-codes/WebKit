@@ -32,11 +32,11 @@
 #import <WebCore/GraphicsLayerClient.h>
 #import <WebCore/SimpleRange.h>
 #import <WebCore/Timer.h>
-#import <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #import <wtf/RefCountedAndCanMakeWeakPtr.h>
 #import <wtf/RefPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 using DDHighlightRef = struct __DDHighlight*;
 

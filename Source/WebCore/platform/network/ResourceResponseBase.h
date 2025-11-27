@@ -35,13 +35,13 @@
 #include <optional>
 #include <span>
 #include <wtf/ArgumentCoder.h>
-#include <wtf/Box.h>
 #include <wtf/EnumTraits.h>
 #include <wtf/Markable.h>
 #include <wtf/Seconds.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/URL.h>
 #include <wtf/WallTime.h>
+#include <wtf/memory/Box.h>
 #include <wtf/persistence/PersistentCoders.h>
 
 namespace WebCore {

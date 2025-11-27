@@ -26,8 +26,9 @@
 #import "config.h"
 #if ENABLE(WEB_PUSH_NOTIFICATIONS)
 
-#import "WebPushDaemon.h"
+#import "_WKMockUserNotificationCenter.h"
 
+#import "_WKWebPushActionInternal.h"
 #import "BaseBoardSPI.h"
 #import "DaemonDecoder.h"
 #import "DaemonEncoder.h"
@@ -37,8 +38,7 @@
 #import "LaunchServicesSPI.h"
 #import "MessageNames.h"
 #import "UserNotificationsSPI.h"
-#import "_WKMockUserNotificationCenter.h"
-#import "_WKWebPushActionInternal.h"
+#import "WebPushDaemon.h"
 
 #import <WebCore/ExceptionOr.h>
 #import <WebCore/LocalizedStrings.h>
@@ -49,7 +49,6 @@
 #import <notify.h>
 #import <pal/spi/cocoa/LaunchServicesSPI.h>
 #import <span>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/HexNumber.h>
 #import <wtf/NeverDestroyed.h>
@@ -59,6 +58,7 @@
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
 #import <wtf/darwin/XPCExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 #if HAVE(MOBILE_KEY_BAG)

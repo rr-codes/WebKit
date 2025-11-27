@@ -28,10 +28,10 @@
 #include <WebCore/SharedMemory.h>
 #include <cstddef>
 #include <span>
-#include <wtf/Atomics.h>
 #include <wtf/MathExtras.h>
 #include <wtf/Ref.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace IPC {
 class Decoder;

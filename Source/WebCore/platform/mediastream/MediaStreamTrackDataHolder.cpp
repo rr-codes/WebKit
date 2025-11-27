@@ -24,7 +24,7 @@
 
 #include "config.h"
 #include "MediaStreamTrackDataHolder.h"
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 
 #if ENABLE(MEDIA_STREAM)

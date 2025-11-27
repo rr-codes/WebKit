@@ -32,10 +32,10 @@
 #import "WKDownloadProgress.h"
 #import <pal/spi/cf/CFNetworkSPI.h>
 #import <pal/spi/cocoa/NSProgressSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 #define DOWNLOAD_RELEASE_LOG(fmt, ...) RELEASE_LOG(Network, "[downloadID=%" PRIu64 "] Download::" fmt, m_downloadID.toUInt64(), ##__VA_ARGS__)
 #define DOWNLOAD_RELEASE_LOG_ERROR(fmt, ...) RELEASE_LOG_ERROR(Network, "[downloadID=%" PRIu64 "] Download::" fmt, m_downloadID.toUInt64(), ##__VA_ARGS__)

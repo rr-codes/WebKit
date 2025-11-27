@@ -27,9 +27,9 @@
 #include "IPCTestUtilities.h"
 
 #include "Test.h"
-#include <wtf/text/MakeString.h>
-#include <wtf/threads/BinarySemaphore.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/concurrency/BinarySemaphore.h>
+#include <wtf/text/MakeString.h>
 
 namespace TestWebKitAPI {
 

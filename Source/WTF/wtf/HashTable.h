@@ -29,10 +29,7 @@
 #include <string.h>
 #include <type_traits>
 #include <utility>
-#include <wtf/AlignedStorage.h>
 #include <wtf/Assertions.h>
-#include <wtf/DebugHeap.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashTraits.h>
 #include <wtf/Lock.h>
 #include <wtf/MathExtras.h>
@@ -40,6 +37,9 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/ValueCheck.h>
 #include <wtf/WeakRandomNumber.h>
+#include <wtf/memory/AlignedStorage.h>
+#include <wtf/memory/DebugHeap.h>
+#include <wtf/memory/FastMalloc.h>
 
 // Configuration of WTF::HashTable.
 //  - 75% load factor for small tables.

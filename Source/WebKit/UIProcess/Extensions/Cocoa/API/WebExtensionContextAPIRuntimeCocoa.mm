@@ -34,18 +34,18 @@
 
 #import "CocoaHelpers.h"
 #import "FoundationSPI.h"
-#import "WKWebExtensionControllerDelegatePrivate.h"
-#import "WKWebExtensionMessagePortInternal.h"
-#import "WKWebExtensionTabConfigurationInternal.h"
-#import "WKWebViewInternal.h"
 #import "WebExtensionContextProxyMessages.h"
 #import "WebExtensionMessagePort.h"
 #import "WebExtensionMessageSenderParameters.h"
 #import "WebExtensionMessageTargetParameters.h"
 #import "WebExtensionUtilities.h"
-#import <wtf/BlockPtr.h>
+#import "WKWebExtensionControllerDelegatePrivate.h"
+#import "WKWebExtensionMessagePortInternal.h"
+#import "WKWebExtensionTabConfigurationInternal.h"
+#import "WKWebViewInternal.h"
 #import <wtf/CallbackAggregator.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

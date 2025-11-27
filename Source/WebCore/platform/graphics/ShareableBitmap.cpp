@@ -29,7 +29,7 @@
 #include "GraphicsContext.h"
 #include "NativeImage.h"
 #include "SharedMemory.h"
-#include <wtf/DebugHeap.h>
+#include <wtf/memory/DebugHeap.h>
 
 namespace WebCore {
 

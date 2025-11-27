@@ -40,7 +40,7 @@
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeWeakPtr.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 #if ENABLE(THREADED_ANIMATIONS)
 #include "RemoteAnimationStack.h"

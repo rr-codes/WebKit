@@ -30,9 +30,9 @@
 #import "APIInspectorExtensionClient.h"
 #import "WKFoundation.h"
 #import <WebCore/FrameIdentifier.h>
-#import <wtf/CheckedPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 @class _WKInspectorExtension;
 @protocol _WKInspectorExtensionDelegate;

@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/Atomics.h>
 #include <wtf/ScopedLambda.h>
 #include <wtf/TimeWithDynamicClockType.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WTF {
 

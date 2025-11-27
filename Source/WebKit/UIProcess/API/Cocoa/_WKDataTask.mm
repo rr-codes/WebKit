@@ -36,7 +36,7 @@
 #import <WebCore/Credential.h>
 #import <WebCore/ResourceRequest.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/cocoa/SpanCocoa.h>
 

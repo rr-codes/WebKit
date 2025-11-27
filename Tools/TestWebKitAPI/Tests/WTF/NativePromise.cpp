@@ -31,20 +31,20 @@
  */
 
 #include "config.h"
-#include <wtf/NativePromise.h>
-
 #include "Test.h"
+
 #include "Utilities.h"
-#include <wtf/Atomics.h>
 #include <wtf/Lock.h>
 #include <wtf/Locker.h>
+#include <wtf/NativePromise.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCountedFixedVector.h>
 #include <wtf/RefPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/WorkQueue.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 using namespace WTF;
 

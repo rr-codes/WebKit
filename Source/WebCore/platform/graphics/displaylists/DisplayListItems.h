@@ -40,8 +40,8 @@
 #include <WebCore/SharedBuffer.h>
 #include <WebCore/SystemImage.h>
 #include <WebCore/TextFlags.h>
-#include <wtf/Box.h>
 #include <wtf/TypeCasts.h>
+#include <wtf/memory/Box.h>
 
 namespace WTF {
 class TextStream;

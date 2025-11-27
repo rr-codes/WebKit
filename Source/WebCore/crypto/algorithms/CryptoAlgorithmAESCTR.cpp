@@ -32,8 +32,8 @@
 #include "CryptoKeyAES.h"
 #include "ExceptionOr.h"
 #include <wtf/CrossThreadCopier.h>
-#include <wtf/FlipBytes.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/FlipBytes.h>
 
 namespace WebCore {
 

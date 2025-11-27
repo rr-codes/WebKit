@@ -32,9 +32,9 @@
 #include <string>
 #include <type_traits>
 #include <wtf/Compiler.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Forward.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 #include <wtf/text/ASCIILiteral.h>
 
 namespace WTF {

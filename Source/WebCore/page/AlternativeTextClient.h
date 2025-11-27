@@ -28,7 +28,7 @@
 #include <WebCore/DictationContext.h>
 #include <WebCore/FloatRect.h>
 #include <WebCore/FrameIdentifier.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/Vector.h>
 #include <wtf/text/WTFString.h>

@@ -27,11 +27,11 @@
 #include "AudioBus.h"
 #include "AudioNode.h"
 #include "AudioParam.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -28,7 +28,6 @@
 #pragma once
 
 #include <functional>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Condition.h>
 #include <wtf/Deque.h>
 #include <wtf/Forward.h>
@@ -44,6 +43,7 @@
 #include <wtf/ThreadingPrimitives.h>
 #include <wtf/TypeTraits.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 #if USE(CF)

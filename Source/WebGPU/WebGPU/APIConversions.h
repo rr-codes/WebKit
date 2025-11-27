@@ -53,8 +53,8 @@
 #import "XRProjectionLayer.h"
 #import "XRSubImage.h"
 #import "XRView.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/SwiftBridging.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/WTFString.h>
 
 namespace WebGPU {

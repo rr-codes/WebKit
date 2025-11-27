@@ -27,14 +27,14 @@
 
 #if ENABLE(WEB_AUDIO)
 
-#include "AudioContext.h"
-
 #include "AnalyserNode.h"
+
 #include "AsyncAudioDecoder.h"
 #include "AudioBuffer.h"
 #include "AudioBufferCallback.h"
 #include "AudioBufferOptions.h"
 #include "AudioBufferSourceNode.h"
+#include "AudioContext.h"
 #include "AudioDestination.h"
 #include "AudioListener.h"
 #include "AudioNodeInput.h"
@@ -87,12 +87,12 @@
 #include "WaveShaperNode.h"
 #include <JavaScriptCore/ArrayBuffer.h>
 #include <JavaScriptCore/ScriptCallStack.h>
-#include <wtf/Atomics.h>
 #include <wtf/MainThread.h>
 #include <wtf/NativePromise.h>
 #include <wtf/Ref.h>
 #include <wtf/Scope.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/concurrency/Atomics.h>
 #include <wtf/text/WTFString.h>
 
 #if DEBUG_AUDIONODE_REFERENCES

@@ -31,6 +31,7 @@
 #include "BasicBlockLocation.h"
 #include "CheckPrivateBrandStatus.h"
 #include "CodeBlock.h"
+#include "DeleteByVariant.h"
 #include "DFGAdjacencyList.h"
 #include "DFGArithMode.h"
 #include "DFGArrayMode.h"
@@ -49,7 +50,6 @@
 #include "DFGUseKind.h"
 #include "DFGVariableAccessData.h"
 #include "DOMJITSignature.h"
-#include "DeleteByVariant.h"
 #include "GetByVariant.h"
 #include "InlineCacheCompiler.h"
 #include "JSCJSValue.h"
@@ -62,9 +62,9 @@
 #include "TypeLocation.h"
 #include "ValueProfile.h"
 #include <type_traits>
-#include <wtf/FastMalloc.h>
 #include <wtf/ListDump.h>
 #include <wtf/LoggingHashSet.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace JSC {
 

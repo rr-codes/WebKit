@@ -24,19 +24,19 @@
  */
 
 #include "config.h"
-#include <wtf/Threading.h>
-
 #include <cstring>
+
 #include <wtf/DateMath.h>
-#include <wtf/Gigacage.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/PrintStream.h>
 #include <wtf/RunLoop.h>
 #include <wtf/ThreadGroup.h>
+#include <wtf/Threading.h>
 #include <wtf/ThreadingPrimitives.h>
 #include <wtf/WTFConfig.h>
+#include <wtf/concurrency/Signals.h>
+#include <wtf/memory/Gigacage.h>
 #include <wtf/text/AtomString.h>
-#include <wtf/threads/Signals.h>
 
 #if HAVE(QOS_CLASSES)
 #include <bmalloc/bmalloc.h>

@@ -27,8 +27,8 @@
 
 #import "LaunchLogHook.h"
 #import "Logging.h"
-#import "WKCrashReporter.h"
 #import "WebKitServiceNames.h"
+#import "WKCrashReporter.h"
 #import "XPCEndpointMessages.h"
 #import "XPCServiceEntryPoint.h"
 #import "XPCUtilities.h"
@@ -38,7 +38,6 @@
 #import <pal/spi/cocoa/CoreServicesSPI.h>
 #import <pal/spi/cocoa/LaunchServicesSPI.h>
 #import <sys/sysctl.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Language.h>
 #import <wtf/OSObjectPtr.h>
 #import <wtf/RetainPtr.h>
@@ -47,6 +46,7 @@
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
 #import <wtf/darwin/XPCExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cocoa/OSLogSPI.h>
 #import <wtf/spi/darwin/SandboxSPI.h>
 #import <wtf/text/MakeString.h>

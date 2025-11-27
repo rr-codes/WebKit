@@ -31,8 +31,8 @@
 
 #include <WebCore/InbandTextTrackPrivate.h>
 #include <WebCore/InbandTextTrackPrivateClient.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 typedef const struct opaqueCMFormatDescription* CMFormatDescriptionRef;
 typedef struct opaqueCMSampleBuffer* CMSampleBufferRef;

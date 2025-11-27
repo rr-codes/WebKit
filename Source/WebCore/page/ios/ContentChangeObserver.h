@@ -35,11 +35,11 @@
 #include <WebCore/Timer.h>
 #include <WebCore/WKContentObservation.h>
 #include <WebCore/WebAnimationTypes.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/Seconds.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class ContentChangeObserver;

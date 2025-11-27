@@ -36,9 +36,9 @@
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/_WKFullscreenDelegate.h>
 #import <pal/spi/cocoa/VisionKitCoreSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #import <pal/cocoa/VisionKitCoreSoftLink.h>
 

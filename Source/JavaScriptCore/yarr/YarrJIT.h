@@ -33,12 +33,12 @@
 #include <JavaScriptCore/VM.h>
 #include <JavaScriptCore/Yarr.h>
 #include <JavaScriptCore/YarrPattern.h>
-#include <wtf/Atomics.h>
 #include <wtf/BitSet.h>
 #include <wtf/FixedVector.h>
 #include <wtf/StackCheck.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/concurrency/Atomics.h>
 
 #define YARR_CALL
 

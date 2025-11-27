@@ -24,16 +24,16 @@
  */
 
 #include "config.h"
-#include "LegacySessionStateCoding.h"
-
 #include "APIData.h"
+
+#include "LegacySessionStateCoding.h"
 #include "SessionState.h"
 #include <mutex>
 #include <wtf/CheckedArithmetic.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/cf/TypeCastsCF.h>
 #include <wtf/cf/VectorCF.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/ParsingUtilities.h>
 #include <wtf/text/StringView.h>
 

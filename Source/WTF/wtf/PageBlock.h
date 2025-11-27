@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
 #include <wtf/MathExtras.h>
+#include <wtf/memory/FastMalloc.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

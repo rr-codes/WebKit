@@ -29,8 +29,8 @@
 
 #include "AudioSessionCocoa.h"
 #include <pal/spi/cf/CoreAudioSPI.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/BlockPtr.h>
 
 typedef UInt32 AudioObjectID;
 typedef struct AudioObjectPropertyAddress AudioObjectPropertyAddress;

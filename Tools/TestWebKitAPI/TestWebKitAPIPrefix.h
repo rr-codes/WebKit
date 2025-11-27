@@ -53,7 +53,7 @@
 #include <wtf/Assertions.h>
 #undef new
 #undef delete
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/StringView.h>
 #endif
 

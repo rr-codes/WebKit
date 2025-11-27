@@ -34,10 +34,10 @@
 #include <WebCore/Gradient.h>
 #include <WebCore/NativeImage.h>
 #include <WebCore/ShareableBitmap.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/UniqueRef.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class Filter;

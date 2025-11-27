@@ -23,22 +23,22 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMCSSStyleSheetInternal.h"
+#import "DOMCSSRuleInternal.h"
 
+#import "DOMCSSRuleListInternal.h"
+#import "DOMCSSStyleSheetInternal.h"
+#import "DOMNodeInternal.h"
+#import "DOMStyleSheetInternal.h"
+#import "ExceptionHandlers.h"
 #import <WebCore/CSSImportRule.h>
 #import <WebCore/CSSRule.h>
 #import <WebCore/CSSRuleList.h>
 #import <WebCore/CSSStyleSheet.h>
-#import "DOMCSSRuleInternal.h"
-#import "DOMCSSRuleListInternal.h"
-#import "DOMNodeInternal.h"
-#import "DOMStyleSheetInternal.h"
-#import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::CSSStyleSheet*>(reinterpret_cast<WebCore::StyleSheet*>(_internal))
 

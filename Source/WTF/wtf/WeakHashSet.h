@@ -26,9 +26,9 @@
 #pragma once
 
 #include <algorithm>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WTF {
 

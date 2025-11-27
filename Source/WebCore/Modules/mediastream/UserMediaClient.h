@@ -34,9 +34,9 @@
 #if ENABLE(MEDIA_STREAM)
 
 #include <WebCore/MediaProducer.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/ObjectIdentifier.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

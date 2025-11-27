@@ -26,7 +26,7 @@
 #import "APICustomHeaderFields.h"
 #import "WKObject.h"
 #import "_WKCustomHeaderFields.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

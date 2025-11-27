@@ -34,8 +34,8 @@
 #include "Yarr.h"
 #include "YarrFlags.h"
 #include "YarrInterpreter.h"
-#include <wtf/BumpPointerAllocator.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/BumpPointerAllocator.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/TextPosition.h>

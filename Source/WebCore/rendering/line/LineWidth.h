@@ -30,7 +30,7 @@
 #pragma once
 
 #include <WebCore/LayoutUnit.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

@@ -27,10 +27,10 @@
 
 #include "APICast.h"
 #include "ArgList.h"
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/Nonmovable.h>
 #include <wtf/UniqueArray.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

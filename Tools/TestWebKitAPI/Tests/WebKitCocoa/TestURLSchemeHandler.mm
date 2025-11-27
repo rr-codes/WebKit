@@ -26,7 +26,7 @@
 #import "config.h"
 #import "TestURLSchemeHandler.h"
 
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @implementation TestURLSchemeHandler {
     BlockPtr<void(WKWebView *, id <WKURLSchemeTask>)> _startURLSchemeTaskHandler;

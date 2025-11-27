@@ -33,8 +33,8 @@
 #include "CompilerTimingScope.h"
 #include "Completion.h"
 #include "ConfigFile.h"
-#include "DeferTermination.h"
 #include "DeferredWorkTimer.h"
+#include "DeferTermination.h"
 #include "Disassembler.h"
 #include "Exception.h"
 #include "ExceptionHelpers.h"
@@ -56,16 +56,16 @@
 #include "JSInternalPromise.h"
 #include "JSLock.h"
 #include "JSNativeStdFunction.h"
-#include "JSONObject.h"
 #include "JSObjectInlines.h"
+#include "JSONObject.h"
 #include "JSScriptFetchParameters.h"
 #include "JSSourceCode.h"
 #include "JSString.h"
 #include "JSTypedArrays.h"
 #include "JSWebAssemblyInstance.h"
 #include "JSWebAssemblyMemory.h"
-#include "LLIntThunks.h"
 #include "LinkBuffer.h"
+#include "LLIntThunks.h"
 #include "NativeCallee.h"
 #include "ObjectConstructor.h"
 #include "ParserError.h"
@@ -95,7 +95,6 @@
 #include <type_traits>
 #include <wtf/CPUTime.h>
 #include <wtf/CommaPrinter.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/FileHandle.h>
 #include <wtf/FileSystem.h>
 #include <wtf/MainThread.h>
@@ -108,12 +107,13 @@
 #include <wtf/URL.h>
 #include <wtf/WTFProcess.h>
 #include <wtf/WallTime.h>
+#include <wtf/concurrency/BinarySemaphore.h>
+#include <wtf/concurrency/Signals.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/Base64.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/StringToIntegerConversion.h>
-#include <wtf/threads/BinarySemaphore.h>
-#include <wtf/threads/Signals.h>
 
 #if OS(WINDOWS)
 #include <direct.h>
@@ -150,8 +150,8 @@
 #endif
 
 #if OS(DARWIN) && CPU(ARM_THUMB2)
-#include <fenv.h>
 #include <arm/arch.h>
+#include <fenv.h>
 #endif
 
 #if OS(DARWIN)

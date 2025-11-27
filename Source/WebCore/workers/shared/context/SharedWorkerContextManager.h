@@ -27,9 +27,9 @@
 
 #include <WebCore/SharedWorkerIdentifier.h>
 #include <WebCore/TransferredMessagePort.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

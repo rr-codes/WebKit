@@ -53,12 +53,12 @@
 
 #include "SandboxExtension.h"
 #include <WebCore/Timer.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/FileHandle.h>
 #include <wtf/FileSystem.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebKit {

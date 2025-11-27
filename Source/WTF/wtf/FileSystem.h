@@ -36,10 +36,10 @@
 #include <utility>
 #include <wtf/FileLockMode.h>
 #include <wtf/Forward.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/OptionSet.h>
 #include <wtf/Vector.h>
 #include <wtf/WallTime.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/WTFString.h>
 
 #if USE(CF)

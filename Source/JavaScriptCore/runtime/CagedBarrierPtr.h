@@ -26,7 +26,7 @@
 #pragma once
 
 #include <JavaScriptCore/AuxiliaryBarrier.h>
-#include <wtf/CagedPtr.h>
+#include <wtf/memory/CagedPtr.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -31,7 +31,7 @@
 
 #if ENABLE(XSLT)
 
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

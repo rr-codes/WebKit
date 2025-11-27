@@ -27,7 +27,7 @@
 
 #include "RenderLayoutState.h"
 #include <WebCore/RenderView.h>
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

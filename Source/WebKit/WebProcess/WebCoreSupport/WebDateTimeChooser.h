@@ -26,9 +26,9 @@
 #pragma once
 
 #include <WebCore/DateTimeChooser.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/RefCounted.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class DateTimeChooserClient;

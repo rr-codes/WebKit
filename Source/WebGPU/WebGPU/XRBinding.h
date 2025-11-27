@@ -27,10 +27,10 @@
 
 #import <utility>
 #import <wtf/CompletionHandler.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/Ref.h>
 #import <wtf/RefCountedAndCanMakeWeakPtr.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUXRBindingImpl {
 };

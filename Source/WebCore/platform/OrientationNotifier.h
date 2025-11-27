@@ -26,9 +26,9 @@
 #pragma once
 
 #include <WebCore/IntDegrees.h>
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

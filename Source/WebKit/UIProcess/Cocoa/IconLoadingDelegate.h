@@ -25,13 +25,13 @@
 
 #pragma once
 
-#import "WKFoundation.h"
-
 #import "APIIconLoadingClient.h"
-#import <wtf/CheckedPtr.h>
+
+#import "WKFoundation.h"
 #import <wtf/RetainPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 @class WKWebView;
 @protocol _WKIconLoadingDelegate;

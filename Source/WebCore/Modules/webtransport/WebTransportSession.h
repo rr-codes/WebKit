@@ -26,9 +26,9 @@
 #pragma once
 
 #include <span>
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/NativePromise.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

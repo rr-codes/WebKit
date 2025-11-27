@@ -31,11 +31,11 @@
 #include <WebCore/NowPlayingMetadataObserver.h>
 #include <WebCore/PlatformMediaSession.h>
 #include <WebCore/VideoReceiverEndpoint.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/Ref.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
 
 namespace WebCore {
 class PlaybackSessionModel;

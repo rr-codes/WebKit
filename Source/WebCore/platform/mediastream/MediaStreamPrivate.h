@@ -38,7 +38,6 @@
 
 #include <WebCore/FloatSize.h>
 #include <WebCore/MediaStreamTrackPrivate.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Function.h>
 #include <wtf/MediaTime.h>
 #include <wtf/RefPtr.h>
@@ -46,6 +45,7 @@
 #include <wtf/UUID.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

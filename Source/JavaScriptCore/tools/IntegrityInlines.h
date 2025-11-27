@@ -30,8 +30,8 @@
 #include <JavaScriptCore/StructureID.h>
 #include <JavaScriptCore/VM.h>
 #include <JavaScriptCore/VMManager.h>
-#include <wtf/Atomics.h>
-#include <wtf/Gigacage.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/Gigacage.h>
 
 namespace JSC {
 namespace Integrity {

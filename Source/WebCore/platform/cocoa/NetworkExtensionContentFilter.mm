@@ -42,7 +42,7 @@
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/URL.h>
 #import <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
-#import <wtf/threads/BinarySemaphore.h>
+#import <wtf/concurrency/BinarySemaphore.h>
 
 static inline NSData *replacementDataFromDecisionInfo(NSDictionary *decisionInfo)
 {

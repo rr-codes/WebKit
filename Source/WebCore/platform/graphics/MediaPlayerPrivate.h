@@ -35,8 +35,8 @@
 #include <WebCore/PlatformTimeRanges.h>
 #include <WebCore/ProcessIdentity.h>
 #include <optional>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 #if ENABLE(LEGACY_ENCRYPTED_MEDIA)
 #include <WebCore/LegacyCDMSession.h>

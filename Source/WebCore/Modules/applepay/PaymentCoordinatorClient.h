@@ -29,10 +29,10 @@
 
 #include <WebCore/ApplePaySessionPaymentRequest.h>
 #include <WebCore/ApplePaySetupFeatureWebCore.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 

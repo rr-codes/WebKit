@@ -35,13 +35,13 @@
 #include <WebCore/PushSubscriptionOwner.h>
 #include <WebCore/Supplementable.h>
 #include <WebCore/WindowOrWorkerGlobalScope.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/FixedVector.h>
 #include <wtf/Function.h>
 #include <wtf/HashSet.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/Platform.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace JSC {
 class CallFrame;

@@ -42,7 +42,6 @@
 #include <WebCore/Timer.h>
 #include <memory>
 #include <utility>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
@@ -50,6 +49,7 @@
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if PLATFORM(COCOA)
 OBJC_CLASS NSView;

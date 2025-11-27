@@ -25,10 +25,10 @@
 
 #include "CollectionIndexCache.h"
 #include "NodeList.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Ref.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

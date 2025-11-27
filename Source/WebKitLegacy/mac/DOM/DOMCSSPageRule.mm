@@ -25,18 +25,18 @@
 
 #import "DOMCSSPageRule.h"
 
-#import <WebCore/CSSPageDescriptors.h>
-#import <WebCore/CSSPageRule.h>
 #import "DOMCSSRuleInternal.h"
 #import "DOMCSSStyleDeclarationInternal.h"
 #import "DOMNodeInternal.h"
 #import "ExceptionHandlers.h"
+#import <WebCore/CSSPageDescriptors.h>
+#import <WebCore/CSSPageRule.h>
 #import <WebCore/JSExecState.h>
 #import <WebCore/StyleProperties.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::CSSPageRule*>(reinterpret_cast<WebCore::CSSRule*>(_internal))
 

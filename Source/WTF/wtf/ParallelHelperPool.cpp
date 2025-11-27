@@ -26,7 +26,7 @@
 #include "config.h"
 #include <wtf/ParallelHelperPool.h>
 
-#include <wtf/AutomaticThread.h>
+#include <wtf/concurrency/AutomaticThread.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WTF {

@@ -31,9 +31,9 @@
 #include <WebCore/IntRect.h>
 #include <WebCore/ScrollbarsController.h>
 #include <WebCore/Timer.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 OBJC_CLASS WebScrollerImpPairDelegate;
 OBJC_CLASS WebScrollerImpDelegate;

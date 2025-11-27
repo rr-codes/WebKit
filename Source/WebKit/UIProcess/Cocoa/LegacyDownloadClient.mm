@@ -24,27 +24,27 @@
  */
 
 #import "config.h"
-#import "LegacyDownloadClient.h"
+#import "_WKDownloadDelegate.h"
 
+#import "_WKDownloadInternal.h"
 #import "AuthenticationChallengeDisposition.h"
 #import "AuthenticationChallengeProxy.h"
 #import "AuthenticationDecisionListener.h"
 #import "CompletionHandlerCallChecker.h"
 #import "DownloadProxy.h"
+#import "LegacyDownloadClient.h"
 #import "Logging.h"
-#import "WKDownloadInternal.h"
-#import "WKNSURLAuthenticationChallenge.h"
-#import "WKNSURLExtras.h"
 #import "WebCredential.h"
 #import "WebPageProxy.h"
 #import "WebProcessProxy.h"
-#import "_WKDownloadDelegate.h"
-#import "_WKDownloadInternal.h"
+#import "WKDownloadInternal.h"
+#import "WKNSURLAuthenticationChallenge.h"
+#import "WKNSURLExtras.h"
 #import <WebCore/ResourceError.h>
 #import <WebCore/ResourceResponse.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

@@ -28,27 +28,27 @@
 
 #if ENABLE(VIDEO) && USE(AVFOUNDATION)
 
-#import "AVAssetMIMETypeCache.h"
-#import "AVAssetTrackUtilities.h"
-#import "AVTrackPrivateAVFObjCImpl.h"
 #import "AudioMediaStreamTrackRenderer.h"
 #import "AudioSourceProviderAVFObjC.h"
 #import "AudioTrackPrivateAVFObjC.h"
 #import "AuthenticationChallenge.h"
+#import "AVAssetMIMETypeCache.h"
+#import "AVAssetTrackUtilities.h"
+#import "AVTrackPrivateAVFObjCImpl.h"
 #import "CDMInstanceFairPlayStreamingAVFObjC.h"
 #import "CDMSessionAVFoundationObjC.h"
-#import "CVUtilities.h"
 #import "ColorSpaceCG.h"
 #import "ContentTypeUtilities.h"
 #import "Cookie.h"
+#import "CVUtilities.h"
 #import "FloatConversion.h"
 #import "FourCC.h"
 #import "GraphicsContext.h"
-#import "IOSurface.h"
 #import "ImageRotationSessionVT.h"
 #import "InbandChapterTrackPrivateAVFObjC.h"
 #import "InbandMetadataTextTrackPrivateAVF.h"
 #import "InbandTextTrackPrivateAVFObjC.h"
+#import "IOSurface.h"
 #import "Logging.h"
 #import "MediaPlaybackTargetCocoa.h"
 #import "MediaPlaybackTargetMock.h"
@@ -104,7 +104,6 @@
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
 #import <pal/text/TextCodecUTF8.h>
 #import <wtf/BlockObjCExceptions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CompletionHandler.h>
 #import <wtf/FileSystem.h>
 #import <wtf/Function.h>
@@ -117,9 +116,10 @@
 #import <wtf/URL.h>
 #import <wtf/WorkQueue.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/concurrency/BinarySemaphore.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/CString.h>
-#import <wtf/threads/BinarySemaphore.h>
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
 #import "MediaPlaybackTarget.h"

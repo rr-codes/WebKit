@@ -26,10 +26,10 @@
 #pragma once
 
 #include <WebCore/Page.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebKit {
 

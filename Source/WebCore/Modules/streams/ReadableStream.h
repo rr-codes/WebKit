@@ -30,9 +30,9 @@
 #include "JSValueInWrappedObject.h"
 #include "ReadableByteStreamController.h"
 #include <JavaScriptCore/Strong.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace JSC {
 class AbstractSlotVisitor;

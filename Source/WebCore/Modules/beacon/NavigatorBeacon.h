@@ -29,9 +29,9 @@
 #include "CachedResourceHandle.h"
 #include "FetchBody.h"
 #include "Supplementable.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

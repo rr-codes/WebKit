@@ -32,11 +32,6 @@
 #include <bit>
 #include <compare>
 #include <new>
-#include <wtf/CheckedPtr.h>
-#include <wtf/CheckedRef.h>
-#include <wtf/CompactPointerTuple.h>
-#include <wtf/CompactUniquePtrTuple.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/FixedVector.h>
 #include <wtf/Forward.h>
 #include <wtf/ListHashSet.h>
@@ -49,6 +44,11 @@
 #include <wtf/TypeCasts.h>
 #include <wtf/URLHash.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/CompactPointerTuple.h>
+#include <wtf/memory/CompactUniquePtrTuple.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/ASCIILiteral.h>
 
 namespace WTF {

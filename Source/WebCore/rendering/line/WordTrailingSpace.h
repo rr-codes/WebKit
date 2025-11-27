@@ -28,8 +28,8 @@
 #include "RenderBlock.h"
 #include "RenderStyle.h"
 #include <optional>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

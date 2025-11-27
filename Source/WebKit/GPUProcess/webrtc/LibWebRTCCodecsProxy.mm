@@ -43,10 +43,10 @@
 #import <WebCore/LibWebRTCProvider.h>
 #import <WebCore/PixelBufferConformerCV.h>
 #import <WebCore/VideoFrameCV.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MediaTime.h>
 #import <wtf/Scope.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
 
@@ -55,8 +55,8 @@ WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
 
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_END
 
-#import <pal/cf/CoreMediaSoftLink.h>
 #import <WebCore/CoreVideoSoftLink.h>
+#import <pal/cf/CoreMediaSoftLink.h>
 
 namespace WebKit {
 using namespace WebCore;

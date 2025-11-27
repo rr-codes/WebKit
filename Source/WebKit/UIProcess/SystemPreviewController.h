@@ -31,12 +31,12 @@
 #include <WebCore/IntRect.h>
 #include <WebCore/ResourceError.h>
 #include <WebCore/SystemPreviewInfo.h>
-#include <wtf/BlockPtr.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/URL.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/BlockPtr.h>
 
 OBJC_CLASS NSArray;
 OBJC_CLASS NSString;

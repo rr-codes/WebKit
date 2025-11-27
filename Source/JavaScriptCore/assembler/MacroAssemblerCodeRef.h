@@ -27,10 +27,10 @@
 
 #include <JavaScriptCore/ExecutableMemoryHandle.h>
 #include <JavaScriptCore/JSCPtrTag.h>
-#include <wtf/CodePtr.h>
 #include <wtf/DataLog.h>
 #include <wtf/PrintStream.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/CodePtr.h>
 #include <wtf/text/CString.h>
 
 #if CPU(ARM_THUMB2) && ENABLE(JIT)

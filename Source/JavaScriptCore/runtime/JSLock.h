@@ -22,11 +22,11 @@
 
 #include <mutex>
 #include <wtf/Assertions.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Lock.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RefPtr.h>
 #include <wtf/Threading.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 #include <wtf/text/AtomStringTable.h>
 
 namespace JSC {

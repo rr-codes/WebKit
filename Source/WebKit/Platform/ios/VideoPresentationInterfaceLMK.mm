@@ -38,7 +38,7 @@
 #import <WebCore/IntRect.h>
 #import <WebCore/WebAVPlayerLayerView.h>
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/UUID.h>
 #import <wtf/text/MakeString.h>

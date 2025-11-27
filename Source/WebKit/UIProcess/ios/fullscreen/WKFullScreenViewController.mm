@@ -32,12 +32,12 @@
 #import "PlaybackSessionManagerProxy.h"
 #import "UIKitUtilities.h"
 #import "VideoPresentationManagerProxy.h"
-#import "WKExtrinsicButton.h"
-#import "WKFullscreenStackView.h"
-#import "WKWebViewIOS.h"
 #import "WebFullScreenManagerProxy.h"
 #import "WebPageProxy.h"
 #import "WebPreferences.h"
+#import "WKExtrinsicButton.h"
+#import "WKFullscreenStackView.h"
+#import "WKWebViewIOS.h"
 #import <WebCore/FloatConversion.h>
 #import <WebCore/LocalizedStrings.h>
 #import <WebCore/PlaybackSessionInterfaceAVKitLegacy.h>
@@ -45,13 +45,13 @@
 #import <WebCore/VideoPresentationInterfaceAVKitLegacy.h>
 #import <WebCore/VideoPresentationInterfaceTVOS.h>
 #import <pal/spi/cocoa/AVKitSPI.h>
-#import <wtf/CheckedRef.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/MonotonicTime.h>
 #import <wtf/OptionSet.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/CheckedRef.h>
+#import <wtf/memory/FastMalloc.h>
 
 #if ENABLE(LINEAR_MEDIA_PLAYER)
 #import "FullscreenClient.h"

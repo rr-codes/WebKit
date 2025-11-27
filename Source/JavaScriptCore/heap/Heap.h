@@ -47,8 +47,6 @@
 #include <JavaScriptCore/StructureID.h>
 #include <JavaScriptCore/Synchronousness.h>
 #include <JavaScriptCore/WeakHandleOwner.h>
-#include <wtf/AutomaticThread.h>
-#include <wtf/Box.h>
 #include <wtf/ConcurrentPtrHashSet.h>
 #include <wtf/Deque.h>
 #include <wtf/HashCountedSet.h>
@@ -58,6 +56,8 @@
 #include <wtf/NotFound.h>
 #include <wtf/ParallelHelperPool.h>
 #include <wtf/Threading.h>
+#include <wtf/concurrency/AutomaticThread.h>
+#include <wtf/memory/Box.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

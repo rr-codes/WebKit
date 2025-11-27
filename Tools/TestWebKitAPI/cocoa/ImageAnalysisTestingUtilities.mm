@@ -28,7 +28,7 @@
 
 #if HAVE(VK_IMAGE_ANALYSIS)
 
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <pal/cocoa/VisionKitCoreSoftLink.h>
 
 @interface TestVKQuad : NSObject

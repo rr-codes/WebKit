@@ -25,11 +25,11 @@
 
 #pragma once
 
-#include <wtf/DebugHeap.h>
 #include <wtf/DoublyLinkedList.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/DebugHeap.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

@@ -35,10 +35,10 @@
 #include <WebCore/MediaPlayerEnums.h>
 #include <WebCore/MediaPlayerIdentifier.h>
 #include <WebCore/PlaybackSessionModel.h>
-#include <wtf/AbstractCanMakeCheckedPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractCanMakeCheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 OBJC_CLASS AVPlayerViewController;

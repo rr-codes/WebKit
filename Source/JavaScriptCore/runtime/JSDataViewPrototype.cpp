@@ -31,7 +31,7 @@
 #include "JSDataView.h"
 #include "ToNativeFromValue.h"
 #include "TypedArrayAdaptors.h"
-#include <wtf/FlipBytes.h>
+#include <wtf/memory/FlipBytes.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

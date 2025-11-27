@@ -30,12 +30,12 @@
 
 #ifdef __OBJC__
 
-#include <wtf/BlockPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/OSObjectPtr.h>
 #include <wtf/Vector.h>
 #include <wtf/cocoa/SpanCocoa.h>
 #include <wtf/darwin/DispatchExtras.h>
+#include <wtf/memory/BlockPtr.h>
 
 namespace WTF {
 

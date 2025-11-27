@@ -29,12 +29,12 @@
 #include "WebGeolocationPosition.h"
 #include "WebProcessSupplement.h"
 #include <WebCore/RegistrableDomain.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 class Geolocation;

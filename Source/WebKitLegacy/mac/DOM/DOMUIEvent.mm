@@ -23,11 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMUIEvent.h"
-
 #import "DOMAbstractViewInternal.h"
+
 #import "DOMEventInternal.h"
 #import "DOMNodeInternal.h"
+#import "DOMUIEvent.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/JSExecState.h>
 #import <WebCore/KeyboardEvent.h>
@@ -35,8 +35,8 @@
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/UIEvent.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::UIEvent*>(reinterpret_cast<WebCore::Event*>(_internal))
 

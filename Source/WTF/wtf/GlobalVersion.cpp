@@ -26,7 +26,7 @@
 #include "config.h"
 #include <wtf/GlobalVersion.h>
 
-#include <wtf/Atomics.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WTF {
 

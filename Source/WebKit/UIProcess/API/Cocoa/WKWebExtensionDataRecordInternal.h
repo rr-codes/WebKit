@@ -27,10 +27,10 @@
 
 #if ENABLE(WK_WEB_EXTENSIONS)
 
-#import "WKObject.h"
 #import "WebExtensionDataRecord.h"
-#import <wtf/AlignedStorage.h>
+#import "WKObject.h"
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 template<> struct WrapperTraits<WebExtensionDataRecord> {

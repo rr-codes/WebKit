@@ -26,11 +26,11 @@
 #pragma once
 
 #include <pal/spi/cf/CFNetworkSPI.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 OBJC_CLASS NSHTTPCookieStorage;
 OBJC_CLASS WebCookieObserverAdapter;

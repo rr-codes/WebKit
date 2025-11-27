@@ -26,19 +26,19 @@
 #import "config.h"
 
 #if ENABLE(GAMEPAD) && HAVE(WIDE_GAMECONTROLLER_SUPPORT)
-#import "GameControllerHapticEngines.h"
-
 #import "GameControllerHapticEffect.h"
+
+#import "GameControllerHapticEngines.h"
 #import "GamepadEffectParameters.h"
 #import "GamepadHapticEffectType.h"
 #import "Logging.h"
 #import <GameController/GameController.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/TZoneMallocInlines.h>
+#import <wtf/memory/BlockPtr.h>
 
-#import "GameControllerSoftLink.h"
 #import "CoreHapticsSoftLink.h"
+#import "GameControllerSoftLink.h"
 
 namespace WebCore {
 

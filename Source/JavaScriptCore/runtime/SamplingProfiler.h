@@ -35,13 +35,13 @@
 #include <JavaScriptCore/PCToCodeOriginMap.h>
 #include <JavaScriptCore/WasmCompilationMode.h>
 #include <JavaScriptCore/WasmIndexOrName.h>
-#include <wtf/Box.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/Stopwatch.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRandom.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

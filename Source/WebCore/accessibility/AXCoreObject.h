@@ -49,7 +49,7 @@
 #include <wtf/RefCounted.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/WallTime.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 #if PLATFORM(WIN)
 #include "AccessibilityObjectWrapperWin.h"

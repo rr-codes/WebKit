@@ -28,7 +28,7 @@
 #include "MoveOnly.h"
 #include "RefLogger.h"
 #include <wtf/CompactVariant.h>
-#include <wtf/GetPtr.h>
+#include <wtf/memory/GetPtr.h>
 
 struct EmptyStruct {
     constexpr bool operator==(const EmptyStruct&) const = default;

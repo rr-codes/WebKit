@@ -70,8 +70,8 @@
 #endif
 
 #if PLATFORM(COCOA)
-#include <wtf/BlockPtr.h>
 #include <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+#include <wtf/memory/BlockPtr.h>
 #endif
 
 #if USE(GBM)

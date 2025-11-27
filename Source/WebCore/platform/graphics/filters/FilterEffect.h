@@ -26,7 +26,7 @@
 #include <WebCore/FilterEffectApplier.h>
 #include <WebCore/FilterFunction.h>
 #include <WebCore/FilterImageVector.h>
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WTF {
 class TextStream;

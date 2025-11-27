@@ -30,12 +30,12 @@
 #include <WebCore/AudioMediaStreamTrackRendererInternalUnit.h>
 #include <WebCore/BaseAudioMediaStreamTrackRendererUnit.h>
 #include <WebCore/Timer.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 class AudioMediaStreamTrackRendererUnit;

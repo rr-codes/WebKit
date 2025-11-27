@@ -30,9 +30,9 @@
 #import "Range.h"
 #import "WritingToolsCompositionCommand.h"
 #import "WritingToolsTypes.h"
-#import <wtf/CheckedPtr.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

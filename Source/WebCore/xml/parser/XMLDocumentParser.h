@@ -32,9 +32,9 @@
 #include "XMLErrors.h"
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/AtomStringHash.h>
 #include <wtf/text/CString.h>
 

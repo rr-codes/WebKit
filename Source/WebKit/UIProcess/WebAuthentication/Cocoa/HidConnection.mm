@@ -29,10 +29,10 @@
 #if ENABLE(WEB_AUTHN)
 
 #import <WebCore/FidoConstants.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 using namespace fido;

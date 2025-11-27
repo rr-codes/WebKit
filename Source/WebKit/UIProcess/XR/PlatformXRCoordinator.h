@@ -34,8 +34,8 @@
 #endif
 #include <WebCore/ExceptionOr.h>
 #include <WebCore/PlatformXR.h>
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/Function.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 class SecurityOriginData;

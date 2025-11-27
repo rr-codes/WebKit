@@ -33,15 +33,6 @@
 #if ENABLE(WK_WEB_EXTENSIONS)
 
 #import "CocoaHelpers.h"
-#import "WKNSError.h"
-#import "WKNavigationActionPrivate.h"
-#import "WKNavigationDelegatePrivate.h"
-#import "WKUIDelegatePrivate.h"
-#import "WKWebExtensionActionInternal.h"
-#import "WKWebExtensionControllerDelegatePrivate.h"
-#import "WKWebViewConfigurationPrivate.h"
-#import "WKWebViewInternal.h"
-#import "WKWindowFeaturesPrivate.h"
 #import "WebExtensionContext.h"
 #import "WebExtensionContextProxyMessages.h"
 #import "WebExtensionMenuItem.h"
@@ -50,9 +41,18 @@
 #import "WebExtensionTabParameters.h"
 #import "WebPageProxy.h"
 #import "WebProcessProxy.h"
+#import "WKNavigationActionPrivate.h"
+#import "WKNavigationDelegatePrivate.h"
+#import "WKNSError.h"
+#import "WKUIDelegatePrivate.h"
+#import "WKWebExtensionActionInternal.h"
+#import "WKWebExtensionControllerDelegatePrivate.h"
+#import "WKWebViewConfigurationPrivate.h"
+#import "WKWebViewInternal.h"
+#import "WKWindowFeaturesPrivate.h"
 #import <WebCore/LocalizedStrings.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import "UIKitSPI.h"

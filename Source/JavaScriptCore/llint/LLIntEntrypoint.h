@@ -27,7 +27,7 @@
 
 #include <JavaScriptCore/JSCPtrTag.h>
 #include <JavaScriptCore/OpcodeSize.h>
-#include <wtf/CodePtr.h>
+#include <wtf/memory/CodePtr.h>
 
 namespace JSC {
 

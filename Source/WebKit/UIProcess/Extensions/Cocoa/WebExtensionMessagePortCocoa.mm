@@ -35,7 +35,7 @@
 #import "CocoaHelpers.h"
 #import "WKWebExtensionMessagePortInternal.h"
 #import "WebExtensionContext.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

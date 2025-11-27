@@ -28,12 +28,9 @@
 #include <string.h>
 #include <type_traits>
 #include <utility>
-#include <wtf/AlignedStorage.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/FailureAction.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/MathExtras.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/NotFound.h>
@@ -41,6 +38,9 @@
 #include <wtf/SwiftBridging.h>
 #include <wtf/ValueCheck.h>
 #include <wtf/VectorTraits.h>
+#include <wtf/memory/AlignedStorage.h>
+#include <wtf/memory/FastMalloc.h>
+#include <wtf/memory/MallocSpan.h>
 
 #if ASAN_ENABLED && __has_include(<sanitizer/asan_interface.h>)
 #include <sanitizer/asan_interface.h>

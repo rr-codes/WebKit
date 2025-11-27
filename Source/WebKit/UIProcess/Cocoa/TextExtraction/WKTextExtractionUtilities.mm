@@ -28,13 +28,13 @@
 
 #if ENABLE(TEXT_EXTRACTION)
 
-#import "WKWebViewInternal.h"
 #import "_WKTextExtractionInternal.h"
+#import "WKWebViewInternal.h"
 #import <WebCore/TextExtraction.h>
-#import <wtf/Box.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/cocoa/VectorCocoa.h>
+#import <wtf/memory/Box.h>
 
 namespace WebKit {
 using namespace WebCore;

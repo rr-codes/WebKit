@@ -25,12 +25,12 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
 #include <wtf/GraphNodeWorklist.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/SingleRootGraph.h>
 #include <wtf/SpanningTree.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

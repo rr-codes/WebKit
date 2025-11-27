@@ -50,7 +50,6 @@
 #import <WebKitAdditions/SeparatedLayerAdditions.h>
 #import <WebKitAdditions/WKREEngine.h>
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Deque.h>
 #import <wtf/MathExtras.h>
 #import <wtf/NakedPtr.h>
@@ -59,6 +58,7 @@
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/WeakPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/TextStream.h>
 
 #import "WebKitSwiftSoftLink.h"

@@ -27,10 +27,10 @@
 
 #include "Test.h"
 #include "Utilities.h"
-#include <wtf/CheckedPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/Threading.h>
-#include <wtf/threads/BinarySemaphore.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 
 namespace TestWebKitAPI {
 

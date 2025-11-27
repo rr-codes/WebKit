@@ -22,9 +22,9 @@
 
 #include <stdint.h>
 #include <tuple>
-#include <wtf/GetPtr.h>
 #include <wtf/RefPtr.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/GetPtr.h>
 
 namespace WTF {
     // integer hash function

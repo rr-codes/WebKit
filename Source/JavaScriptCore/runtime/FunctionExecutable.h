@@ -28,8 +28,8 @@
 #include <JavaScriptCore/JSFunction.h>
 #include <JavaScriptCore/ScriptExecutable.h>
 #include <JavaScriptCore/SourceCode.h>
-#include <wtf/Box.h>
 #include <wtf/Markable.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 

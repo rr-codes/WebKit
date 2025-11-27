@@ -32,8 +32,8 @@
 #if OS(UNIX)
 #include <signal.h>
 #else
-#include <wtf/Gigacage.h>
 #include <wtf/OSAllocator.h>
+#include <wtf/memory/Gigacage.h>
 #endif
 
 #if OS(UNIX)

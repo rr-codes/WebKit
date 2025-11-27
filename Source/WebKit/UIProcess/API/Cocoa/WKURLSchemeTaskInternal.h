@@ -27,7 +27,7 @@
 
 #import "WKObject.h"
 #import "WebURLSchemeTask.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @interface WKURLSchemeTaskImpl : NSObject <WKURLSchemeTaskPrivate>
 @end

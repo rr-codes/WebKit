@@ -28,11 +28,11 @@
 #if ENABLE(LEGACY_ENCRYPTED_MEDIA)
 
 #include <WebCore/LegacyCDMSession.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

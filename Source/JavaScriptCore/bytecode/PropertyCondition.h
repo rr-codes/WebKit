@@ -26,8 +26,8 @@
 #pragma once
 
 #include <JavaScriptCore/JSObject.h>
-#include <wtf/CompactPointerTuple.h>
 #include <wtf/HashMap.h>
+#include <wtf/memory/CompactPointerTuple.h>
 
 namespace JSC {
 

@@ -24,9 +24,8 @@
  */
 
 #import "config.h"
-#import "UIScriptControllerMac.h"
-
 #import "EventSenderProxy.h"
+
 #import "EventSerializerMac.h"
 #import "LayoutTestSpellChecker.h"
 #import "PlatformViewHelpers.h"
@@ -37,6 +36,7 @@
 #import "TestController.h"
 #import "TestRunnerWKWebView.h"
 #import "UIScriptContext.h"
+#import "UIScriptControllerMac.h"
 #import <JavaScriptCore/JSContext.h>
 #import <JavaScriptCore/JSStringRefCF.h>
 #import <JavaScriptCore/JSValue.h>
@@ -47,9 +47,9 @@
 #import <mach/mach_time.h>
 #import <pal/spi/mac/NSApplicationSPI.h>
 #import <pal/spi/mac/NSSpellCheckerSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/WorkQueue.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface WKWebView (Internal_RubberBandingBehavior)
 

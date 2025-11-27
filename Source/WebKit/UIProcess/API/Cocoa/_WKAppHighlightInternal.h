@@ -23,6 +23,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import "CocoaImage.h"
 #import "_WKAppHighlight.h"
 
 @interface _WKAppHighlight ()

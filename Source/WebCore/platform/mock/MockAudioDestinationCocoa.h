@@ -28,10 +28,10 @@
 #if ENABLE(WEB_AUDIO) && PLATFORM(COCOA)
 
 #include "AudioDestinationCocoa.h"
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/RunLoop.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WorkQueue.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

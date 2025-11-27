@@ -28,8 +28,8 @@
 #include <JavaScriptCore/ArityCheckMode.h>
 #include <JavaScriptCore/CallMode.h>
 #include <JavaScriptCore/JSCPtrTag.h>
-#include <wtf/CodePtr.h>
 #include <wtf/SentinelLinkedList.h>
+#include <wtf/memory/CodePtr.h>
 
 namespace JSC {
 

@@ -24,9 +24,8 @@
  */
 
 #include "config.h"
-#include "WebsiteDataStore.h"
-
 #include "APIHTTPCookieStore.h"
+
 #include "APIProcessPoolConfiguration.h"
 #include "APIWebsiteDataRecord.h"
 #include "AuthenticatorManager.h"
@@ -57,6 +56,7 @@
 #include "WebResourceLoadStatisticsStore.h"
 #include "WebsiteData.h"
 #include "WebsiteDataFetchOption.h"
+#include "WebsiteDataStore.h"
 #include "WebsiteDataStoreClient.h"
 #include "WebsiteDataStoreParameters.h"
 #include <WebCore/CredentialStorage.h>
@@ -75,12 +75,12 @@
 #include <WebCore/WebLockRegistry.h>
 #include <algorithm>
 #include <wtf/CallbackAggregator.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/CrossThreadCopier.h>
 #include <wtf/FileSystem.h>
 #include <wtf/ProcessPrivilege.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/MakeString.h>
 
 #if OS(DARWIN)

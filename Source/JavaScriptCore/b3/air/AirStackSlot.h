@@ -30,11 +30,11 @@
 #include "AirStackSlotKind.h"
 #include "B3SparseCollection.h"
 #include <limits.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/PrintStream.h>
 #include <wtf/SequesteredMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace JSC { namespace B3 {
 

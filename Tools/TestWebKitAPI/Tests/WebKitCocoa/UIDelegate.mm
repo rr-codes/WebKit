@@ -28,8 +28,8 @@
 #import "ClassMethodSwizzler.h"
 #import "DeprecatedGlobalValues.h"
 #import "HTTPServer.h"
-#import "IOSMouseEventTestHarness.h"
 #import "InstanceMethodSwizzler.h"
+#import "IOSMouseEventTestHarness.h"
 #import "PlatformUtilities.h"
 #import "TestCocoa.h"
 #import "TestNavigationDelegate.h"
@@ -65,9 +65,9 @@
 
 #import <WebKit/_WKFeature.h>
 #import <WebKit/_WKHitTestResult.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/Vector.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(MAC)
 #import <Carbon/Carbon.h>

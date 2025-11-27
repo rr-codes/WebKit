@@ -27,14 +27,14 @@
 #import "MediaPermissionUtilities.h"
 
 #import "SandboxUtilities.h"
-#import "WKWebViewInternal.h"
 #import "WebPageProxy.h"
+#import "WKWebViewInternal.h"
 #import <WebCore/LocalizedStrings.h>
 #import <WebCore/SecurityOriginData.h>
 #import <mutex>
-#import <wtf/BlockPtr.h>
 #import <wtf/URLHelpers.h>
 #import <wtf/cocoa/TypeCastsCocoa.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/spi/cf/CFBundleSPI.h>
 #import <wtf/spi/darwin/SandboxSPI.h>
 

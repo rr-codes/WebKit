@@ -25,10 +25,10 @@
 
 #pragma once
 
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WTF {
 

@@ -31,11 +31,11 @@
 #include <WebCore/StylePrimitiveNumeric+Forward.h>
 #include <WebCore/WritingMode.h>
 #include <unicode/utypes.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/DataRef.h>
 #include <wtf/FixedVector.h>
 #include <wtf/OptionSet.h>
 #include <wtf/Vector.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WTF {
 class TextStream;

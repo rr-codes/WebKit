@@ -44,7 +44,6 @@
 #import <sys/sysctl.h>
 #import <sys/types.h>
 #import <wtf/FileSystem.h>
-#import <wtf/MallocSpan.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RuntimeApplicationChecks.h>
 #import <wtf/StdLibExtras.h>
@@ -54,6 +53,7 @@
 #import <wtf/cocoa/SoftLinking.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/MallocSpan.h>
 #import <wtf/text/MakeString.h>
 
 #if ENABLE(CFPREFS_DIRECT_MODE)

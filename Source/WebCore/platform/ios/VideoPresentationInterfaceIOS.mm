@@ -44,12 +44,12 @@
 #import <objc/runtime.h>
 #import <pal/spi/ios/UIKitSPI.h>
 #import <pal/system/ios/UserInterfaceIdiom.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RefPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RuntimeApplicationChecks.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/CString.h>
 #import <wtf/text/WTFString.h>
 

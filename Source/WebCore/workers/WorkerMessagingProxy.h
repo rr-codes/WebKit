@@ -26,14 +26,14 @@
 #pragma once
 
 #include "WorkerBadgeProxy.h"
-#include "WorkerGlobalScopeProxy.h"
 #include "WorkerDebuggerProxy.h"
+#include "WorkerGlobalScopeProxy.h"
 #include "WorkerLoaderProxy.h"
 #include "WorkerObjectProxy.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

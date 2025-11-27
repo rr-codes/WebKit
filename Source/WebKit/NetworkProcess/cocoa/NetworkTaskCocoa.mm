@@ -24,20 +24,20 @@
  */
 
 #import "config.h"
-#import "NetworkTaskCocoa.h"
-
 #import "Logging.h"
+
 #import "NetworkProcess.h"
 #import "NetworkSession.h"
+#import "NetworkTaskCocoa.h"
 #import "WebPrivacyHelpers.h"
 #import <WebCore/DNS.h>
 #import <WebCore/NetworkStorageSession.h>
 #import <WebCore/Quirks.h>
 #import <WebCore/RegistrableDomain.h>
 #import <pal/spi/cf/CFNetworkSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/ProcessPrivilege.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/MakeString.h>
 
 namespace WebKit {

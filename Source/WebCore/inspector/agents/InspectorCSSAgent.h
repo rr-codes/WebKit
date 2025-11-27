@@ -25,14 +25,13 @@
 
 #pragma once
 
-#include "CSSSelector.h"
 #include "ContentSecurityPolicy.h"
+#include "CSSSelector.h"
 #include "InspectorStyleSheet.h"
 #include "InspectorWebAgentBase.h"
 #include "SecurityContext.h"
 #include "Timer.h"
 #include <JavaScriptCore/InspectorBackendDispatchers.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/JSONValues.h>
@@ -41,6 +40,7 @@
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace Inspector {

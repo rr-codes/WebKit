@@ -36,7 +36,6 @@
 #include <WebCore/Styleable.h>
 #include <WebCore/Timer.h>
 #include <memory>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/Identified.h>
@@ -48,6 +47,7 @@
 #include <wtf/WeakHashMap.h>
 #include <wtf/WeakHashSet.h>
 #include <wtf/WeakListHashSet.h>
+#include <wtf/memory/CheckedPtr.h>
 #include <wtf/text/AtomStringHash.h>
 #include <wtf/text/WTFString.h>
 

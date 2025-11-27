@@ -30,12 +30,12 @@
 #include <WebCore/MDNSRegisterError.h>
 #include <WebCore/ProcessQualified.h>
 #include <WebCore/ScriptExecutionContextIdentifier.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Expected.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace IPC {
 class Connection;

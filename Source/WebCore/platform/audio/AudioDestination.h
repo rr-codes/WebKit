@@ -32,12 +32,12 @@
 #include <WebCore/AudioBus.h>
 #include <WebCore/AudioIOCallback.h>
 #include <memory>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Lock.h>
 #include <wtf/MediaTime.h>
 #include <wtf/Platform.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/AbstractRefCounted.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

@@ -28,11 +28,11 @@
 
 #include <atomic>
 #include <ctime>
-#include <wtf/CanMakeWeakPtr.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/Function.h>
 #include <wtf/RunLoop.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 #if OS(WINDOWS)
 #include <wtf/win/Win32Handle.h>

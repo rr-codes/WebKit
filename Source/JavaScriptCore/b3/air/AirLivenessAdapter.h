@@ -33,10 +33,10 @@
 #include "AirInstInlines.h"
 #include "AirStackSlot.h"
 #include "AirTmpInlines.h"
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/IndexMap.h>
 #include <wtf/SequesteredMalloc.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace JSC { namespace B3 { namespace Air {
 

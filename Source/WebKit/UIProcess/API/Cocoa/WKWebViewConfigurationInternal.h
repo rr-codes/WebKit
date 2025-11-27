@@ -30,8 +30,8 @@
 
 #import "APIPageConfiguration.h"
 #import "WKObject.h"
-#import <wtf/AlignedStorage.h>
 #import <wtf/Ref.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

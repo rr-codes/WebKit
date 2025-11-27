@@ -28,7 +28,7 @@
 
 #include "Identifier.h"
 #include "IdentifierInlines.h"
-#include <wtf/MallocSpan.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/StringView.h>
 
 using namespace JSC;

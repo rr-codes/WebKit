@@ -26,13 +26,13 @@
 #pragma once
 
 #import <WebCore/TextIndicator.h>
-#import <wtf/CheckedPtr.h>
 #import <wtf/Noncopyable.h>
 #import <wtf/RefPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/RunLoop.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/CheckedPtr.h>
 
 OBJC_CLASS NSView;
 OBJC_CLASS WebTextIndicatorLayer;

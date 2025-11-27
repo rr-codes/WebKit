@@ -30,7 +30,7 @@
 #import "JSBasics.h"
 #import <objc/runtime.h>
 #import <wtf/Assertions.h>
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import "UIKitSPIForTesting.h"

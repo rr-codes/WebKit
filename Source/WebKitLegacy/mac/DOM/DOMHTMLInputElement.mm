@@ -23,14 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMHTMLInputElementInternal.h"
-
 #import "DOMFileListInternal.h"
+
 #import "DOMHTMLElementInternal.h"
 #import "DOMHTMLFormElementInternal.h"
+#import "DOMHTMLInputElementInternal.h"
+#import "DOMInternal.h"
 #import "DOMNodeInternal.h"
 #import "DOMNodeListInternal.h"
-#import "DOMInternal.h"
 #import "DOMPrivate.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/ContainerNodeInlines.h>
@@ -66,8 +66,8 @@
 #import <WebCore/RenderElement.h>
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL static_cast<WebCore::HTMLInputElement*>(reinterpret_cast<WebCore::Node*>(_internal))
 

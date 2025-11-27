@@ -25,14 +25,14 @@
 
 #pragma once
 
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Platform.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 
 #if USE(SYSTEM_MALLOC) || !USE(TZONE_MALLOC)
 
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 #define WTF_MAKE_TZONE_ALLOCATED_INLINE(typeName) WTF_DEPRECATED_MAKE_FAST_ALLOCATED(typeName)
 

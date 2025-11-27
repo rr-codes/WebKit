@@ -22,10 +22,10 @@
 
 #include <wtf/Assertions.h>
 #include <wtf/Compiler.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/MainThread.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/SwiftBridging.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

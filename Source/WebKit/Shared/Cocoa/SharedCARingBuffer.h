@@ -30,10 +30,10 @@
 #include <WebCore/CAAudioStreamDescription.h>
 #include <WebCore/CARingBuffer.h>
 #include <WebCore/SharedMemory.h>
-#include <wtf/Atomics.h>
 #include <wtf/Function.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/concurrency/Atomics.h>
 
 namespace WebKit {
 

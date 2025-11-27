@@ -31,14 +31,14 @@
 #include <stdarg.h>
 #include <tuple>
 #include <wtf/EnumTraits.h>
-#include <wtf/Forward.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/FixedWidthDouble.h>
+#include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/RawHex.h>
 #include <wtf/RawPointer.h>
 #include <wtf/RefPtr.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

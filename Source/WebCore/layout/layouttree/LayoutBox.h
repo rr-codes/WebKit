@@ -29,8 +29,8 @@
 #include <WebCore/RenderObject.h>
 #include <WebCore/RenderStyle.h>
 #include <WebCore/RenderStyleConstants.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

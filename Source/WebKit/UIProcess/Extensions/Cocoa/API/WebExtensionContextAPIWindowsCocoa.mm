@@ -39,7 +39,7 @@
 #import "WebExtensionContextProxyMessages.h"
 #import "WebExtensionUtilities.h"
 #import "WebExtensionWindowIdentifier.h"
-#import <wtf/BlockPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebKit {
 

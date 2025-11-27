@@ -35,9 +35,9 @@
 #include <WebCore/NativeImage.h>
 #include <WebCore/NowPlayingManager.h>
 #include <wtf/BitSet.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

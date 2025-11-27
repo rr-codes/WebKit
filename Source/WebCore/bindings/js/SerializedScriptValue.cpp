@@ -25,17 +25,16 @@
  */
 
 #include "config.h"
-#include "SerializedScriptValue.h"
-
 #include "BlobRegistry.h"
+
 #include "ByteArrayPixelBuffer.h"
 #include "CryptoKeyAES.h"
 #include "CryptoKeyEC.h"
 #include "CryptoKeyHMAC.h"
 #include "CryptoKeyOKP.h"
+#include "CryptoKeyRaw.h"
 #include "CryptoKeyRSA.h"
 #include "CryptoKeyRSAComponents.h"
-#include "CryptoKeyRaw.h"
 #include "IDBValue.h"
 #include "ImageBuffer.h"
 #include "JSAudioWorkletGlobalScope.h"
@@ -68,6 +67,7 @@
 #include "JSWebCodecsEncodedVideoChunk.h"
 #include "JSWebCodecsVideoFrame.h"
 #include "ScriptExecutionContext.h"
+#include "SerializedScriptValue.h"
 #include "SharedBuffer.h"
 #include "WebCodecsEncodedAudioChunk.h"
 #include "WebCodecsEncodedVideoChunk.h"
@@ -115,8 +115,8 @@
 #include <wtf/StackCheck.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/Vector.h>
+#include <wtf/concurrency/BinarySemaphore.h>
 #include <wtf/text/ParsingUtilities.h>
-#include <wtf/threads/BinarySemaphore.h>
 
 #if USE(CG)
 #include <CoreGraphics/CoreGraphics.h>

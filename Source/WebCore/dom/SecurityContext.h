@@ -32,10 +32,10 @@
 #include <WebCore/IPAddressSpace.h>
 #include <WebCore/ReferrerPolicy.h>
 #include <memory>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
 #include <wtf/OptionSet.h>
 #include <wtf/RefPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

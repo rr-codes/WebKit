@@ -26,9 +26,9 @@
 #include <WebCore/RenderObject.h>
 #include <WebCore/RenderPtr.h>
 #include <WebCore/RenderStyle.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/MonotonicTime.h>
 #include <wtf/Packed.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

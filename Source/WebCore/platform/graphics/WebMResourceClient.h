@@ -28,9 +28,9 @@
 #if ENABLE(COCOA_WEBM_PLAYER)
 
 #include "PlatformMediaResourceLoader.h"
-#include <wtf/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractThreadSafeRefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {
 

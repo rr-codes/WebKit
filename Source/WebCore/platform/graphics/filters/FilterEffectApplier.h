@@ -26,7 +26,7 @@
 #pragma once
 
 #include <WebCore/FilterImageVector.h>
-#include <wtf/CheckedRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

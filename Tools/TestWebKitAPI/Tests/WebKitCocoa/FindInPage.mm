@@ -35,8 +35,8 @@
 #import "WKWebViewConfigurationExtras.h"
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/_WKFindDelegate.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import "TestInputDelegate.h"

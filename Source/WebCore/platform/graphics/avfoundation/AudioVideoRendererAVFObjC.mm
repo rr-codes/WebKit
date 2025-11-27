@@ -24,9 +24,9 @@
  */
 
 #import "config.h"
-#import "AudioVideoRendererAVFObjC.h"
-
 #import "AudioMediaStreamTrackRenderer.h"
+
+#import "AudioVideoRendererAVFObjC.h"
 #import "CDMFairPlayStreaming.h"
 #import "CDMInstanceFairPlayStreamingAVFObjC.h"
 #import "CDMSessionAVContentKeySession.h"
@@ -53,7 +53,6 @@
 #import <pal/spi/cocoa/AVFoundationSPI.h>
 #import <pal/spi/cocoa/QuartzCoreSPI.h>
 #import <wtf/BlockObjCExceptions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/SoftLinking.h>
 #import <wtf/TZoneMallocInlines.h>
@@ -61,6 +60,7 @@
 #import <wtf/WorkQueue.h>
 #import <wtf/cocoa/Entitlements.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #pragma mark - Soft Linking
 #import "CoreVideoSoftLink.h"

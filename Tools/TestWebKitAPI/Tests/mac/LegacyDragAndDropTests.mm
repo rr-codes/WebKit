@@ -32,9 +32,9 @@
 #import <AppKit/NSDragging.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <WebKit/WebView.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/Compiler.h>
 #import <wtf/RetainPtr.h>
+#import <wtf/memory/BlockPtr.h>
 
 @interface FrameLoadCompletionListener : NSObject<WebFrameLoadDelegate> {
     BlockPtr<void()> _completionBlock;

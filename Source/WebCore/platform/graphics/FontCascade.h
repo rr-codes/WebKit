@@ -31,11 +31,11 @@
 #include <WebCore/Path.h>
 #include <WebCore/TextSpacing.h>
 #include <optional>
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/Platform.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/CharacterProperties.h>
 #include <wtf/unicode/CharacterNames.h>
 

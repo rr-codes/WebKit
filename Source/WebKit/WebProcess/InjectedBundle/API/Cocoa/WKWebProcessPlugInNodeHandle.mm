@@ -34,7 +34,7 @@
 #import <WebCore/IntRect.h>
 #import <WebCore/NativeImage.h>
 #import <WebCore/WebCoreObjCExtras.h>
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 @implementation WKWebProcessPlugInNodeHandle {
     AlignedStorage<WebKit::InjectedBundleNodeHandle> _nodeHandle;

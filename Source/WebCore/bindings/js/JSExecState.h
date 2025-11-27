@@ -33,8 +33,8 @@
 #include <WebCore/CustomElementReactionQueue.h>
 #include <WebCore/JSDOMBinding.h>
 #include <WebCore/ThreadGlobalData.h>
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/MainThread.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace WebCore {
 

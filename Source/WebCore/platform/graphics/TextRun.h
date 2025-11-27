@@ -27,8 +27,8 @@
 #include <WebCore/TextFlags.h>
 #include <WebCore/TextSpacing.h>
 #include <WebCore/WritingMode.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/StringView.h>
 
 namespace WebCore {

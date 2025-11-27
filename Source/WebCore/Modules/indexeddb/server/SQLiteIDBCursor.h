@@ -34,11 +34,11 @@
 #include "IDBResourceIdentifier.h"
 #include "IDBValue.h"
 #include "SQLiteStatement.h"
-#include <wtf/CheckedPtr.h>
 #include <wtf/Deque.h>
 #include <wtf/Markable.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

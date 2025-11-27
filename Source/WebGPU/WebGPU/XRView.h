@@ -27,9 +27,9 @@
 
 #import <utility>
 #import <wtf/CompletionHandler.h>
-#import <wtf/FastMalloc.h>
 #import <wtf/Ref.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUXRViewImpl {
 };

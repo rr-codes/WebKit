@@ -26,10 +26,10 @@
 #pragma once
 
 #include <string.h>
-#include <wtf/Atomics.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/PrintStream.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/concurrency/Atomics.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WTF {
 

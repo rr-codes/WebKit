@@ -28,12 +28,12 @@
 #if ENABLE(WIRELESS_PLAYBACK_MEDIA_PLAYER)
 
 #include "MediaPlayerPrivate.h"
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/LoggerHelper.h>
 #include <wtf/Ref.h>
 #include <wtf/RefCounted.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeWeakPtr.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

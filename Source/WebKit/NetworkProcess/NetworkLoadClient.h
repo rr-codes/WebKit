@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/Forward.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 class AuthenticationChallenge;

@@ -26,10 +26,10 @@
 #ifndef StorageThread_h
 #define StorageThread_h
 
-#include <wtf/CheckedRef.h>
 #include <wtf/Function.h>
 #include <wtf/MessageQueue.h>
 #include <wtf/Threading.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebCore {

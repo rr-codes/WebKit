@@ -30,8 +30,8 @@
 
 #pragma once
 
-#include <wtf/CheckedPtr.h>
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 

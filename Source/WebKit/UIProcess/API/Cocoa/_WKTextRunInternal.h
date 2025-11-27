@@ -28,7 +28,7 @@
 #import "APITextRun.h"
 #import "WKObject.h"
 #import "_WKTextRun.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

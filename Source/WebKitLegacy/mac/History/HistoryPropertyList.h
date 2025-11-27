@@ -27,8 +27,8 @@
 #define HistoryPropertyList_h
 
 #include "BinaryPropertyList.h"
-#include <wtf/MallocSpan.h>
 #include <wtf/RetainPtr.h>
+#include <wtf/memory/MallocSpan.h>
 #include <wtf/text/WTFString.h>
 
 @class WebHistoryItem;

@@ -27,8 +27,8 @@
 
 #include "LegacyCustomProtocolID.h"
 #include "MessageReceiver.h"
-#include <wtf/CheckedRef.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 
 #if PLATFORM(COCOA)
 #include <wtf/HashMap.h>

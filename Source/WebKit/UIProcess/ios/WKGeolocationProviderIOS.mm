@@ -28,29 +28,29 @@
 
 #if PLATFORM(IOS_FAMILY)
 
+#import "_WKGeolocationCoreLocationProvider.h"
+#import "_WKGeolocationPositionInternal.h"
 #import "APIFrameInfo.h"
 #import "APISecurityOrigin.h"
 #import "CompletionHandlerCallChecker.h"
+#import "WebFrameProxy.h"
+#import "WebGeolocationManagerProxy.h"
+#import "WebPageProxy.h"
+#import "WebProcessPool.h"
 #import "WKFrameInfoInternal.h"
 #import "WKGeolocationManager.h"
 #import "WKProcessPoolInternal.h"
 #import "WKUIDelegatePrivate.h"
 #import "WKWebGeolocationPolicyDecider.h"
 #import "WKWebViewInternal.h"
-#import "WebFrameProxy.h"
-#import "WebGeolocationManagerProxy.h"
-#import "WebPageProxy.h"
-#import "WebProcessPool.h"
-#import "_WKGeolocationCoreLocationProvider.h"
-#import "_WKGeolocationPositionInternal.h"
 #import <WebCore/GeolocationPosition.h>
 #import <WebGeolocationPosition.h>
 #import <wtf/Assertions.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/HashSet.h>
 #import <wtf/RefPtr.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/BlockPtr.h>
 
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
 

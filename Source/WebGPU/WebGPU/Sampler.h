@@ -25,7 +25,6 @@
 
 #pragma once
 
-#import <wtf/FastMalloc.h>
 #import <wtf/GenericHashKey.h>
 #import <wtf/Hasher.h>
 #import <wtf/ListHashSet.h>
@@ -34,6 +33,7 @@
 #import <wtf/RefCounted.h>
 #import <wtf/TZoneMalloc.h>
 #import <wtf/WeakObjCPtr.h>
+#import <wtf/memory/FastMalloc.h>
 
 struct WGPUSamplerImpl {
 };

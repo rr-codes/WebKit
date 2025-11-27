@@ -37,9 +37,9 @@
 #import "Logging.h"
 #import "WKNSData.h"
 #import <JavaScriptCore/JavaScriptCore.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/FileSystem.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 #if PLATFORM(IOS_FAMILY)
 #import <UIKit/UIKit.h>

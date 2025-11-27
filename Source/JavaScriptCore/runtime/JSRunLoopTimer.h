@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <wtf/CheckedRef.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
 #include <wtf/RefPtr.h>
@@ -34,6 +33,7 @@
 #include <wtf/SharedTask.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace JSC {
 

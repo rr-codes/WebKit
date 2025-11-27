@@ -27,8 +27,8 @@
 
 #if ENABLE(IPC_TESTING_API)
 
-#include <wtf/AbstractRefCountedAndCanMakeWeakPtr.h>
 #include <wtf/OptionSet.h>
+#include <wtf/memory/AbstractRefCountedAndCanMakeWeakPtr.h>
 
 namespace IPC {
 

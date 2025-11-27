@@ -32,8 +32,6 @@
 #include "ResponsivenessTimer.h"
 #include <WebCore/ProcessIdentifier.h>
 #include <memory>
-#include <wtf/CheckedRef.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
 #include <wtf/ProcessID.h>
@@ -44,6 +42,8 @@
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/UniqueRef.h>
 #include <wtf/WeakPtrFactory.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/FastMalloc.h>
 
 namespace WebCore {
 class SharedBuffer;

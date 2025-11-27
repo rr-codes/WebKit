@@ -28,8 +28,8 @@
 #include "LayoutIntegrationBoxTreeUpdater.h"
 #include <WebCore/LayoutState.h>
 #include <WebCore/RenderObjectEnums.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

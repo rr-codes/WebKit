@@ -28,10 +28,10 @@
 #if ENABLE(LEGACY_ENCRYPTED_MEDIA)
 
 #include <JavaScriptCore/Forward.h>
-#include <wtf/AbstractRefCounted.h>
 #include <wtf/Forward.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/AbstractRefCounted.h>
 
 namespace WebCore {
 class LegacyCDMSessionClient;

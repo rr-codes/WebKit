@@ -36,8 +36,8 @@
 #import "WebExtension.h"
 #import "WebExtensionContext.h"
 #import "WebExtensionMenuItem.h"
-#import <wtf/BlockPtr.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 #import <wtf/text/StringBuilder.h>
 
 #if USE(APPKIT)

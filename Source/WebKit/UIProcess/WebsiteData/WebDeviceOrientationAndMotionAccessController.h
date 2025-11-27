@@ -29,8 +29,8 @@
 
 #include <WebCore/DeviceOrientationOrMotionPermissionState.h>
 #include <WebCore/SecurityOriginData.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/HashMap.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebKit {
 

@@ -29,10 +29,10 @@
 #include <WebCore/CachedResourceHandle.h>
 #include <WebCore/Document.h>
 #include <WebCore/Timer.h>
-#include <wtf/CanMakeWeakPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CanMakeWeakPtr.h>
 
 namespace WebCore {
 

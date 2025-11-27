@@ -25,10 +25,10 @@
 
 #include "StorageThread.h"
 
-#include <wtf/AutodrainedPool.h>
 #include <wtf/HashSet.h>
 #include <wtf/MainThread.h>
 #include <wtf/NeverDestroyed.h>
+#include <wtf/memory/AutodrainedPool.h>
 
 namespace WebCore {
 

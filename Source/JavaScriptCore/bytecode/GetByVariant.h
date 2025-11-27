@@ -31,8 +31,8 @@
 #include "ObjectPropertyConditionSet.h"
 #include "PropertyOffset.h"
 #include "StructureSet.h"
-#include <wtf/Box.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/Box.h>
 
 namespace JSC {
 namespace DOMJIT {

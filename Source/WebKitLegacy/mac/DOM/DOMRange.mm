@@ -23,14 +23,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "DOMRangeInternal.h"
-
 #import "DOMDocumentFragmentInternal.h"
+
 #import "DOMInternal.h"
 #import "DOMNodeInternal.h"
-#import <WebCore/DocumentFragment.h>
+#import "DOMRangeInternal.h"
 #import "ExceptionHandlers.h"
 #import <WebCore/BoundaryPointInlines.h>
+#import <WebCore/DocumentFragment.h>
 #import <WebCore/JSExecState.h>
 #import <WebCore/Range.h>
 #import <WebCore/SimpleRange.h>
@@ -38,8 +38,8 @@
 #import <WebCore/ThreadCheck.h>
 #import <WebCore/WebCoreObjCExtras.h>
 #import <WebCore/WebScriptObjectPrivate.h>
-#import <wtf/GetPtr.h>
 #import <wtf/URL.h>
+#import <wtf/memory/GetPtr.h>
 
 #define IMPL reinterpret_cast<WebCore::Range*>(_internal)
 

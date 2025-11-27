@@ -35,7 +35,6 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include <JavaScriptCore/Watchpoint.h>
 #include <JavaScriptCore/Weak.h>
 #include <JavaScriptCore/WeakImpl.h>
-#include <wtf/CagedPtr.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/PackedRefPtr.h>
 #include <wtf/SharedTask.h>
@@ -44,6 +43,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CagedPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace JSC {

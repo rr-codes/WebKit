@@ -28,12 +28,12 @@
 
 #include <JavaScriptCore/JSPromise.h>
 #include <JavaScriptCore/WeakGCMap.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Noncopyable.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
 #include <wtf/WeakRef.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace JSC {
 class VM;

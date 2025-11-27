@@ -27,14 +27,14 @@
 
 #include "PageIdentifier.h"
 #include "ScriptExecutionContextIdentifier.h"
-#include <wtf/CheckedPtr.h>
-#include <wtf/CheckedRef.h>
-#include <wtf/FastMalloc.h>
 #include <wtf/Function.h>
 #include <wtf/RefCounted.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/URL.h>
+#include <wtf/memory/CheckedPtr.h>
+#include <wtf/memory/CheckedRef.h>
+#include <wtf/memory/FastMalloc.h>
 #include <wtf/text/WTFString.h>
 
 // All of these methods should be called on the Main Thread.

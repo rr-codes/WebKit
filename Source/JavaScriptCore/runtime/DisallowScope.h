@@ -25,8 +25,8 @@
 
 #pragma once
 
-#include <wtf/ForbidHeapAllocation.h>
 #include <wtf/Noncopyable.h>
+#include <wtf/memory/ForbidHeapAllocation.h>
 
 namespace JSC {
 

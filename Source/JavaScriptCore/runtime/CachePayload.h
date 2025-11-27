@@ -26,8 +26,8 @@
 #pragma once
 
 #include <JavaScriptCore/VM.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/MappedFileData.h>
+#include <wtf/memory/MallocSpan.h>
 
 namespace JSC {
 

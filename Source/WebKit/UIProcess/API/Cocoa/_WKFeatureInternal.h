@@ -26,7 +26,7 @@
 #import "APIFeature.h"
 #import "WKObject.h"
 #import "_WKFeature.h"
-#import <wtf/AlignedStorage.h>
+#import <wtf/memory/AlignedStorage.h>
 
 namespace WebKit {
 

@@ -26,10 +26,10 @@
 #ifndef PasteboardStrategy_h
 #define PasteboardStrategy_h
 
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Platform.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/memory/CheckedRef.h>
 
 namespace WebCore {
 

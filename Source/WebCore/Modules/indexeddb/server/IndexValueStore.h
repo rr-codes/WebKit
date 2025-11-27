@@ -28,9 +28,9 @@
 #include <WebCore/IDBCursorInfo.h>
 #include <WebCore/IDBKeyData.h>
 #include <WebCore/IndexValueEntry.h>
-#include <wtf/CheckedPtr.h>
 #include <wtf/HashMap.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/memory/CheckedPtr.h>
 
 namespace WebCore {
 

@@ -24,6 +24,6 @@
 
 #pragma once
 
-#include <wtf/FastMalloc.h>
+#include <wtf/memory/FastMalloc.h>
 
 // Keeping this file because of build rule bug.

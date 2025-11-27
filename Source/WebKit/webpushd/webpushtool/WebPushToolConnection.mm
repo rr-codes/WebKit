@@ -25,23 +25,23 @@
 
 #import "config.h"
 #if ENABLE(WEB_PUSH_NOTIFICATIONS)
-#import "WebPushToolConnection.h"
-
 #import "DaemonEncoder.h"
+
 #import "DaemonUtilities.h"
 #import "PushClientConnectionMessages.h"
 #import "WebPushDaemonConnectionConfiguration.h"
 #import "WebPushDaemonConstants.h"
+#import "WebPushToolConnection.h"
 #import <WebCore/SecurityOriginData.h>
 #import <mach/mach_init.h>
 #import <mach/task.h>
 #import <pal/spi/cocoa/ServersSPI.h>
-#import <wtf/BlockPtr.h>
 #import <wtf/MainThread.h>
 #import <wtf/RetainPtr.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/darwin/DispatchExtras.h>
+#import <wtf/memory/BlockPtr.h>
 
 namespace WebPushTool {
 

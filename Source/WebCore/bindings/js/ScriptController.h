@@ -29,12 +29,12 @@
 #include <WebCore/LoadableScript.h>
 #include <WebCore/SerializedScriptValue.h>
 #include <WebCore/WindowProxy.h>
-#include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/Platform.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
+#include <wtf/memory/CheckedRef.h>
 #include <wtf/text/TextPosition.h>
 
 #if PLATFORM(COCOA)
