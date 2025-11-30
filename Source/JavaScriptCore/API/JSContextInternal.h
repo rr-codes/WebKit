@@ -44,16 +44,20 @@ struct CallbackData {
 
 @interface JSContext(Internal)
 
-- (void)notifyException:(JSValueRef)exception;
-- (JSValue *)valueFromNotifyException:(JSValueRef)exception;
-- (BOOL)boolFromNotifyException:(JSValueRef)exception;
-
 - (void)beginCallbackWithData:(CallbackData *)callbackData calleeValue:(JSValueRef)calleeValue thisValue:(JSValueRef)thisValue argumentCount:(size_t)argumentCount arguments:(const JSValueRef *)arguments;
 - (void)endCallbackWithData:(CallbackData *)callbackData;
 
 - (JSWrapperMap *)wrapperMap;
 - (JSValue *)wrapperForObjCObject:(id)object;
 - (JSValue *)wrapperForJSObject:(JSValueRef)value;
+
+@end
+
+@interface JSContext(Internal_Swift)
+
+- (void)notifyException:(JSValueRef)exception;
+- (JSValue *)valueFromNotifyException:(JSValueRef)exception;
+- (BOOL)boolFromNotifyException:(JSValueRef)exception;
 
 @end
 

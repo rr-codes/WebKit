@@ -362,23 +362,6 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
     return self;
 }
 
-- (void)notifyException:(JSValueRef)exceptionValue
-{
-    self.exceptionHandler(self, [JSValue valueWithJSValueRef:exceptionValue inContext:self]);
-}
-
-- (JSValue *)valueFromNotifyException:(JSValueRef)exceptionValue
-{
-    [self notifyException:exceptionValue];
-    return [JSValue valueWithUndefinedInContext:self];
-}
-
-- (BOOL)boolFromNotifyException:(JSValueRef)exceptionValue
-{
-    [self notifyException:exceptionValue];
-    return NO;
-}
-
 - (void)beginCallbackWithData:(CallbackData *)callbackData calleeValue:(JSValueRef)calleeValue thisValue:(JSValueRef)thisValue argumentCount:(size_t)argumentCount arguments:(const JSValueRef *)arguments
 {
     auto& thread = Thread::currentSingleton();
@@ -424,6 +407,31 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 }
 
 @end
+
+#ifndef JSC_SUPPORTS_SWIFT
+
+@implementation JSContext (Internal_Swift)
+
+- (void)notifyException:(JSValueRef)exceptionValue
+{
+    self.exceptionHandler(self, [JSValue valueWithJSValueRef:exceptionValue inContext:self]);
+}
+
+- (JSValue *)valueFromNotifyException:(JSValueRef)exceptionValue
+{
+    [self notifyException:exceptionValue];
+    return [JSValue valueWithUndefinedInContext:self];
+}
+
+- (BOOL)boolFromNotifyException:(JSValueRef)exceptionValue
+{
+    [self notifyException:exceptionValue];
+    return NO;
+}
+
+@end
+
+#endif // !JSC_SUPPORTS_SWIFT
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 
