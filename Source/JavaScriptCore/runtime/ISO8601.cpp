@@ -1473,11 +1473,11 @@ String formatTimeZoneOffsetString(int64_t offset)
             fraction.shrink(validLength.value());
         else
             fraction.clear();
-        return makeString(negative ? '-' : '+', pad('0', 2, hours), ':', pad('0', 2, minutes), ':', pad('0', 2, seconds), '.', pad('0', paddingLength, emptyString()), fraction);
+        return makeString(negative ? '-' : '+', WTF::pad('0', 2, hours), ':', WTF::pad('0', 2, minutes), ':', WTF::pad('0', 2, seconds), '.', WTF::pad('0', paddingLength, emptyString()), fraction);
     }
     if (seconds)
-        return makeString(negative ? '-' : '+', pad('0', 2, hours), ':', pad('0', 2, minutes), ':', pad('0', 2, seconds));
-    return makeString(negative ? '-' : '+', pad('0', 2, hours), ':', pad('0', 2, minutes));
+        return makeString(negative ? '-' : '+', WTF::pad('0', 2, hours), ':', WTF::pad('0', 2, minutes), ':', WTF::pad('0', 2, seconds));
+    return makeString(negative ? '-' : '+', WTF::pad('0', 2, hours), ':', WTF::pad('0', 2, minutes));
 }
 
 String temporalTimeToString(PlainTime plainTime, std::tuple<Precision, unsigned> precision)
@@ -1485,7 +1485,7 @@ String temporalTimeToString(PlainTime plainTime, std::tuple<Precision, unsigned>
     auto [precisionType, precisionValue] = precision;
     ASSERT(precisionType == Precision::Auto || precisionValue < 10);
     if (precisionType == Precision::Minute)
-        return makeString(pad('0', 2, plainTime.hour()), ':', pad('0', 2, plainTime.minute()));
+        return makeString(WTF::pad('0', 2, plainTime.hour()), ':', WTF::pad('0', 2, plainTime.minute()));
 
     int64_t milliseconds = plainTime.millisecond();
     int64_t microseconds = plainTime.microsecond();
@@ -1493,7 +1493,7 @@ String temporalTimeToString(PlainTime plainTime, std::tuple<Precision, unsigned>
     int64_t fractionNanoseconds = milliseconds * nsPerMillisecond + microseconds * nsPerMicrosecond + nanoseconds;
     if (precisionType == Precision::Auto) {
         if (!fractionNanoseconds)
-            return makeString(pad('0', 2, plainTime.hour()), ':', pad('0', 2, plainTime.minute()), ':', pad('0', 2, plainTime.second()));
+            return makeString(WTF::pad('0', 2, plainTime.hour()), ':', WTF::pad('0', 2, plainTime.minute()), ':', WTF::pad('0', 2, plainTime.second()));
         auto fraction = numberToStringUnsigned<Vector<Latin1Character, 9>>(fractionNanoseconds);
         unsigned paddingLength = 9 - fraction.size();
         unsigned index = fraction.size();
@@ -1508,16 +1508,16 @@ String temporalTimeToString(PlainTime plainTime, std::tuple<Precision, unsigned>
             fraction.shrink(validLength.value());
         else
             fraction.clear();
-        return makeString(pad('0', 2, plainTime.hour()), ':', pad('0', 2, plainTime.minute()), ':', pad('0', 2, plainTime.second()), '.', pad('0', paddingLength, emptyString()), fraction);
+        return makeString(WTF::pad('0', 2, plainTime.hour()), ':', WTF::pad('0', 2, plainTime.minute()), ':', WTF::pad('0', 2, plainTime.second()), '.', WTF::pad('0', paddingLength, emptyString()), fraction);
     }
     if (!precisionValue)
-        return makeString(pad('0', 2, plainTime.hour()), ':', pad('0', 2, plainTime.minute()), ':', pad('0', 2, plainTime.second()));
+        return makeString(WTF::pad('0', 2, plainTime.hour()), ':', WTF::pad('0', 2, plainTime.minute()), ':', WTF::pad('0', 2, plainTime.second()));
     auto fraction = numberToStringUnsigned<Vector<Latin1Character, 9>>(fractionNanoseconds);
     unsigned paddingLength = 9 - fraction.size();
     paddingLength = std::min(paddingLength, precisionValue);
     precisionValue -= paddingLength;
     fraction.resize(precisionValue);
-    return makeString(pad('0', 2, plainTime.hour()), ':', pad('0', 2, plainTime.minute()), ':', pad('0', 2, plainTime.second()), '.', pad('0', paddingLength, emptyString()), fraction);
+    return makeString(WTF::pad('0', 2, plainTime.hour()), ':', WTF::pad('0', 2, plainTime.minute()), ':', WTF::pad('0', 2, plainTime.second()), '.', WTF::pad('0', paddingLength, emptyString()), fraction);
 }
 
 static String temporalDateToString(int32_t year, int32_t month)
@@ -1533,13 +1533,13 @@ static String temporalDateToString(int32_t year, int32_t month)
         year = std::abs(year);
     }
 
-    return makeString(prefix, pad('0', yearDigits, year), '-', pad('0', 2, month));
+    return makeString(prefix, WTF::pad('0', yearDigits, year), '-', WTF::pad('0', 2, month));
 }
 
 static String temporalDateToString(int32_t year, int32_t month, int32_t day)
 {
     auto first = temporalDateToString(year, month);
-    return makeString(first, '-', pad('0', 2, day));
+    return makeString(first, '-', WTF::pad('0', 2, day));
 }
 
 String temporalDateTimeToString(PlainDate plainDate, PlainTime plainTime, std::tuple<Precision, unsigned> precision)
@@ -1569,12 +1569,12 @@ String temporalMonthDayToString(PlainMonthDay plainMonthDay, StringView calendar
         return makeString(first, "[u-ca=iso8601]"_s);
     }
 
-    return makeString(pad('0', 2, plainMonthDay.month()), '-', pad('0', 2, plainMonthDay.day()));
+    return makeString(WTF::pad('0', 2, plainMonthDay.month()), '-', WTF::pad('0', 2, plainMonthDay.day()));
 }
 
 String monthCode(uint32_t month)
 {
-    return makeString('M', pad('0', 2, month));
+    return makeString('M', WTF::pad('0', 2, month));
 }
 
 // https://tc39.es/proposal-temporal/#sec-temporal-parsemonthcode

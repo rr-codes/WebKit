@@ -96,7 +96,7 @@ void Serialize<FontVariationSettings>::operator()(StringBuilder& builder, const 
         return;
     }
 
-    builder.append(interleave(value.platform(), [&](auto& builder, const auto& setting) {
+    builder.append(WTF::interleave(value.platform(), [&](auto& builder, const auto& setting) {
         serializationForCSS(builder, context, style, FontOpentypeTag { setting.tag() });
         builder.append(' ');
         serializationForCSS(builder, context, style, FontVariationSettings::Value { setting.value() });

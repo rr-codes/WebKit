@@ -395,11 +395,11 @@ String TemporalInstant::toString(ISO8601::ExactTime exactTime, JSObject* timeZon
         yearLength = 6;
     }
 
-    builder.append(makeString(pad('0', yearLength, std::abs(gregorianDateTime.year())),
-        '-', pad('0', 2, gregorianDateTime.month() + 1),
-        '-', pad('0', 2, gregorianDateTime.monthDay()),
-        'T', pad('0', 2, gregorianDateTime.hour()),
-        ':', pad('0', 2, gregorianDateTime.minute())));
+    builder.append(makeString(WTF::pad('0', yearLength, std::abs(gregorianDateTime.year())),
+        '-', WTF::pad('0', 2, gregorianDateTime.month() + 1),
+        '-', WTF::pad('0', 2, gregorianDateTime.monthDay()),
+        'T', WTF::pad('0', 2, gregorianDateTime.hour()),
+        ':', WTF::pad('0', 2, gregorianDateTime.minute())));
 
     static constexpr int nsPerSecond { 1'000'000'000 };
     int fraction { exactTime.nanosecondsFraction() };

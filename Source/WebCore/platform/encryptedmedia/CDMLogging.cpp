@@ -163,7 +163,7 @@ String LogArgument<WebCore::CDMKeyID>::toString(const WebCore::CDMKeyID& keyID)
 String LogArgument<WebCore::CDMKeyIDs>::toString(const WebCore::CDMKeyIDs& keys)
 {
     StringBuilder builder;
-    builder.append('[', interleave(keys, LogArgument<WebCore::CDMKeyID>::toString, ", "_s), ']');
+    builder.append('[', WTF::interleave(keys, LogArgument<WebCore::CDMKeyID>::toString, ", "_s), ']');
     return builder.toString();
 }
 

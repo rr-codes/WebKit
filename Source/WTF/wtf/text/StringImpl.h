@@ -1497,7 +1497,8 @@ inline Expected<std::invoke_result_t<Func, std::span<const char8_t>>, UTF8Conver
 
 using WTF::StaticStringImpl;
 using WTF::StringImpl;
-using WTF::equal;
 using WTF::isUnicodeWhitespace;
 using WTF::deprecatedIsSpaceOrNewline;
 using WTF::deprecatedIsNotSpaceOrNewline;
+
+// Prefer avoiding more `using` declarations here to avoid essentially polluting the global namespace.

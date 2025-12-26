@@ -66,7 +66,7 @@ std::unique_ptr<FilterEffectApplier> SourceAlpha::createAcceleratedApplier() con
 
 TextStream& SourceAlpha::externalRepresentation(TextStream& ts, FilterRepresentation) const
 {
-    ts << indent << "[SourceAlpha]\n"_s;
+    ts << WTF::indent << "[SourceAlpha]\n"_s;
     return ts;
 }
 

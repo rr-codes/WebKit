@@ -1077,7 +1077,7 @@ String ScrollingTree::scrollingTreeAsText(OptionSet<ScrollingStateTreeAsTextBeha
                 {
                     TextStream::IndentScope indentScope(ts);
                     for (auto& it : m_overflowRelatedNodesMap)
-                        ts << '\n' << indent << it.key << " -> "_s << it.value;
+                        ts << '\n' << WTF::indent << it.key << " -> "_s << it.value;
                 }
             }
 
@@ -1088,7 +1088,7 @@ String ScrollingTree::scrollingTreeAsText(OptionSet<ScrollingStateTreeAsTextBeha
                 {
                     TextStream::IndentScope indentScope(ts);
                     for (auto& node : m_activeOverflowScrollProxyNodes)
-                        ts << '\n' << indent << node->scrollingNodeID();
+                        ts << '\n' << WTF::indent << node->scrollingNodeID();
                 }
             }
 
@@ -1098,7 +1098,7 @@ String ScrollingTree::scrollingTreeAsText(OptionSet<ScrollingStateTreeAsTextBeha
                 {
                     TextStream::IndentScope indentScope(ts);
                     for (const auto& node : m_activePositionedNodes)
-                        ts << '\n' << indent << node->scrollingNodeID();
+                        ts << '\n' << WTF::indent << node->scrollingNodeID();
                 }
             }
 #endif // ENABLE(SCROLLING_THREAD)

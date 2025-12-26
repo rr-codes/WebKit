@@ -208,7 +208,7 @@ String CSSSelectorList::selectorsText() const
 
 void CSSSelectorList::buildSelectorsText(StringBuilder& stringBuilder) const
 {
-    stringBuilder.append(interleave(*this, [](auto& subSelector) { return subSelector.selectorText(); }, ", "_s));
+    stringBuilder.append(WTF::interleave(*this, [](auto& subSelector) { return subSelector.selectorText(); }, ", "_s));
 }
 
 template <typename Functor>

@@ -221,19 +221,19 @@ TEST(WTF, StringConcatenate_Interleave)
     std::array strings { "a"_s, "b"_s, "c"_s };
 
     {
-        auto result = makeString('[', interleave(strings, [](auto& builder, auto& s) { builder.append(s); }, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(strings, [](auto& builder, auto& s) { builder.append(s); }, ", "_s), ']');
 
         EXPECT_EQ(String("[a, b, c]"_s), result);
     }
 
     {
-        auto result = makeString('[', interleave(strings, [](auto& s) { return s; }, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(strings, [](auto& s) { return s; }, ", "_s), ']');
 
         EXPECT_EQ(String("[a, b, c]"_s), result);
     }
 
     {
-        auto result = makeString('[', interleave(strings, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(strings, ", "_s), ']');
 
         EXPECT_EQ(String("[a, b, c]"_s), result);
     }
@@ -267,7 +267,7 @@ TEST(WTF, StringConcatenate_InterleaveOverload)
     std::array as { A { 1 }, A { 2 }, A { 3 } };
 
     {
-        auto result = makeString('[', interleave(as, serializeOverloadBuilder, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(as, serializeOverloadBuilder, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), result);
     }
@@ -278,19 +278,19 @@ TEST(WTF, StringConcatenate_InterleaveNoCopies)
     std::array values { MoveOnly { 1 }, MoveOnly { 2 }, MoveOnly { 3 } };
 
     {
-        auto result = makeString('[', interleave(values, [](auto& builder, auto& moveOnly) { builder.append(moveOnly.value()); }, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(values, [](auto& builder, auto& moveOnly) { builder.append(moveOnly.value()); }, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), result);
     }
 
     {
-        auto result = makeString('[', interleave(values, [](auto& moveOnly) { return moveOnly.value(); }, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(values, [](auto& moveOnly) { return moveOnly.value(); }, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), result);
     }
 
     {
-        auto result = makeString('[', interleave(values, ", "_s), ']');
+        auto result = makeString('[', WTF::interleave(values, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), result);
     }

@@ -596,10 +596,8 @@ using WTF::makeStringByJoining;
 using WTF::makeStringByRemoving;
 using WTF::makeStringByReplacingAll;
 using WTF::nullString;
-using WTF::equal;
-using WTF::find;
-using WTF::containsOnly;
-using WTF::reverseFind;
 using WTF::codePointCompareLessThan;
+
+// Prefer avoiding more `using` declarations here to avoid essentially polluting the global namespace.
 
 #include <wtf/text/AtomString.h>

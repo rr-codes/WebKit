@@ -698,7 +698,7 @@ static void dumpInnerLayer(TextStream& textStream, const String& label, Coordina
         return;
 
     Locker locker { layer->lock() };
-    textStream << indent << "(" << label << " ";
+    textStream << WTF::indent << "(" << label << " ";
     if (options & LayerTreeAsTextOptions::Debug)
         textStream << " " << static_cast<void*>(layer);
     textStream << layer->boundsOrigin().x() << ", " << layer->boundsOrigin().y() << " " << layer->size().width() << " x " << layer->size().height();

@@ -4581,29 +4581,29 @@ void GraphicsLayerCA::dumpInnerLayer(TextStream& ts, PlatformCALayer* layer, Opt
     if (!layer)
         return;
 
-    ts << indent << '(' << purposeNameForInnerLayer(*layer) << '\n';
+    ts << WTF::indent << '(' << purposeNameForInnerLayer(*layer) << '\n';
 
     {
         TextStream::IndentScope indentScope(ts);
 
         if (flags.contains(PlatformLayerTreeAsTextFlags::Debug))
-            ts << indent << "(id "_s << layer->layerID() << ")\n"_s;
+            ts << WTF::indent << "(id "_s << layer->layerID() << ")\n"_s;
 
-        ts << indent << "(position "_s << layer->position().x() << ' ' << layer->position().y() << ")\n"_s;
-        ts << indent << "(bounds "_s << layer->bounds().width() << ' ' << layer->bounds().height() << ")\n"_s;
-        
+        ts << WTF::indent << "(position "_s << layer->position().x() << ' ' << layer->position().y() << ")\n"_s;
+        ts << WTF::indent << "(bounds "_s << layer->bounds().width() << ' ' << layer->bounds().height() << ")\n"_s;
+
         if (layer->opacity() != 1)
-            ts << indent << "(opacity "_s << layer->opacity() << ")\n"_s;
+            ts << WTF::indent << "(opacity "_s << layer->opacity() << ")\n"_s;
 
         if (layer->isHidden())
-            ts << indent << "(hidden)\n"_s;
+            ts << WTF::indent << "(hidden)\n"_s;
 
         layer->dumpAdditionalProperties(ts, flags);
 
         if (!flags.contains(PlatformLayerTreeAsTextFlags::IgnoreChildren)) {
             auto sublayers = layer->sublayersForLogging();
             if (sublayers.size()) {
-                ts << indent << "(children "_s << '\n';
+                ts << WTF::indent << "(children "_s << '\n';
 
                 {
                     TextStream::IndentScope indentScope(ts);
@@ -4611,12 +4611,12 @@ void GraphicsLayerCA::dumpInnerLayer(TextStream& ts, PlatformCALayer* layer, Opt
                         dumpInnerLayer(ts, child.get(), flags);
                 }
 
-                ts << indent << ")\n"_s;
+                ts << WTF::indent << ")\n"_s;
             }
         }
     }
 
-    ts << indent << ")\n"_s;
+    ts << WTF::indent << ")\n"_s;
 }
 
 static TextStream& operator<<(TextStream& textStream, AnimatedProperty propertyID)
@@ -4638,7 +4638,7 @@ static TextStream& operator<<(TextStream& textStream, AnimatedProperty propertyI
 void GraphicsLayerCA::dumpAnimations(WTF::TextStream& textStream, ASCIILiteral category, const Vector<LayerPropertyAnimation>& animations)
 {
     auto dumpAnimation = [&textStream](const LayerPropertyAnimation& animation) {
-        textStream << indent << '(' << animation.m_name;
+        textStream << WTF::indent << '(' << animation.m_name;
         {
             TextStream::IndentScope indentScope(textStream);
             textStream.dumpProperty("CA animation"_s, animation.m_animation.get());
@@ -4656,7 +4656,7 @@ void GraphicsLayerCA::dumpAnimations(WTF::TextStream& textStream, ASCIILiteral c
     if (animations.isEmpty())
         return;
     
-    textStream << indent << '(' << category << '\n';
+    textStream << WTF::indent << '(' << category << '\n';
     {
         TextStream::IndentScope indentScope(textStream);
         for (const auto& animation : animations) {
@@ -4754,35 +4754,35 @@ void GraphicsLayerCA::dumpAdditionalProperties(TextStream& textStream, OptionSet
 {
     RefPtr layer = m_layer;
     if (options & LayerTreeAsTextOptions::IncludeVisibleRects) {
-        textStream << indent << "(visible rect " << m_visibleRect.x() << ", " << m_visibleRect.y() << " " << m_visibleRect.width() << " x " << m_visibleRect.height() << ")\n";
-        textStream << indent << "(coverage rect " << m_coverageRect.x() << ", " << m_coverageRect.y() << " " << m_coverageRect.width() << " x " << m_coverageRect.height() << ")\n";
-        textStream << indent << "(intersects coverage rect " << m_intersectsCoverageRect << ")\n";
-        textStream << indent << "(contentsScale " << layer->contentsScale() << ")\n";
+        textStream << WTF::indent << "(visible rect " << m_visibleRect.x() << ", " << m_visibleRect.y() << " " << m_visibleRect.width() << " x " << m_visibleRect.height() << ")\n";
+        textStream << WTF::indent << "(coverage rect " << m_coverageRect.x() << ", " << m_coverageRect.y() << " " << m_coverageRect.width() << " x " << m_coverageRect.height() << ")\n";
+        textStream << WTF::indent << "(intersects coverage rect " << m_intersectsCoverageRect << ")\n";
+        textStream << WTF::indent << "(contentsScale " << layer->contentsScale() << ")\n";
         if (m_contentsScaleLimitingFactor != 1)
-            textStream << indent << "(contentsScale limiting factor " << m_contentsScaleLimitingFactor << ")\n";
+            textStream << WTF::indent << "(contentsScale limiting factor " << m_contentsScaleLimitingFactor << ")\n";
     }
 
     if (tiledBacking() && (options & LayerTreeAsTextOptions::IncludeTileCaches)) {
         if (options & LayerTreeAsTextOptions::Debug)
-            textStream << indent << "(tiled backing " << tiledBacking() << ")\n";
+            textStream << WTF::indent << "(tiled backing " << tiledBacking() << ")\n";
 
         IntRect tileCoverageRect = tiledBacking()->tileCoverageRect();
-        textStream << indent << "(tile cache coverage " << tileCoverageRect.x() << ", " << tileCoverageRect.y() << " " << tileCoverageRect.width() << " x " << tileCoverageRect.height() << ")\n";
+        textStream << WTF::indent << "(tile cache coverage " << tileCoverageRect.x() << ", " << tileCoverageRect.y() << " " << tileCoverageRect.width() << " x " << tileCoverageRect.height() << ")\n";
 
         IntSize tileSize = tiledBacking()->tileSize();
-        textStream << indent << "(tile size " << tileSize.width() << " x " << tileSize.height() << ")\n";
-        
-        IntRect gridExtent = tiledBacking()->tileGridExtent();
-        textStream << indent << "(top left tile " << gridExtent.x() << ", " << gridExtent.y() << " tiles grid " << gridExtent.width() << " x " << gridExtent.height() << ")\n";
+        textStream << WTF::indent << "(tile size " << tileSize.width() << " x " << tileSize.height() << ")\n";
 
-        textStream << indent << "(in window " << tiledBacking()->isInWindow() << ")\n";
+        IntRect gridExtent = tiledBacking()->tileGridExtent();
+        textStream << WTF::indent << "(top left tile " << gridExtent.x() << ", " << gridExtent.y() << " tiles grid " << gridExtent.width() << " x " << gridExtent.height() << ")\n";
+
+        textStream << WTF::indent << "(in window " << tiledBacking()->isInWindow() << ")\n";
     }
 
     if (options & LayerTreeAsTextOptions::IncludeDeviceScale)
-        textStream << indent << "(device scale " << deviceScaleFactor() << ")\n";
+        textStream << WTF::indent << "(device scale " << deviceScaleFactor() << ")\n";
 
     if ((options & LayerTreeAsTextOptions::IncludeExtendedColor) && layer->contentsFormat() != ContentsFormat::RGBA8)
-        textStream << indent << "(contentsFormat " << layer->contentsFormat() << ")\n";
+        textStream << WTF::indent << "(contentsFormat " << layer->contentsFormat() << ")\n";
 
     if (options & LayerTreeAsTextOptions::IncludeContentLayers) {
         OptionSet<PlatformLayerTreeAsTextFlags> platformFlags = { PlatformLayerTreeAsTextFlags::IgnoreChildren };
@@ -4799,10 +4799,10 @@ void GraphicsLayerCA::dumpAdditionalProperties(TextStream& textStream, OptionSet
 
     if (options & LayerTreeAsTextOptions::Debug) {
         if (m_usesDisplayListDrawing)
-            textStream << indent << "(uses display-list drawing " << m_usesDisplayListDrawing << ")\n";
+            textStream << WTF::indent << "(uses display-list drawing " << m_usesDisplayListDrawing << ")\n";
 
         if (m_uncommittedChanges) {
-            textStream << indent << "(uncommitted changes ";
+            textStream << WTF::indent << "(uncommitted changes ";
             dumpLayerChangeFlags(textStream, m_uncommittedChanges);
             textStream << ")\n";
         }

@@ -60,7 +60,7 @@ bool FESpecularLighting::setSpecularExponent(float specularExponent)
 
 TextStream& FESpecularLighting::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feSpecularLighting"_s;
+    ts << WTF::indent << "[feSpecularLighting"_s;
     FilterEffect::externalRepresentation(ts, representation);
     
     ts << " surfaceScale=\""_s << m_surfaceScale << '"';

@@ -47,7 +47,7 @@ ALWAYS_INLINE Ref<AtomStringImpl> JSONAtomStringCache::makeIdentifier(std::span<
 
     auto lastCharacter = characters.back();
     auto& slot = cacheSlot(firstCharacter, lastCharacter, characters.size());
-    if (slot.m_length != characters.size() || !equal(slot.m_buffer, characters)) [[unlikely]] {
+    if (slot.m_length != characters.size() || !WTF::equal(slot.m_buffer, characters)) [[unlikely]] {
         auto result = AtomStringImpl::add(characters);
         slot.m_impl = result;
         slot.m_length = characters.size();
@@ -73,7 +73,7 @@ ALWAYS_INLINE AtomStringImpl* JSONAtomStringCache::existingIdentifier(std::span<
 
     auto lastCharacter = characters.back();
     auto& slot = cacheSlot(firstCharacter, lastCharacter, characters.size());
-    if (slot.m_length != characters.size() || !equal(slot.m_buffer, characters)) [[unlikely]]
+    if (slot.m_length != characters.size() || !WTF::equal(slot.m_buffer, characters)) [[unlikely]]
         return nullptr;
 
     return slot.m_impl.get();

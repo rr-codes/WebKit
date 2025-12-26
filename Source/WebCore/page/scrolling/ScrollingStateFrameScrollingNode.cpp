@@ -485,7 +485,7 @@ void ScrollingStateFrameScrollingNode::dumpProperties(TextStream& ts, OptionSet<
         ts << "asynchronous event dispatch region"_s;
         for (auto rect : m_eventTrackingRegions.asynchronousDispatchRegion.rects()) {
             ts << '\n';
-            ts << indent << rect;
+            ts << WTF::indent << rect;
         }
     }
 
@@ -499,7 +499,7 @@ void ScrollingStateFrameScrollingNode::dumpProperties(TextStream& ts, OptionSet<
             ts << "synchronous event dispatch region for event "_s << EventTrackingRegions::eventName(name);
             for (auto rect : region.rects()) {
                 ts << '\n';
-                ts << indent << rect;
+                ts << WTF::indent << rect;
             }
         }
     }

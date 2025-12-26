@@ -185,7 +185,7 @@ static TextStream& operator<<(TextStream& ts, const CompositeOperationType& type
 
 TextStream& FEComposite::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feComposite"_s;
+    ts << WTF::indent << "[feComposite"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " operation=\""_s << m_type << '"';

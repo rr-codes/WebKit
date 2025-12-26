@@ -101,7 +101,7 @@ void serializationForCSSTokenization(StringBuilder& builder, const CSS::Serializ
     if (value.blendMode != BlendMode::Normal)
         builder.append(nameLiteralForSerialization(toCSSValueID(value.blendMode)), ", "_s);
 
-    builder.append(interleave(value.colors, [&](auto& builder, auto& color) {
+    builder.append(WTF::interleave(value.colors, [&](auto& builder, auto& color) {
         serializationForCSSTokenization(builder, context, color);
     }, ", "_s));
 

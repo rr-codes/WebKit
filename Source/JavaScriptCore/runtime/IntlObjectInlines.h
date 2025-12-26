@@ -243,7 +243,7 @@ template<typename CharacterType1, typename CharacterType2>
 inline std::optional<UCollationResult> compareASCIIWithUCADUCET(std::span<const CharacterType1> characters1, std::span<const CharacterType2> characters2)
 {
     if (characters1.size() == characters2.size()) {
-        if (equal(characters1.data(), characters2))
+        if (WTF::equal(characters1.data(), characters2))
             return UCOL_EQUAL;
     }
 

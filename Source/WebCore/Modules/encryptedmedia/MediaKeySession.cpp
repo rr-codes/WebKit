@@ -736,7 +736,7 @@ void MediaKeySession::updateKeyStatuses(CDMInstanceSession::KeyStatusVector&& in
     StringBuilder statusString;
     if (statusMap.size() > 1)
         statusString.append('\n');
-    statusString.append(interleave(statusMap, buildStatus, '\n'));
+    statusString.append(WTF::interleave(statusMap, buildStatus, '\n'));
     ALWAYS_LOG(LOGIDENTIFIER, "statuses: {", statusString.toString(), "}");
 #endif
 

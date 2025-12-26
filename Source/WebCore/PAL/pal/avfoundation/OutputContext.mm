@@ -70,7 +70,7 @@ String OutputContext::deviceName()
     if (!supportsMultipleOutputDevices())
         return [m_context deviceName];
 
-    return makeString(interleave(outputDevices(), [](auto& device) {
+    return makeString(WTF::interleave(outputDevices(), [](auto& device) {
         return device.name();
     }, " + "_s));
 }

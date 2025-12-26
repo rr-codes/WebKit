@@ -474,7 +474,7 @@ void ResourceUsageOverlay::platformDraw(CGContextRef context)
         size_t external = category.externalSize.last();
 
         StringBuilder labelBuilder;
-        labelBuilder.append(pad(' ', 11, category.name), ": "_s, formatByteNumber(dirty));
+        labelBuilder.append(WTF::pad(' ', 11, category.name), ": "_s, formatByteNumber(dirty));
         if (external)
             labelBuilder.append(" + "_s, formatByteNumber(external));
         if (reclaimable)

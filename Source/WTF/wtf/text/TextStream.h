@@ -459,4 +459,5 @@ WTF_EXPORT_PRIVATE void writeIndent(TextStream&, int indent);
 using WTF::TextStream;
 using WTF::ValueOrEllipsis;
 using WTF::ValueOrNull;
-using WTF::indent;
+
+// Prefer avoiding more `using` declarations here to avoid essentially polluting the global namespace.

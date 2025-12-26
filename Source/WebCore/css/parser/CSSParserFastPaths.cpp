@@ -503,7 +503,7 @@ static std::optional<SRGBA<uint8_t>> parseHexColorInternal(std::span<const Chara
 template<typename CharacterType> static std::optional<SRGBA<uint8_t>> parseLegacyHSL(std::span<const CharacterType> characters)
 {
     // Commas only exist in the legacy syntax.
-    size_t delimiter = find(characters, ',');
+    size_t delimiter = WTF::find(characters, ',');
     if (delimiter == notFound)
         return std::nullopt;
 
@@ -771,7 +771,7 @@ template <typename CharType>
 static bool parseTransformTranslateArguments(StringParsingBuffer<CharType>& buffer, unsigned expectedCount, CSSValueID transformType, CSSValueListBuilder& arguments)
 {
     while (expectedCount) {
-        size_t delimiter = find(buffer.span(), expectedCount == 1 ? ')' : ',');
+        size_t delimiter = WTF::find(buffer.span(), expectedCount == 1 ? ')' : ',');
         if (delimiter == notFound)
             return false;
         unsigned argumentLength = static_cast<unsigned>(delimiter);
@@ -793,7 +793,7 @@ static bool parseTransformTranslateArguments(StringParsingBuffer<CharType>& buff
 template <typename CharType>
 static RefPtr<CSSValue> parseTransformAngleArgument(StringParsingBuffer<CharType>& buffer)
 {
-    size_t delimiter = find(buffer.span(), ')');
+    size_t delimiter = WTF::find(buffer.span(), ')');
     if (delimiter == notFound)
         return nullptr;
 
@@ -812,7 +812,7 @@ template <typename CharType>
 static bool parseTransformNumberArguments(StringParsingBuffer<CharType>& buffer, unsigned expectedCount, CSSValueListBuilder& arguments)
 {
     while (expectedCount) {
-        size_t delimiter = find(buffer.span(), expectedCount == 1 ? ')' : ',');
+        size_t delimiter = WTF::find(buffer.span(), expectedCount == 1 ? ')' : ',');
         if (delimiter == notFound)
             return false;
         unsigned argumentLength = static_cast<unsigned>(delimiter);

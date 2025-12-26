@@ -802,40 +802,40 @@ void EventRegion::dump(TextStream& ts) const
 #if ENABLE(TOUCH_ACTION_REGIONS)
     if (!m_touchActionRegions.isEmpty()) {
         TextStream::IndentScope indentScope(ts);
-        ts << indent << "(touch-action\n"_s;
+        ts << WTF::indent << "(touch-action\n"_s;
         for (unsigned i = 0; i < m_touchActionRegions.size(); ++i) {
             if (m_touchActionRegions[i].isEmpty())
                 continue;
             TextStream::IndentScope indentScope(ts);
-            ts << indent << '(' << toTouchAction(i);
-            ts << indent << m_touchActionRegions[i];
-            ts << indent << ")\n"_s;
+            ts << WTF::indent << '(' << toTouchAction(i);
+            ts << WTF::indent << m_touchActionRegions[i];
+            ts << WTF::indent << ")\n"_s;
         }
-        ts << indent << ")\n"_s;
+        ts << WTF::indent << ")\n"_s;
     }
 #endif
 
 #if ENABLE(WHEEL_EVENT_REGIONS)
     if (!m_wheelEventListenerRegion.isEmpty()) {
-        ts << indent << "(wheel event listener region"_s << m_wheelEventListenerRegion;
+        ts << WTF::indent << "(wheel event listener region"_s << m_wheelEventListenerRegion;
         if (!m_nonPassiveWheelEventListenerRegion.isEmpty()) {
             TextStream::IndentScope indentScope(ts);
-            ts << indent << "(non-passive"_s << m_nonPassiveWheelEventListenerRegion;
-            ts << indent << ")\n"_s;
+            ts << WTF::indent << "(non-passive"_s << m_nonPassiveWheelEventListenerRegion;
+            ts << WTF::indent << ")\n"_s;
         }
-        ts << indent << ")\n"_s;
+        ts << WTF::indent << ")\n"_s;
     }
 #endif
 
 #if ENABLE(TOUCH_EVENT_REGIONS)
     if (!m_touchEventListenerRegion.isEmpty())
-        ts << indent << "(touch event listener region:"_s << m_touchEventListenerRegion << '\n';
+        ts << WTF::indent << "(touch event listener region:"_s << m_touchEventListenerRegion << '\n';
 #endif
 
 #if ENABLE(EDITABLE_REGION)
     if (m_editableRegion && !m_editableRegion->isEmpty()) {
-        ts << indent << "(editable region"_s << *m_editableRegion;
-        ts << indent << ")\n"_s;
+        ts << WTF::indent << "(editable region"_s << *m_editableRegion;
+        ts << WTF::indent << ")\n"_s;
     }
 #endif
     

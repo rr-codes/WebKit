@@ -356,7 +356,7 @@ static inline void writeSVGInlineTextBox(TextStream& ts, const InlineIterator::S
     unsigned fragmentsSize = fragments.size();
     for (unsigned i = 0; i < fragmentsSize; ++i) {
         auto& fragment = fragments.at(i);
-        ts << indent;
+        ts << WTF::indent;
 
         unsigned startOffset = fragment.characterOffset;
         unsigned endOffset = fragment.characterOffset + fragment.length;
@@ -406,7 +406,7 @@ enum class WriteIndentOrNot : bool { No, Yes };
 static void writeStandardPrefix(TextStream& ts, const RenderObject& object, OptionSet<RenderAsTextFlag> behavior, WriteIndentOrNot writeIndent = WriteIndentOrNot::Yes)
 {
     if (writeIndent == WriteIndentOrNot::Yes)
-        ts << indent;
+        ts << WTF::indent;
 
     ts << object.renderName().characters();
 
@@ -590,7 +590,7 @@ void writeResources(TextStream& ts, const RenderObject& renderer, OptionSet<Rend
             Ref document = renderer.document();
             auto resourceID = SVGURIReference::fragmentIdentifierFromIRIString(maskImage->url(), document);
             if (auto* masker = getRenderSVGResourceById<LegacyRenderSVGResourceMasker>(renderer.treeScopeForSVGReferences(), resourceID)) {
-                ts << indent << ' ';
+                ts << WTF::indent << ' ';
                 writeNameAndQuotedValue(ts, "masker"_s, resourceID);
                 ts << ' ';
                 writeStandardPrefix(ts, *masker, behavior, WriteIndentOrNot::No);
@@ -602,7 +602,7 @@ void writeResources(TextStream& ts, const RenderObject& renderer, OptionSet<Rend
         [&](const Style::ReferencePath& clipPath) {
             auto id = clipPath.fragment();
             if (auto* clipper = getRenderSVGResourceById<LegacyRenderSVGResourceClipper>(renderer.treeScopeForSVGReferences(), id)) {
-                ts << indent << ' ';
+                ts << WTF::indent << ' ';
                 writeNameAndQuotedValue(ts, "clipPath"_s, id);
                 ts << ' ';
                 writeStandardPrefix(ts, *clipper, behavior, WriteIndentOrNot::No);
@@ -617,7 +617,7 @@ void writeResources(TextStream& ts, const RenderObject& renderer, OptionSet<Rend
             if (RefPtr referenceFilterOperation = dynamicDowncast<Style::ReferenceFilterOperation>(filterOperations[0].platform())) {
                 auto id = referenceFilterOperation->fragment();
                 if (LegacyRenderSVGResourceFilter* filter = getRenderSVGResourceById<LegacyRenderSVGResourceFilter>(renderer.treeScopeForSVGReferences(), id)) {
-                    ts << indent << ' ';
+                    ts << WTF::indent << ' ';
                     writeNameAndQuotedValue(ts, "filter"_s, id);
                     ts << ' ';
                     writeStandardPrefix(ts, *filter, behavior, WriteIndentOrNot::No);

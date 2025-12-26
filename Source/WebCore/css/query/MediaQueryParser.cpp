@@ -189,7 +189,7 @@ const FeatureSchema* MediaQueryParser::schemaForFeatureName(const AtomString& na
 
 void serialize(StringBuilder& builder, const MediaQueryList& list)
 {
-    builder.append(interleave(list, serialize, ", "_s));
+    builder.append(WTF::interleave(list, serialize, ", "_s));
 }
 
 void serialize(StringBuilder& builder, const MediaQuery& query)

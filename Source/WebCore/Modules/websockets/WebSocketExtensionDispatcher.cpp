@@ -63,7 +63,7 @@ const String WebSocketExtensionDispatcher::createHeaderValue() const
     if (!numProcessors)
         return String();
 
-    return makeString(interleave(m_processors, [](auto& processor) { return processor->handshakeString(); }, ", "_s));
+    return makeString(WTF::interleave(m_processors, [](auto& processor) { return processor->handshakeString(); }, ", "_s));
 }
 
 void WebSocketExtensionDispatcher::appendAcceptedExtension(const String& extensionToken, HashMap<String, String>& extensionParameters)

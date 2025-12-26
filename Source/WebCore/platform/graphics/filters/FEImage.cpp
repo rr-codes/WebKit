@@ -74,7 +74,7 @@ std::unique_ptr<FilterEffectApplier> FEImage::createSoftwareApplier() const
 
 TextStream& FEImage::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feImage"_s;
+    ts << WTF::indent << "[feImage"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " image-size=\""_s << m_sourceImageRect.width() << 'x' << m_sourceImageRect.height() << '"';

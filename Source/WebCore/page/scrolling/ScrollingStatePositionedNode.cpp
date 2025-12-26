@@ -106,7 +106,7 @@ void ScrollingStatePositionedNode::dumpProperties(TextStream& ts, OptionSet<Scro
             TextStream::GroupScope scope(ts);
             ts << "overflow nodes"_s;
             for (auto nodeID : m_relatedOverflowScrollingNodes)
-                ts << '\n' << indent << "nodeID "_s << nodeID;
+                ts << '\n' << WTF::indent << "nodeID "_s << nodeID;
         }
     }
 }

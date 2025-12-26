@@ -77,7 +77,7 @@ void DateTimeNumericFieldElement::adjustMinInlineSize(RenderStyle& style) const
 
     float inlineSize = 0;
     for (char c = '0'; c <= '9'; ++c) {
-        auto numberString = locale.convertToLocalizedNumber(makeString(pad(c, length, makeString(c))));
+        auto numberString = locale.convertToLocalizedNumber(makeString(WTF::pad(c, length, makeString(c))));
         inlineSize = std::max(inlineSize, font->width(RenderBlock::constructTextRun(numberString, style)));
     }
 
@@ -94,10 +94,10 @@ String DateTimeNumericFieldElement::formatValue(int value) const
     Locale& locale = localeForOwner();
 
     if (m_range.maximum > 999)
-        return locale.convertToLocalizedNumber(makeString(pad('0', 4, value)));
+        return locale.convertToLocalizedNumber(makeString(WTF::pad('0', 4, value)));
     if (m_range.maximum > 99)
-        return locale.convertToLocalizedNumber(makeString(pad('0', 3, value)));
-    return locale.convertToLocalizedNumber(makeString(pad('0', 2, value)));
+        return locale.convertToLocalizedNumber(makeString(WTF::pad('0', 3, value)));
+    return locale.convertToLocalizedNumber(makeString(WTF::pad('0', 2, value)));
 }
 
 bool DateTimeNumericFieldElement::hasValue() const

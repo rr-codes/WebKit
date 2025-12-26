@@ -843,7 +843,7 @@ void Serialize<TransformationMatrix>::operator()(StringBuilder& builder, const C
     auto zoom = style.usedZoom();
     if (transform.isAffine()) {
         std::array values { transform.a(), transform.b(), transform.c(), transform.d(), transform.e() / zoom, transform.f() / zoom };
-        builder.append(nameLiteral(CSSValueMatrix), '(', interleave(values, [&](auto& builder, auto& value) {
+        builder.append(nameLiteral(CSSValueMatrix), '(', WTF::interleave(values, [&](auto& builder, auto& value) {
             CSS::serializationForCSS(builder, context, CSS::NumberRaw<> { value });
         }, ", "_s), ')');
         return;
@@ -855,7 +855,7 @@ void Serialize<TransformationMatrix>::operator()(StringBuilder& builder, const C
         transform.m31(), transform.m32(), transform.m33(), transform.m34() * zoom,
         transform.m41() / zoom, transform.m42() / zoom, transform.m43() / zoom, transform.m44()
     };
-    builder.append(nameLiteral(CSSValueMatrix3d), '(', interleave(values, [&](auto& builder, auto& value) {
+    builder.append(nameLiteral(CSSValueMatrix3d), '(', WTF::interleave(values, [&](auto& builder, auto& value) {
         CSS::serializationForCSS(builder, context, CSS::NumberRaw<> { value });
     }, ", "_s), ')');
 }

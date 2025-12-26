@@ -114,7 +114,7 @@ static TextStream& operator<<(TextStream& ts, const MorphologyOperatorType& type
 
 TextStream& FEMorphology::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feMorphology"_s;
+    ts << WTF::indent << "[feMorphology"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " operator=\""_s << morphologyOperator() << '"';

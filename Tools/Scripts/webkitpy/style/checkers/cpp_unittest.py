@@ -5949,6 +5949,43 @@ class WebKitStyleTest(CppStyleTestBase):
             "  [build/using_namespace] [4]",
             'foo.h')
 
+    def test_using_wtf(self):
+        # Should flag using WTF:: in WTF headers
+        self.assert_lint(
+            'using WTF::Packed;',
+            "Do not add 'using WTF::Packed;' declarations in WTF headers."
+            "  [build/using_wtf] [4]",
+            'Source/WTF/wtf/Packed.h')
+
+        self.assert_lint(
+            'using WTF::makeStringByJoining;',
+            "Do not add 'using WTF::makeStringByJoining;' declarations in WTF headers."
+            "  [build/using_wtf] [4]",
+            'Source/WTF/wtf/text/StringConcatenate.h')
+
+        # Should not flag using WTF:: in non-WTF files
+        self.assert_lint(
+            'using WTF::Packed;',
+            '',
+            'Source/WebCore/platform/Foo.h')
+
+        self.assert_lint(
+            'using WTF::makeStringByJoining;',
+            '',
+            'Source/JavaScriptCore/runtime/Bar.cpp')
+
+        # Should not flag other using statements in WTF
+        self.assert_lint(
+            'using std::min;',
+            "Use 'using namespace std;' instead of 'using std::min;'."
+            "  [build/using_std] [4]",
+            'Source/WTF/wtf/Packed.h')
+
+        self.assert_lint(
+            'using namespace std;',
+            '',
+            'Source/WTF/wtf/Packed.cpp')
+
     def test_max_macro(self):
         self.assert_lint(
             'int i = MAX(0, 1);',

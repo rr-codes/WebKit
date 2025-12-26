@@ -79,11 +79,11 @@ static String timeToString(const WebCore::DateComponents& time, WebCore::SecondF
 {
     switch (secondFormat) {
     case WebCore::SecondFormat::None:
-        return makeString(pad('0', 2, time.hour()), ':', pad('0', 2, time.minute()));
+        return makeString(WTF::pad('0', 2, time.hour()), ':', WTF::pad('0', 2, time.minute()));
     case WebCore::SecondFormat::Second:
-        return makeString(pad('0', 2, time.hour()), ':', pad('0', 2, time.minute()), ':', pad('0', 2, time.second()));
+        return makeString(WTF::pad('0', 2, time.hour()), ':', WTF::pad('0', 2, time.minute()), ':', WTF::pad('0', 2, time.second()));
     case WebCore::SecondFormat::Millisecond:
-        return makeString(pad('0', 2, time.hour()), ':', pad('0', 2, time.minute()), ':', pad('0', 2, time.second()), '.', pad('0', 3, time.millisecond()));
+        return makeString(WTF::pad('0', 2, time.hour()), ':', WTF::pad('0', 2, time.minute()), ':', WTF::pad('0', 2, time.second()), '.', WTF::pad('0', 3, time.millisecond()));
     }
 
     ASSERT_NOT_REACHED();
@@ -95,9 +95,9 @@ static String calendarDateToString(int year, int month, int day, const std::opti
     auto type = date ? date->type() : WebCore::DateComponentsType::Date;
     switch (type) {
     case WebCore::DateComponentsType::Date:
-        return makeString(pad('0', 4, year), '-', pad('0', 2, month + 1), '-', pad('0', 2, day));
+        return makeString(WTF::pad('0', 4, year), '-', WTF::pad('0', 2, month + 1), '-', WTF::pad('0', 2, day));
     case WebCore::DateComponentsType::DateTimeLocal:
-        return makeString(pad('0', 4, year), '-', pad('0', 2, month + 1), '-', pad('0', 2, day), 'T', timeToString(*date, secondFormat));
+        return makeString(WTF::pad('0', 4, year), '-', WTF::pad('0', 2, month + 1), '-', WTF::pad('0', 2, day), 'T', timeToString(*date, secondFormat));
     case WebCore::DateComponentsType::Invalid:
     case WebCore::DateComponentsType::Month:
     case WebCore::DateComponentsType::Time:

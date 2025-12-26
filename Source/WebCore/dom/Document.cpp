@@ -7479,12 +7479,12 @@ String Document::lastModified() const
 
     auto ctime = dateTime.value().secondsSinceEpoch().secondsAs<time_t>();
     auto localDateTime = std::localtime(&ctime);
-    return makeString(pad('0', 2, localDateTime->tm_mon + 1), '/',
-        pad('0', 2, localDateTime->tm_mday), '/',
-        pad('0', 4, 1900 + localDateTime->tm_year), ' ',
-        pad('0', 2, localDateTime->tm_hour), ':',
-        pad('0', 2, localDateTime->tm_min), ':',
-        pad('0', 2, localDateTime->tm_sec));
+    return makeString(WTF::pad('0', 2, localDateTime->tm_mon + 1), '/',
+        WTF::pad('0', 2, localDateTime->tm_mday), '/',
+        WTF::pad('0', 4, 1900 + localDateTime->tm_year), ' ',
+        WTF::pad('0', 2, localDateTime->tm_hour), ':',
+        WTF::pad('0', 2, localDateTime->tm_min), ':',
+        WTF::pad('0', 2, localDateTime->tm_sec));
 }
 
 void Document::setCookieURL(const URL& url)

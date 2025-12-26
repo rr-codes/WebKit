@@ -95,7 +95,7 @@ void OperationRecorder::didUpdateState(GraphicsContextState& state)
 
             void dump(TextStream& ts) override
             {
-                ts << indent << "StrokeThicknessChange<>\n"_s;
+                ts << WTF::indent << "StrokeThicknessChange<>\n"_s;
             }
         };
 
@@ -113,7 +113,7 @@ void OperationRecorder::didUpdateState(GraphicsContextState& state)
 
             void dump(TextStream& ts) override
             {
-                ts << indent << "StrokeStyleChange<>\n"_s;
+                ts << WTF::indent << "StrokeStyleChange<>\n"_s;
             }
         };
 
@@ -131,7 +131,7 @@ void OperationRecorder::didUpdateState(GraphicsContextState& state)
 
             void dump(TextStream& ts) override
             {
-                ts << indent << "CompositeOperationChange<>\n"_s;
+                ts << WTF::indent << "CompositeOperationChange<>\n"_s;
             }
         };
 
@@ -149,7 +149,7 @@ void OperationRecorder::didUpdateState(GraphicsContextState& state)
 
             void dump(TextStream& ts) override
             {
-                ts << indent << "ShouldAntialiasChange<>\n"_s;
+                ts << WTF::indent << "ShouldAntialiasChange<>\n"_s;
             }
         };
 
@@ -171,7 +171,7 @@ void OperationRecorder::setLineCap(LineCap lineCap)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "SetLineCap<>\n"_s;
+            ts << WTF::indent << "SetLineCap<>\n"_s;
         }
     };
 
@@ -190,7 +190,7 @@ void OperationRecorder::setLineDash(const DashArray& dashes, float dashOffset)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "SetLineDash<>\n"_s;
+            ts << WTF::indent << "SetLineDash<>\n"_s;
         }
     };
 
@@ -209,7 +209,7 @@ void OperationRecorder::setLineJoin(LineJoin lineJoin)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "SetLineJoin<>\n"_s;
+            ts << WTF::indent << "SetLineJoin<>\n"_s;
         }
     };
 
@@ -228,7 +228,7 @@ void OperationRecorder::setMiterLimit(float miterLimit)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "SetMiterLimit<>\n"_s;
+            ts << WTF::indent << "SetMiterLimit<>\n"_s;
         }
     };
 
@@ -247,7 +247,7 @@ void OperationRecorder::fillRect(const FloatRect& rect, RequiresClipToRect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRect<>\n"_s;
+            ts << WTF::indent << "FillRect<>\n"_s;
         }
     };
 
@@ -267,7 +267,7 @@ void OperationRecorder::fillRect(const FloatRect& rect, const Color& color)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRect<>\n"_s;
+            ts << WTF::indent << "FillRect<>\n"_s;
         }
     };
 
@@ -289,7 +289,7 @@ void OperationRecorder::fillRect(const FloatRect& rect, Gradient& gradient)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRect<>\n"_s;
+            ts << WTF::indent << "FillRect<>\n"_s;
         }
     };
 
@@ -309,7 +309,7 @@ void OperationRecorder::fillRect(const FloatRect& rect, Gradient& gradient, cons
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRect<>\n"_s;
+            ts << WTF::indent << "FillRect<>\n"_s;
         }
     };
 
@@ -333,7 +333,7 @@ void OperationRecorder::fillRect(const FloatRect& rect, const Color& color, Comp
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRect<>\n"_s;
+            ts << WTF::indent << "FillRect<>\n"_s;
         }
     };
 
@@ -363,7 +363,7 @@ void OperationRecorder::fillRoundedRect(const FloatRoundedRect& roundedRect, con
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRoundedRect<>\n"_s;
+            ts << WTF::indent << "FillRoundedRect<>\n"_s;
         }
     };
 
@@ -383,7 +383,7 @@ void OperationRecorder::fillRectWithRoundedHole(const FloatRect& rect, const Flo
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillRectWithRoundedHole<>\n"_s;
+            ts << WTF::indent << "FillRectWithRoundedHole<>\n"_s;
         }
     };
 
@@ -403,7 +403,7 @@ void OperationRecorder::fillPath(const Path& path)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillPath<>\n"_s;
+            ts << WTF::indent << "FillPath<>\n"_s;
         }
     };
 
@@ -428,7 +428,7 @@ void OperationRecorder::fillEllipse(const FloatRect& rect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "FillEllipse<>\n"_s;
+            ts << WTF::indent << "FillEllipse<>\n"_s;
         }
     };
 
@@ -448,7 +448,7 @@ void OperationRecorder::strokeRect(const FloatRect& rect, float lineWidth)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "StrokeRect<>\n"_s;
+            ts << WTF::indent << "StrokeRect<>\n"_s;
         }
     };
 
@@ -468,7 +468,7 @@ void OperationRecorder::strokePath(const Path& path)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "StrokePath<>\n"_s;
+            ts << WTF::indent << "StrokePath<>\n"_s;
         }
     };
 
@@ -493,7 +493,7 @@ void OperationRecorder::strokeEllipse(const FloatRect& rect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "StrokeEllipse<>\n"_s;
+            ts << WTF::indent << "StrokeEllipse<>\n"_s;
         }
     };
 
@@ -513,7 +513,7 @@ void OperationRecorder::clearRect(const FloatRect& rect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "ClearRect<>\n"_s;
+            ts << WTF::indent << "ClearRect<>\n"_s;
         }
     };
 
@@ -533,7 +533,7 @@ void OperationRecorder::drawGlyphs(const Font& font, std::span<const GlyphBuffer
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawGlyphs<>\n"_s;
+            ts << WTF::indent << "DrawGlyphs<>\n"_s;
         }
     };
 
@@ -570,7 +570,7 @@ void OperationRecorder::drawImageBuffer(ImageBuffer& buffer, const FloatRect& de
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawImageBuffer<>\n"_s;
+            ts << WTF::indent << "DrawImageBuffer<>\n"_s;
         }
     };
 
@@ -596,7 +596,7 @@ void OperationRecorder::drawFilteredImageBuffer(ImageBuffer* srcImage, const Flo
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawFilteredImageBuffer<>\n"_s;
+            ts << WTF::indent << "DrawFilteredImageBuffer<>\n"_s;
         }
     };
 
@@ -628,7 +628,7 @@ void OperationRecorder::drawNativeImage(NativeImage& nativeImage, const FloatRec
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawNativeImage<>\n"_s;
+            ts << WTF::indent << "DrawNativeImage<>\n"_s;
         }
     };
 
@@ -648,7 +648,7 @@ void OperationRecorder::drawPattern(NativeImage& nativeImage, const FloatRect& d
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawPattern<>\n"_s;
+            ts << WTF::indent << "DrawPattern<>\n"_s;
         }
     };
 
@@ -668,7 +668,7 @@ void OperationRecorder::drawRect(const FloatRect& rect, float borderThickness)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawRect<>\n"_s;
+            ts << WTF::indent << "DrawRect<>\n"_s;
         }
     };
 
@@ -688,7 +688,7 @@ void OperationRecorder::drawLine(const FloatPoint& point1, const FloatPoint& poi
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawLine<>\n"_s;
+            ts << WTF::indent << "DrawLine<>\n"_s;
         }
     };
 
@@ -711,7 +711,7 @@ void OperationRecorder::drawLinesForText(const FloatPoint& point, float thicknes
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawLinesForText<>\n"_s;
+            ts << WTF::indent << "DrawLinesForText<>\n"_s;
         }
     };
 
@@ -735,7 +735,7 @@ void OperationRecorder::drawDotsForDocumentMarker(const FloatRect& rect, Documen
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawDotsForDocumentMarker<>\n"_s;
+            ts << WTF::indent << "DrawDotsForDocumentMarker<>\n"_s;
         }
     };
 
@@ -754,7 +754,7 @@ void OperationRecorder::drawEllipse(const FloatRect& rect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawEllipse<>\n"_s;
+            ts << WTF::indent << "DrawEllipse<>\n"_s;
         }
     };
 
@@ -778,7 +778,7 @@ void OperationRecorder::drawFocusRing(const Path& path, float outlineWidth, cons
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawFocusRing<>\n"_s;
+            ts << WTF::indent << "DrawFocusRing<>\n"_s;
         }
     };
 
@@ -802,7 +802,7 @@ void OperationRecorder::drawFocusRing(const Vector<FloatRect>& rects, float outl
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "DrawFocusRing<>\n"_s;
+            ts << WTF::indent << "DrawFocusRing<>\n"_s;
         }
     };
 
@@ -823,7 +823,7 @@ void OperationRecorder::save(GraphicsContextState::Purpose purpose)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "Save<>\n"_s;
+            ts << WTF::indent << "Save<>\n"_s;
         }
     };
 
@@ -846,7 +846,7 @@ void OperationRecorder::restore(GraphicsContextState::Purpose purpose)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "Restore<>\n"_s;
+            ts << WTF::indent << "Restore<>\n"_s;
         }
     };
 
@@ -877,7 +877,7 @@ void OperationRecorder::translate(float x, float y)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "Translate<>\n"_s;
+            ts << WTF::indent << "Translate<>\n"_s;
         }
     };
 
@@ -905,7 +905,7 @@ void OperationRecorder::rotate(float angleInRadians)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "Rotate<>\n"_s;
+            ts << WTF::indent << "Rotate<>\n"_s;
         }
     };
 
@@ -933,7 +933,7 @@ void OperationRecorder::scale(const FloatSize& size)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "Scale<>\n"_s;
+            ts << WTF::indent << "Scale<>\n"_s;
         }
     };
 
@@ -961,7 +961,7 @@ void OperationRecorder::concatCTM(const AffineTransform& transform)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "ConcatCTM<>\n"_s;
+            ts << WTF::indent << "ConcatCTM<>\n"_s;
         }
     };
 
@@ -988,7 +988,7 @@ void OperationRecorder::setCTM(const AffineTransform& transform)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "SetCTM<>\n"_s;
+            ts << WTF::indent << "SetCTM<>\n"_s;
         }
     };
 
@@ -1020,7 +1020,7 @@ void OperationRecorder::beginTransparencyLayer(float opacity)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "BeginTransparencyLayer<>\n"_s;
+            ts << WTF::indent << "BeginTransparencyLayer<>\n"_s;
         }
     };
 
@@ -1046,7 +1046,7 @@ void OperationRecorder::endTransparencyLayer()
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "EndTransparencyLayer<>\n"_s;
+            ts << WTF::indent << "EndTransparencyLayer<>\n"_s;
         }
     };
 
@@ -1072,7 +1072,7 @@ void OperationRecorder::clip(const FloatRect& rect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "Clip<>\n"_s;
+            ts << WTF::indent << "Clip<>\n"_s;
         }
     };
 
@@ -1096,7 +1096,7 @@ void OperationRecorder::clipOut(const FloatRect& rect)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "ClipOut<>\n"_s;
+            ts << WTF::indent << "ClipOut<>\n"_s;
         }
     };
 
@@ -1115,7 +1115,7 @@ void OperationRecorder::clipOut(const Path& path)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "ClipOut<>\n"_s;
+            ts << WTF::indent << "ClipOut<>\n"_s;
         }
     };
 
@@ -1134,7 +1134,7 @@ void OperationRecorder::clipPath(const Path& path, WindRule clipRule)
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "ClipPath<>\n"_s;
+            ts << WTF::indent << "ClipPath<>\n"_s;
         }
     };
 
@@ -1164,7 +1164,7 @@ void OperationRecorder::clipToImageBuffer(ImageBuffer& buffer, const FloatRect& 
 
         void dump(TextStream& ts) override
         {
-            ts << indent << "ClipToImageBuffer<>\n"_s;
+            ts << WTF::indent << "ClipToImageBuffer<>\n"_s;
         }
     };
 

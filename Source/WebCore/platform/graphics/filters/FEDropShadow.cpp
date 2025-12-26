@@ -180,7 +180,7 @@ std::unique_ptr<FilterEffectApplier> FEDropShadow::createSoftwareApplier() const
 
 TextStream& FEDropShadow::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feDropShadow"_s;
+    ts << WTF::indent << "[feDropShadow"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " stdDeviation=\""_s << m_stdX << ", "_s << m_stdY << '"';

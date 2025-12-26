@@ -92,7 +92,7 @@ void Serialize<FontFeatureSettings>::operator()(StringBuilder& builder, const CS
         return;
     }
 
-    builder.append(interleave(value.platform(), [&](auto& builder, const auto& setting) {
+    builder.append(WTF::interleave(value.platform(), [&](auto& builder, const auto& setting) {
         serializationForCSS(builder, context, style, FontOpentypeTag { setting.tag() });
         if (setting.value() != 1.0) {
             builder.append(' ');

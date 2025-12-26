@@ -215,16 +215,16 @@ static TextStream& operator<<(TextStream& ts, const ComponentTransferFunction& f
 
 TextStream& FEComponentTransfer::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feComponentTransfer"_s;
+    ts << WTF::indent << "[feComponentTransfer"_s;
     FilterEffect::externalRepresentation(ts, representation);
     ts << '\n';
 
     {
         TextStream::IndentScope indentScope(ts, 2);
-        ts << indent << "{red: "_s << m_functions[ComponentTransferChannel::Red] << "}\n"_s;
-        ts << indent << "{green: "_s << m_functions[ComponentTransferChannel::Green] << "}\n"_s;
-        ts << indent << "{blue: "_s << m_functions[ComponentTransferChannel::Blue] << "}\n"_s;
-        ts << indent << "{alpha: "_s << m_functions[ComponentTransferChannel::Alpha] << '}';
+        ts << WTF::indent << "{red: "_s << m_functions[ComponentTransferChannel::Red] << "}\n"_s;
+        ts << WTF::indent << "{green: "_s << m_functions[ComponentTransferChannel::Green] << "}\n"_s;
+        ts << WTF::indent << "{blue: "_s << m_functions[ComponentTransferChannel::Blue] << "}\n"_s;
+        ts << WTF::indent << "{alpha: "_s << m_functions[ComponentTransferChannel::Alpha] << '}';
     }
 
     ts << "]\n"_s;

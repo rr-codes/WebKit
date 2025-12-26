@@ -132,7 +132,7 @@ static TextStream& operator<<(TextStream& ts, const ChannelSelectorType& type)
 
 TextStream& FEDisplacementMap::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feDisplacementMap"_s;
+    ts << WTF::indent << "[feDisplacementMap"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " scale=\"" << m_scale << '"';

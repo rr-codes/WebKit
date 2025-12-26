@@ -81,7 +81,7 @@ TEST(WebKit, PDFLinkReferrer)
             auto currentLine = requestBytes.span();
             while (!currentLine.empty()) {
                 EXPECT_FALSE(spanHasPrefixIgnoringASCIICase(currentLine, "referer:"_span));
-                size_t nextLineIndex = find(currentLine, '\n');
+                size_t nextLineIndex = WTF::find(currentLine, '\n');
                 currentLine = nextLineIndex != notFound ? currentLine.subspan(nextLineIndex + 1) : std::span<const char> { };
             }
             constexpr auto responseHeader =

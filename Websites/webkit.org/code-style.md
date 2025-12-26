@@ -1243,9 +1243,9 @@ class VectorBuffer {
 } // namespace WTF
 ```
 
-[](#using-wtf) In header files in the WTF sub-library, however, it is acceptable to use "using" declarations at the end of the file to import one or more names in the WTF namespace into the global scope.
+This rule includes header files even in the WTF sub-library:
 
-###### Right:
+###### Wrong:
 
 ```cpp
 // wtf/Vector.h

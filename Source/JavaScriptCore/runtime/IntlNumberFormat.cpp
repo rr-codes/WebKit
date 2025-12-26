@@ -115,7 +115,7 @@ static inline unsigned computeCurrencySortKey(const String& currency)
 
 static inline unsigned computeCurrencySortKey(const std::array<const char, 3>& currency)
 {
-    ASSERT(containsOnly<isASCIIUpper>(std::span { currency }));
+    ASSERT(WTF::containsOnly<isASCIIUpper>(std::span { currency }));
     return (currency[0] << 16) + (currency[1] << 8) + currency[2];
 }
 

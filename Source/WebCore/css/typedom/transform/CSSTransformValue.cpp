@@ -173,7 +173,7 @@ CSSTransformValue::~CSSTransformValue() = default;
 void CSSTransformValue::serialize(StringBuilder& builder, OptionSet<SerializationArguments>) const
 {
     // https://drafts.css-houdini.org/css-typed-om/#serialize-a-csstransformvalue
-    builder.append(interleave(m_components, [](auto& builder, auto& transform) { transform->serialize(builder); }, ' '));
+    builder.append(WTF::interleave(m_components, [](auto& builder, auto& transform) { transform->serialize(builder); }, ' '));
 }
 
 RefPtr<CSSValue> CSSTransformValue::toCSSValue() const

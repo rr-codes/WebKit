@@ -139,7 +139,7 @@ public:
     {
         dataLogLn("Sampling Results size:(", m_size, ")");
         for (unsigned i = 0; i < BoyerMooreBitmap::mapSize; ++i)
-            dataLogLn("    [", makeString(pad(' ', 3, i)), "] ", m_samples[i]);
+            dataLogLn("    [", makeString(WTF::pad(' ', 3, i)), "] ", m_samples[i]);
     }
 
     bool is8Bit() const { return m_is8Bit; }
@@ -297,7 +297,7 @@ void BoyerMooreInfo::dump(PrintStream& out) const
     out.println("BoyerMooreInfo size:(", m_characters.size(), ")");
     unsigned index = 0;
     for (auto& map : m_characters)
-        out.println("    [", makeString(pad(' ', 3, index++)), "] ", map);
+        out.println("    [", makeString(WTF::pad(' ', 3, index++)), "] ", map);
 }
 
 void BoyerMooreBitmap::dump(PrintStream& out) const

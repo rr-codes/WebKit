@@ -626,5 +626,5 @@ using WTF::Indentation;
 using WTF::IndentationScope;
 using WTF::asASCIILowercase;
 using WTF::asASCIIUppercase;
-using WTF::interleave;
-using WTF::pad;
+
+// Prefer avoiding more `using` declarations here to avoid essentially polluting the global namespace.

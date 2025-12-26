@@ -321,7 +321,7 @@ Ref<Style::Calculation::Value> Value::createCalculationValue(NoConversionDataReq
 
 void Value::dump(TextStream& ts) const
 {
-    ts << indent << '(' << "Value"_s;
+    ts << WTF::indent << '(' << "Value"_s;
 
     TextStream multilineStream;
     multilineStream.setIndent(ts.indent() + 2);

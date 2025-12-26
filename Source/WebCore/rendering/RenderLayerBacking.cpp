@@ -4813,9 +4813,9 @@ void RenderLayerBacking::dumpProperties(const GraphicsLayer* layer, TextStream& 
 
     // If this is the leaf layer for a RemoteFrame, then collect layers from the frame's process.
     if (auto* remoteFrame = downcast<RenderWidget>(renderer()).remoteFrame(); remoteFrame && layer->children().isEmpty()) {
-        ts << indent << "(children 1\n"_s;
+        ts << WTF::indent << "(children 1\n"_s;
         ts << remoteFrame->client().layerTreeAsText(ts.indent() + 1, options);
-        ts << indent << ")\n"_s;
+        ts << WTF::indent << ")\n"_s;
     }
 }
 

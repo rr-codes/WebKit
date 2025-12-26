@@ -739,8 +739,8 @@ void IntlDateTimeFormat::initializeDateTimeFormat(JSGlobalObject* globalObject, 
         if (auto minutesValue = ISO8601::parseUTCOffsetInMinutes(originalTz)) {
             int64_t minutes = minutesValue.value();
             int64_t absMinutes = std::abs(minutes);
-            tz = makeString(minutes < 0 ? '-' : '+', pad('0', 2, absMinutes / 60), ':', pad('0', 2, absMinutes % 60));
-            timeZoneForICU = makeString("GMT"_s, minutes < 0 ? '-' : '+', pad('0', 2, absMinutes / 60), pad('0', 2, absMinutes % 60));
+            tz = makeString(minutes < 0 ? '-' : '+', WTF::pad('0', 2, absMinutes / 60), ':', WTF::pad('0', 2, absMinutes % 60));
+            timeZoneForICU = makeString("GMT"_s, minutes < 0 ? '-' : '+', WTF::pad('0', 2, absMinutes / 60), WTF::pad('0', 2, absMinutes % 60));
         } else {
             tz = availableNamedTimeZoneIdentifier(originalTz);
             if (tz.isNull()) {

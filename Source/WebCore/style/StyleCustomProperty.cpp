@@ -132,7 +132,7 @@ void CustomProperty::propertyValueSerialization(StringBuilder& builder, const CS
             serializeValue(builder, value);
         },
         [&](const ValueList& valueList) {
-            builder.append(interleave(valueList.values, [&](auto& builder, const auto& value) {
+            builder.append(WTF::interleave(valueList.values, [&](auto& builder, const auto& value) {
                 serializeValue(builder, value);
             }, CSSValue::separatorCSSText(valueList.separator)));
         }
@@ -178,7 +178,7 @@ void CustomProperty::propertyValueSerializationForTokenization(StringBuilder& bu
             serializeValue(builder, value);
         },
         [&](const ValueList& valueList) {
-            builder.append(interleave(valueList.values, [&](auto& builder, const auto& value) {
+            builder.append(WTF::interleave(valueList.values, [&](auto& builder, const auto& value) {
                 serializeValue(builder, value);
             }, CSSValue::separatorCSSText(valueList.separator)));
         }

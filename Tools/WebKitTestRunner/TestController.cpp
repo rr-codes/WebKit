@@ -2959,7 +2959,7 @@ void TestController::runTestingServerLoop()
 {
     std::array<char, 2048> filenameBuffer;
     while (fgets(filenameBuffer.data(), filenameBuffer.size(), stdin)) {
-        if (size_t newLineCharacterIndex = find(std::span<const char> { filenameBuffer }, '\n'); newLineCharacterIndex != notFound)
+        if (size_t newLineCharacterIndex = WTF::find(std::span<const char> { filenameBuffer }, '\n'); newLineCharacterIndex != notFound)
             filenameBuffer[newLineCharacterIndex] = '\0';
 
         if (!strlen(filenameBuffer.data()))

@@ -118,14 +118,14 @@ String DateTimeLocalInputType::formatDateTimeFieldsState(const DateTimeFieldsSta
     if (!state.year || !state.month || !state.dayOfMonth || !state.hour || !state.minute || !state.meridiem)
         return emptyString();
 
-    auto dateString = makeString(pad('0', 4, *state.year), '-', pad('0', 2, *state.month), '-', pad('0', 2, *state.dayOfMonth));
-    auto hourMinuteString = makeString(pad('0', 2, *state.hour23()), ':', pad('0', 2, *state.minute));
+    auto dateString = makeString(WTF::pad('0', 4, *state.year), '-', WTF::pad('0', 2, *state.month), '-', WTF::pad('0', 2, *state.dayOfMonth));
+    auto hourMinuteString = makeString(WTF::pad('0', 2, *state.hour23()), ':', WTF::pad('0', 2, *state.minute));
 
     if (state.millisecond)
-        return makeString(dateString, 'T', hourMinuteString, ':', pad('0', 2, state.second ? *state.second : 0), '.', pad('0', 3, *state.millisecond));
+        return makeString(dateString, 'T', hourMinuteString, ':', WTF::pad('0', 2, state.second ? *state.second : 0), '.', WTF::pad('0', 3, *state.millisecond));
 
     if (state.second)
-        return makeString(dateString, 'T', hourMinuteString, ':', pad('0', 2, *state.second));
+        return makeString(dateString, 'T', hourMinuteString, ':', WTF::pad('0', 2, *state.second));
 
     return makeString(dateString, 'T', hourMinuteString);
 }

@@ -52,7 +52,7 @@ std::unique_ptr<FilterEffectApplier> FEMerge::createSoftwareApplier() const
 
 TextStream& FEMerge::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feMerge"_s;
+    ts << WTF::indent << "[feMerge"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " mergeNodes=\"" << m_numberOfEffectInputs << '"';

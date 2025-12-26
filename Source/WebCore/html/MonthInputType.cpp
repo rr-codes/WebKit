@@ -150,7 +150,7 @@ String MonthInputType::formatDateTimeFieldsState(const DateTimeFieldsState& stat
     if (!state.year || !state.month)
         return emptyString();
 
-    return makeString(pad('0', 4, *state.year), '-', pad('0', 2, *state.month));
+    return makeString(WTF::pad('0', 4, *state.year), '-', WTF::pad('0', 2, *state.month));
 }
 
 void MonthInputType::setupLayoutParameters(DateTimeEditElement::LayoutParameters& layoutParameters, const DateComponents&) const

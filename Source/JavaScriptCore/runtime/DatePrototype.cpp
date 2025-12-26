@@ -353,7 +353,7 @@ JSC_DEFINE_HOST_FUNCTION(dateProtoFuncToISOString, (JSGlobalObject* globalObject
         year = std::abs(year);
     }
 
-    return JSValue::encode(jsNontrivialString(vm, makeString(prefix, pad('0', yearDigits, year), '-', pad('0', 2, month), '-', pad('0', 2, day), 'T', pad('0', 2, hour), ':', pad('0', 2, minute), ':', pad('0', 2, second), '.', pad('0', 3, ms), 'Z')));
+    return JSValue::encode(jsNontrivialString(vm, makeString(prefix, WTF::pad('0', yearDigits, year), '-', WTF::pad('0', 2, month), '-', WTF::pad('0', 2, day), 'T', WTF::pad('0', 2, hour), ':', WTF::pad('0', 2, minute), ':', WTF::pad('0', 2, second), '.', WTF::pad('0', 3, ms), 'Z')));
 }
 
 JSC_DEFINE_HOST_FUNCTION(dateProtoFuncToDateString, (JSGlobalObject* globalObject, CallFrame* callFrame))

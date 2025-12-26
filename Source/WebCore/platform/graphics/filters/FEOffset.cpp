@@ -102,7 +102,7 @@ std::unique_ptr<FilterEffectApplier> FEOffset::createSoftwareApplier() const
 
 TextStream& FEOffset::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feOffset"_s;
+    ts << WTF::indent << "[feOffset"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " dx=\""_s << dx() << "\" dy=\""_s << dy() << '"';

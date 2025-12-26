@@ -310,7 +310,7 @@ String IDBKeyData::loggingString() const
     case IndexedDB::KeyType::Invalid:
         return "<invalid>"_s;
     case IndexedDB::KeyType::Array:
-        result = makeString("<array> - { "_s, interleave(std::get<Vector<IDBKeyData>>(m_value), [](auto& builder, auto& item) { builder.append(item.loggingString()); }, ", "_s), " }"_s);
+        result = makeString("<array> - { "_s, WTF::interleave(std::get<Vector<IDBKeyData>>(m_value), [](auto& builder, auto& item) { builder.append(item.loggingString()); }, ", "_s), " }"_s);
         break;
 
     case IndexedDB::KeyType::Binary: {

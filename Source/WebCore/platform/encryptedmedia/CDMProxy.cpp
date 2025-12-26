@@ -103,7 +103,7 @@ static String vectorToHexString(const Vector<uint8_t>& vec)
 {
     StringBuilder stringBuilder;
     for (auto byte : vec)
-        stringBuilder.append(pad('0', 2, hex(byte)));
+        stringBuilder.append(WTF::pad('0', 2, hex(byte)));
     return stringBuilder.toString();
 }
 

@@ -55,7 +55,7 @@ std::unique_ptr<FilterEffectApplier> FETile::createSoftwareApplier() const
 
 TextStream& FETile::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feTile"_s;
+    ts << WTF::indent << "[feTile"_s;
     FilterEffect::externalRepresentation(ts, representation);
     ts << "]\n"_s;
     return ts;

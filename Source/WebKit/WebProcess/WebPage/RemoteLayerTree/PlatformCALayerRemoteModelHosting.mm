@@ -73,7 +73,7 @@ void PlatformCALayerRemoteModelHosting::populateCreationProperties(RemoteLayerTr
 void PlatformCALayerRemoteModelHosting::dumpAdditionalProperties(TextStream& ts, OptionSet<WebCore::PlatformLayerTreeAsTextFlags> flags)
 {
     if (flags.contains(WebCore::PlatformLayerTreeAsTextFlags::IncludeModels))
-        ts << indent << "(model data size "_s << m_model->data()->size() << ")\n"_s;
+        ts << WTF::indent << "(model data size "_s << m_model->data()->size() << ")\n"_s;
 }
 
 } // namespace WebKit

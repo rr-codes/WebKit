@@ -910,7 +910,7 @@ void GraphicsLayer::setTileCoverage(TileCoverage coverage)
 
 void GraphicsLayer::dumpLayer(TextStream& ts, OptionSet<LayerTreeAsTextOptions> options) const
 {
-    ts << indent << '(' << "GraphicsLayer"_s;
+    ts << WTF::indent << '(' << "GraphicsLayer"_s;
 
     if (options & LayerTreeAsTextOptions::Debug) {
         ts << ' ' << static_cast<void*>(const_cast<GraphicsLayer*>(this));
@@ -919,7 +919,7 @@ void GraphicsLayer::dumpLayer(TextStream& ts, OptionSet<LayerTreeAsTextOptions> 
 
     ts << '\n';
     dumpProperties(ts, options);
-    ts << indent << ")\n"_s;
+    ts << WTF::indent << ")\n"_s;
 }
 
 static void dumpChildren(TextStream& ts, const Vector<Ref<GraphicsLayer>>& children, unsigned& totalChildCount, OptionSet<LayerTreeAsTextOptions> options)
@@ -941,80 +941,80 @@ void GraphicsLayer::dumpProperties(TextStream& ts, OptionSet<LayerTreeAsTextOpti
 {
     TextStream::IndentScope indentScope(ts);
     if (!m_offsetFromRenderer.isZero())
-        ts << indent << "(offsetFromRenderer "_s << m_offsetFromRenderer << ")\n"_s;
+        ts << WTF::indent << "(offsetFromRenderer "_s << m_offsetFromRenderer << ")\n"_s;
 
     if (!m_scrollOffset.isZero())
-        ts << indent << "(scrollOffset "_s << m_scrollOffset << ")\n"_s;
+        ts << WTF::indent << "(scrollOffset "_s << m_scrollOffset << ")\n"_s;
 
     if (m_position != FloatPoint())
-        ts << indent << "(position "_s << m_position.x() << ' ' << m_position.y() << ")\n"_s;
+        ts << WTF::indent << "(position "_s << m_position.x() << ' ' << m_position.y() << ")\n"_s;
 
     if (m_approximatePosition)
-        ts << indent << "(approximate position "_s << m_approximatePosition.value().x() << ' ' << m_approximatePosition.value().y() << ")\n"_s;
+        ts << WTF::indent << "(approximate position "_s << m_approximatePosition.value().x() << ' ' << m_approximatePosition.value().y() << ")\n"_s;
 
     if (m_boundsOrigin != FloatPoint())
-        ts << indent << "(bounds origin "_s << m_boundsOrigin.x() << ' ' << m_boundsOrigin.y() << ")\n"_s;
+        ts << WTF::indent << "(bounds origin "_s << m_boundsOrigin.x() << ' ' << m_boundsOrigin.y() << ")\n"_s;
 
     if (client().shouldDumpPropertyForLayer(this, "anchorPoint"_s, options)) {
-        ts << indent << "(anchor "_s << m_anchorPoint.x() << ' ' << m_anchorPoint.y();
+        ts << WTF::indent << "(anchor "_s << m_anchorPoint.x() << ' ' << m_anchorPoint.y();
         if (m_anchorPoint.z())
             ts << ' ' << m_anchorPoint.z();
         ts << ")\n"_s;
     }
 
     if (m_size != IntSize())
-        ts << indent << "(bounds "_s << m_size.width() << ' ' << m_size.height() << ")\n"_s;
+        ts << WTF::indent << "(bounds "_s << m_size.width() << ' ' << m_size.height() << ")\n"_s;
 
     if (m_opacity != 1)
-        ts << indent << "(opacity "_s << m_opacity << ")\n"_s;
+        ts << WTF::indent << "(opacity "_s << m_opacity << ")\n"_s;
 
     if (m_blendMode != BlendMode::Normal)
-        ts << indent << "(blendMode "_s << compositeOperatorName(CompositeOperator::SourceOver, m_blendMode) << ")\n"_s;
+        ts << WTF::indent << "(blendMode "_s << compositeOperatorName(CompositeOperator::SourceOver, m_blendMode) << ")\n"_s;
 
     if (type() == Type::Normal && tiledBacking())
-        ts << indent << "(usingTiledLayer 1)\n"_s;
+        ts << WTF::indent << "(usingTiledLayer 1)\n"_s;
 
     bool needsIOSDumpRenderTreeMainFrameRenderViewLayerIsAlwaysOpaqueHack = client().needsIOSDumpRenderTreeMainFrameRenderViewLayerIsAlwaysOpaqueHack(*this);
     if (m_contentsOpaque || needsIOSDumpRenderTreeMainFrameRenderViewLayerIsAlwaysOpaqueHack)
-        ts << indent << "(contentsOpaque "_s << (m_contentsOpaque || needsIOSDumpRenderTreeMainFrameRenderViewLayerIsAlwaysOpaqueHack) << ")\n"_s;
+        ts << WTF::indent << "(contentsOpaque "_s << (m_contentsOpaque || needsIOSDumpRenderTreeMainFrameRenderViewLayerIsAlwaysOpaqueHack) << ")\n"_s;
 
     if (m_masksToBounds && options & LayerTreeAsTextOptions::IncludeClipping)
-        ts << indent << "(clips "_s << m_masksToBounds << ")\n"_s;
+        ts << WTF::indent << "(clips "_s << m_masksToBounds << ")\n"_s;
 
     if (m_preserves3D)
-        ts << indent << "(preserves3D "_s << m_preserves3D << ")\n"_s;
+        ts << WTF::indent << "(preserves3D "_s << m_preserves3D << ")\n"_s;
 
     if (m_drawsContent && client().shouldDumpPropertyForLayer(this, "drawsContent"_s, options))
-        ts << indent << "(drawsContent "_s << m_drawsContent << ")\n"_s;
+        ts << WTF::indent << "(drawsContent "_s << m_drawsContent << ")\n"_s;
 
 #if HAVE(SUPPORT_HDR_DISPLAY)
     if (m_drawsHDRContent)
-        ts << indent << "(drawsHDRContent "_s << m_drawsHDRContent << ")\n"_s;
+        ts << WTF::indent << "(drawsHDRContent "_s << m_drawsHDRContent << ")\n"_s;
 #endif
 
     if (!m_contentsVisible)
-        ts << indent << "(contentsVisible "_s << m_contentsVisible << ")\n"_s;
+        ts << WTF::indent << "(contentsVisible "_s << m_contentsVisible << ")\n"_s;
 
     if (!m_backfaceVisibility)
-        ts << indent << "(backfaceVisibility "_s << (m_backfaceVisibility ? "visible"_s : "hidden"_s) << ")\n"_s;
+        ts << WTF::indent << "(backfaceVisibility "_s << (m_backfaceVisibility ? "visible"_s : "hidden"_s) << ")\n"_s;
 
     if (m_isBackdropRoot)
-        ts << indent << "(backdropRoot "_s << m_isBackdropRoot << ")\n"_s;
+        ts << WTF::indent << "(backdropRoot "_s << m_isBackdropRoot << ")\n"_s;
 
     if (options & LayerTreeAsTextOptions::Debug)
-        ts << indent << "(primary-layer-id "_s << primaryLayerID() << ")\n"_s;
+        ts << WTF::indent << "(primary-layer-id "_s << primaryLayerID() << ")\n"_s;
 
     if (m_backgroundColor.isValid() && client().shouldDumpPropertyForLayer(this, "backgroundColor"_s, options))
-        ts << indent << "(backgroundColor "_s << serializationForRenderTreeAsText(m_backgroundColor) << ")\n"_s;
+        ts << WTF::indent << "(backgroundColor "_s << serializationForRenderTreeAsText(m_backgroundColor) << ")\n"_s;
 
     if (options & LayerTreeAsTextOptions::IncludeAcceleratesDrawing && m_acceleratesDrawing)
-        ts << indent << "(acceleratesDrawing "_s << m_acceleratesDrawing << ")\n"_s;
+        ts << WTF::indent << "(acceleratesDrawing "_s << m_acceleratesDrawing << ")\n"_s;
 
     if (options & LayerTreeAsTextOptions::IncludeBackingStoreAttached)
-        ts << indent << "(backingStoreAttached "_s << backingStoreAttachedForTesting() << ")\n"_s;
+        ts << WTF::indent << "(backingStoreAttached "_s << backingStoreAttachedForTesting() << ")\n"_s;
 
     if (m_transform && !m_transform->isIdentity()) {
-        ts << indent << "(transform "_s;
+        ts << WTF::indent << "(transform "_s;
         ts << '[' << m_transform->m11() << ' ' << m_transform->m12() << ' ' << m_transform->m13() << ' ' << m_transform->m14() << "] "_s;
         ts << '[' << m_transform->m21() << ' ' << m_transform->m22() << ' ' << m_transform->m23() << ' ' << m_transform->m24() << "] "_s;
         ts << '[' << m_transform->m31() << ' ' << m_transform->m32() << ' ' << m_transform->m33() << ' ' << m_transform->m34() << "] "_s;
@@ -1024,7 +1024,7 @@ void GraphicsLayer::dumpProperties(TextStream& ts, OptionSet<LayerTreeAsTextOpti
     // Avoid dumping the sublayer transform on the root layer, because it's used for geometry flipping, whose behavior
     // differs between platforms.
     if (parent() && m_childrenTransform && !m_childrenTransform->isIdentity()) {
-        ts << indent << "(childrenTransform "_s;
+        ts << WTF::indent << "(childrenTransform "_s;
         ts << '[' << m_childrenTransform->m11() << ' ' << m_childrenTransform->m12() << ' ' << m_childrenTransform->m13() << ' ' << m_childrenTransform->m14() << "] "_s;
         ts << '[' << m_childrenTransform->m21() << ' ' << m_childrenTransform->m22() << ' ' << m_childrenTransform->m23() << ' ' << m_childrenTransform->m24() << "] "_s;
         ts << '[' << m_childrenTransform->m31() << ' ' << m_childrenTransform->m32() << ' ' << m_childrenTransform->m33() << ' ' << m_childrenTransform->m34() << "] "_s;
@@ -1033,11 +1033,11 @@ void GraphicsLayer::dumpProperties(TextStream& ts, OptionSet<LayerTreeAsTextOpti
 
 #if HAVE(CORE_MATERIAL)
     if (m_appleVisualEffectData.effect != AppleVisualEffect::None)
-        ts << indent << "(appleVisualEffectData "_s << m_appleVisualEffectData << ")\n"_s;
+        ts << WTF::indent << "(appleVisualEffectData "_s << m_appleVisualEffectData << ")\n"_s;
 #endif
 
     if (m_maskLayer) {
-        ts << indent << "(mask layer"_s;
+        ts << WTF::indent << "(mask layer"_s;
         if (options & LayerTreeAsTextOptions::Debug)
             ts << ' ' << m_maskLayer.get();
         ts << ")\n"_s;
@@ -1047,7 +1047,7 @@ void GraphicsLayer::dumpProperties(TextStream& ts, OptionSet<LayerTreeAsTextOpti
     }
 
     if (m_replicaLayer) {
-        ts << indent << "(replica layer"_s;
+        ts << WTF::indent << "(replica layer"_s;
         if (options & LayerTreeAsTextOptions::Debug)
             ts << ' ' << m_replicaLayer.get();
         ts << ")\n"_s;
@@ -1057,41 +1057,41 @@ void GraphicsLayer::dumpProperties(TextStream& ts, OptionSet<LayerTreeAsTextOpti
     }
 
     if (m_replicatedLayer) {
-        ts << indent << "(replicated layer"_s;
+        ts << WTF::indent << "(replicated layer"_s;
         if (options & LayerTreeAsTextOptions::Debug)
             ts << ' ' << m_replicatedLayer;
         ts << ")\n"_s;
     }
 
     if (options & LayerTreeAsTextOptions::IncludeRepaintRects && repaintRectMap().contains(this) && !repaintRectMap().get(this).isEmpty() && client().shouldDumpPropertyForLayer(this, "repaintRects"_s, options)) {
-        ts << indent << "(repaint rects\n"_s;
+        ts << WTF::indent << "(repaint rects\n"_s;
         for (size_t i = 0; i < repaintRectMap().get(this).size(); ++i) {
             if (repaintRectMap().get(this)[i].isEmpty())
                 continue;
 
             TextStream::IndentScope indentScope(ts);
-            ts << indent << "(rect "_s;
+            ts << WTF::indent << "(rect "_s;
             ts << repaintRectMap().get(this)[i].x() << ' ';
             ts << repaintRectMap().get(this)[i].y() << ' ';
             ts << repaintRectMap().get(this)[i].width() << ' ';
             ts << repaintRectMap().get(this)[i].height();
             ts << ")\n"_s;
         }
-        ts << indent << ")\n"_s;
+        ts << WTF::indent << ")\n"_s;
     }
 
     if (options & LayerTreeAsTextOptions::IncludeEventRegion && !m_eventRegion.isEmpty()) {
-        ts << indent << "(event region"_s << m_eventRegion;
-        ts << indent << ")\n"_s;
+        ts << WTF::indent << "(event region"_s << m_eventRegion;
+        ts << WTF::indent << ")\n"_s;
     }
     
 #if ENABLE(SCROLLING_THREAD)
     if ((options & LayerTreeAsTextOptions::Debug) && m_scrollingNodeID)
-        ts << indent << "(scrolling node "_s << m_scrollingNodeID << ")\n"_s;
+        ts << WTF::indent << "(scrolling node "_s << m_scrollingNodeID << ")\n"_s;
 #endif
 
     if (options & LayerTreeAsTextOptions::IncludePaintingPhases && paintingPhase())
-        ts << indent << "(paintingPhases "_s << paintingPhase() << ")\n"_s;
+        ts << WTF::indent << "(paintingPhases "_s << paintingPhase() << ")\n"_s;
 
     dumpAdditionalProperties(ts, options);
     
@@ -1103,9 +1103,9 @@ void GraphicsLayer::dumpProperties(TextStream& ts, OptionSet<LayerTreeAsTextOpti
         dumpChildren(childrenStream, m_children, totalChildCount, options);
 
         if (totalChildCount) {
-            ts << indent << "(children "_s << totalChildCount << '\n';
+            ts << WTF::indent << "(children "_s << totalChildCount << '\n';
             ts << childrenStream.release();
-            ts << indent << ")\n"_s;
+            ts << WTF::indent << ")\n"_s;
         }
     }
 

@@ -2733,6 +2733,31 @@ def check_using_namespace(clean_lines, line_number, file_extension, error):
           "Do not use 'using namespace %s;'." % method_name)
 
 
+def check_using_wtf(filename, clean_lines, line_number, error):
+    """Looks for 'using WTF::foo;' statements in WTF headers which should not be added.
+
+    Args:
+      filename: Filename of the file that is being processed.
+      clean_lines: A CleansedLines instance containing the file.
+      line_number: The number of the line to check.
+      error: The function to call with any errors found.
+    """
+
+    # This check only applies to WTF header files
+    if not filename or 'Source/WTF/wtf/' not in filename:
+        return
+
+    line = clean_lines.elided[line_number]  # Get rid of comments and strings.
+
+    using_wtf_match = match(r'\s*using\s+WTF::(?P<symbol_name>\S+)\s*;\s*$', line)
+    if not using_wtf_match:
+        return
+
+    symbol_name = using_wtf_match.group('symbol_name')
+    error(line_number, 'build/using_wtf', 4,
+          "Do not add 'using WTF::%s;' declarations in WTF headers." % symbol_name)
+
+
 def check_max_min_macros(clean_lines, line_number, file_state, error):
     """Looks for use of MAX() and MIN() macros that should be replaced with std::max() and std::min().
 
@@ -4954,6 +4979,7 @@ def process_line(filename, file_extension,
     check_style(clean_lines, line, file_extension, class_state, file_state, enum_state, error)
     check_language(filename, clean_lines, line, file_extension, include_state,
                    file_state, error)
+    check_using_wtf(filename, clean_lines, line, error)
     check_for_non_standard_constructs(clean_lines, line, class_state, error)
     check_posix_threading(clean_lines, line, error)
     check_invalid_increment(clean_lines, line, error)
@@ -5050,6 +5076,7 @@ class CppChecker(object):
         'build/storage_class',
         'build/using_std',
         'build/using_namespace',
+        'build/using_wtf',
         'build/cpp_comment',
         'build/webcore_export',
         'build/wk_api_available',

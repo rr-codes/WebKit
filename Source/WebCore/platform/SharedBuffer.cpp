@@ -216,7 +216,7 @@ String FragmentedSharedBuffer::toHexString() const
     StringBuilder stringBuilder;
     forEachSegment([&](auto segment) {
         for (auto byte : segment)
-            stringBuilder.append(pad('0', 2, hex(byte)));
+            stringBuilder.append(WTF::pad('0', 2, hex(byte)));
     });
     return stringBuilder.toString();
 }

@@ -125,13 +125,13 @@ String TimeInputType::formatDateTimeFieldsState(const DateTimeFieldsState& state
     if (!state.hour || !state.minute || !state.meridiem)
         return emptyString();
 
-    auto hourMinuteString = makeString(pad('0', 2, *state.hour23()), ':', pad('0', 2, *state.minute));
+    auto hourMinuteString = makeString(WTF::pad('0', 2, *state.hour23()), ':', WTF::pad('0', 2, *state.minute));
 
     if (state.millisecond)
-        return makeString(hourMinuteString, ':', pad('0', 2, state.second ? *state.second : 0), '.', pad('0', 3, *state.millisecond));
+        return makeString(hourMinuteString, ':', WTF::pad('0', 2, state.second ? *state.second : 0), '.', WTF::pad('0', 3, *state.millisecond));
 
     if (state.second)
-        return makeString(hourMinuteString, ':', pad('0', 2, *state.second));
+        return makeString(hourMinuteString, ':', WTF::pad('0', 2, *state.second));
 
     return hourMinuteString;
 }

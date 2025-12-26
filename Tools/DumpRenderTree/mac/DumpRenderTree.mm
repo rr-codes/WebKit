@@ -1077,7 +1077,7 @@ static void runTestingServerLoop()
     std::array<char, 2048> filenameBuffer;
     unsigned testCount = 0;
     while (fgets(filenameBuffer.data(), filenameBuffer.size(), stdin)) {
-        if (size_t newLineCharacterIndex = find(std::span<const char> { filenameBuffer }, '\n'); newLineCharacterIndex != notFound)
+        if (size_t newLineCharacterIndex = WTF::find(std::span<const char> { filenameBuffer }, '\n'); newLineCharacterIndex != notFound)
             filenameBuffer[newLineCharacterIndex] = '\0';
 
         if (!strlenSpan(std::span { filenameBuffer }))

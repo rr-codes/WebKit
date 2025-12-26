@@ -218,7 +218,7 @@ CSSValueListBuilder CSSValueContainingVector::copyValues() const
 
 void CSSValueContainingVector::serializeItems(StringBuilder& builder, const CSS::SerializationContext& context) const
 {
-    builder.append(interleave(*this, [&](auto& value) { return value.cssText(context); }, separatorCSSText()));
+    builder.append(WTF::interleave(*this, [&](auto& value) { return value.cssText(context); }, separatorCSSText()));
 }
 
 String CSSValueContainingVector::serializeItems(const CSS::SerializationContext& context) const

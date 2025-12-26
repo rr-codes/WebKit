@@ -159,7 +159,7 @@ static TextStream& operator<<(TextStream& ts, const EdgeModeType& type)
 
 TextStream& FEConvolveMatrix::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feConvolveMatrix"_s;
+    ts << WTF::indent << "[feConvolveMatrix"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " order=\"" << m_kernelSize << '"';

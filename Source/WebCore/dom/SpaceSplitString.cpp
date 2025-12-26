@@ -115,7 +115,7 @@ public:
     template <typename TokenCharacterType>
     bool processToken(std::span<const TokenCharacterType> characters)
     {
-        if (characters.size() == m_referenceLength && equal(m_referenceCharacters, characters)) {
+        if (characters.size() == m_referenceLength && WTF::equal(m_referenceCharacters, characters)) {
             m_referenceStringWasFound = true;
             return false;
         }

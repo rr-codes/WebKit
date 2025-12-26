@@ -100,6 +100,9 @@
 		072F53502E3C0F3300389E15 /* JITSubGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = FE98B5B61BB9AE110073E7A6 /* JITSubGenerator.h */; };
 		072F53512E3C3F8700389E15 /* BytecodeGeneratorBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 14C5AD6522F1866C00F1FB83 /* BytecodeGeneratorBase.h */; };
 		072F53522E3C3FDA00389E15 /* ProfileTypeBytecodeFlag.h in Headers */ = {isa = PBXBuildFile; fileRef = 14BA7752211A8E5F008D0B05 /* ProfileTypeBytecodeFlag.h */; };
+		07440C352EFF44CB003D0ECD /* TemporalPlainYearMonth.h in Headers */ = {isa = PBXBuildFile; fileRef = 07440C2F2EFF44C2003D0ECD /* TemporalPlainYearMonth.h */; };
+		07440C362EFF44D0003D0ECD /* TemporalPlainYearMonthConstructor.h in Headers */ = {isa = PBXBuildFile; fileRef = 07440C312EFF44C2003D0ECD /* TemporalPlainYearMonthConstructor.h */; };
+		07440C372EFF44D6003D0ECD /* TemporalPlainYearMonthPrototype.h in Headers */ = {isa = PBXBuildFile; fileRef = 07440C332EFF44C2003D0ECD /* TemporalPlainYearMonthPrototype.h */; };
 		07CEB6A22EF90E4B008DCDEC /* TargetAssemblerDefinitions.h in Headers */ = {isa = PBXBuildFile; fileRef = 07CEB6A12EF90E37008DCDEC /* TargetAssemblerDefinitions.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		0F0123331944EA1B00843A0C /* DFGValueStrength.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F0123311944EA1B00843A0C /* DFGValueStrength.h */; };
 		0F0332C418B01763005F979A /* GetByVariant.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F0332C218B01763005F979A /* GetByVariant.h */; };
@@ -2730,6 +2733,12 @@
 		05517CA02C74004700ED0CD5 /* JSIteratorConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIteratorConstructor.h; sourceTree = "<group>"; };
 		05517CA12C74004700ED0CD5 /* JSIterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSIterator.h; sourceTree = "<group>"; };
 		05517CA22C74004700ED0CD5 /* JSIteratorConstructor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSIteratorConstructor.cpp; sourceTree = "<group>"; };
+		07440C2F2EFF44C2003D0ECD /* TemporalPlainYearMonth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TemporalPlainYearMonth.h; sourceTree = "<group>"; };
+		07440C302EFF44C2003D0ECD /* TemporalPlainYearMonth.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TemporalPlainYearMonth.cpp; sourceTree = "<group>"; };
+		07440C312EFF44C2003D0ECD /* TemporalPlainYearMonthConstructor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TemporalPlainYearMonthConstructor.h; sourceTree = "<group>"; };
+		07440C322EFF44C2003D0ECD /* TemporalPlainYearMonthConstructor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TemporalPlainYearMonthConstructor.cpp; sourceTree = "<group>"; };
+		07440C332EFF44C2003D0ECD /* TemporalPlainYearMonthPrototype.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TemporalPlainYearMonthPrototype.h; sourceTree = "<group>"; };
+		07440C342EFF44C2003D0ECD /* TemporalPlainYearMonthPrototype.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TemporalPlainYearMonthPrototype.cpp; sourceTree = "<group>"; };
 		07A564652E6250D900DEC7C4 /* JavaScriptCore_Private.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = JavaScriptCore_Private.modulemap; sourceTree = "<group>"; };
 		07CEB6A12EF90E37008DCDEC /* TargetAssemblerDefinitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TargetAssemblerDefinitions.h; sourceTree = "<group>"; };
 		0F0123301944EA1B00843A0C /* DFGValueStrength.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DFGValueStrength.cpp; path = dfg/DFGValueStrength.cpp; sourceTree = "<group>"; };
@@ -9231,6 +9240,12 @@
 				E386FD7526E867B700E4C28B /* TemporalPlainTimeConstructor.h */,
 				E386FD7626E867B700E4C28B /* TemporalPlainTimePrototype.cpp */,
 				E386FD7926E867B800E4C28B /* TemporalPlainTimePrototype.h */,
+				07440C302EFF44C2003D0ECD /* TemporalPlainYearMonth.cpp */,
+				07440C2F2EFF44C2003D0ECD /* TemporalPlainYearMonth.h */,
+				07440C322EFF44C2003D0ECD /* TemporalPlainYearMonthConstructor.cpp */,
+				07440C312EFF44C2003D0ECD /* TemporalPlainYearMonthConstructor.h */,
+				07440C342EFF44C2003D0ECD /* TemporalPlainYearMonthPrototype.cpp */,
+				07440C332EFF44C2003D0ECD /* TemporalPlainYearMonthPrototype.h */,
 				E30E8A4D26DE2E4700DA4915 /* TemporalTimeZone.cpp */,
 				E30E8A5026DE2E4800DA4915 /* TemporalTimeZone.h */,
 				E30E8A4F26DE2E4700DA4915 /* TemporalTimeZoneConstructor.cpp */,
@@ -12253,6 +12268,9 @@
 				E386FD7E26E867B800E4C28B /* TemporalPlainTime.h in Headers */,
 				E386FD7B26E867B800E4C28B /* TemporalPlainTimeConstructor.h in Headers */,
 				E386FD7F26E867B800E4C28B /* TemporalPlainTimePrototype.h in Headers */,
+				07440C352EFF44CB003D0ECD /* TemporalPlainYearMonth.h in Headers */,
+				07440C362EFF44D0003D0ECD /* TemporalPlainYearMonthConstructor.h in Headers */,
+				07440C372EFF44D6003D0ECD /* TemporalPlainYearMonthPrototype.h in Headers */,
 				E30E8A5626DE2E4800DA4915 /* TemporalTimeZone.h in Headers */,
 				E30E8A5726DE2E4800DA4915 /* TemporalTimeZoneConstructor.h in Headers */,
 				E30E8A5426DE2E4800DA4915 /* TemporalTimeZonePrototype.h in Headers */,

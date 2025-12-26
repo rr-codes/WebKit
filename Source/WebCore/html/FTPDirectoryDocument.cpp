@@ -209,12 +209,12 @@ static String processFileDateString(const FTPTime& fileTime)
         if (hour < 12) {
             if (hour == 0)
                 hour = 12;
-            timeOfDay = makeString(", "_s, hour, ':', pad('0', 2, fileTime.tm_min), " AM"_s);
+            timeOfDay = makeString(", "_s, hour, ':', WTF::pad('0', 2, fileTime.tm_min), " AM"_s);
         } else {
             hour = hour - 12;
             if (hour == 0)
                 hour = 12;
-            timeOfDay = makeString(", "_s, hour, ':', pad('0', 2, fileTime.tm_min), " PM"_s);
+            timeOfDay = makeString(", "_s, hour, ':', WTF::pad('0', 2, fileTime.tm_min), " PM"_s);
         }
     }
 

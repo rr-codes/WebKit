@@ -207,7 +207,7 @@ static TextStream& operator<<(TextStream& ts, const ColorMatrixType& type)
 
 TextStream& FEColorMatrix::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feColorMatrix"_s;
+    ts << WTF::indent << "[feColorMatrix"_s;
     FilterEffect::externalRepresentation(ts, representation);
 
     ts << " type=\"" << m_type << '"';

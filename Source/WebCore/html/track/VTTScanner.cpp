@@ -59,9 +59,9 @@ bool VTTScanner::scan(std::span<const Latin1Character> characters)
         return false;
     bool matched;
     if (m_is8Bit)
-        matched = equal(m_data.characters8.first(characters.size()), characters);
+        matched = WTF::equal(m_data.characters8.first(characters.size()), characters);
     else
-        matched = equal(m_data.characters16.first(characters.size()), characters);
+        matched = WTF::equal(m_data.characters16.first(characters.size()), characters);
     if (matched)
         advance(characters.size());
     return matched;
@@ -78,9 +78,9 @@ bool VTTScanner::scanRun(const Run& run, const String& toMatch)
         return false;
     bool matched;
     if (m_is8Bit)
-        matched = equal(toMatch.impl(), m_data.characters8.first(matchLength));
+        matched = WTF::equal(toMatch.impl(), m_data.characters8.first(matchLength));
     else
-        matched = equal(toMatch.impl(), m_data.characters16.first(matchLength));
+        matched = WTF::equal(toMatch.impl(), m_data.characters16.first(matchLength));
     if (matched)
         advance(run.length());
     return matched;

@@ -82,7 +82,7 @@ Vector<BBQDisassembler::DumpedOp> BBQDisassembler::dumpVectorForInstructions(Lin
         auto origin = std::get<1>(labels[i]);
         result.append(DumpedOp { { } });
         out.print(prefix);
-        out.println("[", makeString(pad(' ', 8, makeString("0x"_s, hex(origin.location(), 0, Lowercase)))), "] "_s, origin.opcodeString());
+        out.println("[", makeString(WTF::pad(' ', 8, makeString("0x"_s, hex(origin.location(), 0, Lowercase)))), "] "_s, origin.opcodeString());
         unsigned nextIndex = i + 1;
         if (nextIndex >= labels.size()) {
             dumpDisassembly(out, linkBuffer, std::get<0>(labels[i]), endLabel);

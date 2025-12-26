@@ -111,9 +111,9 @@ WTF::TextStream& operator<<(TextStream& ts, const FontVariantAlternates& alterna
         if (values.historicalForms)
             append("historical-forms"_s);
         if (!values.styleset.isEmpty())
-            append("styleset("_s, interleave(values.styleset, ", "_s), ')');
+            append("styleset("_s, WTF::interleave(values.styleset, ", "_s), ')');
         if (!values.characterVariant.isEmpty())
-            append("character-variant("_s, interleave(values.characterVariant, ", "_s), ')');
+            append("character-variant("_s, WTF::interleave(values.characterVariant, ", "_s), ')');
         if (!values.swash.isNull())
             append("swash("_s, values.swash, ')');
         if (!values.ornaments.isNull())

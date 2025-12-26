@@ -147,7 +147,7 @@ public:
 
     static bool equal(const StringImpl*, std::span<const Latin1Character>);
     static bool equal(const StringImpl*, std::span<const char16_t>);
-    static bool equal(const StringImpl* a, const StringImpl* b) { return ::equal(a, b); }
+    static bool equal(const StringImpl* a, const StringImpl* b) { return WTF::equal(a, b); }
 
     void dump(PrintStream&) const;
 

@@ -327,7 +327,7 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const Region::Shape& value)
 {
     ts << '\n';
     TextStream::IndentScope indentScope(ts);
-    ts << indent;
+    ts << WTF::indent;
     for (auto spans = value.spans(); !spans.empty(); skip(spans, 1)) {
         ts << "y: "_s << spans[0].y << " spans: ("_s;
         int comma = 0;
@@ -665,7 +665,7 @@ TextStream& operator<<(TextStream& ts, const Region& region)
     {
         TextStream::IndentScope indentScope(ts);
         for (auto& rect : region.rects())
-            ts << indent << "(rect "_s << rect << ")\n"_s;
+            ts << WTF::indent << "(rect "_s << rect << ")\n"_s;
     }
 
     return ts;

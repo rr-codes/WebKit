@@ -201,21 +201,21 @@ TEST(StringBuilderTest, Interleave)
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(strings, [](auto& builder, auto& s) { builder.append(s); }, ", "_s), ']');
+        builder.append('[', WTF::interleave(strings, [](auto& builder, auto& s) { builder.append(s); }, ", "_s), ']');
 
         EXPECT_EQ(String("[a, b, c]"_s), builderContent(builder));
     }
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(strings, [](auto& s) { return s; }, ", "_s), ']');
+        builder.append('[', WTF::interleave(strings, [](auto& s) { return s; }, ", "_s), ']');
 
         EXPECT_EQ(String("[a, b, c]"_s), builderContent(builder));
     }
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(strings, ", "_s), ']');
+        builder.append('[', WTF::interleave(strings, ", "_s), ']');
 
         EXPECT_EQ(String("[a, b, c]"_s), builderContent(builder));
     }
@@ -250,7 +250,7 @@ TEST(StringBuilderTest, InterleaveOverload)
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(as, serializeOverloadBuilder, ", "_s), ']');
+        builder.append('[', WTF::interleave(as, serializeOverloadBuilder, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), builderContent(builder));
     }
@@ -262,21 +262,21 @@ TEST(StringBuilderTest, InterleaveNoCopies)
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(values, [](auto& builder, auto& moveOnly) { builder.append(moveOnly.value()); }, ", "_s), ']');
+        builder.append('[', WTF::interleave(values, [](auto& builder, auto& moveOnly) { builder.append(moveOnly.value()); }, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), builderContent(builder));
     }
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(values, [](auto& moveOnly) { return moveOnly.value(); }, ", "_s), ']');
+        builder.append('[', WTF::interleave(values, [](auto& moveOnly) { return moveOnly.value(); }, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), builderContent(builder));
     }
 
     {
         StringBuilder builder;
-        builder.append('[', interleave(values, ", "_s), ']');
+        builder.append('[', WTF::interleave(values, ", "_s), ']');
 
         EXPECT_EQ(String("[1, 2, 3]"_s), builderContent(builder));
     }

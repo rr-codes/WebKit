@@ -467,7 +467,7 @@ void writeDebugInfo(TextStream& ts, const RenderObject& object, OptionSet<Render
 static inline void writeTextRuns(TextStream& ts, auto& textRenderer)
 {
     auto writeTextRun = [&] (auto& textRun) {
-        ts << indent;
+        ts << WTF::indent;
 
         auto rect = textRun.visualRectIgnoringBlockDirection();
         int x = rect.x();
@@ -538,7 +538,7 @@ void write(TextStream& ts, const RenderObject& renderer, OptionSet<RenderAsTextF
         return;
     }
 
-    ts << indent;
+    ts << WTF::indent;
     RenderTreeAsText::writeRenderObject(ts, renderer, behavior);
     ts << '\n';
 
@@ -571,7 +571,7 @@ template<typename DumpRectType>
 inline void writeLayerUsingGeometryType(TextStream& ts, const RenderLayer& layer, const DumpRectType& layerBounds, const DumpRectType& backgroundClipRect, const DumpRectType& clipRect,
     LayerPaintPhase paintPhase, OptionSet<RenderAsTextFlag> behavior)
 {
-    ts << indent << "layer "_s;
+    ts << WTF::indent << "layer "_s;
     
     if (behavior.contains(RenderAsTextFlag::ShowAddresses)) {
         ts << &layer << ' ';
@@ -687,7 +687,7 @@ static void writeLayers(TextStream& ts, const RenderLayer& rootLayer, RenderLaye
         
     if (negativeZOrderLayers.size()) {
         if (behavior.contains(RenderAsTextFlag::ShowLayerNesting)) {
-            ts << indent << " negative z-order list ("_s << negativeZOrderLayers.size() << ")\n"_s;
+            ts << WTF::indent << " negative z-order list ("_s << negativeZOrderLayers.size() << ")\n"_s;
             ts.increaseIndent();
         }
         
@@ -709,7 +709,7 @@ static void writeLayers(TextStream& ts, const RenderLayer& rootLayer, RenderLaye
                 TextStream::IndentScope indentScope(ts, 2);
                 for (unsigned i = 0; i < layerFragments.size(); ++i) {
                     const auto& fragment = layerFragments[i];
-                    ts << indent << " fragment "_s << i << ": bounds in layer "_s << fragment.layerBounds() << " fragment bounds "_s << fragment.boundingBox() << '\n';
+                    ts << WTF::indent << " fragment "_s << i << ": bounds in layer "_s << fragment.layerBounds() << " fragment bounds "_s << fragment.boundingBox() << '\n';
                 }
             }
         }
@@ -720,7 +720,7 @@ static void writeLayers(TextStream& ts, const RenderLayer& rootLayer, RenderLaye
     auto normalFlowLayers = layer.normalFlowLayers();
     if (normalFlowLayers.size()) {
         if (behavior.contains(RenderAsTextFlag::ShowLayerNesting)) {
-            ts << indent << " normal flow list ("_s << normalFlowLayers.size() << ")\n"_s;
+            ts << WTF::indent << " normal flow list ("_s << normalFlowLayers.size() << ")\n"_s;
             ts.increaseIndent();
         }
         
@@ -737,7 +737,7 @@ static void writeLayers(TextStream& ts, const RenderLayer& rootLayer, RenderLaye
 
         if (layerCount) {
             if (behavior.contains(RenderAsTextFlag::ShowLayerNesting)) {
-                ts << indent << " positive z-order list ("_s << layerCount << ")\n"_s;
+                ts << WTF::indent << " positive z-order list ("_s << layerCount << ")\n"_s;
                 ts.increaseIndent();
             }
 

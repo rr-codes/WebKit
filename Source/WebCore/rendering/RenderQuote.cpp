@@ -279,14 +279,14 @@ static SubtagComparison subtagCompare(std::span<const char> key, std::span<const
 
     result.keyLength = key.size();
     result.keyContinue = result.keyLength;
-    if (size_t hyphenIndex = find(key, '-'); hyphenIndex != notFound) {
+    if (size_t hyphenIndex = WTF::find(key, '-'); hyphenIndex != notFound) {
         result.keyLength = hyphenIndex;
         result.keyContinue = result.keyLength + 1;
     }
 
     result.rangeLength = range.size();
     result.rangeContinue = result.rangeLength;
-    if (size_t hyphenIndex = find(range, '-'); hyphenIndex != notFound) {
+    if (size_t hyphenIndex = WTF::find(range, '-'); hyphenIndex != notFound) {
         result.rangeLength = hyphenIndex;
         result.rangeContinue = result.rangeLength + 1;
     }

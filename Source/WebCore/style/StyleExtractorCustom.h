@@ -1515,7 +1515,7 @@ inline Ref<CSSValueList> extractStandardSpaceSeparatedShorthand(ExtractorState& 
 
 inline void extractStandardSpaceSeparatedShorthandSerialization(ExtractorState& state, StringBuilder& builder, const CSS::SerializationContext& context, const StylePropertyShorthand& shorthand)
 {
-    builder.append(interleave(shorthand, [&](auto& builder, const auto& longhand) {
+    builder.append(WTF::interleave(shorthand, [&](auto& builder, const auto& longhand) {
         ExtractorGenerated::extractValueSerialization(state, builder, context, longhand);
     }, ' '));
 }
@@ -1530,7 +1530,7 @@ inline Ref<CSSValue> extractStandardSlashSeparatedShorthand(ExtractorState& stat
 
 inline void extractStandardSlashSeparatedShorthandSerialization(ExtractorState& state, StringBuilder& builder, const CSS::SerializationContext& context, const StylePropertyShorthand& shorthand)
 {
-    builder.append(interleave(shorthand, [&](auto& builder, const auto& longhand) {
+    builder.append(WTF::interleave(shorthand, [&](auto& builder, const auto& longhand) {
         ExtractorGenerated::extractValueSerialization(state, builder, context, longhand);
     }, " / "_s));
 }
@@ -2515,7 +2515,7 @@ inline void ExtractorCustom::extractAnimationShorthandSerialization(ExtractorSta
             return;
     }
 
-    builder.append(interleave(animations.computedValues(), [&](auto& builder, const auto& animation) {
+    builder.append(WTF::interleave(animations.computedValues(), [&](auto& builder, const auto& animation) {
         // FIXME: Do this more efficiently without creating and destroying a CSSValue object.
         builder.append(convertSingleAnimation(state, animation, animations)->cssText(context));
     }, ", "_s));
@@ -3058,7 +3058,7 @@ inline void ExtractorCustom::extractScrollTimelineShorthandSerialization(Extract
         return;
     }
 
-    builder.append(interleave(timelines, [&](auto& builder, auto& timeline) {
+    builder.append(WTF::interleave(timelines, [&](auto& builder, auto& timeline) {
         ASSERT(!timeline->name().isNull());
 
         serializationForCSS(builder, context, state.style, CustomIdentifier { timeline->name() });
@@ -3184,7 +3184,7 @@ inline void ExtractorCustom::extractTransitionShorthandSerialization(ExtractorSt
         return;
     }
 
-    builder.append(interleave(transitions.computedValues(), [&](auto& builder, auto& transition) {
+    builder.append(WTF::interleave(transitions.computedValues(), [&](auto& builder, auto& transition) {
         // FIXME: Do this more efficiently without creating and destroying a CSSValue object.
         builder.append(convertSingleTransition(state, transition)->cssText(context));
     }, ", "_s));

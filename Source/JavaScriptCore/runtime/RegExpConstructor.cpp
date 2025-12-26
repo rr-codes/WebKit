@@ -157,12 +157,12 @@ JSC_DEFINE_HOST_FUNCTION(regExpConstructorEscape, (JSGlobalObject* globalObject,
 
         if (StringView(",-=<>#&!%:;@~'`\""_s).contains(codePoint) || isStrWhiteSpace(codePoint) || U16_IS_SURROGATE(codePoint)) {
             if (isLatin1(codePoint))
-                builder.append('\\', 'x', pad('0', 2, toStringWithRadix(codePoint, 16)));
+                builder.append('\\', 'x', WTF::pad('0', 2, toStringWithRadix(codePoint, 16)));
             else if (U_IS_BMP(codePoint))
-                builder.append('\\', 'u', pad('0', 4, toStringWithRadix(codePoint, 16)));
+                builder.append('\\', 'u', WTF::pad('0', 4, toStringWithRadix(codePoint, 16)));
             else {
-                builder.append('\\', 'u', pad('0', 4, toStringWithRadix(U16_LEAD(codePoint), 16)));
-                builder.append('\\', 'u', pad('0', 4, toStringWithRadix(U16_TRAIL(codePoint), 16)));
+                builder.append('\\', 'u', WTF::pad('0', 4, toStringWithRadix(U16_LEAD(codePoint), 16)));
+                builder.append('\\', 'u', WTF::pad('0', 4, toStringWithRadix(U16_TRAIL(codePoint), 16)));
             }
             continue;
         }

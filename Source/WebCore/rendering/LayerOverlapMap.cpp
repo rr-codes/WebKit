@@ -262,7 +262,7 @@ OverlapMapContainer::ClippingScope* OverlapMapContainer::findClippingScopeForLay
 
 void OverlapMapContainer::recursiveOutputToStream(TextStream& ts, const ClippingScope& scope, unsigned depth) const
 {
-    ts << '\n' << indent << TextStream::Repeat { 2 * depth, ' ' } << " scope for layer "_s << &scope.layer.get() << " rects "_s << scope.rectList;
+    ts << '\n' << WTF::indent << TextStream::Repeat { 2 * depth, ' ' } << " scope for layer "_s << &scope.layer.get() << " rects "_s << scope.rectList;
     for (auto& childScope : scope.children)
         recursiveOutputToStream(ts, childScope, depth + 1);
 }
@@ -382,7 +382,7 @@ TextStream& operator<<(TextStream& ts, const LayerOverlapMap& overlapMap)
             multilineStream << "\n";
         else
             needNewline = true;
-        multilineStream << indent << *container;
+        multilineStream << WTF::indent << *container;
     }
 
     ts << multilineStream.release();

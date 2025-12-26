@@ -500,7 +500,7 @@ void formatSecondsStringFraction(StringBuilder& builder, unsigned fraction, std:
 {
     auto [precisionType, precisionValue] = precision;
     if ((precisionType == Precision::Auto && fraction) || (precisionType == Precision::Fixed && precisionValue)) {
-        auto padded = makeString('.', pad('0', 9, fraction));
+        auto padded = makeString('.', WTF::pad('0', 9, fraction));
         if (precisionType == Precision::Fixed)
             builder.append(StringView(padded).left(padded.length() - (9 - precisionValue)));
         else {
@@ -519,7 +519,7 @@ void formatSecondsStringPart(StringBuilder& builder, unsigned second, unsigned f
     if (precision.unit == TemporalUnit::Minute)
         return;
 
-    builder.append(':', pad('0', 2, second));
+    builder.append(':', WTF::pad('0', 2, second));
     formatSecondsStringFraction(builder, fraction, precision.precision);
 }
 

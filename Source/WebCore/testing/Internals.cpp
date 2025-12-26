@@ -5837,7 +5837,7 @@ static void serializeOffset(StringBuilder& builder, const SnapOffset<LayoutUnit>
 
 static void serializeOffsets(StringBuilder& builder, const Vector<SnapOffset<LayoutUnit>>& snapOffsets)
 {
-    builder.append("{ "_s, interleave(snapOffsets, serializeOffset, ", "_s), " }"_s);
+    builder.append("{ "_s, WTF::interleave(snapOffsets, serializeOffset, ", "_s), " }"_s);
 }
 
 void Internals::setPlatformMomentumScrollingPredictionEnabled(bool enabled)

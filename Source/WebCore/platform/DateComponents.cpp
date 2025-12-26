@@ -751,16 +751,16 @@ String DateComponents::toStringForTime(SecondFormat format) const
         [[fallthrough]]; // To None.
 #endif
     case SecondFormat::None:
-        return makeString(pad('0', 2, m_hour), ':', pad('0', 2, m_minute));
+        return makeString(WTF::pad('0', 2, m_hour), ':', WTF::pad('0', 2, m_minute));
     case SecondFormat::Second:
-        return makeString(pad('0', 2, m_hour), ':', pad('0', 2, m_minute), ':', pad('0', 2, m_second));
+        return makeString(WTF::pad('0', 2, m_hour), ':', WTF::pad('0', 2, m_minute), ':', WTF::pad('0', 2, m_second));
     case SecondFormat::Millisecond: {
-        auto resultWithoutMilliseconds = makeString(pad('0', 2, m_hour), ':', pad('0', 2, m_minute), ':', pad('0', 2, m_second), '.');
+        auto resultWithoutMilliseconds = makeString(WTF::pad('0', 2, m_hour), ':', WTF::pad('0', 2, m_minute), ':', WTF::pad('0', 2, m_second), '.');
         if (!(m_millisecond % 100))
             return makeString(resultWithoutMilliseconds, m_millisecond / 100);
         if (!(m_millisecond % 10))
-            return makeString(resultWithoutMilliseconds, pad('0', 2, m_millisecond / 10));
-        return makeString(resultWithoutMilliseconds, pad('0', 3, m_millisecond));
+            return makeString(resultWithoutMilliseconds, WTF::pad('0', 2, m_millisecond / 10));
+        return makeString(resultWithoutMilliseconds, WTF::pad('0', 3, m_millisecond));
     }
     }
 }
@@ -769,15 +769,15 @@ String DateComponents::toString(SecondFormat format) const
 {
     switch (m_type) {
     case DateComponentsType::Date:
-        return makeString(pad('0', 4, m_year), '-', pad('0', 2, m_month + 1), '-', pad('0', 2, m_monthDay));
+        return makeString(WTF::pad('0', 4, m_year), '-', WTF::pad('0', 2, m_month + 1), '-', WTF::pad('0', 2, m_monthDay));
     case DateComponentsType::DateTimeLocal:
-        return makeString(pad('0', 4, m_year), '-', pad('0', 2, m_month + 1), '-', pad('0', 2, m_monthDay), 'T', toStringForTime(format));
+        return makeString(WTF::pad('0', 4, m_year), '-', WTF::pad('0', 2, m_month + 1), '-', WTF::pad('0', 2, m_monthDay), 'T', toStringForTime(format));
     case DateComponentsType::Month:
-        return makeString(pad('0', 4, m_year), '-', pad('0', 2, m_month + 1));
+        return makeString(WTF::pad('0', 4, m_year), '-', WTF::pad('0', 2, m_month + 1));
     case DateComponentsType::Time:
         return toStringForTime(format);
     case DateComponentsType::Week:
-        return makeString(pad('0', 4, m_year), "-W"_s, pad('0', 2, m_week));
+        return makeString(WTF::pad('0', 4, m_year), "-W"_s, WTF::pad('0', 2, m_week));
     case DateComponentsType::Invalid:
         break;
     }

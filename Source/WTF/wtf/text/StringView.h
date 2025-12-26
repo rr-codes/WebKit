@@ -1504,8 +1504,6 @@ template<> struct VectorTraits<StringViewWithUnderlyingString> : VectorTraitsBas
 
 } // namespace WTF
 
-using WTF::append;
-using WTF::equal;
 using WTF::makeStringByReplacing;
 using WTF::makeStringBySimplifyingNewLines;
 using WTF::StringView;
@@ -1513,3 +1511,5 @@ using WTF::StringViewWithUnderlyingString;
 using WTF::hasUnpairedSurrogate;
 using WTF::nullStringView;
 using WTF::emptyStringView;
+
+// Prefer avoiding more `using` declarations here to avoid essentially polluting the global namespace.

@@ -135,7 +135,7 @@ static TextStream& operator<<(TextStream& ts, TurbulenceType type)
 
 TextStream& FETurbulence::externalRepresentation(TextStream& ts, FilterRepresentation representation) const
 {
-    ts << indent << "[feTurbulence"_s;
+    ts << WTF::indent << "[feTurbulence"_s;
     FilterEffect::externalRepresentation(ts, representation);
     
     ts << " type=\""_s << type() << '"';

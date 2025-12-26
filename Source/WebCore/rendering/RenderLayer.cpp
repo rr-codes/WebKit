@@ -297,10 +297,10 @@ void makeMatrixRenderable(TransformationMatrix& matrix, bool has3DRendering)
 static TextStream& operator<<(TextStream& ts, const ClipRects& clipRects)
 {
     TextStream::GroupScope scope(ts);
-    ts << indent << "ClipRects\n"_s;
-    ts << indent << "  overflow  : "_s << clipRects.overflowClipRect() << '\n';
-    ts << indent << "  fixed     : "_s << clipRects.fixedClipRect() << '\n';
-    ts << indent << "  positioned: "_s << clipRects.posClipRect() << '\n';
+    ts << WTF::indent << "ClipRects\n"_s;
+    ts << WTF::indent << "  overflow  : "_s << clipRects.overflowClipRect() << '\n';
+    ts << WTF::indent << "  fixed     : "_s << clipRects.fixedClipRect() << '\n';
+    ts << WTF::indent << "  positioned: "_s << clipRects.posClipRect() << '\n';
 
     return ts;
 }
