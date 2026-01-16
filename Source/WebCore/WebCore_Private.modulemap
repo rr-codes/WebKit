@@ -4,12 +4,12 @@ framework module WebCore_Private [system] {
         export *
     }
 
-    explicit module Core {
+    module Core {
         umbrella "PrivateHeaders"
 
         requires cplusplus
 
-        explicit module * {
+        module * {
             export *
         }
     }
