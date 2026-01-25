@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2005-2025 Apple Inc. All rights reserved.
+ *  Copyright (C) 2005-2026 Apple Inc. All rights reserved.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Library General Public
@@ -18,12 +18,11 @@
  *
  */
 
-// RefPtr is documented at http://webkit.org/coding/RefPtr.html
-
 #pragma once
 
 #include <algorithm>
 #include <utility>
+#include <wtf/Compiler.h>
 #include <wtf/RawPtrTraits.h>
 #include <wtf/Ref.h>
 #include <wtf/SwiftBridging.h>
@@ -31,11 +30,17 @@
 namespace WTF {
 
 template<typename T, typename PtrTraits, typename RefDerefTraits> class RefPtr;
-template<typename T, typename PtrTraits = RawPtrTraits<T>, typename RefDerefTraits = DefaultRefDerefTraits<T>> RefPtr<T, PtrTraits, RefDerefTraits> adoptRef(T*);
+template<typename T, typename PtrTraits = RawPtrTraits<T>, typename RefDerefTraits = DefaultRefDerefTraits<T>> RefPtr<T, PtrTraits, RefDerefTraits> adoptRef(T* WTF_NULLABLE);
 
+/// ``WTF::RefPtr`` is a smart pointer class template that calls ``ref`` on incoming values and ``deref`` on outgoing values
+/// to implement intrusive reference counting.
+///
+/// RefPtr works on any object with both a ``ref`` and a ``deref`` member function. For more information, see [RefPtr Basics](http://webkit.org/coding/RefPtr.html).
 template<typename T, typename _PtrTraits, typename _RefDerefTraits>
 class RefPtr {
+    IGNORE_CLANG_WARNINGS_BEGIN("nullability-completeness")
     WTF_FORBID_HEAP_ALLOCATION_ALLOWING_PLACEMENT_NEW;
+    IGNORE_CLANG_WARNINGS_END
 public:
     using PtrTraits = _PtrTraits;
     using RefDerefTraits = _RefDerefTraits;
@@ -46,7 +51,7 @@ public:
 
     ALWAYS_INLINE constexpr RefPtr() : m_ptr(nullptr) { }
     ALWAYS_INLINE constexpr RefPtr(std::nullptr_t) : m_ptr(nullptr) { }
-    ALWAYS_INLINE RefPtr(T* ptr) : m_ptr(RefDerefTraits::refIfNotNull(ptr)) { }
+    ALWAYS_INLINE RefPtr(T* WTF_NULLABLE ptr) : m_ptr(RefDerefTraits::refIfNotNull(ptr)) { }
     ALWAYS_INLINE RefPtr(T& ptr) : m_ptr(&RefDerefTraits::ref(ptr)) { }
     ALWAYS_INLINE RefPtr(const RefPtr& o) : m_ptr(RefDerefTraits::refIfNotNull(PtrTraits::unwrap(o.m_ptr))) { }
     template<typename X, typename Y, typename Z> RefPtr(const RefPtr<X, Y, Z>& o) : m_ptr(RefDerefTraits::refIfNotNull(PtrTraits::unwrap(o.get()))) { }
@@ -64,26 +69,26 @@ public:
 
     RefPtr(HashTableEmptyValueType) : m_ptr(hashTableEmptyValue()) { }
     bool isHashTableEmptyValue() const { return m_ptr == hashTableEmptyValue(); }
-    static T* hashTableEmptyValue() { return nullptr; }
+    static T* WTF_NULLABLE hashTableEmptyValue() { return nullptr; }
 
     ALWAYS_INLINE ~RefPtr() { RefDerefTraits::derefIfNotNull(PtrTraits::exchange(m_ptr, nullptr)); }
 
-    T* get() const LIFETIME_BOUND { return PtrTraits::unwrap(m_ptr); }
-    T* unsafeGet() const { return PtrTraits::unwrap(m_ptr); } // FIXME: Replace with get() then remove.
-    operator T*() const LIFETIME_BOUND { return PtrTraits::unwrap(m_ptr); }
+    SWIFT_RETURNS_UNRETAINED T* WTF_NULLABLE get() const LIFETIME_BOUND { return PtrTraits::unwrap(m_ptr); }
+    T* WTF_NULLABLE unsafeGet() const { return PtrTraits::unwrap(m_ptr); } // FIXME: Replace with get() then remove.
+    SWIFT_RETURNS_UNRETAINED operator T* WTF_NULLABLE () const LIFETIME_BOUND { return PtrTraits::unwrap(m_ptr); }
 
     Ref<T> releaseNonNull() { ASSERT(m_ptr); Ref<T> tmp(adoptRef(*m_ptr)); m_ptr = nullptr; return tmp; }
 
-    [[nodiscard]] T* leakRef();
+    [[nodiscard]] T* WTF_NULLABLE leakRef();
 
     ALWAYS_INLINE T& operator*() const LIFETIME_BOUND { ASSERT(m_ptr); return *PtrTraits::unwrap(m_ptr); }
-    ALWAYS_INLINE T* operator->() const LIFETIME_BOUND { return &**this; }
+    ALWAYS_INLINE SWIFT_RETURNS_UNRETAINED T* WTF_NULLABLE operator->() const LIFETIME_BOUND { return &**this; }
 
     bool operator!() const { return !m_ptr; }
     explicit operator bool() const { return !!m_ptr; }
-    
+
     RefPtr& operator=(const RefPtr&);
-    RefPtr& operator=(T*);
+    RefPtr& operator=(T* WTF_NULLABLE);
     RefPtr& operator=(std::nullptr_t);
     template<typename X, typename Y, typename Z> RefPtr& operator=(const RefPtr<X, Y, Z>&);
     RefPtr& operator=(RefPtr&&);
@@ -96,16 +101,16 @@ public:
     [[nodiscard]] RefPtr copyRef() const & { return RefPtr(m_ptr); }
 
 private:
-    friend RefPtr adoptRef<T, PtrTraits, RefDerefTraits>(T*);
+    friend RefPtr adoptRef<T, PtrTraits, RefDerefTraits>(T* WTF_NULLABLE);
     template<typename X, typename Y, typename Z> friend class RefPtr;
 
     template<typename T1, typename U, typename V, typename X, typename Y, typename Z>
     friend bool operator==(const RefPtr<T1, U, V>&, const RefPtr<X, Y, Z>&);
     template<typename T1, typename U, typename V, typename X>
-    friend bool operator==(const RefPtr<T1, U, V>&, X*);
+    friend bool operator==(const RefPtr<T1, U, V>&, X* WTF_NULLABLE);
 
     enum AdoptTag { Adopt };
-    RefPtr(T* ptr, AdoptTag) : m_ptr(ptr) { }
+    RefPtr(T* WTF_NULLABLE ptr, AdoptTag) : m_ptr(ptr) { }
 
     typename PtrTraits::StorageType m_ptr;
 } SWIFT_ESCAPABLE;
@@ -127,7 +132,7 @@ inline RefPtr<T, U, V>::RefPtr(Ref<X, Y>&& reference)
 }
 
 template<typename T, typename U, typename V>
-inline T* RefPtr<T, U, V>::leakRef()
+inline T* WTF_NULLABLE RefPtr<T, U, V>::leakRef()
 {
     return U::exchange(m_ptr, nullptr);
 }
@@ -150,7 +155,7 @@ inline RefPtr<T, U, V>& RefPtr<T, U, V>::operator=(const RefPtr<X, Y, Z>& o)
 }
 
 template<typename T, typename U, typename V>
-inline RefPtr<T, U, V>& RefPtr<T, U, V>::operator=(T* optr)
+inline RefPtr<T, U, V>& RefPtr<T, U, V>::operator=(T* WTF_NULLABLE optr)
 {
     RefPtr ptr = optr;
     swap(ptr);
@@ -210,13 +215,13 @@ inline bool operator==(const RefPtr<T, U, V>& a, const RefPtr<X, Y, Z>& b)
 }
 
 template<typename T, typename U, typename V, typename X>
-inline bool operator==(const RefPtr<T, U, V>& a, X* b)
+inline bool operator==(const RefPtr<T, U, V>& a, X* WTF_NULLABLE b)
 {
     return a.m_ptr == b;
 }
 
 template<typename T, typename U, typename V>
-inline RefPtr<T, U, V> adoptRef(T* p)
+inline RefPtr<T, U, V> adoptRef(T* WTF_NULLABLE p)
 {
     adopted(p);
     return RefPtr<T, U, V>(p, RefPtr<T, U, V>::Adopt);
@@ -224,7 +229,7 @@ inline RefPtr<T, U, V> adoptRef(T* p)
 
 template<typename T, typename PtrTraits = RawPtrTraits<T>, typename RefDerefTraits = DefaultRefDerefTraits<T>>
     requires HasRefPtrMemberFunctions<T>::value
-ALWAYS_INLINE CLANG_POINTER_CONVERSION RefPtr<T, PtrTraits, RefDerefTraits> protect(T* ptr)
+ALWAYS_INLINE CLANG_POINTER_CONVERSION RefPtr<T, PtrTraits, RefDerefTraits> protect(T* WTF_NULLABLE ptr)
 {
     return RefPtr<T, PtrTraits, RefDerefTraits>(ptr);
 }
