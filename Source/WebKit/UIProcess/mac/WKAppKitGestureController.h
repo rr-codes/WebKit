@@ -29,7 +29,7 @@
 
 #if HAVE(APPKIT_GESTURES_SUPPORT)
 
-#import <AppKit/NSGestureRecognizer.h>
+#import <AppKit/NSGestureRecognizer_Private.h>
 #import <wtf/Forward.h>
 #import <wtf/ObjectIdentifier.h>
 #import <wtf/Vector.h>
@@ -52,7 +52,12 @@ OBJC_CLASS NSPanGestureRecognizer;
 #import <WebKitAdditions/WKAppKitGestureControllerAdditionsBefore.mm>
 #endif
 
-@interface WKAppKitGestureController : NSObject <NSGestureRecognizerDelegate>
+NS_HEADER_AUDIT_BEGIN(nullability, sendability)
+
+// MARK: WKAppKitGestureController
+
+NS_SWIFT_UI_ACTOR
+@interface WKAppKitGestureController : NSObject
 
 - (instancetype)initWithPage:(std::reference_wrapper<WebKit::WebPageProxy>)page viewImpl:(std::reference_wrapper<WebKit::WebViewImpl>)viewImpl;
 - (void)enableGesturesIfNeeded;
@@ -68,8 +73,34 @@ OBJC_CLASS NSPanGestureRecognizer;
 - (void)didHandleClickAsHover;
 - (void)didNotHandleClickAsClick:(const WebCore::IntPoint&)point;
 
-#endif
+#endif // ENABLE(TWO_PHASE_CLICKS)
 
 @end
+
+// MARK: WKAppKitGestureController + Internal
+
+@interface WKAppKitGestureController (Internal)
+
+@property (nonatomic, readonly) NSPanGestureRecognizer *_panGestureRecognizer;
+
+@property (nonatomic, readonly) NSPressGestureRecognizer *_singleClickGestureRecognizer;
+
+@property (nonatomic, readonly) NSClickGestureRecognizer *_doubleClickGestureRecognizer;
+
+@property (nonatomic, readonly) NSPressGestureRecognizer *_secondaryClickGestureRecognizer;
+
+@property (nonatomic, readonly, nullable) WebKit::WebViewImpl *_viewImpl;
+
+@property (nonatomic, readonly, nullable) WebKit::WebPageProxy *_page;
+
+@end
+
+// MARK: WKAppKitGestureController + NSGestureRecognizerDelegatePrivate
+
+@interface WKAppKitGestureController (NSGestureRecognizerDelegate) <NSGestureRecognizerDelegatePrivate>
+
+@end
+
+NS_HEADER_AUDIT_END(nullability, sendability)
 
 #endif // HAVE(APPKIT_GESTURES_SUPPORT)

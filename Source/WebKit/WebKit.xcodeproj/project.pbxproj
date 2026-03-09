@@ -218,6 +218,7 @@
 		07AF79E12D693DD7004E8D3A /* WKScrollGeometryAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AF79E02D693DD7004E8D3A /* WKScrollGeometryAdapter.swift */; };
 		07AF79E92D695195004E8D3A /* WKUIDelegateInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 07AF79E82D695195004E8D3A /* WKUIDelegateInternal.h */; };
 		07BAEEA12ED056EE00251691 /* WebURLSchemeTask.h in Headers */ = {isa = PBXBuildFile; fileRef = 51D124271E6D3F1F002B2820 /* WebURLSchemeTask.h */; };
+		07C7D2782F5E8B25007D69FB /* WKAppKitGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C7D2772F5E8B25007D69FB /* WKAppKitGestureRecognizer.swift */; };
 		07CB79962CE9435700199C49 /* WebPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07CB79952CE9435700199C49 /* WebPage.swift */; };
 		07CB79982CE943E400199C49 /* WKNavigationDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07CB79972CE943E400199C49 /* WKNavigationDelegateAdapter.swift */; };
 		07CF2D512C2147A50064DF23 /* PlatformWritingToolsUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 07CA7FE92C20FAAA00798167 /* PlatformWritingToolsUtilities.h */; };
@@ -3499,6 +3500,7 @@
 		07B93FF523AF0CB80036F8EA /* RemoteMediaPlayerConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteMediaPlayerConfiguration.h; sourceTree = "<group>"; };
 		07BAF35623A2CC170044257E /* RemoteMediaPlayerProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteMediaPlayerProxy.h; sourceTree = "<group>"; };
 		07BAF35723A2CC190044257E /* RemoteMediaPlayerProxy.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteMediaPlayerProxy.cpp; sourceTree = "<group>"; };
+		07C7D2772F5E8B25007D69FB /* WKAppKitGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKAppKitGestureRecognizer.swift; sourceTree = "<group>"; };
 		07CA7FE92C20FAAA00798167 /* PlatformWritingToolsUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformWritingToolsUtilities.h; sourceTree = "<group>"; };
 		07CA7FEA2C20FAAA00798167 /* PlatformWritingToolsUtilities.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PlatformWritingToolsUtilities.mm; sourceTree = "<group>"; };
 		07CB79952CE9435700199C49 /* WebPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPage.swift; sourceTree = "<group>"; };
@@ -16549,6 +16551,7 @@
 				868160CF187645370021E79D /* WindowServerConnection.mm */,
 				336E07462EBCC1C100B4D635 /* WKAppKitGestureController.h */,
 				336E07472EBCC1C100B4D635 /* WKAppKitGestureController.mm */,
+				07C7D2772F5E8B25007D69FB /* WKAppKitGestureRecognizer.swift */,
 				CDCA85C7132ABA4E00E961DF /* WKFullScreenWindowController.h */,
 				CDCA85C6132ABA4E00E961DF /* WKFullScreenWindowController.mm */,
 				9321D5851A38EE3C008052BE /* WKImmediateActionController.h */,
@@ -22168,6 +22171,7 @@
 				9356F2DF2152B72300E6D5DF /* WebSWOriginStore.cpp in Sources */,
 				9356F2E12152B76600E6D5DF /* WebSWServerConnection.cpp in Sources */,
 				9356F2E02152B75200E6D5DF /* WebSWServerToContextConnection.cpp in Sources */,
+				07C7D2782F5E8B25007D69FB /* WKAppKitGestureRecognizer.swift in Sources */,
 				A190E9422F3DB703009615AD /* WKAVContentSource.mm in Sources */,
 				C6A4CA0C2252899800169289 /* WKBundlePageMac.mm in Sources */,
 				2D931169212F61B200044BFE /* WKContentView.mm in Sources */,
