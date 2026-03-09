@@ -526,6 +526,16 @@ private:
 
     const UniqueRef<SnapshotRemovalTracker> m_snapshotRemovalTracker;
     WTF::Function<void()> m_loadCallback;
-};
+} SWIFT_SHARED_REFERENCE(refViewGestureController, derefViewGestureController);
 
 } // namespace WebKit
+
+inline void refViewGestureController(WebKit::ViewGestureController* WTF_NONNULL obj)
+{
+    WTF::ref(obj);
+}
+
+inline void derefViewGestureController(WebKit::ViewGestureController* WTF_NONNULL obj)
+{
+    WTF::deref(obj);
+}

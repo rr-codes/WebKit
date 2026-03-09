@@ -95,6 +95,54 @@ NS_SWIFT_UI_ACTOR
 
 @end
 
+// MARK: WKAppKitGestureController + Click Handling
+
+@interface WKAppKitGestureController (ClickHandling)
+
+- (void)_handleClickBegan:(NSGestureRecognizer *)gesture;
+
+- (void)_handleClickEnded:(NSGestureRecognizer *)gesture;
+
+- (void)_handleClickCancelled;
+
+- (void)_endPotentialClickAndEnableDoubleClickGesturesIfNecessary;
+
+- (void)_setDoubleClickGesturesEnabled:(BOOL)enabled;
+
+@end
+
+// MARK: WKAppKitGestureController + Wheel Event Handling
+
+@interface WKAppKitGestureController (WheelEventHandling)
+
+- (void)sendWheelEventForGesture:(NSPanGestureRecognizer *)gesture;
+
+@end
+
+// MARK: WKAppKitGestureController + Momentum Handling
+
+@interface WKAppKitGestureController (MomentumHandling)
+
+- (void)startMomentumIfNeededForGesture:(NSPanGestureRecognizer *)gesture;
+
+- (void)interruptMomentumIfNeeded;
+
+@end
+
+// MARK: WKAppKitGestureController + Gesture Recognition
+
+@interface WKAppKitGestureController (GestureRecognition)
+
+- (void)panGestureRecognized:(NSGestureRecognizer *)gesture;
+
+- (void)singleClickGestureRecognized:(NSGestureRecognizer *)gesture;
+
+- (void)doubleClickGestureRecognized:(NSGestureRecognizer *)gesture;
+
+- (void)secondaryClickGestureRecognized:(NSGestureRecognizer *)gesture;
+
+@end
+
 // MARK: WKAppKitGestureController + NSGestureRecognizerDelegatePrivate
 
 @interface WKAppKitGestureController (NSGestureRecognizerDelegate) <NSGestureRecognizerDelegatePrivate>

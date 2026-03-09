@@ -266,209 +266,6 @@ static WebCore::FloatSize toRawPlatformDelta(WebCore::FloatSize delta)
     [gesture setEnabled:gestureEnabled];
 }
 
-#pragma mark - Gesture Recognition
-
-- (void)panGestureRecognized:(NSGestureRecognizer *)gesture
-{
-    CheckedPtr viewImpl = _viewImpl.get();
-    if (!viewImpl)
-        return;
-
-    RefPtr page = _page.get();
-    if (!page)
-        return;
-
-    WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "%@", gesture);
-
-    RetainPtr panGesture = dynamic_objc_cast<NSPanGestureRecognizer>(gesture);
-    if (!panGesture || _panGestureRecognizer != panGesture)
-        return;
-
-    if (viewImpl->ignoresAllEvents()) {
-        WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "Ignored gesture");
-        return;
-    }
-
-    if ([panGesture state] == NSGestureRecognizerStateBegan)
-        viewImpl->dismissContentRelativeChildWindowsWithAnimation(false);
-
-#if ENABLE(BANNER_VIEW_OVERLAYS)
-    viewImpl->updateBannerViewForPanGesture([panGesture state]);
-#endif
-
-    [self sendWheelEventForGesture:panGesture.get()];
-    [self startMomentumIfNeededForGesture:panGesture.get()];
-}
-
-- (void)singleClickGestureRecognized:(NSGestureRecognizer *)gesture
-{
-    CheckedPtr viewImpl = _viewImpl.get();
-    if (!viewImpl)
-        return;
-
-    RetainPtr webView = viewImpl->view();
-    if (!webView)
-        return;
-
-    RefPtr page = _page.get();
-    if (!page)
-        return;
-
-    WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "%@", gesture);
-
-    if (_singleClickGestureRecognizer != gesture)
-        return;
-
-    switch (gesture.state) {
-    case NSGestureRecognizerStateBegan:
-        [self _handleClickBegan:gesture];
-        break;
-    case NSGestureRecognizerStateEnded:
-        [self _handleClickEnded:gesture];
-        break;
-    case NSGestureRecognizerStateCancelled:
-    case NSGestureRecognizerStateFailed:
-        [self _handleClickCancelled];
-        break;
-    default:
-        break;
-    }
-}
-
-- (void)doubleClickGestureRecognized:(NSGestureRecognizer *)gesture
-{
-    CheckedPtr viewImpl = _viewImpl.get();
-    if (!viewImpl)
-        return;
-
-    RetainPtr webView = viewImpl->view();
-    if (!webView)
-        return;
-
-    RefPtr page = _page.get();
-    if (!page)
-        return;
-
-    WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "%@", gesture);
-
-    RetainPtr clickGesture = dynamic_objc_cast<NSClickGestureRecognizer>(gesture);
-    if (!clickGesture || _doubleClickGestureRecognizer != clickGesture)
-        return;
-
-    viewImpl->dismissContentRelativeChildWindowsWithAnimation(false);
-
-    auto magnificationOrigin = [webView convertPoint:[gesture locationInView:nil] fromView:nil];
-    protect(viewImpl->ensureGestureController())->handleSmartMagnificationGesture(magnificationOrigin);
-}
-
-- (void)secondaryClickGestureRecognized:(NSGestureRecognizer *)gesture
-{
-    CheckedPtr viewImpl = _viewImpl.get();
-    if (!viewImpl)
-        return;
-
-    RetainPtr webView = viewImpl->view();
-    if (!webView)
-        return;
-
-    RefPtr page = _page.get();
-    if (!page)
-        return;
-
-    WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "%@", gesture);
-
-    if (_secondaryClickGestureRecognizer != gesture)
-        return;
-
-ALLOW_NEW_API_WITHOUT_GUARDS_BEGIN
-    auto modifierFlags = [gesture modifierFlags];
-ALLOW_NEW_API_WITHOUT_GUARDS_END
-    auto location = [gesture locationInView:nil];
-    auto windowNumber = viewImpl->windowNumber();
-
-    RetainPtr mouseDown = [NSEvent mouseEventWithType:NSEventTypeRightMouseDown location:location modifierFlags:modifierFlags timestamp:GetCurrentEventTime() windowNumber:windowNumber context:NULL eventNumber:0 clickCount:1 pressure:1.0];
-    viewImpl->mouseDown(mouseDown.get(), WebKit::WebMouseEventInputSource::Automation);
-
-    RetainPtr mouseUp = [NSEvent mouseEventWithType:NSEventTypeRightMouseUp location:location modifierFlags:modifierFlags timestamp:GetCurrentEventTime() windowNumber:windowNumber context:NULL eventNumber:0 clickCount:1 pressure:0.0];
-    viewImpl->mouseUp(mouseUp.get(), WebKit::WebMouseEventInputSource::Automation);
-}
-
-#pragma mark - Click Handling
-
-- (void)_handleClickBegan:(NSGestureRecognizer *)gesture
-{
-    CheckedPtr viewImpl = _viewImpl.get();
-    if (!viewImpl)
-        return;
-
-    RetainPtr webView = viewImpl->view();
-    if (!webView)
-        return;
-
-    RefPtr page = _page.get();
-    if (!page)
-        return;
-
-    WebCore::FloatPoint position = [gesture locationInView:webView.get()];
-    _lastInteractionLocation = position;
-
-    if (RefPtr drawingArea = page->drawingArea()) {
-        if (RefPtr remoteDrawingArea = dynamicDowncast<WebKit::RemoteLayerTreeDrawingAreaProxy>(*drawingArea))
-            _layerTreeTransactionIdAtLastInteractionStart = remoteDrawingArea->lastCommittedMainFrameLayerTreeTransactionID();
-    }
-
-    _latestClickID = WebKit::ClickIdentifier::generate();
-    _potentialClickInProgress = true;
-    _isClickHighlightIDValid = true;
-    _isExpectingFastClickCommit = ![_doubleClickGestureRecognizer isEnabled];
-
-    page->potentialClickAtPosition(std::nullopt, WebCore::FloatPoint(position), false, *_latestClickID, WebKit::WebMouseEventInputSource::Automation);
-}
-
-- (void)_handleClickEnded:(NSGestureRecognizer *)gesture
-{
-    if (!_potentialClickInProgress)
-        return;
-
-    RefPtr page = _page.get();
-    if (!page)
-        return;
-
-    [self _endPotentialClickAndEnableDoubleClickGesturesIfNecessary];
-
-    _commitPotentialClickPointerId = WebCore::mousePointerID;
-
-    if (!_layerTreeTransactionIdAtLastInteractionStart) {
-        [self _handleClickCancelled];
-        return;
-    }
-
-    page->commitPotentialClick(std::nullopt, { }, *_layerTreeTransactionIdAtLastInteractionStart, _commitPotentialClickPointerId);
-}
-
-- (void)_handleClickCancelled
-{
-    if (!_potentialClickInProgress)
-        return;
-
-    _potentialClickInProgress = false;
-    _isClickHighlightIDValid = false;
-
-    if (RefPtr page = _page.get())
-        page->cancelPotentialClick();
-}
-
-- (void)_endPotentialClickAndEnableDoubleClickGesturesIfNecessary
-{
-    _potentialClickInProgress = false;
-    [self _setDoubleClickGesturesEnabled:YES];
-}
-
-- (void)_setDoubleClickGesturesEnabled:(BOOL)enabled
-{
-    [_doubleClickGestureRecognizer setEnabled:enabled];
-}
-
 #if ENABLE(TWO_PHASE_CLICKS)
 
 #pragma mark - Two-Phase Click Response Handlers
@@ -548,9 +345,13 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
 
 #endif
 
-#pragma mark - Wheel Event Handling
+@end
 
-- (void)sendWheelEventForGesture:(NSPanGestureRecognizer *)gesture
+// MARK: WKAppKitGestureController + Click Handling
+
+@implementation WKAppKitGestureController (ClickHandling)
+
+- (void)_handleClickBegan:(NSGestureRecognizer *)gesture
 {
     CheckedPtr viewImpl = _viewImpl.get();
     if (!viewImpl)
@@ -564,51 +365,71 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
     if (!page)
         return;
 
-    auto timestamp = MonotonicTime::fromRawSeconds([gesture timestamp]);
-    WebCore::IntPoint position { [gesture locationInView:webView.get()] };
-    auto globalPosition { WebCore::globalPoint([gesture locationInView:nil], [webView window]) };
-    auto gestureDelta { translationInView(gesture, webView.get()) };
-    auto wheelTicks { gestureDelta.scaled(1. / static_cast<float>(WebCore::Scrollbar::pixelsPerLineStep())) };
-    auto granularity = WebKit::WebWheelEvent::Granularity::ScrollByPixelWheelEvent;
-    bool directionInvertedFromDevice = false;
-    auto phase = toWheelEventPhase(gesture.state);
-    auto momentumPhase = WebKit::WebWheelEvent::Phase::None;
-    bool hasPreciseScrollingDeltas = true;
-    uint32_t scrollCount = 1;
-    auto unacceleratedScrollingDelta = gestureDelta;
-    auto ioHIDEventTimestamp = timestamp;
-    std::optional<WebCore::FloatSize> rawPlatformDelta;
-    auto momentumEndType = WebKit::WebWheelEvent::MomentumEndType::Unknown;
+    WebCore::FloatPoint position = [gesture locationInView:webView.get()];
+    _lastInteractionLocation = position;
 
-    WebKit::WebWheelEvent wheelEvent {
-        { WebKit::WebEventType::Wheel, { }, timestamp, WTF::UUID::createVersion4() },
-        WebCore::IntPoint { position },
-        WebCore::IntPoint { globalPosition },
-        gestureDelta,
-        wheelTicks,
-        granularity,
-        directionInvertedFromDevice,
-        phase,
-        momentumPhase,
-        hasPreciseScrollingDeltas,
-        scrollCount,
-        unacceleratedScrollingDelta,
-        ioHIDEventTimestamp,
-        rawPlatformDelta,
-        momentumEndType
-    };
+    if (RefPtr drawingArea = page->drawingArea()) {
+        if (RefPtr remoteDrawingArea = dynamicDowncast<WebKit::RemoteLayerTreeDrawingAreaProxy>(*drawingArea))
+            _layerTreeTransactionIdAtLastInteractionStart = remoteDrawingArea->lastCommittedMainFrameLayerTreeTransactionID();
+    }
 
-    WebKit::NativeWebWheelEvent nativeEvent { wheelEvent };
+    _latestClickID = WebKit::ClickIdentifier::generate();
+    _potentialClickInProgress = true;
+    _isClickHighlightIDValid = true;
+    _isExpectingFastClickCommit = ![_doubleClickGestureRecognizer isEnabled];
 
-    if (viewImpl->allowsBackForwardNavigationGestures() && protect(viewImpl->ensureGestureController())->handleScrollWheelEvent(nativeEvent)) {
-        WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "View gesture controller handled gesture");
+    page->potentialClickAtPosition(std::nullopt, WebCore::FloatPoint(position), false, *_latestClickID, WebKit::WebMouseEventInputSource::Automation);
+}
+
+- (void)_handleClickEnded:(NSGestureRecognizer *)gesture
+{
+    if (!_potentialClickInProgress)
+        return;
+
+    RefPtr page = _page.get();
+    if (!page)
+        return;
+
+    [self _endPotentialClickAndEnableDoubleClickGesturesIfNecessary];
+
+    _commitPotentialClickPointerId = WebCore::mousePointerID;
+
+    if (!_layerTreeTransactionIdAtLastInteractionStart) {
+        [self _handleClickCancelled];
         return;
     }
 
-    page->handleNativeWheelEvent(nativeEvent);
+    page->commitPotentialClick(std::nullopt, { }, *_layerTreeTransactionIdAtLastInteractionStart, _commitPotentialClickPointerId);
 }
 
-#pragma mark - Momentum Handling
+- (void)_handleClickCancelled
+{
+    if (!_potentialClickInProgress)
+        return;
+
+    _potentialClickInProgress = false;
+    _isClickHighlightIDValid = false;
+
+    if (RefPtr page = _page.get())
+        page->cancelPotentialClick();
+}
+
+- (void)_endPotentialClickAndEnableDoubleClickGesturesIfNecessary
+{
+    _potentialClickInProgress = false;
+    [self _setDoubleClickGesturesEnabled:YES];
+}
+
+- (void)_setDoubleClickGesturesEnabled:(BOOL)enabled
+{
+    [_doubleClickGestureRecognizer setEnabled:enabled];
+}
+
+@end
+
+// MARK: WKAppKitGestureController + Momentum Handling
+
+@implementation WKAppKitGestureController (MomentumHandling)
 
 - (void)startMomentumIfNeededForGesture:(NSPanGestureRecognizer *)gesture
 {
@@ -708,6 +529,72 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
 }
 
 @end
+
+// MARK: WKAppKitGestureController + Wheel Event Handling
+
+@implementation WKAppKitGestureController (WheelEventHandling)
+
+- (void)sendWheelEventForGesture:(NSPanGestureRecognizer *)gesture
+{
+    CheckedPtr viewImpl = _viewImpl.get();
+    if (!viewImpl)
+        return;
+
+    RetainPtr webView = viewImpl->view();
+    if (!webView)
+        return;
+
+    RefPtr page = _page.get();
+    if (!page)
+        return;
+
+    auto timestamp = MonotonicTime::fromRawSeconds([gesture timestamp]);
+    WebCore::IntPoint position { [gesture locationInView:webView.get()] };
+    auto globalPosition { WebCore::globalPoint([gesture locationInView:nil], [webView window]) };
+    auto gestureDelta { translationInView(gesture, webView.get()) };
+    auto wheelTicks { gestureDelta.scaled(1. / static_cast<float>(WebCore::Scrollbar::pixelsPerLineStep())) };
+    auto granularity = WebKit::WebWheelEvent::Granularity::ScrollByPixelWheelEvent;
+    bool directionInvertedFromDevice = false;
+    auto phase = toWheelEventPhase(gesture.state);
+    auto momentumPhase = WebKit::WebWheelEvent::Phase::None;
+    bool hasPreciseScrollingDeltas = true;
+    uint32_t scrollCount = 1;
+    auto unacceleratedScrollingDelta = gestureDelta;
+    auto ioHIDEventTimestamp = timestamp;
+    std::optional<WebCore::FloatSize> rawPlatformDelta;
+    auto momentumEndType = WebKit::WebWheelEvent::MomentumEndType::Unknown;
+
+    WebKit::WebWheelEvent wheelEvent {
+        { WebKit::WebEventType::Wheel, { }, timestamp, WTF::UUID::createVersion4() },
+        WebCore::IntPoint { position },
+        WebCore::IntPoint { globalPosition },
+        gestureDelta,
+        wheelTicks,
+        granularity,
+        directionInvertedFromDevice,
+        phase,
+        momentumPhase,
+        hasPreciseScrollingDeltas,
+        scrollCount,
+        unacceleratedScrollingDelta,
+        ioHIDEventTimestamp,
+        rawPlatformDelta,
+        momentumEndType
+    };
+
+    WebKit::NativeWebWheelEvent nativeEvent { wheelEvent };
+
+    if (viewImpl->allowsBackForwardNavigationGestures() && protect(viewImpl->ensureGestureController())->handleScrollWheelEvent(nativeEvent)) {
+        WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(page->logIdentifier(), "View gesture controller handled gesture");
+        return;
+    }
+
+    page->handleNativeWheelEvent(nativeEvent);
+}
+
+@end
+
+// MARK: WKAppKitGestureController + Internal
 
 @implementation WKAppKitGestureController (Internal)
 

@@ -25,6 +25,122 @@
 
 import Foundation
 internal import WebKit_Internal
+private import Carbon
+
+@objc(GestureRecognition)
+@implementation
+extension WKAppKitGestureController {
+    func panGestureRecognized(_ gesture: NSGestureRecognizer) {
+        guard let page = _page, let viewImpl = unsafe _viewImpl else {
+            return
+        }
+
+        Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function) \(String(reflecting: gesture))")
+
+        guard let panGesture = gesture as? NSPanGestureRecognizer, panGesture === _panGestureRecognizer else {
+            return
+        }
+
+        if unsafe viewImpl.ignoresAllEvents() {
+            Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function) Ignored gesture")
+        }
+
+        if panGesture.state == .began {
+            unsafe viewImpl.dismissContentRelativeChildWindowsWithAnimation(false)
+        }
+
+        #if ENABLE_BANNER_VIEW_OVERLAYS
+        unsafe viewImpl.updateBannerViewForPanGesture(panGesture.state)
+        #endif
+
+        sendWheelEvent(forGesture: panGesture)
+        startMomentumIfNeeded(forGesture: panGesture)
+    }
+
+    func singleClickGestureRecognized(_ gesture: NSGestureRecognizer) {
+        guard let page = _page else {
+            return
+        }
+
+        Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function) \(String(reflecting: gesture))")
+
+        guard _singleClickGestureRecognizer === gesture else {
+            return
+        }
+
+        switch gesture.state {
+        case .began:
+            _handleClickBegan(gesture)
+        case .ended:
+            _handleClickEnded(gesture)
+        case .cancelled, .failed:
+            _handleClickCancelled()
+        default:
+            break
+        }
+    }
+
+    func doubleClickGestureRecognized(_ gesture: NSGestureRecognizer) {
+        guard let page = _page, let viewImpl = unsafe _viewImpl, let webView = unsafe viewImpl.view() else {
+            return
+        }
+
+        Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function) \(String(reflecting: gesture))")
+
+        guard let clickGesture = gesture as? NSClickGestureRecognizer, clickGesture === _doubleClickGestureRecognizer else {
+            return
+        }
+
+        unsafe viewImpl.dismissContentRelativeChildWindowsWithAnimation(false)
+
+        let magnificationOrigin = webView.convert(gesture.location(in: nil), from: nil)
+        unsafe viewImpl.gestureController()?.handleSmartMagnificationGesture(.init(magnificationOrigin))
+    }
+
+    func secondaryClickGestureRecognized(_ gesture: NSGestureRecognizer) {
+        guard let page = _page, let viewImpl = unsafe _viewImpl, let webView = unsafe viewImpl.view() else {
+            return
+        }
+
+        Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function) \(String(reflecting: gesture))")
+
+        guard _secondaryClickGestureRecognizer === gesture else {
+            return
+        }
+
+        let modifierFlags = gesture.modifierFlags
+        let location = gesture.location(in: nil)
+        let windowNumber = unsafe viewImpl.windowNumber()
+
+        let mouseDown = NSEvent.mouseEvent(
+            with: .rightMouseDown,
+            location: location,
+            modifierFlags: modifierFlags,
+            timestamp: GetCurrentEventTime(),
+            windowNumber: windowNumber,
+            context: nil,
+            eventNumber: 0,
+            clickCount: 1,
+            pressure: 1
+        )
+
+        unsafe viewImpl.mouseDown(mouseDown, .Automation)
+
+        let mouseUp = NSEvent.mouseEvent(
+            with: .rightMouseUp,
+            location: location,
+            modifierFlags: modifierFlags,
+            timestamp: GetCurrentEventTime(),
+            windowNumber: windowNumber,
+            context: nil,
+            eventNumber: 0,
+            clickCount: 1,
+            pressure: 0
+        )
+
+        unsafe viewImpl.mouseUp(mouseUp, .Automation)
+    }
+}
 
 @objc(NSGestureRecognizerDelegate)
 @implementation
