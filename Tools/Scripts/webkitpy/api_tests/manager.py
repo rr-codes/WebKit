@@ -27,6 +27,7 @@ import re
 import time
 
 from webkitpy.api_tests.runner import Runner
+from webkitpy.api_tests.swift_testing_runner import SwiftTestingRunner
 from webkitpy.common.iteration_compatibility import iteritems
 from webkitpy.common.system.executive import ScriptError
 from webkitpy.results.upload import Upload
@@ -77,7 +78,8 @@ class Manager(object):
         result = []
         for arg in arg_filter:
             # Might match <binary>.<suite>.<test> or just <suite>.<test>
-            arg_re = re.compile(f'^{arg.replace("*", ".*")}$')
+            escaped = re.escape(arg).replace(r'\*', '.*')
+            arg_re = re.compile(f'^{escaped}$')
             for test in superset:
                 if arg_re.match(test):
                     result.append(test)
@@ -99,6 +101,18 @@ class Manager(object):
                     result.append(test)
                     continue
         return result
+
+    def _collect_swift_tests(self, args):
+        swift_runner = SwiftTestingRunner(self._port, self._stream)
+        workspace = swift_runner._workspace_path()
+        if not workspace:
+            return []
+
+        if not args:
+            return [SwiftTestingRunner.SWIFT_TESTING_PREFIX]
+
+        swift_prefix = SwiftTestingRunner.SWIFT_TESTING_PREFIX + '.'
+        return [arg for arg in args if arg.startswith(swift_prefix)]
 
     def _collect_tests(self, args):
         available_tests = []
@@ -123,6 +137,10 @@ class Manager(object):
             finally:
                 if not self._port.host.platform.is_win():
                     self.host.filesystem.remove(to_be_listed)
+
+        if SwiftTestingRunner.SWIFT_TESTING_PREFIX in specified_binaries:
+            swift_tests = self._collect_swift_tests(args)
+            available_tests += swift_tests
 
         if len(args) == 0:
             return sorted(available_tests)
@@ -162,10 +180,20 @@ class Manager(object):
                 continue
             if candidate_binary in self._port.path_to_api_test_binaries():
                 binaries.append(candidate_binary)
+            elif candidate_binary == SwiftTestingRunner.SWIFT_TESTING_PREFIX:
+                if SwiftTestingRunner.SWIFT_TESTING_PREFIX not in binaries:
+                    binaries.append(SwiftTestingRunner.SWIFT_TESTING_PREFIX)
             else:
                 # If the user specifies a test-name without a binary, we need to search both binaries
-                return self._port.path_to_api_test_binaries().keys()
-        return binaries or self._port.path_to_api_test_binaries().keys()
+                all_binaries = list(self._port.path_to_api_test_binaries().keys())
+                if SwiftTestingRunner.SWIFT_TESTING_PREFIX not in all_binaries:
+                    all_binaries.append(SwiftTestingRunner.SWIFT_TESTING_PREFIX)
+                return all_binaries
+        if not binaries:
+            all_binaries = list(self._port.path_to_api_test_binaries().keys())
+            all_binaries.append(SwiftTestingRunner.SWIFT_TESTING_PREFIX)
+            return all_binaries
+        return binaries
 
     def _update_worker_count(self):
         child_processes_option_value = int(self._options.child_processes or 0)
@@ -236,13 +264,34 @@ class Manager(object):
         if self._options.repeat_each != 1:
             _log.debug(f'Repeating each test {self._options.iterations} times')
 
+        # Separate gtest and Swift Testing tests
+        swift_prefix = SwiftTestingRunner.SWIFT_TESTING_PREFIX + '.'
+
+        def _is_swift(t):
+            return t == SwiftTestingRunner.SWIFT_TESTING_PREFIX or t.startswith(swift_prefix)
+
+        gtest_names = [t for t in test_names if not _is_swift(t)]
+        swift_test_names = [t for t in test_names if _is_swift(t)]
+
         runner = None
+        swift_runner = None
         try:
             _log.info('Running tests')
-            runner = Runner(self._port, self._stream)
-            for i in range(self._options.iterations):
-                _log.debug(f'\nIteration {i + 1}')
-                runner.run(test_names, int(self._options.child_processes) if self._options.child_processes else None)
+
+            # Run gtest tests through existing Runner
+            if gtest_names:
+                runner = Runner(self._port, self._stream)
+                for i in range(self._options.iterations):
+                    _log.debug(f'\nIteration {i + 1}')
+                    runner.run(gtest_names, int(self._options.child_processes) if self._options.child_processes else None)
+
+            # Run Swift Testing tests through SwiftTestingRunner
+            if swift_test_names:
+                swift_runner = SwiftTestingRunner(self._port, self._stream)
+                for i in range(self._options.iterations):
+                    _log.debug(f'\nSwift Testing iteration {i + 1}')
+                    swift_runner.run(swift_test_names)
+
         except KeyboardInterrupt:
             # If we receive a KeyboardInterrupt, print results.
             self._stream.writeln('')
@@ -251,17 +300,32 @@ class Manager(object):
 
         end_time = time.time()
 
-        if not runner:
+        # Merge results from both runners
+        all_results = {}
+        if runner:
+            all_results.update(runner.results)
+        if swift_runner:
+            all_results.update(swift_runner.results)
+
+        if not all_results:
             return Manager.FAILED_TESTS
 
-        successful = runner.result_map_by_status(runner.STATUS_PASSED)
-        disabled = len(runner.result_map_by_status(runner.STATUS_DISABLED))
+        # When Swift tests run at suite level, results contain dynamically
+        # discovered test names that weren't in the original test_names list.
+        # Replace the swift placeholder names with the real ones for accurate
+        # summary accounting.
+        swift_prefix = SwiftTestingRunner.SWIFT_TESTING_PREFIX + '.'
+        actual_test_names = [t for t in test_names if not _is_swift(t)]
+        actual_test_names += [t for t in all_results.keys() if t.startswith(swift_prefix)]
+
+        successful = {t: r[1] for t, r in all_results.items() if r[0] == Runner.STATUS_PASSED}
+        disabled_count = len({t: r[1] for t, r in all_results.items() if r[0] == Runner.STATUS_DISABLED})
 
         # Check if running in test-parallel-safety mode
         test_parallel_safety_tests = self._port.get_option('test_parallel_safety') or []
         is_parallel_safety_mode = bool(test_parallel_safety_tests)
 
-        _log.info(f'Ran {len(runner.results) - disabled} tests of {len(set(test_names))} with {len(successful)} successful')
+        _log.info(f'Ran {len(all_results) - disabled_count} tests of {len(set(actual_test_names))} with {len(successful)} successful')
 
         result_dictionary = {
             'Skipped': [],
@@ -274,9 +338,9 @@ class Manager(object):
         result = Manager.SUCCESS
 
         # Count actual failures (not skipped)
-        failed_tests = runner.result_map_by_status(runner.STATUS_FAILED)
-        crashed_tests = runner.result_map_by_status(runner.STATUS_CRASHED)
-        timedout_tests = runner.result_map_by_status(runner.STATUS_TIMEOUT)
+        failed_tests = {t: r[1] for t, r in all_results.items() if r[0] == Runner.STATUS_FAILED}
+        crashed_tests = {t: r[1] for t, r in all_results.items() if r[0] == Runner.STATUS_CRASHED}
+        timedout_tests = {t: r[1] for t, r in all_results.items() if r[0] == Runner.STATUS_TIMEOUT}
         has_real_failures = bool(failed_tests or crashed_tests or timedout_tests)
 
         if is_parallel_safety_mode:
@@ -289,7 +353,7 @@ class Manager(object):
                 self._stream.writeln('All parallel-safety tests passed!')
                 if json_output:
                     self.host.filesystem.write_text_file(json_output, json.dumps(result_dictionary, indent=4))
-        elif len(successful) + disabled == len(set(test_names)):
+        elif len(successful) + disabled_count == len(set(actual_test_names)):
             self._stream.writeln('All tests successfully passed!')
             if json_output:
                 self.host.filesystem.write_text_file(json_output, json.dumps(result_dictionary, indent=4))
@@ -302,8 +366,8 @@ class Manager(object):
             self._stream.writeln('')
 
             skipped = []
-            for test in test_names:
-                if test not in runner.results:
+            for test in actual_test_names:
+                if test not in all_results:
                     skipped.append(test)
                     result_dictionary['Skipped'].append({'name': test, 'output': None})
             if skipped:
@@ -313,15 +377,18 @@ class Manager(object):
                     for test in skipped:
                         self._stream.writeln(f'    {test}')
 
-            self._print_tests_result_with_status(runner.STATUS_FAILED, runner)
-            self._print_tests_result_with_status(runner.STATUS_CRASHED, runner)
-            self._print_tests_result_with_status(runner.STATUS_TIMEOUT, runner)
+            # Create a temporary combined runner for printing results
+            combined_runner = Runner(self._port, self._stream)
+            combined_runner.results = all_results
+            self._print_tests_result_with_status(Runner.STATUS_FAILED, combined_runner)
+            self._print_tests_result_with_status(Runner.STATUS_CRASHED, combined_runner)
+            self._print_tests_result_with_status(Runner.STATUS_TIMEOUT, combined_runner)
 
-            for test, test_result in iteritems(runner.results):
+            for test, test_result in iteritems(all_results):
                 status_to_string = {
-                    runner.STATUS_FAILED: 'Failed',
-                    runner.STATUS_CRASHED: 'Crashed',
-                    runner.STATUS_TIMEOUT: 'Timedout',
+                    Runner.STATUS_FAILED: 'Failed',
+                    Runner.STATUS_CRASHED: 'Crashed',
+                    Runner.STATUS_TIMEOUT: 'Timedout',
                 }.get(test_result[0])
                 if not status_to_string:
                     continue
@@ -335,10 +402,10 @@ class Manager(object):
             self._stream.write_update('Preparing upload data ...')
 
             status_to_test_result = {
-                runner.STATUS_PASSED: None,
-                runner.STATUS_FAILED: Upload.Expectations.FAIL,
-                runner.STATUS_CRASHED: Upload.Expectations.CRASH,
-                runner.STATUS_TIMEOUT: Upload.Expectations.TIMEOUT,
+                Runner.STATUS_PASSED: None,
+                Runner.STATUS_FAILED: Upload.Expectations.FAIL,
+                Runner.STATUS_CRASHED: Upload.Expectations.CRASH,
+                Runner.STATUS_TIMEOUT: Upload.Expectations.TIMEOUT,
             }
             upload = Upload(
                 suite=self._options.suite or 'api-tests',
@@ -353,7 +420,7 @@ class Manager(object):
                     test: Upload.create_test_result(
                         actual=status_to_test_result[result[0]],
                         time=int(result[2] * 1000),
-                    ) for test, result in iteritems(runner.results) if result[0] in status_to_test_result
+                    ) for test, result in iteritems(all_results) if result[0] in status_to_test_result
                 },
             )
             for url in self._options.report_urls:

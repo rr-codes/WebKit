@@ -309,6 +309,8 @@ class Port(object):
         for binary, path in self.path_to_api_test_binaries().items():
             if binary not in canonicalized_binaries:
                 continue
+            if binary == 'SwiftTesting':
+                continue
             if not self._filesystem.exists(path):
                 _log.error('{} was not found at {}'.format(os.path.basename(path), path))
                 return False

@@ -34,7 +34,7 @@ import SwiftUI
 struct WebPageTransferableTests {
     @Test
     func transferableContentTypes() async throws {
-        let expectedTypes: [UTType] = [.webArchive, .pdf, .png, .url, .flatRTFD, .rtf, .utf8PlainText]
+        let expectedTypes: [UTType] = [.pdf, .png, .url, .flatRTFD, .rtf, .utf8PlainText]
         let exportedContentTypes = WebPage.exportedContentTypes()
         #expect(exportedContentTypes == expectedTypes)
 

@@ -306,6 +306,16 @@ class DarwinPort(ApplePort):
             self._append_value_colon_separated(environment, name, build_root_path)
         return environment
 
+    def path_to_xcworkspace(self):
+        webkit_base = self.webkit_base()
+        internal_workspace = self.host.filesystem.join(webkit_base, '..', 'Internal', 'WebKit', 'WebKit.xcworkspace')
+        if self.host.filesystem.exists(internal_workspace):
+            return self.host.filesystem.abspath(internal_workspace)
+        fallback_workspace = self.host.filesystem.join(webkit_base, 'WebKit.xcworkspace')
+        if self.host.filesystem.exists(fallback_workspace):
+            return self.host.filesystem.abspath(fallback_workspace)
+        return None
+
     def stderr_patterns_to_strip(self):
         worthless_patterns = super(DarwinPort, self).stderr_patterns_to_strip()
         # Suppress log message from <rdar://56920527>
