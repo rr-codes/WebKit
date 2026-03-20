@@ -1173,7 +1173,7 @@ class Port(object):
         config_file_name = self._apache_config_file_name_for_platform(sys.platform)
         return self._filesystem.join(self.layout_tests_dir(), 'http', 'conf', config_file_name)
 
-    def _build_path(self, *comps):
+    def _build_path(self, *comps) -> str:
         root_directory = self.get_option('_cached_root') or self.get_option('root')
         if not root_directory:
             root_directory = self._config.build_directory(self.get_option('configuration'))
@@ -1253,10 +1253,10 @@ class Port(object):
 
     API_TEST_BINARY_NAMES = ['TestWTF', 'TestWebKitAPI']
 
-    def path_to_api_test(self, program_name):
+    def path_to_api_test(self, program_name: str) -> str:
         return self._build_path(program_name)
 
-    def path_to_api_test_binaries(self):
+    def path_to_api_test_binaries(self) -> dict[str, str]:
         return {binary: self.path_to_api_test(binary) for binary in self.API_TEST_BINARY_NAMES}
 
     def _webkit_baseline_path(self, platform):

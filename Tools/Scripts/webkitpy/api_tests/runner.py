@@ -20,12 +20,14 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import os
 import logging
+import os
 import time
+from enum import Enum
+from typing import Optional
 
-from webkitcorepy import string_utils
 from webkitcorepy import TaskPool
+from webkitcorepy import string_utils
 
 from webkitpy.common.iteration_compatibility import iteritems
 from webkitpy.port.server_process import ServerProcess, _log as server_process_logger
@@ -44,6 +46,18 @@ class _NoisyOutputFilter(logging.Filter):
 
 
 _log.addFilter(_NoisyOutputFilter())
+
+
+class RunnerTestStatus(Enum):
+    PASSED = 0
+    FAILED = 1
+    CRASHED = 2
+    TIMEOUT = 3
+    DISABLED = 4
+    RUNNING = 5
+
+    def __str__(self):
+        return ['Passed', 'Failed', 'Crashed', 'Timeout', 'Disabled'][self.value]
 
 
 def setup_shard(port=None, devices=None, log_limit=None):
@@ -77,15 +91,16 @@ def run_test_parallel_safety_single_iteration(test_name):
         _log.error(f'Error in test-parallel-safety iteration for {test_name}: {e}')
         raise  # Re-raise so TaskPool can handle the error appropriately
 
-def report_result(worker, test, status, output, elapsed=None):
-    if elapsed < Runner.ELAPSED_THRESHOLD and status == Runner.STATUS_PASSED and (not output or Runner.instance.port.get_option('quiet')):
-        Runner.instance.printer.write_update(f'{worker} {test} {Runner.NAME_FOR_STATUS[status]}')
+
+def report_result(worker, test, status: RunnerTestStatus, output: str, elapsed: Optional[int] = None):
+    if elapsed < Runner.ELAPSED_THRESHOLD and status == RunnerTestStatus.PASSED and (not output or Runner.instance.port.get_option('quiet')):
+        Runner.instance.printer.write_update(f'{worker} {test} {status}')
     else:
         elapsed_log = f' (took {round(elapsed, 1)} seconds)' if elapsed > Runner.ELAPSED_THRESHOLD else ''
-        Runner.instance.printer.writeln(f'{worker} {test} {Runner.NAME_FOR_STATUS[status]}{elapsed_log}')
+        Runner.instance.printer.writeln(f'{worker} {test} {status}{elapsed_log}')
     if test in Runner.instance.results:
         existing_status = Runner.instance.results[test][0]
-        if status > existing_status or (status == existing_status and status != Runner.STATUS_PASSED):
+        if status > existing_status or (status == existing_status and status != RunnerTestStatus.PASSED):
             Runner.instance.results[test] = status, output, elapsed
     else:
         Runner.instance.results[test] = status, output, elapsed
@@ -96,22 +111,7 @@ def teardown_shard():
 
 
 class Runner(object):
-    STATUS_PASSED = 0
-    STATUS_FAILED = 1
-    STATUS_CRASHED = 2
-    STATUS_TIMEOUT = 3
-    STATUS_DISABLED = 4
-    STATUS_RUNNING = 5
-
     ELAPSED_THRESHOLD = 3
-
-    NAME_FOR_STATUS = [
-        'Passed',
-        'Failed',
-        'Crashed',
-        'Timeout',
-        'Disabled',
-    ]
 
     instance = None
 
@@ -122,7 +122,7 @@ class Runner(object):
         self._num_workers = 1
         self.log_limit = log_limit
         self._has_logged_for_test = True  # Suppress an empty line between "Running tests" and the first test's output.
-        self.results = {}
+        self.results: dict[str, tuple[RunnerTestStatus, str, Optional[int]]] = {}
 
     # FIXME API tests should run as an app, we won't need this function <https://bugs.webkit.org/show_bug.cgi?id=175204>
     @staticmethod
@@ -180,7 +180,9 @@ class Runner(object):
                 raise RuntimeError('Cannot nest API test runners')
             Runner.instance = self
             mutually_exclusive_groups = list(self.port.sharding_groups(suite='api-tests').keys())
-            workers = (num_workers if num_workers and num_workers >= self._num_workers else max(self.port.default_child_processes() or self._num_workers, self._num_workers) if mutually_exclusive_groups else self._num_workers)
+            workers = (num_workers if num_workers and num_workers >= self._num_workers else max(
+                self.port.default_child_processes() or self._num_workers,
+                self._num_workers) if mutually_exclusive_groups else self._num_workers)
 
             devices = None
             if getattr(self.port, 'DEVICE_MANAGER', None):
@@ -208,10 +210,12 @@ class Runner(object):
                     for i in range(0, len(supplied_tests), max_repeat_workers):
                         batch = supplied_tests[i:i + max_repeat_workers]
                         test_parallel_safety_batches.append(batch)
-                    _log.info(f'Test-parallel-safety batching: {len(supplied_tests)} tasks split into {len(test_parallel_safety_batches)} batches of max {max_repeat_workers} tasks each')
+                    _log.info(
+                        f'Test-parallel-safety batching: {len(supplied_tests)} tasks split into {len(test_parallel_safety_batches)} batches of max {max_repeat_workers} tasks each')
 
             # For minimum worker calculation, use current batch size (first batch or all if unbatched)
-            self._num_workers = min(workers, max(len(shards) + (len(test_parallel_safety_batches[0]) if test_parallel_safety_batches else 0), 1))
+            self._num_workers = min(workers, max(len(shards) + (
+                len(test_parallel_safety_batches[0]) if test_parallel_safety_batches else 0), 1))
 
             system_shards = {}
             non_system_shards = {}
@@ -226,7 +230,8 @@ class Runner(object):
             # Process test-parallel-safety batches sequentially
             for batch_index, test_parallel_safety_batch in enumerate(test_parallel_safety_batches if test_parallel_safety_batches else [[]]):
                 if test_parallel_safety_batch:
-                    _log.info(f'Running batch {batch_index + 1}/{len(test_parallel_safety_batches)}: {len(non_system_shards)} regular shards with {len(test_parallel_safety_batch)} test-parallel-safety repeat tasks')
+                    _log.info(
+                        f'Running batch {batch_index + 1}/{len(test_parallel_safety_batches)}: {len(non_system_shards)} regular shards with {len(test_parallel_safety_batch)} test-parallel-safety repeat tasks')
 
                 non_system_groups = [group for group in mutually_exclusive_groups if group != 'system']
                 test_parallel_safety_groups = []
@@ -245,14 +250,17 @@ class Runner(object):
                 with TaskPool(
                     workers=batch_workers,
                     mutually_exclusive_groups=non_system_groups,
-                    setup=setup_shard, setupkwargs=dict(port=self.port, devices=devices, log_limit=self.log_limit), teardown=teardown_shard,
+                    setup=setup_shard, setupkwargs=dict(port=self.port, devices=devices, log_limit=self.log_limit),
+                    teardown=teardown_shard,
                 ) as pool:
 
                     if test_parallel_safety_batch:
                         for i, test_name in enumerate(test_parallel_safety_batch):
                             test_parallel_safety_group = test_parallel_safety_groups[i]
-                            _log.info(f'Dispatching repeat test-parallel-safety task for {test_name} to group {test_parallel_safety_group} (batch {batch_index + 1}/{len(test_parallel_safety_batches)})')
-                            pool.do(run_test_parallel_safety_single_iteration, test_name, repeat=True, group=test_parallel_safety_group)
+                            _log.info(
+                                f'Dispatching repeat test-parallel-safety task for {test_name} to group {test_parallel_safety_group} (batch {batch_index + 1}/{len(test_parallel_safety_batches)})')
+                            pool.do(run_test_parallel_safety_single_iteration, test_name, repeat=True,
+                                    group=test_parallel_safety_group)
 
                     # Run regular shards with each batch - this is the whole point of test-parallel-safety testing
                     for name, tests in iteritems(non_system_shards):
@@ -275,7 +283,8 @@ class Runner(object):
                 with TaskPool(
                     workers=1,  # System tests run with single worker to avoid conflicts
                     mutually_exclusive_groups=[],
-                    setup=setup_shard, setupkwargs=dict(port=self.port, devices=devices, log_limit=self.log_limit), teardown=teardown_shard,
+                    setup=setup_shard, setupkwargs=dict(port=self.port, devices=devices, log_limit=self.log_limit),
+                    teardown=teardown_shard,
                 ) as pool:
                     for name, tests in iteritems(system_shards):
                         pool.do(run_shard, name, *tests)
@@ -288,9 +297,9 @@ class Runner(object):
             server_process_logger.setLevel(original_level)
             Runner.instance = None
 
-    def result_map_by_status(self, status=None):
+    def result_map_by_status(self, status: Optional[RunnerTestStatus] = None) -> dict[str, str]:
         map = {}
-        for test_name, result in iteritems(self.results):
+        for test_name, result in self.results.items():
             if result[0] == status:
                 map[test_name] = result[1]
         return map
@@ -333,9 +342,9 @@ class _Worker(object):
             Runner.command_for_port(self._port, [self._port.path_to_api_test(binary_name), f'--gtest_filter={test}']),
             env=self._port.environment_for_api_tests())
 
-        status = Runner.STATUS_RUNNING
+        status: RunnerTestStatus = RunnerTestStatus.RUNNING
         if test.split('.')[1].startswith('DISABLED_') and not self._port.get_option('force'):
-            status = Runner.STATUS_DISABLED
+            status = RunnerTestStatus.DISABLED
 
         stdout_buffer = ''
         stderr_buffer = ''
@@ -343,10 +352,10 @@ class _Worker(object):
 
         try:
             started = time.time()
-            if status != Runner.STATUS_DISABLED:
+            if status != RunnerTestStatus.DISABLED:
                 server_process.start()
 
-            while status == Runner.STATUS_RUNNING:
+            while status == RunnerTestStatus.RUNNING:
                 stdout_line, stderr_line = server_process.read_either_stdout_or_stderr_line(started + self._timeout)
                 if not stderr_line and not stdout_line:
                     break
@@ -359,7 +368,7 @@ class _Worker(object):
                     stderr_buffer += stderr_line
                     _log.error(stderr_line[:-1])
                     server_process.stop()
-                    status = Runner.STATUS_FAILED
+                    status = RunnerTestStatus.FAILED
                     break
 
                 if stderr_line:
@@ -369,21 +378,21 @@ class _Worker(object):
                 if stdout_line:
                     stdout_line = string_utils.decode(stdout_line, target_type=str)
                     if '**PASS**' in stdout_line:
-                        status = Runner.STATUS_PASSED
+                        status = RunnerTestStatus.PASSED
                     elif '**FAIL**' in stdout_line:
-                        status = Runner.STATUS_FAILED
+                        status = RunnerTestStatus.FAILED
                     else:
                         stdout_buffer += stdout_line
                         _log.error(stdout_line[:-1])
 
-            if status == Runner.STATUS_DISABLED:
+            if status == RunnerTestStatus.DISABLED:
                 pass
             elif server_process.timed_out:
-                status = Runner.STATUS_TIMEOUT
+                status = RunnerTestStatus.TIMEOUT
             elif server_process.has_crashed():
-                status = Runner.STATUS_CRASHED
-            elif status == Runner.STATUS_RUNNING:
-                status = Runner.STATUS_FAILED
+                status = RunnerTestStatus.CRASHED
+            elif status == RunnerTestStatus.RUNNING:
+                status = RunnerTestStatus.FAILED
 
         finally:
             output_buffer = stderr_buffer + stdout_buffer
@@ -392,7 +401,7 @@ class _Worker(object):
             for line in (remaining_stdout + remaining_stderr).splitlines(False):
                 line_count += 1
                 if line_count > self.log_limit:
-                    status = Runner.STATUS_FAILED
+                    status = RunnerTestStatus.FAILED
                     line = self.EXCEEDED_LOG_LINE_MESSAGE.format(self.log_limit)
 
                 _log.error(line)
@@ -433,7 +442,8 @@ class _Worker(object):
 
                 server_process.start()
                 while remaining_tests:
-                    stdout = string_utils.decode(server_process.read_stdout_line(started + self._timeout), target_type=str)
+                    stdout = string_utils.decode(server_process.read_stdout_line(started + self._timeout),
+                                                 target_type=str)
 
                     # If we've triggered a timeout, we don't know which test caused it. Break out and run singly.
                     if stdout is None and server_process.timed_out:
@@ -441,10 +451,10 @@ class _Worker(object):
 
                     if stdout is None and server_process.has_crashed():
                         # It's possible we crashed before printing anything.
-                        if last_status == Runner.STATUS_PASSED:
+                        if last_status == RunnerTestStatus.PASSED:
                             last_test = None
                         else:
-                            last_status = Runner.STATUS_CRASHED
+                            last_status = RunnerTestStatus.CRASHED
                         break
 
                     assert stdout is not None
@@ -473,16 +483,17 @@ class _Worker(object):
                         buffer = ''
 
                     if '**PASS**' == stdout_split[0]:
-                        last_status = Runner.STATUS_PASSED
+                        last_status = RunnerTestStatus.PASSED
                     else:
-                        last_status = Runner.STATUS_FAILED
+                        last_status = RunnerTestStatus.FAILED
                     last_test = stdout_split[1]
 
                 # We assume that stderr is only relevant if there is a crash (meaning we triggered an assert)
                 if last_test:
                     remaining_tests.remove(last_test)
                     stdout_buffer = string_utils.decode(server_process.pop_all_buffered_stdout(), target_type=str)
-                    stderr_buffer = string_utils.decode(server_process.pop_all_buffered_stderr(), target_type=str) if last_status == Runner.STATUS_CRASHED else ''
+                    stderr_buffer = string_utils.decode(server_process.pop_all_buffered_stderr(),
+                                                        target_type=str) if last_status == RunnerTestStatus.CRASHED else ''
                     for line in (stdout_buffer + stderr_buffer).splitlines():
                         line_count += 1
                         if line_count > self.log_limit:
@@ -491,7 +502,7 @@ class _Worker(object):
                         _log.error(line[:-1])
 
                     if line_count > self.log_limit:
-                        last_status = Runner.STATUS_FAILED
+                        last_status = RunnerTestStatus.FAILED
                         line = self.EXCEEDED_LOG_LINE_MESSAGE.format(self.log_limit)
                         buffer += line
                         _log.error(line[:-1])
