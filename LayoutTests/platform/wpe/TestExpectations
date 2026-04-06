@@ -550,6 +550,9 @@ webkit.org/b/301555 transforms/2d/zoom-menulist.html [ Skip ]
 # 5. FLAKY TESTS
 #////////////////////////////////////////////////////////////////////////////////////////
 
+webkit.org/b/309377 [ arm64 ] http/wpt/webcodecs/videoFrame-video-element-compressed.html [ Failure Pass ]
+webkit.org/b/309377 [ arm64 ] imported/w3c/web-platform-tests/html/canvas/element/manual/imagebitmap/canvas-createImageBitmap-video-resize.html [ Failure Pass ]
+
 webkit.org/b/119253 fast/workers/dedicated-worker-lifecycle.html [ Pass ]
 
 webkit.org/b/200304 svg/as-image/svg-image-with-data-uri-background.html [ ImageOnlyFailure Pass ]
