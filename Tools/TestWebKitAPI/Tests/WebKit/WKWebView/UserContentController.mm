@@ -1909,6 +1909,51 @@ TEST(WKUserContentController, AutoFillWorldTrustedEventHandler)
     EXPECT_EQ(pageWorldEventCount, 2);
 }
 
+TEST(WKUserContentController, DispatchTrustedEventForAutoFill)
+{
+    RetainPtr contentWorldConfiguration = adoptNS([[WKContentWorldConfiguration alloc] init]);
+    [contentWorldConfiguration setAutofillScriptingEnabled:YES];
+
+    __block int trustedOnlyEventCount = 0;
+    __block int regularEventCount = 0;
+    __block int isTrustedCount = 0;
+
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+
+    RetainPtr world = [WKContentWorld worldWithConfiguration:contentWorldConfiguration.get()];
+    RetainPtr autoFillHandler = adoptNS([[TestMessageHandler alloc] init]);
+    [autoFillHandler addMessage:@"trustedOnly" withHandler:^{
+        trustedOnlyEventCount++;
+    }];
+    [autoFillHandler addMessage:@"regular" withHandler:^{
+        regularEventCount++;
+    }];
+    [autoFillHandler addMessage:@"isTrusted" withHandler:^{
+        isTrustedCount++;
+    }];
+    [[configuration userContentController] addScriptMessageHandler:autoFillHandler.get() contentWorld:world.get() name:@"autofill"];
+
+    RetainPtr pageHandler = adoptNS([[TestMessageHandler alloc] init]);
+    [pageHandler addMessage:@"isTrusted" withHandler:^{
+        isTrustedCount++;
+    }];
+    [[configuration userContentController] addScriptMessageHandler:pageHandler.get() name:@"page"];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600) configuration:configuration.get() addToWindow:YES]);
+    [webView synchronouslyLoadHTMLString:@"<input id='input' type='text'>"];
+
+    [webView objectByEvaluatingJavaScript:@"input.addEventListener('keydown', (e) => { window.webkit.messageHandlers.autofill.postMessage('trustedOnly'); }, { webkitTrustedOnly: true })" inFrame:nil inContentWorld:world.get()];
+    [webView objectByEvaluatingJavaScript:@"input.addEventListener('keydown', (e) => { window.webkit.messageHandlers.autofill.postMessage('regular'); })" inFrame:nil inContentWorld:world.get()];
+    [webView objectByEvaluatingJavaScript:@"input.addEventListener('keydown', (e) => { if (e.isTrusted) window.webkit.messageHandlers.page.postMessage('isTrusted'); window.webkit.messageHandlers.page.postMessage('done'); })"];
+    [webView objectByEvaluatingJavaScript:@"input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', code: 'KeyA', keyCode: 65, which: 65, bubbles: true }))" inFrame:nil inContentWorld:world.get()];
+    [webView objectByEvaluatingJavaScript:@"input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', code: 'KeyA', keyCode: 65, which: 65, bubbles: true, trusted: true }))" inFrame:nil inContentWorld:world.get()];
+    [webView waitForNextPresentationUpdate];
+
+    EXPECT_EQ(isTrustedCount, 1);
+    EXPECT_EQ(regularEventCount, 2);
+    EXPECT_EQ(trustedOnlyEventCount, 0);
+}
+
 #endif
 
 TEST(WKUserContentController, WebKitSubmitEvent)

@@ -24,6 +24,7 @@
 #include "ActiveDOMObject.h"
 #include "ContextDestructionObserverInlines.h"
 #include "DOMPromiseProxy.h"
+#include "DOMWrapperWorld.h"
 #include "ExtendedDOMClientIsoSubspaces.h"
 #include "ExtendedDOMIsoSubspaces.h"
 #include "JSDOMAttribute.h"
@@ -106,6 +107,22 @@ template<> ConversionResult<IDLDictionary<TestPromiseRejectionEvent::Init>> conv
     auto composedConversionResult = convert<IDLBoolean>(lexicalGlobalObject, composedValue);
     if (composedConversionResult.hasException(throwScope)) [[unlikely]]
         return ConversionResultException { };
+    auto trustedForBindingsOnlyConversionResult = [&]() -> ConversionResult<IDLBoolean> {
+        if (worldForDOMObject(*&lexicalGlobalObject).allowAutofill()) {
+            JSValue trustedValue;
+            if (isNullOrUndefined)
+                trustedValue = jsUndefined();
+            else {
+                trustedValue = object->get(&lexicalGlobalObject, Identifier::fromString(vm, "trusted"_s));
+                RETURN_IF_EXCEPTION(throwScope, ConversionResultException { });
+            }
+            return convert<IDLBoolean>(lexicalGlobalObject, trustedValue);
+        } else {
+            return ConversionResult<IDLBoolean> { Converter<IDLBoolean>::ReturnType { } };
+        }
+    }();
+    if (trustedForBindingsOnlyConversionResult.hasException(throwScope)) [[unlikely]]
+        return ConversionResultException { };
     JSValue promiseValue;
     if (isNullOrUndefined)
         promiseValue = jsUndefined();
@@ -135,6 +152,7 @@ template<> ConversionResult<IDLDictionary<TestPromiseRejectionEvent::Init>> conv
             bubblesConversionResult.releaseReturnValue(),
             cancelableConversionResult.releaseReturnValue(),
             composedConversionResult.releaseReturnValue(),
+            trustedForBindingsOnlyConversionResult.releaseReturnValue(),
         },
         promiseConversionResult.releaseReturnValue(),
         reasonConversionResult.releaseReturnValue(),
