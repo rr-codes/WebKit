@@ -22,6 +22,7 @@
 #include "WindowProxy.h"
 
 #include "CommonVM.h"
+#include "ContentSecurityPolicy.h"
 #include "DOMWrapperWorld.h"
 #include "DocumentLoader.h"
 #include "DocumentPage.h"
@@ -247,6 +248,12 @@ void WindowProxy::setDOMWindow(DOMWindow* newDOMWindow)
                 cacheableBindingRootObject->updateGlobalObject(windowProxy->window());
 
             windowProxy->window()->setConsoleClient(localFrame->console());
+
+            // Apply the document's CSP state to the new JSDOMWindow created by setWindow().
+            if (RefPtr document = localFrame->document()) {
+                if (CheckedPtr csp = document->contentSecurityPolicy())
+                    csp->didCreateWindowProxy(*windowProxy.get());
+            }
         }
 
         RefPtr page = m_frame->page();

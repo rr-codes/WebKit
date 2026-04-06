@@ -5137,15 +5137,16 @@ bool Document::isNavigationBlockedByThirdPartyIFrameRedirectBlocking(Frame& targ
     if (m_frame->hasHadUserInteraction())
         return false;
 
-    // Only prevent navigations by unsandboxed iframes. Such navigations by sandboxed iframes would have already been blocked unless
-    // "allow-top-navigation" / "allow-top-navigation-by-user-activation" was explicitly specified.
-    // We also want to guard against bypassing this block via an iframe-provided CSP sandbox.
-    RefPtr ownerElement = m_frame->ownerElement();
-    if ((!ownerElement || ownerElement->sandboxFlags() == sandboxFlags()) && !sandboxFlags().isEmpty()) {
-        // Navigation is only allowed if the parent of the sandboxed iframe is first-party.
-        RefPtr parentFrame = dynamicDowncast<LocalFrame>(m_frame->tree().parent());
-        RefPtr parentDocument = parentFrame ? parentFrame->document() : nullptr;
-        if (parentDocument && canAccessAncestor(parentDocument->securityOrigin(), &targetFrame))
+    // Only prevent navigations by unsandboxed iframes. Sandboxed iframes would have already been blocked
+    // unless "allow-top-navigation" was explicitly set via the element's sandbox attribute (not CSP).
+    // Also require the parent that set the sandbox to be same-origin with the target.
+    bool sandboxIsFromElementAttribute = !sandboxFlags().isEmpty() && m_frame->sandboxFlagsFromSandboxAttributeNotCSP() == sandboxFlags();
+    if (sandboxIsFromElementAttribute) {
+        RefPtr parentFrame = m_frame->tree().parent();
+        RefPtr parentOrigin = parentFrame ? parentFrame->frameDocumentSecurityOrigin() : nullptr;
+        RefPtr targetOrigin = targetFrame.frameDocumentSecurityOrigin();
+        bool parentIsFirstParty = parentOrigin && targetOrigin && parentOrigin->isSameOriginDomain(*targetOrigin);
+        if (parentIsFirstParty)
             return false;
     }
 
