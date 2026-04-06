@@ -1533,6 +1533,7 @@ class SystemCallTestCase(BaseTestCase):
             try:
                 self.send_lldb_command_or_raise("c")
                 self.send_lldb_command_or_raise("process interrupt")
+                self.send_lldb_command_or_raise("dis", patterns=["error: read memory from 0x8000000000000000 failed"])
             except Exception as e:
                 raise Exception(f"Cycle {cycle} failed: {e}")
 
@@ -1546,7 +1547,6 @@ class SystemCallTestCase(BaseTestCase):
         self.send_lldb_command_or_raise("n", patterns=[])
         self.send_lldb_command_or_raise("process interrupt")
 
-        # FIXME: `dis` hangs LLDB when stop in the system call.
 
 
 class MultiVMSameModuleSameFunctionTestCase(BaseTestCase):

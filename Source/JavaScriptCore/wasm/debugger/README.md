@@ -103,29 +103,6 @@ Virtual Memory Layout:
 - 0x8000000000000000 - 0xFFFFFFFFFFFFFFFF: Invalid regions
 ```
 
-## Protocol Implementation
-
-### Execution Control
-
-- **[DONE]** `gdb-remote localhost:1234`: Attach to debugger
-- **[DONE]** `process interrupt`, `ctrl+C`: Stop execution at function entry
-- **[DONE]** `continue`: Resume WebAssembly execution
-- **[DONE]** `breakpoint set`: Set breakpoints at virtual addresses
-- **[DONE]** `step over`: Step over function calls
-- **[DONE]** `step in`: Step into function calls and exception handlers
-- **[DONE]** `step out`: Step out of current function
-- **[DONE]** `step instruction`: Single step through bytecode
-
-### Inspection
-
-- **[DONE]** `target modules list`: List loaded WebAssembly modules
-- **[DONE]** `disassemble`: Display WebAssembly bytecode
-- **[DONE]** `bt` (backtrace): Show WebAssembly call stack
-- **[DONE]** `frame variable`: List local variables
-- **[DONE]** `memory region --all`: List memory regions
-- **[DONE]** `memory read`: Read WebAssembly memory and module source
-- **[TODO]** `memory write`: Write to memory? source? or both?
-
 ## Testing
 
 ### Unit Tests
@@ -187,7 +164,7 @@ lldb -o 'log enable gdb-remote packets' -o 'process connect --plugin wasm connec
 
 See [RWI_ARCHITECTURE.md](./RWI_ARCHITECTURE.md) for complete setup instructions including:
 
-- Starting Safari/MiniBrowser with `--wasm-debugger` flag
+- Starting Safari/MiniBrowser with `__XPC_JSC_enableWasmDebugger=1 JSC_enableWasmDebugger=1` flag
 - Using WasmDebuggerRWIClient to relay LLDB commands
 - Debugging WebContent processes via Remote Web Inspector
 
