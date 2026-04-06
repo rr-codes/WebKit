@@ -701,6 +701,10 @@ void run(const TestConfig* config)
     RUN(testSelectFold(42));
     RUN(testSelectFold(43));
     RUN(testSelectInvert());
+    RUN(testSelectInt32WithZeroElse());
+    RUN(testSelectInt64WithZeroElse());
+    RUN(testSelectInt32ImmWithZeroElse());
+    RUN(testSelectTestWithZeroElse());
     RUN(testCheckSelect());
     RUN(testCheckSelectCheckSelect());
     RUN(testCheckSelectAndCSE());

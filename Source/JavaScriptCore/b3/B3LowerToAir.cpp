@@ -2901,6 +2901,14 @@ private:
     {
         using namespace Air;
         auto createSelectInstruction = [&] (Air::Opcode opcode, const Arg& condition, ArgPromise& left, ArgPromise& right) -> Inst {
+            if (m_value->child(2)->isInt(0)) {
+                if (isValidForm(opcode, condition.kind(), left.kind(), right.kind(), Arg::Tmp, Arg::ZeroReg, Arg::Tmp)) {
+                    Tmp result = tmp(m_value);
+                    Tmp thenCase = tmp(m_value->child(1));
+                    return left.inst(right.inst(opcode, m_value, condition, left.consume(*this), right.consume(*this), thenCase, zeroReg(), result));
+                }
+            }
+
             if (isValidForm(opcode, condition.kind(), left.kind(), right.kind(), Arg::Tmp, Arg::Tmp, Arg::Tmp)) {
                 Tmp result = tmp(m_value);
                 Tmp thenCase = tmp(m_value->child(1));
@@ -2909,6 +2917,7 @@ private:
                     opcode, m_value, condition,
                     left.consume(*this), right.consume(*this), thenCase, elseCase, result));
             }
+
             if (isValidForm(opcode, condition.kind(), left.kind(), right.kind(), Arg::Tmp, Arg::Tmp)) {
                 Tmp result = tmp(m_value);
                 Tmp source = tmp(m_value->child(1));
