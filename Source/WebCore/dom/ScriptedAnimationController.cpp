@@ -161,6 +161,14 @@ void ScriptedAnimationController::serviceRequestAnimationFrameCallbacks(ReducedR
     Ref protectedThis { *this };
     Ref document = *m_document;
 
+    RefPtr frame = document->frame();
+    if (!frame)
+        return;
+
+    CheckedRef script = frame->script();
+    if (!script->canExecuteScripts(ReasonForCallingCanExecuteScripts::AboutToExecuteScript) || script->isPaused())
+        return;
+
     for (auto& [callback, userGestureTokenToForward, scheduledWorkScope] : callbackDataList) {
         if (callback->m_firedOrCancelled)
             continue;

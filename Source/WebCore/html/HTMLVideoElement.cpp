@@ -803,6 +803,14 @@ void HTMLVideoElement::serviceRequestVideoFrameCallbacks(ReducedResolutionSecond
     if (!videoFrameMetadata || !document().window())
         return;
 
+    RefPtr frame = document().frame();
+    if (!frame)
+        return;
+
+    CheckedRef script = frame->script();
+    if (!script->canExecuteScripts(ReasonForCallingCanExecuteScripts::AboutToExecuteScript) || script->isPaused())
+        return;
+
     processVideoFrameMetadataTimestamps(*videoFrameMetadata, protect(document().window()->performance()));
 
     Ref protectedThis { *this };
