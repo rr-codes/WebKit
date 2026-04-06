@@ -117,6 +117,7 @@ template<typename, typename> struct DefaultOSObjectRetainTraits;
 template<typename> struct DefaultRefDerefTraits;
 
 template<typename> class Awaitable;
+template<typename> class Borrow;
 template<typename> class CompactPtr;
 template<typename> class CompletionHandler;
 template<typename, size_t = 0> class Deque;
@@ -248,6 +249,7 @@ using WTF::AtomString;
 using WTF::AtomStringImpl;
 using WTF::AtomicObjectIdentifier;
 using WTF::Awaitable;
+using WTF::Borrow;
 using WTF::BinarySemaphore;
 using WTF::CString;
 using WTF::CompletionHandler;
