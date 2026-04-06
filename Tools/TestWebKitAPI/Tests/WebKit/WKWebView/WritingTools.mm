@@ -96,10 +96,6 @@
 
 #endif
 
-@interface NSObject (Staging_170159369)
-- (void)willBeginWritingToolsSession:(WTSession *)session forProofreadingReview:(BOOL)proofreadingReview requestContexts:(void (^)(NSArray<WTContext *> *))completion;
-@end
-
 @protocol WKIntelligenceTextEffectCoordinating;
 
 @protocol WKIntelligenceTextEffectCoordinatorDelegate <NSObject>

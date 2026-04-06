@@ -48,6 +48,13 @@ DECLARE_SYSTEM_HEADER
 
 // MARK: Forward-declared Writing Tools types
 
+@class WTSession;
+@class WTContext;
+
+@interface NSObject (WritingToolsSPI)
+- (void)willBeginWritingToolsSession:(WTSession *)session forProofreadingReview:(BOOL)proofreadingReview requestContexts:(void (^)(NSArray<WTContext *> *))completion;
+@end
+
 // MARK: _WTTextPreview
 
 @interface _WTTextPreview : NSObject
