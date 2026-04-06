@@ -1813,6 +1813,11 @@ std::optional<String> Quirks::needsCustomUserAgentOverride(const URL& url, const
     if ((hostDomain.string() == "messenger.com" || hostDomain.string() == "facebook.com") && url.path().startsWith("/groupcall/ROOM:"_s))
         return chromeUserAgent;
 
+    // Outlook detects Safari and handles selections incorrectly in their rich text editor roosterjs
+    auto host = url.host();
+    if (host == "outlook.live.com"_s)
+        return chromeUserAgent;
+
 #if PLATFORM(COCOA)
     // FIXME(rdar://148759791): Remove this once TikTok removes the outdated error message.
     if (hostDomain.string() == "tiktok.com"_s) {

@@ -137,22 +137,23 @@ static void clearSelectionIfNeeded(LocalFrame* oldFocusedFrame, LocalFrame* newF
         return;
 
     if (newFocusedNode) {
-        auto* selectionStartNode = selection.start().deprecatedNode();
+        RefPtr selectionStartNode = selection.start().deprecatedNode();
         if (newFocusedNode->contains(selectionStartNode) || selectionStartNode->shadowHost() == newFocusedNode)
             return;
     }
 
     if (RefPtr mousePressNode = newFocusedFrame ? newFocusedFrame->eventHandler().mousePressNode() : nullptr) {
-        if (!mousePressNode->canStartSelection()) {
+        RefPtr root = selection.rootEditableElement();
+        if (root) {
             // Don't clear the selection for contentEditable elements, but do clear it for input and textarea. See bug 38696.
-            RefPtr root = selection.rootEditableElement();
-            if (!root)
-                return;
+
             RefPtr host = root->shadowHost();
             // FIXME: Seems likely we can just do the check on "host" here instead of "rootOrHost".
             RefPtr rootOrHost = host ? host : root;
             if (!is<HTMLInputElement>(*rootOrHost) && !is<HTMLTextAreaElement>(*rootOrHost))
                 return;
+        } else if (!mousePressNode->canStartSelection()) {
+            return;
         }
     }
 
