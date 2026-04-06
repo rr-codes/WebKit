@@ -21,11 +21,11 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-#if ENABLE_GPU_PROCESS_MODEL && canImport(RealityCoreRenderer, _version: 11)
+#if ENABLE_GPU_PROCESS_MODEL && canImport(RealityCoreTextureProcessing, _version: 19)
 
 import QuartzCore
-@_weakLinked import USDKit
-@_weakLinked @_spi(UsdLoaderAPI) import _USDKit_RealityKit
+import USDKit
+@_spi(UsdLoaderAPI) import _USDKit_RealityKit
 @_spi(RealityCoreRendererAPI) @_spi(Private) import RealityKit
 import simd
 
@@ -68,12 +68,8 @@ class Renderer {
     }
 
     func createMaterialCompiler(colorPixelFormat: MTLPixelFormat, rasterSampleCount: Int, colorSpace: CGColorSpace? = nil) async throws {
-        #if canImport(RealityCoreRenderer, _version: 12)
         var configuration = _Proto_LowLevelRenderContextStandaloneConfiguration_v1(device: device)
         configuration.memoryOwner = self.memoryOwner
-        #else
-        var configuration = _Proto_LowLevelRenderContextStandaloneConfiguration_v1(device: device)
-        #endif
         configuration.residencySetBehavior = _Proto_LowLevelRenderContextStandaloneConfiguration_v1.ResidencySetBehavior.disable
         let renderContext = try await _Proto_makeLowLevelRenderContextStandalone_v1(configuration: configuration)
 
@@ -91,11 +87,21 @@ class Renderer {
         self.renderer = renderer
     }
 
+    func newCommandBuffer() -> any MTLCommandBuffer {
+        guard let renderCommandBuffer = commandQueue.makeCommandBuffer() else {
+            fatalError("Failed to make command buffer")
+        }
+
+        return renderCommandBuffer
+    }
+
     func render(
         meshInstances: _Proto_LowLevelMeshInstanceArray_v1,
-        texture: any MTLTexture
+        texture: any MTLTexture,
+        commandBuffer: any MTLCommandBuffer
     ) throws {
         guard let renderer else {
+            commandBuffer.commit()
             return
         }
 
@@ -116,12 +122,9 @@ class Renderer {
         renderer.output.color = .init(texture: texture)
         renderer.meshInstances = meshInstances
 
-        guard let renderCommandBuffer = commandQueue.makeCommandBuffer() else {
-            fatalError("Failed to make command buffer")
-        }
-        renderCommandBuffer.label = "Render Camera"
-        try renderer.render(for: renderCommandBuffer)
-        renderCommandBuffer.commit()
+        commandBuffer.label = "Render Camera"
+        try renderer.render(for: commandBuffer)
+        commandBuffer.commit()
     }
 
     internal func setFOV(_ fovYRadians: Float) {
