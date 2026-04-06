@@ -69,7 +69,7 @@ bool LargestContentfulPaintData::isExposedForPaintTiming(const Element& element)
     if (!protect(element.document())->isFullyActive())
         return false;
 
-    if (!element.isConnected())
+    if (!element.isInDocumentTree()) // Also checks isConnected().
         return false;
 
     return true;
