@@ -328,11 +328,24 @@ RenderPtr<RenderElement> HTMLModelElement::createElementRenderer(RenderStyle&& s
 
 void HTMLModelElement::didAttachRenderers()
 {
+#if ENABLE(MODEL_PROCESS)
+    if (RefPtr page = document().page())
+        page->incrementModelElementCount();
+#endif
+
     if (!m_shouldCreateModelPlayerUponRendererAttachment)
         return;
 
     m_shouldCreateModelPlayerUponRendererAttachment = false;
     createModelPlayer();
+}
+
+void HTMLModelElement::willDetachRenderers()
+{
+#if ENABLE(MODEL_PROCESS)
+    if (RefPtr page = document().page())
+        page->decrementModelElementCount();
+#endif
 }
 
 // MARK: - CachedRawResourceClient overrides.
@@ -1706,9 +1719,6 @@ Node::NeedsPostConnectionSteps HTMLModelElement::insertionSteps(InsertionType in
     if (insertionType.connectedToDocument) {
         Ref document = this->document();
         document->registerForVisibilityStateChangedCallbacks(*this);
-#if ENABLE(MODEL_PROCESS)
-        document->incrementModelElementCount();
-#endif
         m_modelPlayerProvider = document->page()->modelPlayerProvider();
         LazyLoadModelObserver::observe(*this);
     }
@@ -1723,9 +1733,6 @@ void HTMLModelElement::removingSteps(RemovalType removalType, ContainerNode& old
     if (removalType.disconnectedFromDocument) {
         Ref document = this->document();
         document->unregisterForVisibilityStateChangedCallbacks(*this);
-#if ENABLE(MODEL_PROCESS)
-        document->decrementModelElementCount();
-#endif
         LazyLoadModelObserver::unobserve(*this, document);
 
         m_loadModelTimer = nullptr;

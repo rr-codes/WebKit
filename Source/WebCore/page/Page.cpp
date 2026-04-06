@@ -3123,18 +3123,12 @@ void Page::incrementModelElementCount()
         chrome().client().setHasModelElement(true);
 }
 
-void Page::decrementModelElementCount(unsigned count)
+void Page::decrementModelElementCount()
 {
-    m_modelElementCount -= count;
-    if (!m_modelElementCount) {
+    ASSERT(m_modelElementCount > 0);
+    m_modelElementCount--;
+    if (!m_modelElementCount)
         chrome().client().setHasModelElement(false);
-        return;
-    }
-
-    if (m_modelElementCount < 0) [[unlikely]] {
-        m_modelElementCount = 0;
-        ASSERT_NOT_REACHED();
-    }
 }
 
 #endif

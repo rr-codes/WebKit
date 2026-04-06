@@ -239,6 +239,7 @@ private:
     RenderPtr<RenderElement> createElementRenderer(RenderStyle&&, const RenderTreePosition&) final;
     bool isReplaced(const RenderStyle* = nullptr) const final { return true; }
     void didAttachRenderers() final;
+    void willDetachRenderers() final;
 
     // CachedRawResourceClient overrides.
     void dataReceived(CachedResource&, const SharedBuffer&) final;

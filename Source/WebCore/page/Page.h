@@ -1030,7 +1030,7 @@ public:
 
 #if ENABLE(MODEL_PROCESS)
     void incrementModelElementCount();
-    void decrementModelElementCount(unsigned);
+    void decrementModelElementCount();
 #endif
 
     std::optional<MediaSessionGroupIdentifier> NODELETE mediaSessionGroupIdentifier() const;
