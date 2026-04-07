@@ -621,6 +621,19 @@ pas_mte_generate_tag_and_tag_region(
             valid_tags = pas_mte_compute_valid_tags_under_adjacent_tag_exclusion(begin, size, homogeneity, is_known_medium);
         else
             valid_tags = pas_mte_any_nonzero_tag;
+        if (PAS_MTE_FEATURE_ENABLED(PAS_MTE_FEATURE_PREVIOUS_TAG_EXCLUSION)) {
+            /*
+             * The LDG this incurs tends to be expensive, and could be avoided
+             * for initial allocations at the cost of an extra branch. If this
+             * code becomes hotter than it is today (e.g. further deployment of
+             * +MTE WebContent process variants) it might be worth looking into
+             * whether it can be elided.
+             */
+            uintptr_t p = begin;
+            PAS_MTE_GET_MTAG(p);
+            uint8_t previous_tag = (p & PAS_MTE_TAG_MASK) >> PAS_MTE_TAG_SHIFT;
+            valid_tags = pas_mte_exclude_tag(valid_tags, previous_tag);
+        }
         begin = pas_mte_generate_random_tag(begin, valid_tags);
     }
     if (mode != pas_always_compact_allocation_mode) {
