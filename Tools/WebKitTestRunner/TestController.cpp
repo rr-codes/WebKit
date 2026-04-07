@@ -532,6 +532,16 @@ void TestController::tooltipDidChange(WKStringRef tooltip)
     m_tooltipCallbacks.notifyListeners(tooltip);
 }
 
+static void cursorDidChangeForTesting(WKStringRef cursorInfo, const void*)
+{
+    TestController::singleton().cursorDidChange(cursorInfo);
+}
+
+void TestController::cursorDidChange(WKStringRef cursorInfo)
+{
+    m_cursorCallbacks.notifyListeners(cursorInfo);
+}
+
 void TestController::Callbacks::append(WKJSHandleRef handle)
 {
     if (!handle)
@@ -1615,6 +1625,8 @@ bool TestController::resetStateToConsistentValues(const TestOptions& options, Re
         m_finishExitFullscreenHandler();
 
     m_tooltipCallbacks.clear();
+    m_cursorCallbacks.clear();
+    WKPageSetCursorDidChangeCallbackForTesting(mainWebView()->page(), nullptr, nullptr);
     m_beginSwipeCallbacks.clear();
     m_willEndSwipeCallbacks.clear();
     m_didEndSwipeCallbacks.clear();
@@ -1948,6 +1960,7 @@ if (window.testRunner) {
     let createHandle = (object) => object ? window.webkit.createJSHandle(object) : undefined;
 
     testRunner.installTooltipDidChangeCallback = callback => post(['InstallTooltipCallback', createHandle(callback)]);
+    testRunner.installCursorDidChangeCallback = callback => post(['InstallCursorCallback', createHandle(callback)]);
     testRunner.installDidBeginSwipeCallback = callback => post(['InstallBeginSwipeCallback', createHandle(callback)]);
     testRunner.installWillEndSwipeCallback = callback => post(['InstallWillEndSwipeCallback', createHandle(callback)]);
     testRunner.installDidEndSwipeCallback = callback => post(['InstallDidEndSwipeCallback', createHandle(callback)]);
@@ -2477,6 +2490,12 @@ void TestController::didReceiveScriptMessage(WKScriptMessageRef message, Complet
 
     if (WKStringIsEqualToUTF8CString(command, "InstallTooltipCallback")) {
         m_tooltipCallbacks.append(dynamic_wk_cast<WKJSHandleRef>(argument));
+        return completionHandler(nullptr);
+    }
+
+    if (WKStringIsEqualToUTF8CString(command, "InstallCursorCallback")) {
+        m_cursorCallbacks.append(dynamic_wk_cast<WKJSHandleRef>(argument));
+        WKPageSetCursorDidChangeCallbackForTesting(mainWebView()->page(), cursorDidChangeForTesting, nullptr);
         return completionHandler(nullptr);
     }
 

@@ -100,6 +100,7 @@
 #include <WebCore/AuthenticatorAssertionResponse.h>
 #include <WebCore/AutoplayEvent.h>
 #include <WebCore/ContentRuleListResults.h>
+#include <WebCore/Cursor.h>
 #include <WebCore/FrameLoaderClient.h>
 #include <WebCore/MockRealtimeMediaSourceCenter.h>
 #include <WebCore/OrganizationStorageAccessPromptQuirk.h>
@@ -113,6 +114,7 @@
 #include <WebCore/WindowFeatures.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/text/StringBuilder.h>
 
 #ifdef __BLOCKS__
 #include <Block.h>
@@ -3544,3 +3546,27 @@ void WKPageDoAfterProcessingAllPendingKeyEvents(WKPageRef page, void* context, W
     });
 }
 #endif
+
+void WKPageSetCursorDidChangeCallbackForTesting(WKPageRef page, WKPageCursorDidChangeCallbackForTesting callback, const void* clientInfo)
+{
+    if (!callback) {
+        protect(toImpl(page))->setCursorDidChangeCallbackForTesting({ });
+        return;
+    }
+
+    protect(toImpl(page))->setCursorDidChangeCallbackForTesting([callback, clientInfo](const WebCore::Cursor& cursor) {
+        StringBuilder info;
+        auto type = cursor.type();
+        info.append("type="_s, type == WebCore::Cursor::Type::Custom ? "Custom"_s : "Predefined"_s);
+        info.append(" hotSpot="_s, cursor.hotSpot().x(), ',', cursor.hotSpot().y());
+        if (cursor.image()) {
+            auto size = cursor.image()->size();
+            info.append(" image="_s, static_cast<int>(size.width()), 'x', static_cast<int>(size.height()));
+        }
+#if ENABLE(MOUSE_CURSOR_SCALE)
+        if (cursor.imageScaleFactor() != 1)
+            info.append(" scale="_s, cursor.imageScaleFactor());
+#endif
+        callback(toAPI(info.toString().impl()), clientInfo);
+    });
+}

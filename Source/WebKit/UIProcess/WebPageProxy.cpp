@@ -11864,6 +11864,9 @@ void WebPageProxy::setCursor(const WebCore::Cursor& cursor)
 {
     if (RefPtr pageClient = this->pageClient())
         pageClient->setCursor(cursor);
+
+    if (m_cursorDidChangeCallbackForTesting)
+        m_cursorDidChangeCallbackForTesting(cursor);
 }
 
 void WebPageProxy::setCursorHiddenUntilMouseMoves(bool hiddenUntilMouseMoves)

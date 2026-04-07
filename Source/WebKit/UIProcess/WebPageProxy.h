@@ -1641,6 +1641,7 @@ public:
     bool useElevatedUserInterfaceLevel() const;
     void setUseColorAppearance(bool useDarkAppearance, bool useElevatedUserInterfaceLevel);
     void setUseDarkAppearanceForTesting(bool);
+    void setCursorDidChangeCallbackForTesting(Function<void(const WebCore::Cursor&)>&& callback) { m_cursorDidChangeCallbackForTesting = WTF::move(callback); }
 
     WebCore::DataOwnerType dataOwnerForPasteboard(PasteboardAccessIntent) const;
 
@@ -3842,6 +3843,8 @@ private:
     bool m_shouldSkipWaitingForPaintAfterNextViewDidMoveToWindow { false };
 
     String m_toolTip;
+
+    Function<void(const WebCore::Cursor&)> m_cursorDidChangeCallbackForTesting;
 
     bool m_isEditable { false };
 

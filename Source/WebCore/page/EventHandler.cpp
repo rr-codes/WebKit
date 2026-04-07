@@ -1749,10 +1749,10 @@ std::optional<Cursor> EventHandler::selectCursor(const HitTestResult& result, bo
             if (size.width() > maximumCursorSize || size.height() > maximumCursorSize)
                 continue;
 
-            RefPtr localMainFrame = dynamicDowncast<LocalFrame>(frame->mainFrame());
-            if (!localMainFrame)
+            RefPtr frameView = frame->view();
+            if (!frameView)
                 continue;
-            IntRect visibleContentRect = localMainFrame->view()->visibleContentRect();
+            IntRect visibleContentRect = frameView->visibleContentRect();
             IntRect cursorRect = { roundedIntPoint(result.pointInMainFrame()), expandedIntSize(size) };
             cursorRect.moveBy(-hotSpot);
 
