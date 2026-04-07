@@ -400,7 +400,7 @@ static void addParametersShared(const LocalFrame* frame, NetworkResourceLoadPara
         parameters.crossOriginEmbedderPolicy = document->crossOriginEmbedderPolicy();
         parameters.isClearSiteDataHeaderEnabled = document->settings().clearSiteDataHTTPHeaderEnabled();
         parameters.isClearSiteDataExecutionContextEnabled = document->settings().clearSiteDataExecutionContextsSupportEnabled();
-        parameters.mayBlockNetworkRequest = document->settings().scriptTrackingPrivacyNetworkRequestBlockingLatchEnabled() ?
+        parameters.mayBlockNetworkRequest = (!isMainFrameNavigation && document->settings().scriptTrackingPrivacyNetworkRequestBlockingLatchEnabled()) ?
             std::optional { WebProcess::singleton().shouldBlockRequest(parameters.request.url(), protect(document->topOrigin())) } : std::nullopt;
     }
 

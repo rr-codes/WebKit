@@ -1233,6 +1233,125 @@ TEST(ScriptTrackingPrivacyTests, BlockSubsequent2Element)
     EXPECT_TRUE([taintedLoadResult2 hasPrefix:@"error"]);
 }
 
+TEST(ScriptTrackingPrivacyTests, SameSiteFetchNotBlocked)
+{
+    if (!supportsFingerprintingScriptRequests())
+        return;
+
+    FingerprintingScriptsRequestSwizzler swizzler { @[ @"tainted.example" ] };
+
+    static constexpr auto taintedSiteIndexHTML = R"markup(
+        <!DOCTYPE html>
+        <html>
+            <body>
+                <script src="http://tainted.example/script.js"></script>
+            </body>
+        </html>
+    )markup"_s;
+
+    auto server = HTTPServer(HTTPServer::UseCoroutines::Yes, [&](Connection connection) -> ConnectionTask {
+        while (1) {
+            auto request = co_await connection.awaitableReceiveHTTPRequest();
+            auto path = HTTPServer::parsePath(request);
+
+            if (path.endsWith("/script.js"_s)) {
+                co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/javascript"_s } },
+                    "async function doFetch() {"
+                    "  try {"
+                    "    const response = await fetch('http://tainted.example/data.json');"
+                    "    const data = await response.text();"
+                    "    window.fetchResult = 'success: ' + data;"
+                    "  } catch (e) {"
+                    "    window.fetchResult = 'error: ' + e.message;"
+                    "  }"
+                    "}"
+                    "doFetch();"_s).serialize());
+                continue;
+            }
+            if (path.endsWith("/index.html"_s)) {
+                co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/html"_s } }, String { taintedSiteIndexHTML }).serialize());
+                continue;
+            }
+            if (path.endsWith("/data.json"_s)) {
+                co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/plain"_s } }, "{\"value\": 42}"_s).serialize());
+                continue;
+            }
+
+            EXPECT_FALSE(true);
+        }
+    }, HTTPServer::Protocol::Http);
+
+    auto storeConfiguration = adoptNS([[_WKWebsiteDataStoreConfiguration alloc] initNonPersistentConfiguration]);
+    [storeConfiguration setProxyConfiguration:@{
+        (NSString *)kCFStreamPropertyHTTPProxyHost: @"127.0.0.1",
+        (NSString *)kCFStreamPropertyHTTPProxyPort: @(server.port())
+    }];
+
+    auto dataStore = adoptNS([[WKWebsiteDataStore alloc] _initWithConfiguration:storeConfiguration.get()]);
+
+    RetainPtr webView = setUpWebViewForFingerprintingTests(@"http://tainted.example/index.html", dataStore.get());
+
+    Util::waitForConditionWithLogging([&] -> bool {
+        return [[webView stringByEvaluatingJavaScript:@"window.fetchResult || ''"] length] > 0;
+    }, 10, @"Timed out waiting for fetch result.");
+
+    RetainPtr fetchResult = [webView stringByEvaluatingJavaScript:@"window.fetchResult"];
+    EXPECT_TRUE([fetchResult hasPrefix:@"success:"]);
+}
+
+TEST(ScriptTrackingPrivacyTests, MainFrameNavigationNotBlocked)
+{
+    if (!supportsFingerprintingScriptRequests())
+        return;
+
+    FingerprintingScriptsRequestSwizzler swizzler { @[ @"tainted.example" ] };
+
+    bool receivedNavigationRequest = false;
+
+    auto server = HTTPServer(HTTPServer::UseCoroutines::Yes, [&](Connection connection) -> ConnectionTask {
+        while (1) {
+            auto request = co_await connection.awaitableReceiveHTTPRequest();
+            auto path = HTTPServer::parsePath(request);
+
+            if (path.endsWith("/script.js"_s)) {
+                co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/javascript"_s } }, ""_s).serialize());
+                continue;
+            }
+            if (path.contains("top-domain.org"_s) && path.endsWith("/index.html"_s)) {
+                String document = makeStringByReplacingAll(String { simpleIndexHTML }, "test://"_s, "http://"_s);
+                co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/html"_s } }, document).serialize());
+                continue;
+            }
+            if (path.contains("tainted.example"_s) && path.endsWith("/page.html"_s)) {
+                receivedNavigationRequest = true;
+                co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/html"_s } },
+                    "<html><body><script>window.navigationResult = 'loaded';</script></body></html>"_s).serialize());
+                continue;
+            }
+
+            co_await connection.awaitableSend(HTTPResponse({ { "Content-Type"_s, "text/plain"_s } }, ""_s).serialize());
+        }
+    }, HTTPServer::Protocol::Http);
+
+    auto storeConfiguration = adoptNS([[_WKWebsiteDataStoreConfiguration alloc] initNonPersistentConfiguration]);
+    [storeConfiguration setProxyConfiguration:@{
+        (NSString *)kCFStreamPropertyHTTPProxyHost: @"127.0.0.1",
+        (NSString *)kCFStreamPropertyHTTPProxyPort: @(server.port())
+    }];
+
+    auto dataStore = adoptNS([[WKWebsiteDataStore alloc] _initWithConfiguration:storeConfiguration.get()]);
+
+    RetainPtr webView = setUpWebViewForFingerprintingTests(@"http://top-domain.org/index.html", dataStore.get());
+
+    [webView evaluateJavaScript:@"window.location.href = 'http://tainted.example/page.html'" completionHandler:nil];
+
+    Util::waitForConditionWithLogging([&] -> bool {
+        return receivedNavigationRequest;
+    }, 10, @"Timed out waiting for main frame navigation to tainted.example.");
+
+    EXPECT_TRUE(receivedNavigationRequest);
+}
+
 } // namespace TestWebKitAPI
 
 #endif // ENABLE(SCRIPT_TRACKING_PRIVACY_PROTECTIONS)
