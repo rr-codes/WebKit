@@ -154,9 +154,6 @@ class GLibPort(Port):
         # actual sound card.
         environment['WEBKIT_GST_MAX_NUMBER_OF_AUDIO_OUTPUT_CHANNELS'] = '2'
 
-        # Disable SIMD optimization in GStreamer's ORC. Some bots (WPE release) crash in ORC's optimizations.
-        environment['ORC_CODE'] = 'backup'
-
         # Workaround for bots not using latest SDK version.
         environment['RICE_LOG'] = 'none'
 
