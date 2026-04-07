@@ -45,7 +45,6 @@ enum class ReasonCollectionMode : bool {
 };
 
 enum class GridAvoidanceReason : uint8_t {
-    GridHasNonFixedHeight,
     GridHasVerticalWritingMode,
     GridHasMarginTrim,
     GridNeedsBaseline,
@@ -54,11 +53,6 @@ enum class GridAvoidanceReason : uint8_t {
     GridItemIsReplacedElement,
     GridItemDoesNotHaveElement,
     GridIsEmpty,
-    GridHasNonInitialMinWidth,
-    GridHasNonInitialMaxWidth,
-    GridHasNonInitialMinHeight,
-    GridHasNonInitialMaxHeight,
-    GridHasNonZeroMinWidth,
     GridHasGridTemplateAreas,
     GridHasColumnAutoFlow,
     GridHasNonFixedGaps,
@@ -66,10 +60,7 @@ enum class GridAvoidanceReason : uint8_t {
     GridHasContainsSize,
     GridHasUnsupportedGridTemplateColumns,
     GridHasUnsupportedGridTemplateRows,
-    GridItemHasNonFixedWidth,
-    GridItemHasNonFixedHeight,
     GridItemHasNonInitialMaxWidth,
-    GridItemHasNonZeroMinHeight,
     GridItemHasNonInitialMaxHeight,
     GridItemHasBorder,
     GridItemHasPadding,
@@ -560,9 +551,6 @@ static void printReason(GridAvoidanceReason reason, TextStream& stream)
     case GridAvoidanceReason::GridFormattingContextIntegrationDisabled:
         stream << "grid formatting context integration is disabled";
         break;
-    case GridAvoidanceReason::GridHasNonFixedHeight:
-        stream << "grid has non-fixed height";
-        break;
     case GridAvoidanceReason::GridHasVerticalWritingMode:
         stream << "grid has vertical writing mode";
         break;
@@ -586,21 +574,6 @@ static void printReason(GridAvoidanceReason reason, TextStream& stream)
         break;
     case GridAvoidanceReason::GridIsEmpty:
         stream << "grid is empty";
-        break;
-    case GridAvoidanceReason::GridHasNonInitialMinWidth:
-        stream << "grid has non-initial min-width";
-        break;
-    case GridAvoidanceReason::GridHasNonInitialMaxWidth:
-        stream << "grid has non-initial max-width";
-        break;
-    case GridAvoidanceReason::GridHasNonInitialMinHeight:
-        stream << "grid has non-initial min-height";
-        break;
-    case GridAvoidanceReason::GridHasNonInitialMaxHeight:
-        stream << "grid has non-initial max-height";
-        break;
-    case GridAvoidanceReason::GridHasNonZeroMinWidth:
-        stream << "grid has non-zero min-width";
         break;
     case GridAvoidanceReason::GridHasGridTemplateAreas:
         stream << "grid has grid-template-areas";
@@ -635,14 +608,8 @@ static void printReason(GridAvoidanceReason reason, TextStream& stream)
     case GridAvoidanceReason::GridItemHasUnsupportedAutomaticBlockSizing:
         stream << "grid item has unsupported automatic block sizing";
         break;
-    case GridAvoidanceReason::GridItemHasNonFixedHeight:
-        stream << "grid item has non-fixed height";
-        break;
     case GridAvoidanceReason::GridItemHasNonInitialMaxWidth:
         stream << "grid item has non-initial max-width";
-        break;
-    case GridAvoidanceReason::GridItemHasNonZeroMinHeight:
-        stream << "grid item has non-zero min-height";
         break;
     case GridAvoidanceReason::GridItemHasNonInitialMaxHeight:
         stream << "grid item has non-initial max-height";
