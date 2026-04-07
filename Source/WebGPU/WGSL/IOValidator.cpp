@@ -34,6 +34,12 @@
 #include <wtf/MathExtras.h>
 #include <wtf/text/MakeString.h>
 
+#define CHECK(__expression) { \
+    __expression; \
+    if (hasError()) [[unlikely]] \
+        return; \
+}
+
 namespace WGSL {
 
 enum class Direction : uint8_t {
@@ -47,8 +53,7 @@ public:
 
     IOValidator(ShaderModule&);
 
-    std::optional<FailedCheck> validate();
-    std::optional<FailedCheck> validateIO();
+    void validateIO();
 
     void visit(AST::Function&) override;
     void visit(AST::Parameter&) override;
@@ -60,8 +65,8 @@ private:
     using Locations = HashSet<uint64_t, DefaultHash<uint64_t>, WTF::UnsignedWithZeroKeyHashTraits<uint64_t>>;
 
     void collectGlobals();
-    std::optional<FailedCheck> validateResources(const CallGraph::EntryPoint&);
-    std::optional<FailedCheck> validateEntryPointIO(const CallGraph::EntryPoint&);
+    void validateResources(const CallGraph::EntryPoint&);
+    void validateEntryPointIO(const CallGraph::EntryPoint&);
 
     void validateBuiltinIO(const SourceSpan&, const Type*, ShaderStage, Builtin, Direction, Builtins&);
     void validateLocationIO(const SourceSpan&, const Type*, ShaderStage, unsigned, Locations&);
@@ -71,10 +76,9 @@ private:
     template<typename... Arguments>
     void error(const SourceSpan&, Arguments&&...);
 
-    AST::Function* m_currentFunction { nullptr };
     ShaderModule& m_shaderModule;
     HashSet<const CallGraph::Global*> m_usedGlobals { };
-    bool m_hasSizeOrAlignmentAttributes { false };
+    ShaderStage m_stage { ShaderStage::Vertex };
 };
 
 IOValidator::IOValidator(ShaderModule& shaderModule)
@@ -82,25 +86,21 @@ IOValidator::IOValidator(ShaderModule& shaderModule)
 {
 }
 
-std::optional<FailedCheck> IOValidator::validateIO()
+void IOValidator::validateIO()
 {
     collectGlobals();
 
     for (auto& entryPoint : m_shaderModule.callGraph().entrypoints()) {
-        if (auto maybeError = validateEntryPointIO(entryPoint))
-            return *maybeError;
+        CHECK(validateEntryPointIO(entryPoint));
 
-        visit(entryPoint.function);
+        m_stage = entryPoint.stage;
+        CHECK(visit(entryPoint.function));
+
         const_cast<CallGraph::EntryPoint&>(entryPoint).usedGlobals.addAll(m_usedGlobals);
         m_usedGlobals.clear();
 
-        if (auto maybeError = validateResources(entryPoint))
-            return *maybeError;
+        CHECK(validateResources(entryPoint));
     }
-
-    if (!hasError()) [[likely]]
-        return std::nullopt;
-    return FailedCheck { Vector<Error> { result().error() }, { } };
 }
 
 void IOValidator::collectGlobals()
@@ -162,10 +162,30 @@ void IOValidator::visit(AST::IdentifierExpression& identifier)
     if (!variable || !*variable)
         return;
 
+    auto& var = *(*variable)->declaration;
+    if (auto addressSpace = var.addressSpace()) {
+        if (m_stage != ShaderStage::Compute && *addressSpace == AddressSpace::Workgroup) {
+            error(identifier.span(), "var with `workgroup` address space cannot be used by `"_s, toString(m_stage), "` pipeline stage"_s);
+            return;
+        }
+
+        if (m_stage == ShaderStage::Vertex) {
+            auto* textureStorage = std::get_if<Types::TextureStorage>(var.storeType());
+            if (textureStorage && std::to_underlying(textureStorage->access) & std::to_underlying(AccessMode::Write)) {
+                error(identifier.span(), "storage texture with `read_write` access mode cannot be used by `vertex` pipeline stage"_s);
+                return;
+            }
+
+            if (auto accessMode = var.accessMode(); *addressSpace == AddressSpace::Storage && accessMode.has_value() && std::to_underlying(*accessMode) & std::to_underlying(AccessMode::Write)) {
+                error(identifier.span(), "var with `storage` address space and `read_write` access mode cannot be used by `vertex` pipeline stage"_s);
+                return;
+            }
+        }
+    }
     m_usedGlobals.add(*variable);
 }
 
-std::optional<FailedCheck> IOValidator::validateResources(const CallGraph::EntryPoint& entryPoint)
+void IOValidator::validateResources(const CallGraph::EntryPoint& entryPoint)
 {
     HashMap<std::pair<unsigned, unsigned>, const CallGraph::Global*> usedGlobals;
     for (auto* global : entryPoint.usedGlobals) {
@@ -173,24 +193,19 @@ std::optional<FailedCheck> IOValidator::validateResources(const CallGraph::Entry
             continue;
 
         auto result = usedGlobals.add({ global->resource->group + 1, global->resource->binding + 1 }, global);
-        if (!result.isNewEntry)
-            return FailedCheck { Vector<Error> { Error(makeString("entry point '"_s, entryPoint.originalName, "' uses variables '"_s, result.iterator->value->declaration->originalName(), "' and '"_s, global->declaration->originalName(), "', both which use the same resource binding: @group("_s, global->resource->group, ") @binding("_s, global->resource->binding, ')'), global->declaration->span()) }, { } };
+        if (!result.isNewEntry) [[unlikely]] {
+            auto& var = *global->declaration;
+            auto& resource = *global->resource;
+            auto& entryPointName = entryPoint.originalName;
+            auto& originalDeclaration = result.iterator->value->declaration->originalName();
+            error(var.span(), "entry point '"_s, entryPointName, "' uses variables '"_s, originalDeclaration, "' and '"_s, var.originalName(), "', both which use the same resource binding: @group("_s, resource.group, ") @binding("_s, resource.binding, ')');
+            return;
+        }
     }
-    return std::nullopt;
 }
 
-std::optional<FailedCheck> IOValidator::validateEntryPointIO(const CallGraph::EntryPoint& entryPoint)
+void IOValidator::validateEntryPointIO(const CallGraph::EntryPoint& entryPoint)
 {
-#define CHECK(__expression) { \
-    __expression; \
-    if (hasError()) [[unlikely]] \
-        return failedCheck(); \
-}
-
-    const auto& failedCheck = [&] -> std::optional<FailedCheck> {
-        return { FailedCheck { Vector<Error> { result().error() }, { } } };
-    };
-
     auto& function = entryPoint.function;
     Builtins builtins;
     Locations locations;
@@ -215,15 +230,13 @@ std::optional<FailedCheck> IOValidator::validateEntryPointIO(const CallGraph::En
         }
 
         error(span, "missing entry point IO attribute on parameter"_s);
-        return failedCheck();
+        return;
     }
 
     if (!function.maybeReturnType()) {
-        if (entryPoint.stage == ShaderStage::Vertex) [[unlikely]] {
+        if (entryPoint.stage == ShaderStage::Vertex) [[unlikely]]
             error(function.span(), "a vertex shader must include the 'position' builtin in its return type"_s);
-            return failedCheck();
-        }
-        return std::nullopt;
+        return;
     }
 
     builtins.clear();
@@ -239,15 +252,11 @@ std::optional<FailedCheck> IOValidator::validateEntryPointIO(const CallGraph::En
         CHECK(validateStructIO(entryPoint.stage, *structType, Direction::Output, builtins, locations));
     } else [[unlikely]] {
         error(span, "missing entry point IO attribute on return type"_s);
-        return failedCheck();
+        return;
     }
 
-    if (entryPoint.stage == ShaderStage::Vertex && !builtins.contains(Builtin::Position)) [[unlikely]] {
+    if (entryPoint.stage == ShaderStage::Vertex && !builtins.contains(Builtin::Position)) [[unlikely]]
         error(span, "a vertex shader must include the 'position' builtin in its return type"_s);
-        return failedCheck();
-    }
-
-    return std::nullopt;
 }
 
 void IOValidator::validateBuiltinIO(const SourceSpan& span, const Type* type, ShaderStage stage, Builtin builtin, Direction direction, Builtins& builtins)
@@ -379,7 +388,13 @@ void IOValidator::error(const SourceSpan& span, Arguments&&... arguments)
 
 std::optional<FailedCheck> validateIO(ShaderModule& shaderModule)
 {
-    return IOValidator(shaderModule).validateIO();
+    IOValidator validator(shaderModule);
+    validator.validateIO();
+    if (validator.hasError()) [[unlikely]]
+        return FailedCheck { Vector<Error> { validator.result().error() }, { } };
+    return std::nullopt;
 }
 
 } // namespace WGSL
+
+#undef CHECK
