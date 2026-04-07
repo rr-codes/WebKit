@@ -123,9 +123,7 @@ private:
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(RunLoop::TimerBase::ScheduledTask);
 
-RunLoop::RunLoop()
-{
-}
+RunLoop::RunLoop() = default;
 
 RunLoop::~RunLoop()
 {
