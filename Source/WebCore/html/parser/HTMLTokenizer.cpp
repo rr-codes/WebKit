@@ -57,6 +57,25 @@ static std::span<const Latin1Character> findPlainTextInDataState(std::span<const
     return span.first(it - span.begin());
 }
 
+// https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(double-quoted)-state
+// https://html.spec.whatwg.org/multipage/parsing.html#attribute-value-(single-quoted)-state
+// In quoted attribute value states, the closing quote ends the value, '&' starts
+// a character reference, and '\0' is a parse error. '\r' and '\n' require special
+// handling for line counting and newline normalization. Everything else is plain
+// text that can be appended to the attribute value as-is.
+template<Latin1Character quoteCharacter>
+static bool isQuotedAttributeValueSpecialCharacter(Latin1Character c)
+{
+    return c == quoteCharacter || c == '&' || c == '\r' || c == '\n' || c == '\0';
+}
+
+template<Latin1Character quoteCharacter>
+static std::span<const Latin1Character> findPlainTextInQuotedAttributeValue(std::span<const Latin1Character> span)
+{
+    auto it = std::ranges::find_if(span, isQuotedAttributeValueSpecialCharacter<quoteCharacter>);
+    return span.first(it - span.begin());
+}
+
 static inline Latin1Character NODELETE convertASCIIAlphaToLower(char16_t character)
 {
     ASSERT(isASCIIAlpha(character));
@@ -237,9 +256,14 @@ bool HTMLTokenizer::processToken(SegmentedString& source)
         // Optimization: scan ahead for a run of plain-text characters in the
         // current 8-bit substring and buffer them all at once, avoiding the
         // per-character overhead of the main tokenizer loop.
+        // We skip batching when m_preprocessor.skipNextNewLine() is true (i.e.
+        // the current character was a '\r'). The preprocessor expects the very
+        // next peek to check whether a '\n' follows (for \r\n normalization);
+        // batching would bypass that check and cause a subsequent '\n' to be
+        // incorrectly skipped.
         {
             auto span = source.currentSubstringSpan8();
-            if (span.size() > 2) {
+            if (span.size() > 2 && !m_preprocessor.skipNextNewLine()) {
                 // span[0] is the current character, already buffered above. We also
                 // stop before the last character because advancePastMultiple8()
                 // requires at least one character to remain in the span (it becomes
@@ -830,6 +854,25 @@ bool HTMLTokenizer::processToken(SegmentedString& source)
             RECONSUME_IN(DataState);
         }
         m_token.appendToAttributeValue(character);
+        // Optimization: scan ahead for a run of plain-text characters in the
+        // current 8-bit substring and append them all at once, avoiding the
+        // per-character overhead of the main tokenizer loop.
+        // We skip batching when m_preprocessor.skipNextNewLine() is true (i.e.
+        // the current character was a '\r'). The preprocessor expects the very
+        // next peek to check whether a '\n' follows (for \r\n normalization);
+        // batching would bypass that check and cause a subsequent '\n' to be
+        // incorrectly skipped.
+        {
+            auto span = source.currentSubstringSpan8();
+            if (span.size() > 2 && !m_preprocessor.skipNextNewLine()) {
+                auto plainText = findPlainTextInQuotedAttributeValue<'"'>(span.subspan(1, span.size() - 2));
+                if (!plainText.empty()) {
+                    m_token.appendToAttributeValue(plainText);
+                    source.advancePastMultiple8(plainText.size() + 1);
+                    SWITCH_TO(AttributeValueDoubleQuotedState);
+                }
+            }
+        }
         ADVANCE_TO(AttributeValueDoubleQuotedState);
     END_STATE()
 
@@ -848,6 +891,25 @@ bool HTMLTokenizer::processToken(SegmentedString& source)
             RECONSUME_IN(DataState);
         }
         m_token.appendToAttributeValue(character);
+        // Optimization: scan ahead for a run of plain-text characters in the
+        // current 8-bit substring and append them all at once, avoiding the
+        // per-character overhead of the main tokenizer loop.
+        // We skip batching when m_preprocessor.skipNextNewLine() is true (i.e.
+        // the current character was a '\r'). The preprocessor expects the very
+        // next peek to check whether a '\n' follows (for \r\n normalization);
+        // batching would bypass that check and cause a subsequent '\n' to be
+        // incorrectly skipped.
+        {
+            auto span = source.currentSubstringSpan8();
+            if (span.size() > 2 && !m_preprocessor.skipNextNewLine()) {
+                auto plainText = findPlainTextInQuotedAttributeValue<'\''>(span.subspan(1, span.size() - 2));
+                if (!plainText.empty()) {
+                    m_token.appendToAttributeValue(plainText);
+                    source.advancePastMultiple8(plainText.size() + 1);
+                    SWITCH_TO(AttributeValueSingleQuotedState);
+                }
+            }
+        }
         ADVANCE_TO(AttributeValueSingleQuotedState);
     END_STATE()
 
