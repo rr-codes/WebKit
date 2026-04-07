@@ -3947,8 +3947,6 @@ webkit.org/b/49179 animations/stop-animation-on-suspend.html [ Failure Pass ]
 
 webkit.org/b/133151 js/cached-window-properties.html [ Skip ] # Timeout.
 
-webkit.org/b/222638 js/throw-large-string-oom.html [ Pass Timeout ]
-
 # Fails when built with GCC but passes with Clang
 webkit.org/b/218220 editing/execCommand/switch-list-type-with-orphaned-li.html [ Failure ]
 
