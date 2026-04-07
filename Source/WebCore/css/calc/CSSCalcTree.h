@@ -955,59 +955,21 @@ constexpr CSSUnitType toCSSUnit(const NonCanonicalDimension& dimension) { return
 
 // MARK: Predicates
 
-inline bool isNumeric(const Child& root)
-{
-    return WTF::switchOn(root,
-        []<Numeric T>(const T&) { return true; },
-        [](const auto&) { return false; }
-    );
-}
+bool isNumeric(const Child& root);
 
 // Convenience constructors
 
 // Makes the appropriate child type (number, percentage, canonical-dimensions, non-canonical-dimension) based on the CSSUnitType.
 Child makeNumeric(double, CSSUnitType);
 
-inline Sum add(Child&& a, Child&& b)
-{
-    Vector<Child> sumChildren;
-    sumChildren.append(WTF::move(a));
-    sumChildren.append(WTF::move(b));
-    return Sum { .children = WTF::move(sumChildren) };
-}
+Sum add(Child&& a, Child&& b);
+Product multiply(Child&& a, Child&& b);
+Sum subtract(Child&& a, Child&& b);
 
-inline Product multiply(Child&& a, Child&& b)
-{
-    Vector<Child> productChildren;
-    productChildren.append(WTF::move(a));
-    productChildren.append(WTF::move(b));
-    return Product { .children = WTF::move(productChildren) };
-}
-
-inline Sum subtract(Child&& a, Child&& b)
-{
-    return add(WTF::move(a), makeChild(Negate { .a = WTF::move(b) }, getType(b)));
-}
-
-inline Child makeChildWithValueBasedOn(double value, const Number&)
-{
-    return makeChild(Number { .value = value });
-}
-
-inline Child makeChildWithValueBasedOn(double value, const Percentage& a)
-{
-    return makeChild(Percentage { .value = value, .hint = a.hint });
-}
-
-inline Child makeChildWithValueBasedOn(double value, const CanonicalDimension& a)
-{
-    return makeChild(CanonicalDimension { .value = value, .dimension = a.dimension });
-}
-
-inline Child makeChildWithValueBasedOn(double value, const NonCanonicalDimension& a)
-{
-    return makeChild(NonCanonicalDimension { .value = value, .unit = a.unit });
-}
+Child makeChildWithValueBasedOn(double value, const Number&);
+Child makeChildWithValueBasedOn(double value, const Percentage&);
+Child makeChildWithValueBasedOn(double value, const CanonicalDimension&);
+Child makeChildWithValueBasedOn(double value, const NonCanonicalDimension&);
 
 // MARK: Tuple Conformance
 

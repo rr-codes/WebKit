@@ -566,46 +566,13 @@ template<typename Op> Child makeChild(Op&& op)
 
 // Convenience constructors
 
-inline Child number(double value)
-{
-    return makeChild(Number { .value = value });
-}
-
-inline Child percentage(double value)
-{
-    return makeChild(Percentage { .value = value });
-}
-
-inline Child dimension(double value)
-{
-    return makeChild(Dimension { .value = value });
-}
-
-inline Child add(Child&& a, Child&& b)
-{
-    Vector<Child> sumChildren;
-    sumChildren.append(WTF::move(a));
-    sumChildren.append(WTF::move(b));
-    return makeChild(Sum { .children = WTF::move(sumChildren) });
-}
-
-inline Child multiply(Child&& a, Child&& b)
-{
-    Vector<Child> productChildren;
-    productChildren.append(WTF::move(a));
-    productChildren.append(WTF::move(b));
-    return makeChild(Product { .children = WTF::move(productChildren) });
-}
-
-inline Child subtract(Child&& a, Child&& b)
-{
-    return add(WTF::move(a), makeChild(Negate { .a = WTF::move(b) }));
-}
-
-inline Child blend(Child&& from, Child&& to, double progress)
-{
-    return makeChild(Blend { .progress = progress, .from = WTF::move(from), .to = WTF::move(to) });
-}
+Child number(double value);
+Child percentage(double value);
+Child dimension(double value);
+Child add(Child&& a, Child&& b);
+Child multiply(Child&& a, Child&& b);
+Child subtract(Child&& a, Child&& b);
+Child blend(Child&& from, Child&& to, double progress);
 
 // MARK: Dumping
 
