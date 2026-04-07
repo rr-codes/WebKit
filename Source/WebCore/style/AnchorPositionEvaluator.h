@@ -156,7 +156,7 @@ struct AnchorPositionedState {
 };
 
 using AnchorPositionedKey = std::pair<RefPtr<const Element>, std::optional<PseudoElementIdentifier>>;
-using AnchorPositionedStates = HashMap<AnchorPositionedKey, std::unique_ptr<AnchorPositionedState>>;
+using AnchorPositionedStates = HashMap<AnchorPositionedKey, UniqueRef<AnchorPositionedState>>;
 
 using AnchorsForAnchorName = HashMap<ResolvedScopedName, Vector<SingleThreadWeakRef<const RenderBoxModelObject>>>;
 

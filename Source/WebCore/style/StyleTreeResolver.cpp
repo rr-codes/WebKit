@@ -1541,11 +1541,8 @@ std::unique_ptr<Update> TreeResolver::resolve()
                 // reset the resolution stage to FindAnchor. This re-runs anchor resolution to
                 // pick up new anchor name changes.
                 AnchorPositionedKey anchorPositionedKey { anchorPositionedElement.ptr(), anchors.pseudoElementIdentifier };
-                auto stateIt = m_treeResolutionState.anchorPositionedStates.find(anchorPositionedKey);
-                if (stateIt != m_treeResolutionState.anchorPositionedStates.end()) {
-                    ASSERT(stateIt->value);
-                    stateIt->value->stage = AnchorPositionResolutionStage::FindAnchors;
-                }
+                if (auto* state = m_treeResolutionState.anchorPositionedStates.get(anchorPositionedKey))
+                    state->stage = AnchorPositionResolutionStage::FindAnchors;
             }
         }
 

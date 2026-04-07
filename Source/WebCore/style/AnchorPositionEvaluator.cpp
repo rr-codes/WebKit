@@ -788,8 +788,8 @@ CheckedPtr<RenderBoxModelObject> AnchorPositionEvaluator::findAnchorForAnchorFun
 
     // PseudoElement nodes are created on-demand by render tree builder so dont' work as keys here.
     auto& anchorPositionedStates = *builderState.anchorPositionedStates();
-    auto& anchorPositionedState = *anchorPositionedStates.ensure({ elementOrHost.ptr(), style.pseudoElementIdentifier() }, [&] {
-        return WTF::makeUnique<AnchorPositionedState>();
+    auto& anchorPositionedState = anchorPositionedStates.ensure({ elementOrHost.ptr(), style.pseudoElementIdentifier() }, [&] {
+        return makeUniqueRef<AnchorPositionedState>();
     }).iterator->value.get();
 
     auto scopedAnchorName = [&] {
@@ -1300,7 +1300,7 @@ void AnchorPositionEvaluator::updateAnchorPositioningStatesAfterInterleavedLayou
     auto anchorsForAnchorName = collectAnchorsForAnchorName(document);
 
     for (auto& elementAndState : anchorPositionedStates) {
-        auto& state = *elementAndState.value;
+        auto& state = elementAndState.value.get();
 
         switch (state.stage) {
         case AnchorPositionResolutionStage::FindAnchors: {
@@ -1362,17 +1362,17 @@ void AnchorPositionEvaluator::updateAnchorPositionedStateForDefaultAnchorAndPosi
     if (!shouldResolveDefaultAnchor && !hasPositionVisibilityNoOverflow)
         return;
 
-    auto* state = states.ensure({ &element, style.pseudoElementIdentifier() }, [&] {
-        return makeUnique<AnchorPositionedState>();
+    auto& state = states.ensure({ &element, style.pseudoElementIdentifier() }, [&] {
+        return makeUniqueRef<AnchorPositionedState>();
     }).iterator->value.get();
 
     if (shouldResolveDefaultAnchor) {
         // Always resolve the default anchor. Even if nothing is anchored to it we need it to compute the scroll compensation.
         auto resolvedDefaultAnchor = ResolvedScopedName::createFromScopedName(element, defaultAnchorName(style));
-        if (state->anchorNames.add(resolvedDefaultAnchor).isNewEntry) {
+        if (state.anchorNames.add(resolvedDefaultAnchor).isNewEntry) {
             // If anchor resolution has progressed past FindAnchors, and we pick up a new anchor name, set the
             // stage back to FindAnchors. This restarts the resolution process to resolve newly added names.
-            state->stage = AnchorPositionResolutionStage::FindAnchors;
+            state.stage = AnchorPositionResolutionStage::FindAnchors;
         }
     }
 }
