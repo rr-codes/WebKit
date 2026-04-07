@@ -2881,7 +2881,7 @@ sub GenerateDictionaryImplementationMemberConversion
     if ($needsRuntimeCheck) {
         my $runtimeEnableConditionalString = GenerateRuntimeEnableConditionalString($dictionary, $member, "&lexicalGlobalObject");
 
-        $memberConversion .= "    auto ${implementedAsKey}ConversionResult = [&]() -> ConversionResult<${adjustedIDLType}> {\n";
+        $memberConversion .= "    auto ${implementedAsKey}ConversionResult = [&] -> ConversionResult<${adjustedIDLType}> {\n";
         $memberConversion .= "        if (${runtimeEnableConditionalString}) {\n";
         $indent = "        ";
     }
@@ -2922,7 +2922,7 @@ sub GenerateDictionaryImplementationMemberConversion
 
         AddToImplIncludes("JSDOMConvertOptional.h", $conditional) if $optional;
 
-        $conversion = "[&]() -> ConversionResult<${adjustedIDLType}> {\n";
+        $conversion = "[&] -> ConversionResult<${adjustedIDLType}> {\n";
         $conversion .= "        if (${key}Value.isUndefined())\n";
         $conversion .= "            return ${defaultValue};\n";
         $conversion .= "        auto parseResult = parseEnumeration<${enumClassName}>(lexicalGlobalObject, ${key}Value);\n";
@@ -8406,7 +8406,7 @@ sub NativeToJSValue
     push(@conversionArguments, $globalObjectReference) if NativeToJSValueDOMConvertNeedsGlobalObject($type);
     push(@conversionArguments, "throwScope") if $mayThrowException;
     if ($needsFunctorWrapping) {
-        push(@conversionArguments, "[&]() -> decltype(auto) { return $value; }");
+        push(@conversionArguments, "[&] -> decltype(auto) { return $value; }");
     } else {
         push(@conversionArguments, "$value");
     }

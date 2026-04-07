@@ -106,7 +106,7 @@ template<> ConversionResult<IDLDictionary<TestEventConstructor::Init>> convertDi
     auto composedConversionResult = convert<IDLBoolean>(lexicalGlobalObject, composedValue);
     if (composedConversionResult.hasException(throwScope)) [[unlikely]]
         return ConversionResultException { };
-    auto trustedForBindingsOnlyConversionResult = [&]() -> ConversionResult<IDLBoolean> {
+    auto trustedForBindingsOnlyConversionResult = [&] -> ConversionResult<IDLBoolean> {
         if (worldForDOMObject(*&lexicalGlobalObject).allowAutofill()) {
             JSValue trustedValue;
             if (isNullOrUndefined)
