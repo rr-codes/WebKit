@@ -29,6 +29,7 @@
 #include "WebAnimationTypes.h"
 #include <wtf/BitSet.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/ValueOrReference.h>
 
 namespace WebCore {
 
@@ -103,7 +104,7 @@ public:
     std::span<const CSSPropertyID> logicalGroupPropertyIDs() const LIFETIME_BOUND;
     const HashMap<AtomString, Property>& customProperties() const LIFETIME_BOUND { return m_customProperties; }
 
-    const HashSet<AnimatableCSSProperty> overriddenAnimatedProperties() const;
+    ValueOrReference<HashSet<AnimatableCSSProperty>> overriddenAnimatedProperties() const;
 
     PropertyBitSet& propertyIsPresent() LIFETIME_BOUND { return m_propertyIsPresent; }
     const PropertyBitSet& propertyIsPresent() const LIFETIME_BOUND { return m_propertyIsPresent; }

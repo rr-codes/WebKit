@@ -482,7 +482,7 @@ void PropertyCascade::sortLogicalGroupPropertyIDs()
     });
 }
 
-const HashSet<AnimatableCSSProperty> PropertyCascade::overriddenAnimatedProperties() const
+ValueOrReference<HashSet<AnimatableCSSProperty>> PropertyCascade::overriddenAnimatedProperties() const
 {
     if (m_animationLayer)
         return m_animationLayer->overriddenProperties;
