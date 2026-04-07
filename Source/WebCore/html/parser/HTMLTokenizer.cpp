@@ -39,6 +39,24 @@ namespace WebCore {
 
 using namespace HTMLNames;
 
+// https://html.spec.whatwg.org/multipage/parsing.html#data-state
+// In the Data state, '<' switches to TagOpenState, '&' switches to a character
+// reference, and '\0' is a parse error. '\r' and '\n' require special handling
+// for line counting and newline normalization in the input stream preprocessor.
+// Everything else is plain text that can be emitted as-is.
+static bool isDataStateSpecialCharacter(Latin1Character c)
+{
+    return c == '<' || c == '&' || c == '\r' || c == '\n' || c == '\0';
+}
+
+// Returns the leading prefix of `span` that contains only plain-text characters
+// (i.e. characters that don't require special handling in the Data state).
+static std::span<const Latin1Character> findPlainTextInDataState(std::span<const Latin1Character> span)
+{
+    auto it = std::ranges::find_if(span, isDataStateSpecialCharacter);
+    return span.first(it - span.begin());
+}
+
 static inline Latin1Character NODELETE convertASCIIAlphaToLower(char16_t character)
 {
     ASSERT(isASCIIAlpha(character));
@@ -216,6 +234,25 @@ bool HTMLTokenizer::processToken(SegmentedString& source)
         if (character == kEndOfFileMarker)
             return emitEndOfFile(source);
         bufferCharacter(character);
+        // Optimization: scan ahead for a run of plain-text characters in the
+        // current 8-bit substring and buffer them all at once, avoiding the
+        // per-character overhead of the main tokenizer loop.
+        {
+            auto span = source.currentSubstringSpan8();
+            if (span.size() > 2) {
+                // span[0] is the current character, already buffered above. We also
+                // stop before the last character because advancePastMultiple8()
+                // requires at least one character to remain in the span (it becomes
+                // the new current character for the next iteration).
+                auto plainText = findPlainTextInDataState(span.subspan(1, span.size() - 2));
+                if (!plainText.empty()) {
+                    bufferCharacters(plainText);
+                    // +1 to also advance past span[0] (the current character already buffered above).
+                    source.advancePastMultiple8(plainText.size() + 1);
+                    SWITCH_TO(DataState);
+                }
+            }
+        }
         ADVANCE_TO(DataState);
     END_STATE()
 
