@@ -1593,7 +1593,7 @@ static std::optional<LayoutSize> scrollContainerSizeForPositionOptions(const Sty
     CheckedRef containingBlock = *anchoredRenderer->containingBlock();
     if (containingBlock->canUseOverlayScrollbars())
         return { };
-    bool isOverflowScroller = containingBlock->isScrollContainerY() || containingBlock->isScrollContainerY();
+    bool isOverflowScroller = containingBlock->isScrollContainerX() || containingBlock->isScrollContainerY();
     if (!containingBlock->isRenderView() && !isOverflowScroller)
         return { };
     return containingBlock->contentBoxSize();
