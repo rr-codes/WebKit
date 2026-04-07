@@ -144,8 +144,37 @@ void RenderTreeBuilder::FirstLetter::updateAfterDescendants(RenderBlock& block)
         return;
 
     // If the child already has style, then it has already been created, so we just want
-    // to update it.
-    if (firstLetter->parent()->style().pseudoElementType() == PseudoElementType::FirstLetter) {
+    // to update it — unless the first letter text is stale because a new text node was
+    // inserted before it in the DOM. In that case, reset the remaining fragment to its
+    // full text (which tears down the old first-letter) and let createRenderers rebuild.
+    if (CheckedPtr anonymousFirstLetterContainer = dynamicDowncast<RenderBoxModelObject>(firstLetter->parent()); anonymousFirstLetterContainer && anonymousFirstLetterContainer->style().pseudoElementType() == PseudoElementType::FirstLetter) {
+        CheckedPtr remainingText = anonymousFirstLetterContainer->firstLetterRemainingText();
+        auto isFirstLetterStale = [&] {
+            // The first-letter split is anchored to the remaining fragment's text node.
+            if (!remainingText)
+                return false;
+            auto* textNode = remainingText->textNode();
+            if (!textNode)
+                return false;
+            // If a new text node was inserted before the first-letter's text node,
+            // the first letter of the block has changed and the split must be rebuilt.
+            return is<Text>(textNode->previousSibling());
+        };
+        if (isFirstLetterStale()) {
+            ASSERT(remainingText.get());
+            // <div>BC</div> splits into first-letter "B" + remaining "C".
+            // When "A" is added before "BC": <div>ABC</div>, the first letter should now be "A".
+            // Reset the remaining renderer from "C" back to the full text "BC" - this
+            // triggers setTextInternal which destroys the stale first-letter "B".
+            // createRenderers then rebuilds the split from the actual first text ("A").
+            remainingText->setText(remainingText->textNode()->data(), true);
+            auto [newFirstLetter, container] = block.firstLetterAndContainer();
+            ASSERT(container == firstLetterContainer);
+            ASSERT(is<RenderText>(newFirstLetter));
+            if (CheckedPtr renderer = dynamicDowncast<RenderText>(newFirstLetter))
+                createRenderers(*renderer);
+            return;
+        }
         updateStyle(block, *firstLetter);
         return;
     }
