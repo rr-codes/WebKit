@@ -4101,7 +4101,6 @@ Vector<AXStitchGroup> AccessibilityNodeObject::stitchGroups() const
     if (!cache)
         return { };
 
-    bool shouldStop = false;
     StitchingContext context { *this };
     Vector<AXStitchGroup> stitchGroups;
     Vector<AXID> currentGroup;
@@ -4112,7 +4111,14 @@ Vector<AXStitchGroup> AccessibilityNodeObject::stitchGroups() const
         if (currentGroup.isEmpty() || currentGroup.last() != axID)
             currentGroup.append(axID);
     };
-    for (auto lineBox = inlineLayout->firstLineBox(); lineBox && !shouldStop; lineBox.traverseNext()) {
+    auto finalizeCurrentGroup = [&] {
+        if (currentGroup.size() > 1 && representativeID)
+            stitchGroups.append(AXStitchGroup { std::exchange(currentGroup, { }), *representativeID });
+        else
+            currentGroup.clear();
+        representativeID = std::nullopt;
+    };
+    for (auto lineBox = inlineLayout->firstLineBox(); lineBox; lineBox.traverseNext()) {
         for (auto box = lineBox->logicalLeftmostLeafBox(); box; box.traverseLogicalRightwardOnLine()) {
             auto updateLastRenderer = makeScopeExit([&] {
                 context.lastRenderer = box->renderer();
@@ -4125,9 +4131,10 @@ Vector<AXStitchGroup> AccessibilityNodeObject::stitchGroups() const
             }
 
             if (box->isAtomicInlineBox()) {
-                // Non-list-marker atomic inline boxes (like buttons) should break up stitch groups.
-                shouldStop = true;
-                break;
+                // Non-list-marker atomic inline boxes (like buttons) should finalize
+                // the current stitch group. Text after the atomic inline can start a new group.
+                finalizeCurrentGroup();
+                continue;
             }
 
             // FIXME: We should also be able to stitch ellipsis-type boxes.
@@ -4138,34 +4145,33 @@ Vector<AXStitchGroup> AccessibilityNodeObject::stitchGroups() const
                     continue;
                 AXID axID = object->objectID();
 
-                if (shouldStopStitchingAt(renderer, *object, context)) {
-                    if (currentGroup.size() > 1 && representativeID)
-                        stitchGroups.append(AXStitchGroup { std::exchange(currentGroup, { }), *representativeID });
-                    else
-                        currentGroup.clear();
-
-                    representativeID = std::nullopt;
-                } else {
-                    CheckedPtr renderText = dynamicDowncast<RenderText>(renderer);
-
-                    // Avoid doing the wrong thing when !renderText->hasRenderedText() is only true
-                    // because it has dirty layout. We should not run this function when layout is dirty.
-                    AX_ASSERT(!renderText || !renderText->needsLayout() || !renderText->text().length());
-
-                    if (!renderText || !renderText->hasRenderedText())
+                auto action = stitchActionFor(renderer, *object, context);
+                if (action != StitchAction::Continue) {
+                    finalizeCurrentGroup();
+                    if (action == StitchAction::BreakAndSkip)
                         continue;
-
-                    if (currentGroup.isEmpty()) {
-                        if (renderText->text().containsOnly<isASCIIWhitespace>()) {
-                            // Do not start a stitch-group with whitspace.
-                            continue;
-                        }
-                    }
-
-                    if (!representativeID)
-                        representativeID = axID;
-                    appendToCurrentGroup(axID);
+                    // BreakAndAdd: fall through to add this text to a new group.
                 }
+
+                CheckedPtr renderText = dynamicDowncast<RenderText>(renderer);
+
+                // Avoid doing the wrong thing when !renderText->hasRenderedText() is only true
+                // because it has dirty layout. We should not run this function when layout is dirty.
+                AX_ASSERT(!renderText || !renderText->needsLayout() || !renderText->text().length());
+
+                if (!renderText || !renderText->hasRenderedText())
+                    continue;
+
+                if (currentGroup.isEmpty()) {
+                    if (renderText->text().containsOnly<isASCIIWhitespace>()) {
+                        // Do not start a stitch-group with whitspace.
+                        continue;
+                    }
+                }
+
+                if (!representativeID)
+                    representativeID = axID;
+                appendToCurrentGroup(axID);
             }
         }
     }
