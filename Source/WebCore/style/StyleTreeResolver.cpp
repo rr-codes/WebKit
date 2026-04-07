@@ -260,18 +260,8 @@ void TreeResolver::resetStyleForNonRenderedDescendants(Element& subtreeRoot)
             it.traverseNextSkippingChildren();
     }
 
-    auto nonRenderedElementsWithPositionOptions = [&] () {
-        Vector<RefPtr<const Element>> result;
-        for (auto& styleable : m_positionOptions.keys()) {
-            if (styleable.first->isComposedTreeDescendantOf(subtreeRoot))
-                result.append(styleable.first);
-        }
-
-        return result;
-    }();
-
-    m_positionOptions.removeIf([&nonRenderedElementsWithPositionOptions] (const auto& kv) {
-        return nonRenderedElementsWithPositionOptions.contains(kv.key.first);
+    m_positionOptions.removeIf([&subtreeRoot] (const auto& kv) {
+        return kv.key.first->isComposedTreeDescendantOf(subtreeRoot);
     });
 
     subtreeRoot.clearChildNeedsStyleRecalc();
