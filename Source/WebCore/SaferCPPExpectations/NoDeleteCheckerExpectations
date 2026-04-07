@@ -1,7 +1,9 @@
 Modules/notifications/NotificationPayload.cpp
+Modules/permissions/WorkerNavigatorPermissions.cpp
 Modules/streams/ReadableByteStreamController.cpp
 Modules/streams/ReadableStreamBYOBRequest.cpp
 Modules/webauthn/cbor/CBORValue.cpp
+Modules/websockets/WebSocketChannelInspector.cpp
 Modules/webtransport/WebTransportDatagramsWritable.cpp
 css/CSSComputedStyleDeclaration.cpp
 css/PropertySetCSSDescriptors.cpp
