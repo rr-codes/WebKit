@@ -214,16 +214,6 @@ static HashSet<String, ASCIICaseInsensitiveHash>& NODELETE globalURLSchemesWithC
     return set;
 }
 
-bool WebProcessPool::globalDelaysWebProcessLaunchDefaultValue()
-{
-#if PLATFORM(IOS_FAMILY)
-    // FIXME: Delayed process launch is currently disabled on iOS for performance reasons (rdar://problem/49074131).
-    return false;
-#else
-    return true;
-#endif
-}
-
 Vector<String> WebProcessPool::urlSchemesWithCustomProtocolHandlers()
 {
     return copyToVector(globalURLSchemesWithCustomProtocolHandlers());

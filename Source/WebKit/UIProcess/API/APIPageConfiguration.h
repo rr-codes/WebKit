@@ -494,6 +494,7 @@ public:
 #endif // PLATFORM(VISION)
 
 private:
+    bool defaultDelaysWebProcessLaunchUntilFirstLoad() const;
     struct Data {
         Data();
 
