@@ -153,18 +153,9 @@ void HTMLFormElement::removingSteps(RemovalType removalType, ContainerNode& oldP
       m_controlsCollection = nullptr; // Avoid leaks since HTMLCollection has a back Ref to this element.
 }
 
-unsigned HTMLFormElement::length() const
+unsigned HTMLFormElement::length()
 {
-    unsigned length = 0;
-    for (auto& weakElement : m_listedElements) {
-        auto* element = weakElement.get();
-        ASSERT(element);
-        auto* listedElement = element->asFormListedElement();
-        ASSERT(listedElement);
-        if (listedElement->isEnumeratable())
-            ++length;
-    }
-    return length;
+    return elements()->length();
 }
 
 HTMLElement* HTMLFormElement::item(unsigned index)
