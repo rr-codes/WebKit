@@ -95,12 +95,6 @@ imported/w3c/web-platform-tests/css/css-transforms/transform3d-preserve3d-013.ht
 # Passing since added in r258661.
 webkit.org/b/209080 imported/w3c/web-platform-tests/css/css-writing-modes/background-position-vrl-022.xht [ Pass ImageOnlyFailure ]
 
-# Passing since r259532.
-imported/w3c/web-platform-tests/css/css-ui/outline-019.html
-
-# Passing since r260259.
-imported/w3c/web-platform-tests/html/rendering/replaced-elements/embedded-content/video-controls-vertical-writing-mode.html
-
 # Passing since r261992.
 fast/scrolling/rtl-scrollbars-animation-property.html [ Pass ]
 
@@ -456,8 +450,6 @@ imported/w3c/web-platform-tests/pointerevents/compat/pointerevent_mouseevent_key
 imported/w3c/web-platform-tests/pointerevents/persistentDeviceId/get-persistendeviceid-from-pointer-mouse-event.tentative.html [ Skip ]
 imported/w3c/web-platform-tests/pointerevents/pointerevent_auxclick_is_a_pointerevent.html?pen [ Skip ]
 imported/w3c/web-platform-tests/pointerevents/pointerevent_click_on_chorded_mouse_button.tentative.html [ Skip ]
-imported/w3c/web-platform-tests/pointerevents/pointerevent_constructor.html [ Skip ]
-imported/w3c/web-platform-tests/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?mouse [ Skip ]
 imported/w3c/web-platform-tests/pointerevents/pointerevent_movementxy.html?mouse [ Skip ]
 imported/w3c/web-platform-tests/pointerevents/pointerlock/pointerevent_getCoalescedEvents_when_pointerlocked.https.html [ Skip ]
 imported/w3c/web-platform-tests/pointerevents/pointerlock/pointerevent_pointerrawupdate_in_pointerlock.https.html [ Skip ]
@@ -485,27 +477,11 @@ webkit.org/b/204112 editing/async-clipboard/clipboard-change-data-while-reading.
 webkit.org/b/204112 editing/async-clipboard/clipboard-get-type-with-old-items.html [ Timeout Pass ]
 
 # Event timing: times out, probably missing automation
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/click-timing.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/contextmenu.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/dblclick.html [ Skip ]
 webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/disconnect-target.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/duration-with-target-low.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/event-retarget.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/first-input-shadow-dom.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/interactionid-auxclick.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/interactionid-aux-pointerdown-and-pointerdown.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/interactionid-aux-pointerdown.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/interactionid-orphan-pointerup.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/keydown.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/large-duration-threshold.html [ Skip ]
-webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/medium-duration-threshold.html [ Skip ]
 webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/retrievability.html [ Skip ]
 
-# Event timing: timing out for unclear reasons - perhaps scheduling. Events handlers are called but event timing entries aren't produced
-webkit.org/b/301110 imported/w3c/web-platform-tests/event-timing/gap-keydown-keyup.html [ Skip ]
-webkit.org/b/301110 imported/w3c/web-platform-tests/event-timing/gap-pointerdown-pointerup.html [ Skip ]
-
 webkit.org/b/304407 imported/w3c/web-platform-tests/event-timing/timingconditions.html [ Pass Failure ]
+webkit.org/b/244186 imported/w3c/web-platform-tests/event-timing/keydown.html [ Pass Failure ]
 
 # These crash due to missing WTR support implemented.
 fast/forms/datalist/datalist-click-crash.html [ Skip ]
@@ -872,7 +848,6 @@ webkit.org/b/280603 webgl/2.0.0/conformance2/textures/video/tex-2d-rgb8ui-rgb_in
 
 # Timing out since 259143@main.
 webkit.org/b/251554 imported/w3c/web-platform-tests/html/user-activation/consumption-crossorigin.sub.html [ Skip ]
-webkit.org/b/251554 imported/w3c/web-platform-tests/html/user-activation/consumption-sameorigin.html [ Skip ]
 
 webkit.org/b/308629 imported/w3c/web-platform-tests/svg/pservers/reftests/pattern-opacity-01.svg [ ImageOnlyFailure ]
 ######################################################
