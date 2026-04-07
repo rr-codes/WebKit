@@ -87,6 +87,19 @@ void RenderTextFragment::setTextInternal(const String& newText, bool force)
     ASSERT(!textNode() || textNode()->renderer() == this);
 }
 
+Node* RenderTextFragment::nodeForHitTest() const
+{
+    if (!textNode()) {
+        // The anonymous first-letter text has no DOM node. Resolve to the DOM text
+        // node via the remaining fragment so cursor and selection work.
+        if (auto* parent = dynamicDowncast<RenderBoxModelObject>(this->parent()); parent && parent->isFirstLetter()) {
+            if (auto* remainingText = parent->firstLetterRemainingText())
+                return remainingText->textNode();
+        }
+    }
+    return RenderText::nodeForHitTest();
+}
+
 char32_t RenderTextFragment::previousCharacter() const
 {
     if (start()) {

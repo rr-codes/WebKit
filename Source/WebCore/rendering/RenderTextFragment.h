@@ -59,7 +59,7 @@ public:
     
 private:
     void setTextInternal(const String&, bool force) override;
-
+    Node* nodeForHitTest() const override;
     char32_t previousCharacter() const override;
 
     unsigned m_start;

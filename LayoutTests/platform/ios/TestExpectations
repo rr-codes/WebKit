@@ -486,6 +486,9 @@ editing/selection/selection-across-shadow-boundaries-mixed-editability-3.html [ 
 editing/selection/selection-across-shadow-boundaries-mixed-editability-4.html [ Skip ]
 editing/selection/selection-across-shadow-boundaries-mixed-editability-5.html [ Skip ]
 editing/selection/selection-across-shadow-boundaries-user-select-all-1.html [ Skip ]
+# Cursor details not available on this platform.
+editing/selection/first-letter-click-caret.html [ Skip ]
+
 fast/events/bogus-dropEffect-effectAllowed.html [ Skip ]
 fast/events/clear-drag-state.html [ Skip ]
 fast/events/clear-edit-drag-state.html [ Skip ]
