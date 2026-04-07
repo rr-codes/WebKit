@@ -1028,7 +1028,7 @@ void AXIsolatedTree::updateChildren(AccessibilityObject& axObject, ResolveNodeCh
     // web area, the incremental tree updates that follow may not actually ever
     // update the webarea's empty children, leaving the whole tree empty forever.
     RefPtr axAncestor = &axObject;
-    while (axAncestor && !axAncestor->isDetached() && !m_nodeMap.contains(axAncestor->objectID()))
+    while (axAncestor && !m_nodeMap.contains(axAncestor->objectID()))
         axAncestor = downcast<AccessibilityObject>(axAncestor->parentInCoreTree());
 
     if (!axAncestor || axAncestor->isDetached()) {
