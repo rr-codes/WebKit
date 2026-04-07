@@ -138,6 +138,27 @@ static constexpr auto nbaSeekBarFixScript = R"js(if (!window.__nbaSeekFix) {
 })js"_s;
 #endif
 
+// ceac.state.gov rdar://170258502
+static constexpr auto ceacBeforeUnloadFixScript = R"js((function() {
+    if (window.__ceacBeforeUnloadFix) return;
+    window.__ceacBeforeUnloadFix = true;
+    var origAEL = window.addEventListener;
+    window.addEventListener = function(type, fn, opts) {
+        if (type === 'beforeunload') {
+            return origAEL.call(this, type, function(e) {
+                var ae = document.activeElement;
+                if (ae && ae.tagName === 'INPUT') {
+                    var t = (ae.type || '').toLowerCase();
+                    if (t === 'radio' || t === 'checkbox' || t === 'submit' || t === 'button')
+                        return;
+                }
+                if (typeof fn === 'function') fn.call(this, e);
+            }, opts);
+        }
+        return origAEL.apply(this, arguments);
+    };
+})();)js"_s;
+
 static inline OptionSet<AutoplayQuirk> NODELETE allowedAutoplayQuirks(Document& document)
 {
     auto* loader = document.loader();
@@ -2002,6 +2023,10 @@ String Quirks::scriptToEvaluateBeforeRunningScriptFromURL(const URL& scriptURL)
 #endif
 #endif
 
+    // ceac.state.gov rdar://170258502
+    if (m_quirksData.isCEAC && scriptURL.lastPathComponent() == "CheckBrowserClose.js"_s) [[unlikely]]
+        return ceacBeforeUnloadFixScript;
+
     return { };
 }
 
@@ -2732,16 +2757,21 @@ static void handleTMobileQuirks(QuirksData& quirksData, const URL& quirksURL, co
     });
 }
 
-#if PLATFORM(MAC)
 static void handleCEACStateGovQuirks(QuirksData& quirksData, const URL& quirksURL, const String& /* quirksDomainString */, const URL&  /* documentURL */)
 {
     auto topDocumentHost = quirksURL.host();
     if (topDocumentHost == "ceac.state.gov"_s || topDocumentHost.endsWith(".ceac.state.gov"_s)) {
+        quirksData.isCEAC = true;
+#if PLATFORM(MAC)
         // ceac.state.gov https://bugs.webkit.org/show_bug.cgi?id=193478
         quirksData.enableQuirk(QuirksData::SiteSpecificQuirk::NeedsFormControlToBeMouseFocusableQuirk);
+#endif
+        // ceac.state.gov https://bugs.webkit.org/show_bug.cgi?id=311383
+        quirksData.enableQuirk(QuirksData::SiteSpecificQuirk::NeedsScriptToEvaluateBeforeRunningScriptFromURLQuirk);
     }
 }
 
+#if PLATFORM(MAC)
 static void handleMadisonCityK12Quirks(QuirksData& quirksData, const URL& /* quirksURL */, const String& quirksDomainString, const URL& /* documentURL */)
 {
     QUIRKS_EARLY_RETURN_IF_NOT_DOMAIN("madisoncity.k12.al.us"_s);
@@ -3693,9 +3723,7 @@ void Quirks::determineRelevantQuirks()
         { "soylent"_s, &handleSoylentQuirks },
 #endif
         { "spotify"_s, &handleSpotifyQuirks },
-#if PLATFORM(MAC)
         { "state"_s, &handleCEACStateGovQuirks },
-#endif
 #if PLATFORM(IOS_FAMILY)
         { "theguardian"_s, &handleGuardianQuirks },
         { "thesaurus"_s, &handleScriptToEvaluateBeforeRunningScriptFromURLQuirk },
