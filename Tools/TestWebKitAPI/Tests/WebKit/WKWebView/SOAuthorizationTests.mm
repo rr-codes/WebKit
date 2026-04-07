@@ -2168,12 +2168,7 @@ TEST(SOAuthorizationPopUp, InterceptionCancel)
     Util::run(&allMessagesReceived);
 }
 
-// FIXME when webkit.org/b/309196 is resolved.
-#if PLATFORM(MAC) && !defined(NDEBUG)
-TEST(SOAuthorizationPopUp, DISABLED_InterceptionSucceedCloseByItself)
-#else
 TEST(SOAuthorizationPopUp, InterceptionSucceedCloseByItself)
-#endif
 {
     resetState();
     SWIZZLE_SOAUTH(PAL::getSOAuthorizationClassSingleton());
@@ -2182,12 +2177,8 @@ TEST(SOAuthorizationPopUp, InterceptionSucceedCloseByItself)
     URL testURL { "http://www.example.com"_str };
     auto testHtml = generateOpenerHTML(openerTemplate, testURL.string());
 
-    auto configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
-    auto messageHandler = adoptNS([[TestSOAuthorizationScriptMessageHandler alloc] initWithExpectation:@[@"Hello.", @"WindowClosed."]]);
-    [[configuration userContentController] addScriptMessageHandler:messageHandler.get() name:@"testHandler"];
-
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 400, 400) configuration:configuration.get()]);
-    auto delegate = adoptNS([[TestSOAuthorizationDelegate alloc] init]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 400, 400)]);
+    RetainPtr delegate = adoptNS([[TestSOAuthorizationDelegate alloc] init]);
     configureSOAuthorizationWebView(webView.get(), delegate.get());
 
     [webView loadHTMLString:testHtml.createNSString().get() baseURL:baseURL.get()];
@@ -2203,12 +2194,12 @@ TEST(SOAuthorizationPopUp, InterceptionSucceedCloseByItself)
     EXPECT_TRUE(policyForAppSSOPerformed);
 
     auto response = adoptNS([[NSHTTPURLResponse alloc] initWithURL:testURL.createNSURL().get() statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:nil]);
-    auto resonseHtmlCString = generateHTML(newWindowResponseTemplate, "window.close();"_s).utf8(); // The pop up closes itself.
+    auto responseHtmlCString = generateHTML(newWindowResponseTemplate, "window.close();"_s).utf8();
     // The secret WKWebView needs to be destroyed right the way.
     @autoreleasepool {
-        [gDelegate authorization:gAuthorization didCompleteWithHTTPResponse:response.get() httpBody:adoptNS([[NSData alloc] initWithBytes:resonseHtmlCString.data() length:resonseHtmlCString.length()]).get()];
+        [gDelegate authorization:gAuthorization didCompleteWithHTTPResponse:response.get() httpBody:adoptNS([[NSData alloc] initWithBytes:responseHtmlCString.data() length:responseHtmlCString.length()]).get()];
     }
-    Util::run(&allMessagesReceived);
+    [webView waitForMessagesUnordered:@[@"Hello.", @"WindowClosed."]];
 }
 
 TEST(SOAuthorizationPopUp, InterceptionSucceedCloseByParent)

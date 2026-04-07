@@ -865,6 +865,7 @@ static IterationStatus forEachCALayer(CALayer *layer, IterationStatus(^visitor)(
 
 @implementation TestMessageHandler {
     NSMutableDictionary<NSString *, dispatch_block_t> *_messageHandlers;
+    RetainPtr<NSMutableArray<NSString *>> _receivedMessages;
 }
 
 - (void)addMessage:(NSString *)message withHandler:(dispatch_block_t)handler
@@ -882,10 +883,19 @@ static IterationStatus forEachCALayer(CALayer *layer, IterationStatus(^visitor)(
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
+    if (!_receivedMessages)
+        _receivedMessages = adoptNS([[NSMutableArray alloc] init]);
+    [_receivedMessages addObject:message.body];
+
     if (dispatch_block_t handler = _messageHandlers[message.body])
         handler();
     if (_didReceiveScriptMessage)
         _didReceiveScriptMessage(message.body);
+}
+
+- (NSArray<NSString *> *)receivedMessages
+{
+    return _receivedMessages.get();
 }
 
 @end
@@ -1193,6 +1203,18 @@ static UIWindowScene *windowScene()
         EXPECT_WK_STREQ(receivedMessages.takeFirst().get(), expectedMessage);
     }
     [self.configuration.userContentController removeScriptMessageHandlerForName:@"testHandler"];
+}
+
+- (void)waitForMessagesUnordered:(NSArray<NSString *> *)expectedMessages
+{
+    if (!_testHandler) {
+        _testHandler = adoptNS([[TestMessageHandler alloc] init]);
+        [[self.configuration userContentController] addScriptMessageHandler:_testHandler.get() name:@"testHandler"];
+    }
+
+    RetainPtr expected = [NSCountedSet setWithArray:expectedMessages];
+    while (![expected isSubsetOfSet:[NSCountedSet setWithArray:[_testHandler receivedMessages]]])
+        TestWebKitAPI::Util::spinRunLoop();
 }
 
 - (void)performAfterLoading:(dispatch_block_t)actions

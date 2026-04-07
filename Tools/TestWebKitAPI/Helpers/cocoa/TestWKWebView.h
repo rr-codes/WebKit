@@ -175,6 +175,7 @@ class Color;
 @interface TestMessageHandler : NSObject <WKScriptMessageHandler>
 - (void)addMessage:(NSString *)message withHandler:(dispatch_block_t)handler;
 @property (nonatomic, copy) void (^didReceiveScriptMessage)(NSString *);
+@property (nonatomic, readonly) NSArray<NSString *> *receivedMessages;
 @end
 
 @interface TestWKWebView : WKWebView
@@ -186,6 +187,7 @@ class Color;
 - (void)performAfterReceivingAnyMessage:(void (^)(NSString *))action;
 - (void)waitForMessage:(NSString *)message;
 - (void)waitForMessages:(NSArray<NSString *> *)messages;
+- (void)waitForMessagesUnordered:(NSArray<NSString *> *)messages;
 
 // This function waits until a DOM load event is fired.
 // FIXME: Rename this function to better describe what "after loading" means.
