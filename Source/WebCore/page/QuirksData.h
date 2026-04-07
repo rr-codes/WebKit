@@ -158,6 +158,7 @@ struct QuirksData {
 #endif
 #if ENABLE(MEDIA_STREAM)
         ShouldDisableImageCaptureQuirk,
+        ShouldAllowMediaStreamTrackSerializationQuirk,
 #endif
         ShouldDisableLazyIframeLoadingQuirk,
 #if PLATFORM(IOS_FAMILY)

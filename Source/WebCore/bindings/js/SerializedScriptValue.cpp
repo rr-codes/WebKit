@@ -1186,7 +1186,7 @@ public:
             Vector<RefPtr<WebCodecsAudioData>>& serializedAudioData,
 #endif
 #if ENABLE(MEDIA_STREAM)
-            const Vector<Ref<MediaStreamTrack>>& detachedMediaStreamTracks,
+            Vector<Ref<MediaStreamTrack>>& detachedMediaStreamTracks,
             const Vector<Ref<MediaStreamTrackHandle>>& detachedMediaStreamTrackHandles,
 #endif
 #if ENABLE(WEBASSEMBLY)
@@ -1234,6 +1234,10 @@ public:
 #endif
             blobHandles, out, context, sharedBuffers, forStorage);
         auto code = serializer.serialize(value);
+#if ENABLE(MEDIA_STREAM)
+        for (auto& track : std::exchange(serializer.m_serializedMediaStreamTracks , { }))
+            detachedMediaStreamTracks.append(track.releaseNonNull());
+#endif
 #if ASSERT_ENABLED
         RETURN_IF_EXCEPTION(scope, code);
         validateSerializedResult(serializer, code, out, lexicalGlobalObject, messagePorts, sharedBuffers, sharedBuffers, inMemoryMessagePorts);
@@ -1960,13 +1964,23 @@ private:
     void dumpMediaStreamTrack(JSObject* obj, SerializationReturnCode& code)
     {
         auto index = m_transferredMediaStreamTracks.find(obj);
-        if (index != m_transferredMediaStreamTracks.end()) {
-            write(MediaStreamTrackTag);
-            write(index->value);
-            return;
+        if (index == m_transferredMediaStreamTracks.end()) {
+            bool shouldAllowMediaStreamTrackSerialization = [&] {
+                RefPtr context = jsCast<JSDOMGlobalObject*>(m_lexicalGlobalObject)->scriptExecutionContext();
+                RefPtr document = dynamicDowncast<Document>(context);
+                return document && document->quirks().shouldAllowMediaStreamTrackSerializationQuirk();
+            }();
+            if (!shouldAllowMediaStreamTrackSerialization) {
+                code = SerializationReturnCode::DataCloneError;
+                return;
+            }
+
+            m_serializedMediaStreamTracks.append(protect(jsCast<JSMediaStreamTrack*>(obj)->wrapped())->clone());
+            index = m_transferredMediaStreamTracks.add(obj, m_transferredMediaStreamTracks.size()).iterator;
         }
 
-        code = SerializationReturnCode::DataCloneError;
+        write(MediaStreamTrackTag);
+        write(index->value);
     }
     void dumpMediaStreamTrackHandle(JSObject* obj, SerializationReturnCode& code)
     {
@@ -2902,6 +2916,7 @@ private:
 #endif
 #if ENABLE(MEDIA_STREAM)
     ObjectPoolMap m_transferredMediaStreamTracks;
+    Vector<RefPtr<MediaStreamTrack>> m_serializedMediaStreamTracks;
     ObjectPoolMap m_transferredMediaStreamTrackHandles;
 #endif
     SerializationForStorage m_forStorage;

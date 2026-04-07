@@ -1150,6 +1150,13 @@ bool Quirks::shouldDisableImageCaptureQuirk() const
     return m_quirksData.quirkIsEnabled(QuirksData::SiteSpecificQuirk::ShouldDisableImageCaptureQuirk);
 }
 
+bool Quirks::shouldAllowMediaStreamTrackSerializationQuirk() const
+{
+    QUIRKS_EARLY_RETURN_IF_DISABLED_WITH_VALUE(false);
+
+    return m_quirksData.quirkIsEnabled(QuirksData::SiteSpecificQuirk::ShouldAllowMediaStreamTrackSerializationQuirk);
+}
+
 bool Quirks::shouldEnableCameraAndMicrophonePermissionStateQuirk() const
 {
     QUIRKS_EARLY_RETURN_IF_DISABLED_WITH_VALUE(false);
@@ -3576,6 +3583,7 @@ static void handleZoomQuirks(QuirksData& quirksData, const URL& /* quirksURL */,
 #if ENABLE(MEDIA_STREAM)
         // zoom.us rdar://118185086
         QuirksData::SiteSpecificQuirk::ShouldDisableImageCaptureQuirk,
+        QuirksData::SiteSpecificQuirk::ShouldAllowMediaStreamTrackSerializationQuirk
 #endif
     });
 }
