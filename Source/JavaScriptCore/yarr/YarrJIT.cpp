@@ -3671,6 +3671,13 @@ class YarrGenerator final : public YarrJITInfo {
                     // PRIOR alteranative, and we will only check input availability if we
                     // need to progress it forwards.
                     defineReentryLabel(op);
+#if ENABLE(YARR_JIT_UNICODE_EXPRESSIONS) && ENABLE(YARR_JIT_UNICODE_CAN_INCREMENT_INDEX_FOR_NON_BMP)
+                    // Reset on reentry: a prior alternative may have read a non-BMP codepoint
+                    // and left this register set to 1. The next alternative starts a fresh
+                    // first-character read.
+                    if (m_useFirstNonBMPCharacterOptimization)
+                        m_jit.move(MacroAssembler::TrustedImm32(0), m_regs.firstCharacterAdditionalReadSize);
+#endif
                     if (shouldRecordSubpatterns() && priorAlternative->needToCleanupCaptures()) {
                         for (unsigned subpattern = priorAlternative->firstCleanupSubpatternId(); subpattern <= priorAlternative->m_lastSubpatternId; subpattern++)
                             clearSubpattern(subpattern);
@@ -3684,6 +3691,11 @@ class YarrGenerator final : public YarrJITInfo {
                     // This is the reentry point for the End of 'once through' alternatives,
                     // jumped to when the last alternative fails to match.
                     defineReentryLabel(op);
+#if ENABLE(YARR_JIT_UNICODE_EXPRESSIONS) && ENABLE(YARR_JIT_UNICODE_CAN_INCREMENT_INDEX_FOR_NON_BMP)
+                    // Reset on reentry: see BodyAlternativeNext above.
+                    if (m_useFirstNonBMPCharacterOptimization)
+                        m_jit.move(MacroAssembler::TrustedImm32(0), m_regs.firstCharacterAdditionalReadSize);
+#endif
                     m_jit.sub32(MacroAssembler::Imm32(priorAlternative->m_minimumSize), m_regs.index);
                 }
                 break;
