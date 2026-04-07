@@ -98,13 +98,16 @@
 #if PLATFORM(GTK)
 #include "GUniquePtrGtk.h"
 #include "GtkUtilities.h"
-#include "WebKitFaviconDatabasePrivate.h"
 #include "WebKitInputMethodContextImplGtk.h"
 #include "WebKitPointerLockPermissionRequest.h"
 #include "WebKitPrintOperationPrivate.h"
 #include "WebKitWebInspectorPrivate.h"
 #include "WebKitWebViewBasePrivate.h"
 #include <WebCore/RefPtrCairo.h>
+#endif
+
+#if PLATFORM(GTK) || ENABLE(2022_GLIB_API)
+#include "WebKitFaviconDatabasePrivate.h"
 #endif
 
 #if PLATFORM(WPE)
@@ -253,7 +256,7 @@ enum {
     PROP_THEME_COLOR,
     PROP_IS_IMMERSIVE_MODE_ENABLED,
 
-#if PLATFORM(GTK) && ENABLE(2022_GLIB_API)
+#if ENABLE(2022_GLIB_API)
     PROP_PAGE_ICONS,
 #endif
 
@@ -424,9 +427,10 @@ struct _WebKitWebViewPrivate {
 
     CString faviconURI;
     unsigned long faviconChangedHandlerID;
+#endif
+
 #if ENABLE(2022_GLIB_API)
     GRefPtr<WebKitImageList> pageIcons;
-#endif
 #endif
 
     GRefPtr<WebKitAuthenticationRequest> authenticationRequest;
@@ -688,6 +692,17 @@ static gboolean webkitWebViewIsEphemeral(WebKitWebView* webView)
 #endif
 }
 
+#if PLATFORM(GTK) || ENABLE(2022_GLIB_API)
+static WebKitFaviconDatabase* webkitWebViewGetFaviconDatabase(WebKitWebView* webView)
+{
+#if ENABLE(2022_GLIB_API)
+    return webkit_website_data_manager_get_favicon_database(webkitWebViewGetWebsiteDataManager(webView));
+#else
+    return webkit_web_context_get_favicon_database(webView->priv->context.get());
+#endif
+}
+#endif // PLATFORM(GTK) || ENABLE(2021_GLIB_API)
+
 #if PLATFORM(GTK)
 static void enableBackForwardNavigationGesturesChanged(WebKitSettings* settings, GParamSpec*, WebKitWebView* webView)
 {
@@ -734,15 +749,6 @@ static void gotFaviconCallback(GObject* object, GAsyncResult* result, gpointer u
     webView->priv->faviconCancellable = nullptr;
 }
 
-static WebKitFaviconDatabase* webkitWebViewGetFaviconDatabase(WebKitWebView* webView)
-{
-#if ENABLE(2022_GLIB_API)
-    return webkit_website_data_manager_get_favicon_database(webkitWebViewGetWebsiteDataManager(webView));
-#else
-    return webkit_web_context_get_favicon_database(webView->priv->context.get());
-#endif
-}
-
 static void webkitWebViewRequestFavicon(WebKitWebView* webView)
 {
     webkitWebViewCancelFaviconRequest(webView);
@@ -772,6 +778,7 @@ static void faviconChangedCallback(WebKitFaviconDatabase*, const char* pageURI, 
 
     webkitWebViewUpdateFaviconURI(webView, faviconURI);
 }
+#endif // PLATFORM(GTK)
 
 #if ENABLE(2022_GLIB_API)
 static void webkitWebViewUpdatePageIcons(WebKitWebView* webView, GRefPtr<WebKitImageList>&& pageIcons)
@@ -783,7 +790,6 @@ static void webkitWebViewUpdatePageIcons(WebKitWebView* webView, GRefPtr<WebKitI
     g_object_notify_by_pspec(G_OBJECT(webView), sObjProperties[PROP_PAGE_ICONS]);
 }
 #endif
-#endif // PLATFORM(GTK)
 
 static bool webkitWebViewIsConstructed(WebKitWebView* webView)
 {
@@ -1013,9 +1019,11 @@ static void webkitWebViewConstructed(GObject* object)
 #endif // ENABLE(CONTEXT_MENUS)
     attachFormClientToView(webView);
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || ENABLE(2022_GLIB_API)
     attachIconLoadingClientToView(webView);
+#endif
 
+#if PLATFORM(GTK)
     GRefPtr<WebKitInputMethodContext> imContext = adoptGRef(webkitInputMethodContextImplGtkNew());
     webkitInputMethodContextSetWebView(imContext.get(), webView);
     webkitWebViewBaseSetInputMethodContext(WEBKIT_WEB_VIEW_BASE(webView), imContext.get());
@@ -1245,7 +1253,7 @@ static void webkitWebViewGetProperty(GObject* object, guint propId, GValue* valu
     case PROP_IS_IMMERSIVE_MODE_ENABLED:
         g_value_set_boolean(value, webkit_web_view_is_immersive_mode_enabled(webView));
         break;
-#if PLATFORM(GTK) && ENABLE(2022_GLIB_API)
+#if ENABLE(2022_GLIB_API)
     case PROP_PAGE_ICONS:
         g_value_set_boxed(value, webkit_web_view_get_page_icons(webView));
         break;
@@ -1469,6 +1477,7 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
             nullptr, nullptr,
             WEBKIT_PARAM_READABLE);
 #endif
+#endif // PLATFORM(GTK)
 
 #if ENABLE(2022_GLIB_API)
     /**
@@ -1484,7 +1493,6 @@ static void webkit_web_view_class_init(WebKitWebViewClass* webViewClass)
         WEBKIT_TYPE_IMAGE_LIST,
         WEBKIT_PARAM_READABLE);
 #endif
-#endif // PLATFORM(GTK)
 
     /**
      * WebKitWebView:uri:
@@ -2769,7 +2777,7 @@ void webkitWebViewLoadFailedWithTLSErrors(WebKitWebView* webView, const char* fa
     g_signal_emit(webView, signals[LOAD_CHANGED], 0, WEBKIT_LOAD_FINISHED);
 }
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || ENABLE(2022_GLIB_API)
 void webkitWebViewGetLoadDecisionForIcons(WebKitWebView* webView, const HashMap<CallbackID, WebCore::LinkIcon>& icons, CompletionHandler<void(HashSet<WebKit::CallbackID>&&)>&& completionHandler)
 {
     struct CallbackAggregator final : public ThreadSafeRefCounted<CallbackAggregator>  {
@@ -2839,7 +2847,7 @@ void webkitWebViewSetIcon(WebKitWebView* webView, const LinkIcon& icon, API::Dat
 
     webkitFaviconDatabaseSetIconForPageURL(database, icon, iconData, getPage(webView).pageLoadState().activeURL(), webkitWebViewIsEphemeral(webView));
 }
-#endif // PLATFORM(GTK)
+#endif // PLATFORM(GTK) || ENABLE(2022_GLIB_API)
 
 RefPtr<WebPageProxy> webkitWebViewCreateNewPage(WebKitWebView* webView, Ref<API::PageConfiguration>&& configuration, WebKitNavigationAction* navigationAction)
 {
@@ -6075,7 +6083,7 @@ void webkit_web_view_leave_immersive_mode(WebKitWebView* webView)
 #endif
 }
 
-#if PLATFORM(GTK) && ENABLE(2022_GLIB_API)
+#if ENABLE(2022_GLIB_API)
 /**
  * webkit_web_view_get_page_icons: (get-property page-icons):
  * @web_view: a #WebKitWebView

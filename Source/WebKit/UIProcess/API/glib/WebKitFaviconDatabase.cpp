@@ -66,6 +66,7 @@ using namespace WebCore;
  * the in-memory cache during the current execution.
  */
 
+#if PLATFORM(GTK)
 enum {
     FAVICON_CHANGED,
 
@@ -73,6 +74,7 @@ enum {
 };
 
 static std::array<unsigned, LAST_SIGNAL> signals;
+#endif // PLATFORM(GTK)
 
 struct _WebKitFaviconDatabasePrivate {
     RefPtr<IconDatabase> iconDatabase;
@@ -82,6 +84,7 @@ WEBKIT_DEFINE_FINAL_TYPE(WebKitFaviconDatabase, webkit_favicon_database, G_TYPE_
 
 static void webkit_favicon_database_class_init(WebKitFaviconDatabaseClass* faviconDatabaseClass)
 {
+#if PLATFORM(GTK)
     /**
      * WebKitFaviconDatabase::favicon-changed:
      * @database: the object on which the signal is emitted
@@ -104,6 +107,7 @@ static void webkit_favicon_database_class_init(WebKitFaviconDatabaseClass* favic
         G_TYPE_NONE, 2,
         G_TYPE_STRING,
         G_TYPE_STRING);
+#endif // PLATFORM(GTK)
 }
 
 WebKitFaviconDatabase* webkitFaviconDatabaseCreate()
@@ -129,7 +133,7 @@ void webkitFaviconDatabaseClose(WebKitFaviconDatabase* database)
     database->priv->iconDatabase = nullptr;
 }
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || ENABLE(2022_GLIB_API)
 void webkitFaviconDatabaseGetLoadDecisionForIcon(WebKitFaviconDatabase* database, const LinkIcon& icon, const String& pageURL, bool isEphemeral, Function<void(bool)>&& completionHandler)
 {
     if (!webkitFaviconDatabaseIsOpen(database)) {
@@ -145,8 +149,13 @@ void webkitFaviconDatabaseGetLoadDecisionForIcon(WebKitFaviconDatabase* database
                 return;
             }
 
+#if PLATFORM(GTK)
             if (found && changed)
                 g_signal_emit(database.get(), signals[FAVICON_CHANGED], 0, pageURL.utf8().data(), url.utf8().data());
+#else
+            UNUSED_PARAM(changed);
+#endif
+
             completionHandler(!found);
         });
 }
@@ -162,10 +171,12 @@ void webkitFaviconDatabaseSetIconForPageURL(WebKitFaviconDatabase* database, con
             if (!webkitFaviconDatabaseIsOpen(database.get()) || !success)
                 return;
 
+#if PLATFORM(GTK)
             g_signal_emit(database.get(), signals[FAVICON_CHANGED], 0, pageURL.utf8().data(), url.utf8().data());
+#endif
         });
 }
-#endif
+#endif // PLATFORM(GTK) || ENABLE(2022_GLIB_API)
 
 /**
  * webkit_favicon_database_error_quark:
@@ -272,6 +283,33 @@ cairo_surface_t* webkit_favicon_database_get_favicon_finish(WebKitFaviconDatabas
 #endif
 }
 
+/**
+ * webkit_favicon_database_get_favicon_uri:
+ * @database: a #WebKitFaviconDatabase
+ * @page_uri: URI of the page containing the icon
+ *
+ * Obtains the URI of the favicon for the given @page_uri.
+ *
+ * Returns: a newly allocated URI for the favicon, or %NULL if the
+ * database doesn't have a favicon for @page_uri.
+ */
+gchar* webkit_favicon_database_get_favicon_uri(WebKitFaviconDatabase* database, const gchar* pageURL)
+{
+    g_return_val_if_fail(WEBKIT_IS_FAVICON_DATABASE(database), nullptr);
+    g_return_val_if_fail(pageURL, nullptr);
+    ASSERT(RunLoop::isMain());
+
+    if (!webkitFaviconDatabaseIsOpen(database))
+        return nullptr;
+
+    const auto& iconURLsForPageURL = database->priv->iconDatabase->iconURLsForPageURL(String::fromUTF8(pageURL));
+    if (iconURLsForPageURL.isEmpty())
+        return nullptr;
+
+    return g_strdup(iconURLsForPageURL.last().utf8().data());
+}
+#endif // PLATFORM(GTK)
+
 #if ENABLE(2022_GLIB_API)
 /**
  * webkit_favicon_database_get_page_icons:
@@ -358,33 +396,6 @@ WebKitImageList* webkit_favicon_database_get_page_icons_finish(WebKitFaviconData
     return static_cast<WebKitImageList*>(g_task_propagate_pointer(G_TASK(result), error));
 }
 #endif // ENABLE(2022_GLIB_API)
-#endif // PLATFORM(GTK)
-
-/**
- * webkit_favicon_database_get_favicon_uri:
- * @database: a #WebKitFaviconDatabase
- * @page_uri: URI of the page containing the icon
- *
- * Obtains the URI of the favicon for the given @page_uri.
- *
- * Returns: a newly allocated URI for the favicon, or %NULL if the
- * database doesn't have a favicon for @page_uri.
- */
-gchar* webkit_favicon_database_get_favicon_uri(WebKitFaviconDatabase* database, const gchar* pageURL)
-{
-    g_return_val_if_fail(WEBKIT_IS_FAVICON_DATABASE(database), nullptr);
-    g_return_val_if_fail(pageURL, nullptr);
-    ASSERT(RunLoop::isMain());
-
-    if (!webkitFaviconDatabaseIsOpen(database))
-        return nullptr;
-
-    const auto& iconURLsForPageURL = database->priv->iconDatabase->iconURLsForPageURL(String::fromUTF8(pageURL));
-    if (iconURLsForPageURL.isEmpty())
-        return nullptr;
-
-    return g_strdup(iconURLsForPageURL.last().utf8().data());
-}
 
 /**
  * webkit_favicon_database_clear:

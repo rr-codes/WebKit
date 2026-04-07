@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#if PLATFORM(GTK)
+#if PLATFORM(GTK) || ENABLE(2022_GLIB_API)
 
 #include "WebKitTestServer.h"
 #include "WebViewTest.h"
@@ -52,7 +52,7 @@ public:
 
     ~FaviconDatabaseTest()
     {
-#if !USE(GTK4)
+#if PLATFORM(GTK) && !USE(GTK4)
         if (m_favicon)
             cairo_surface_destroy(m_favicon);
 #endif
@@ -87,7 +87,9 @@ public:
         m_database = webkit_website_data_manager_get_favicon_database(manager);
         g_assert_true(WEBKIT_IS_FAVICON_DATABASE(m_database.get()));
         assertObjectIsDeletedWhenTestFinishes(G_OBJECT(m_database.get()));
+#if PLATFORM(GTK)
         g_signal_connect(m_database.get(), "favicon-changed", G_CALLBACK(faviconChangedCallback), this);
+#endif
 #else
         GUniquePtr<char> databaseDirectory(g_build_filename(dataDirectory(), directory, nullptr));
         webkit_web_context_set_favicon_database_directory(m_webContext.get(), databaseDirectory.get());
@@ -104,6 +106,7 @@ public:
     }
 #endif
 
+#if PLATFORM(GTK)
     static void faviconChangedCallback(WebKitFaviconDatabase* database, const char* pageURI, const char* faviconURI, FaviconDatabaseTest* test)
     {
         if (!g_strcmp0(webkit_web_view_get_uri(test->webView()), pageURI)) {
@@ -127,6 +130,7 @@ public:
         if (test->m_loadFinished)
             test->quitMainLoop();
     }
+#endif // PLATFORM(GTK)
 
 #if ENABLE(2022_GLIB_API)
     static void viewPageIconsChangedCallback(WebKitWebView* webView, GParamSpec*, FaviconDatabaseTest* test)
@@ -147,10 +151,16 @@ public:
             return;
 
         test->m_loadFinished = true;
-        if (test->m_pageFaviconNotificationCount > 0)
+#if PLATFORM(GTK)
+        const bool shouldQuitMainLoop = test->m_pageFaviconNotificationCount > 0;
+#else
+        const bool shouldQuitMainLoop = test->m_pageIconsNoticationCount > 0;
+#endif
+        if (shouldQuitMainLoop)
             test->quitMainLoop();
     }
 
+#if PLATFORM(GTK)
     static void getFaviconCallback(GObject* sourceObject, GAsyncResult* result, void* data)
     {
         FaviconDatabaseTest* test = static_cast<FaviconDatabaseTest*>(data);
@@ -191,26 +201,34 @@ public:
         g_assert_true(test->webView() == webView);
         test->m_pageFaviconNotificationCount++;
     }
+#endif // PLATFORM(GTK)
 
 #if ENABLE(2022_GLIB_API)
     void waitUntilLoadFinishedAndPageIconsChanged()
     {
         g_clear_pointer(&m_pageIcons, webkit_image_list_unref);
-        m_pageFaviconNotificationCount = 0;
         m_pageIconsNoticationCount = 0;
         m_loadFinished = false;
 
+#if PLATFORM(GTK)
+        m_pageFaviconNotificationCount = 0;
         const auto faviconID = g_signal_connect(m_webView.get(), "notify::favicon", G_CALLBACK(faviconChangedCountCallback), this);
+#endif
+
         const auto pageIconsID = g_signal_connect(m_webView.get(), "notify::page-icons", G_CALLBACK(viewPageIconsChangedCallback), this);
         const auto loadChangedID = g_signal_connect(m_webView.get(), "load-changed", G_CALLBACK(viewLoadChangedCallback), this);
         g_main_loop_run(m_mainLoop);
 
+#if PLATFORM(GTK)
         g_signal_handler_disconnect(m_webView.get(), faviconID);
+#endif
+
         g_signal_handler_disconnect(m_webView.get(), pageIconsID);
         g_signal_handler_disconnect(m_webView.get(), loadChangedID);
     }
 #endif // ENABLE(2022_GLIB_API)
 
+#if PLATFORM(GTK)
     void getFaviconForPageURIAndWaitUntilReady(const char* pageURI)
     {
 #if !USE(GTK4)
@@ -271,26 +289,28 @@ public:
         g_signal_handler_disconnect(m_webView.get(), handlerID);
     }
 
-    GRefPtr<WebKitFaviconDatabase> m_database;
     unsigned m_faviconChangedID { 0 };
+    unsigned m_pageFaviconNotificationTimeoutID { 0 };
+    size_t m_pageFaviconNotificationCount { 0 };
+    std::optional<CString> m_faviconURI { std::nullopt };
+    GUniqueOutPtr<GError> m_error;
+    bool m_waitingForFaviconURI { false };
+    unsigned m_waitingForFaviconURITimeoutID { 0 };
+
 #if USE(GTK4)
     GRefPtr<GdkTexture> m_favicon;
 #else
     cairo_surface_t* m_favicon { nullptr };
 #endif
-    size_t m_pageFaviconNotificationCount { 0 };
-    unsigned m_pageFaviconNotificationTimeoutID { 0 };
-
-    std::optional<CString> m_faviconURI { std::nullopt };
-    GUniqueOutPtr<GError> m_error;
-    bool m_loadFinished { false };
-    bool m_waitingForFaviconURI { false };
-    unsigned m_waitingForFaviconURITimeoutID { 0 };
+#endif // PLATFORM(GTK)
 
 #if ENABLE(2022_GLIB_API)
     size_t m_pageIconsNoticationCount { 0 };
     WebKitImageList* m_pageIcons;
 #endif
+
+    GRefPtr<WebKitFaviconDatabase> m_database;
+    bool m_loadFinished { false };
 };
 
 static void serverCallback(SoupServer*, SoupServerMessage* message, const char* path, GHashTable* query, gpointer)
@@ -341,6 +361,7 @@ static void serverCallback(SoupServer*, SoupServerMessage* message, const char* 
     soup_message_body_complete(responseBody);
 }
 
+#if PLATFORM(GTK)
 static void testFaviconDatabaseInitialization(FaviconDatabaseTest* test, gconstpointer)
 {
     // In 2022 API favicon database is nullptr until favicons are enabled.
@@ -436,6 +457,7 @@ static void testFaviconDatabaseGetFavicon(FaviconDatabaseTest* test, gconstpoint
     g_assert_false(test->m_faviconURI.has_value());
     g_assert_nonnull(webkit_web_view_get_favicon(test->webView()));
 }
+#endif // PLATFORM(GTK)
 
 #if ENABLE(2022_GLIB_API)
 static void testFaviconDatabaseGetPageIcons(FaviconDatabaseTest *test, gconstpointer)
@@ -444,8 +466,11 @@ static void testFaviconDatabaseGetPageIcons(FaviconDatabaseTest *test, gconstpoi
 
     test->loadURI(kServer->getURIForPath("/multipleicons").data());
     test->waitUntilLoadFinishedAndPageIconsChanged();
+
+#if PLATFORM(GTK)
     test->waitUntilFaviconChangedTimes(3, 1500);
     g_assert_cmpint(test->m_pageFaviconNotificationCount, ==, 3);
+#endif
 
     g_assert_cmpint(test->m_pageIconsNoticationCount, ==, 1);
     g_assert_nonnull(test->m_pageIcons);
@@ -491,6 +516,7 @@ static void testFaviconDatabaseGetPageIcons(FaviconDatabaseTest *test, gconstpoi
 }
 #endif // ENABLE(2022_GLIB_API)
 
+#if PLATFORM(GTK)
 static void ephemeralViewFaviconChanged(WebKitWebView* webView, GParamSpec*, WebViewTest* test)
 {
     g_signal_handlers_disconnect_by_func(webView, reinterpret_cast<void*>(ephemeralViewFaviconChanged), test);
@@ -575,6 +601,8 @@ void testFaviconDatabaseClear(FaviconDatabaseTest* test, gconstpointer)
     g_assert_null(test->m_favicon);
     g_assert_null(webkit_favicon_database_get_favicon_uri(test->m_database.get(), kServer->getURIForPath("/foo").data()));
 }
+#endif // PLATFORM(GTK)
+
 
 void beforeAll()
 {
@@ -582,10 +610,13 @@ void beforeAll()
     kServer = new WebKitTestServer();
     kServer->run(serverCallback);
 
+#if PLATFORM(GTK)
+    // FIXME(311208): Enable these test cases for the WPE port.
     FaviconDatabaseTest::add("WebKitFaviconDatabase", "initialization", testFaviconDatabaseInitialization);
     FaviconDatabaseTest::add("WebKitFaviconDatabase", "get-favicon", testFaviconDatabaseGetFavicon);
     FaviconDatabaseTest::add("WebKitFaviconDatabase", "ephemeral", testFaviconDatabaseEphemeral);
     FaviconDatabaseTest::add("WebKitFaviconDatabase", "clear", testFaviconDatabaseClear);
+#endif
 #if ENABLE(2022_GLIB_API)
     FaviconDatabaseTest::add("WebKitFaviconDatabase", "get-page-icons", testFaviconDatabaseGetPageIcons);
 #endif

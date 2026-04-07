@@ -32,9 +32,10 @@
 #else
 #include <cairo.h>
 #endif
+#endif
+
 #if ENABLE(2022_GLIB_API)
 #include <@API_INCLUDE_PREFIX@/WebKitImage.h>
-#endif
 #endif
 
 G_BEGIN_DECLS
@@ -98,6 +99,11 @@ webkit_favicon_database_get_favicon_finish (WebKitFaviconDatabase *database,
                                             GError               **error);
 #endif
 
+WEBKIT_API gchar *
+webkit_favicon_database_get_favicon_uri    (WebKitFaviconDatabase *database,
+                                            const gchar           *page_uri);
+#endif // PLATFORM(GTK)
+
 #if ENABLE(2022_GLIB_API)
 WEBKIT_API void
 webkit_favicon_database_get_page_icons     (WebKitFaviconDatabase *database,
@@ -111,12 +117,8 @@ webkit_favicon_database_get_page_icons_finish
                                            (WebKitFaviconDatabase  *database,
                                             GAsyncResult           *result,
                                             GError                **error);
-#endif
-#endif
+#endif // ENABLE(2022_GLIB_API)
 
-WEBKIT_API gchar *
-webkit_favicon_database_get_favicon_uri    (WebKitFaviconDatabase *database,
-                                            const gchar           *page_uri);
 WEBKIT_API void
 webkit_favicon_database_clear              (WebKitFaviconDatabase *database);
 
