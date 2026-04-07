@@ -3493,7 +3493,6 @@ webkit.org/b/189345 http/tests/media/clearkey/collect-webkit-media-session.html 
 
 media/encrypted-media [ Pass ]
 
-webkit.org/b/205857 media/encrypted-media/mock-navigator-requestMediaKeySystemAccess.html [ Skip ]
 webkit.org/b/205860 media/encrypted-media/mock-MediaKeySession-remove.html [ Skip ]
 
 
