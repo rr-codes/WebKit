@@ -775,7 +775,7 @@ void Styleable::updateCSSTransitions(const RenderStyle& currentStyle, const Rend
 
     // In case this element is newly getting a "display: none" we need to cancel all of its transitions and disregard new ones,
     // unless it will transition the "display" property itself.
-    if (!currentStyle.transitions().isInitial() && currentStyle.display() != Style::DisplayType::None && newStyle.display() == Style::DisplayType::None && !styleHasDisplayTransition(newStyle)) {
+    if (!currentStyle.transitions().isInitial() && currentStyle.display() != Style::DisplayType::None && newStyle.display() == Style::DisplayType::None && !styleHasDisplayTransition(newStyle, element)) {
         if (hasRunningTransitions()) {
             auto runningTransitions = ensureRunningTransitionsByProperty();
             for (const auto& cssTransitionsByAnimatableCSSPropertyMapItem : runningTransitions)

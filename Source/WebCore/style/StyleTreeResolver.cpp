@@ -864,7 +864,7 @@ ElementUpdate TreeResolver::createAnimatedElementUpdate(ResolvedStyle&& resolved
             // to the old value. To remedy this, we manually patch display to be the old value if:
             // 1. the old style's display is not none, and
             // 2. the new style has display: none and specifies a transition on display.
-            if (oldStyle && !oldStyle->transitions().isInitial() && oldStyle->display() != DisplayType::None && styleHasDisplayTransition(*newStyle) && newStyle->display() == DisplayType::None)
+            if (oldStyle && !oldStyle->transitions().isInitial() && oldStyle->display() != DisplayType::None && styleHasDisplayTransition(*newStyle, element) && newStyle->display() == DisplayType::None)
                 newStyle->setDisplay(oldStyle->display());
             return { WTF::move(newStyle), OptionSet<AnimationImpact> { } };
         }
