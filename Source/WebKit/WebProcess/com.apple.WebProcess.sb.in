@@ -648,7 +648,7 @@
     (if path
         (begin
             (allow file-read* (subpath path))
-            (allow file-write* (with report) (with telemetry) (subpath path))
+            (allow file-write* (with report) (with telemetry-backtrace) (subpath path))
             (allow file-issue-extension (require-all (extension-class "com.apple.app-sandbox.read") (subpath path)))
             (allow file-issue-extension (require-all (extension-class "com.apple.app-sandbox.read-write") (subpath path))))))
 
@@ -772,11 +772,13 @@
         (global-name-regex #"^_oglprof_attach_<[0-9]+>$"))
 )
 
+#if USE(SANDBOX_PARAMS)
 (if (positive? (string-length (param "DARWIN_USER_CACHE_DIR")))
     (allow-read-write-directory-and-issue-read-write-extensions (param "DARWIN_USER_CACHE_DIR")))
 
 (if (positive? (string-length (param "DARWIN_USER_TEMP_DIR")))
     (allow-read-write-directory-and-issue-read-write-extensions (param "DARWIN_USER_TEMP_DIR")))
+#endif
 
 ;; IOKit user clients
 (deny IOKIT_OPEN_USER_CLIENT (with no-report)
