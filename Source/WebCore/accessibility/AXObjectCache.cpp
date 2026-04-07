@@ -469,6 +469,7 @@ AXObjectCache::~AXObjectCache()
         object->detach(AccessibilityDetachmentType::CacheDestroyed);
 
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
+    m_buildIsolatedTreeTimer.stop();
     m_selectedTextRangeTimer.stop();
     m_updateTreeSnapshotTimer.stop();
 
@@ -5830,7 +5831,25 @@ AXTreeData AXObjectCache::treeData(std::optional<OptionSet<AXStreamOptions>> add
     TextStream stream(TextStream::LineMode::MultipleLine);
 
     stream << "\nAXObjectTree:\n";
+    stream << "Loading progress: " << m_loadingProgress << "\n";
+
     RefPtr document = this->document();
+    if (document) {
+        if (RefPtr liveFocus = focusedObjectForPage(document->page()))
+            stream << "Focused object: ID=" << liveFocus->objectID().loggingString() << " role=" << liveFocus->rolePlatformString() << "\n";
+        else
+            stream << "Focused object: none\n";
+    }
+
+    stream << "Page activity state: " << m_pageActivityState << "\n";
+
+    if (RefPtr modalElement = m_currentModalElement.get()) {
+        if (RefPtr modalObject = get(modalElement.get()))
+            stream << "Current modal element: ID=" << modalObject->objectID().loggingString() << " role=" << modalObject->rolePlatformString() << "\n";
+        else
+            stream << "Current modal element: <" << modalElement->tagName() << "> (no AX object)\n";
+    }
+
     if (RefPtr root = document ? get(document->view()) : nullptr) {
         OptionSet<AXStreamOptions> options = { AXStreamOptions::ObjectID, AXStreamOptions::ParentID, AXStreamOptions::Role };
         if (additionalOptions)
@@ -5838,6 +5857,7 @@ AXTreeData AXObjectCache::treeData(std::optional<OptionSet<AXStreamOptions>> add
         streamSubtree(stream, *root, options);
     } else
         stream << "No root!";
+
     data.liveTree = stream.release();
 
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
@@ -5853,6 +5873,18 @@ AXTreeData AXObjectCache::treeData(std::optional<OptionSet<AXStreamOptions>> add
         stream << "\nAXIsolatedTree:\n";
 
         RefPtr tree = getOrCreateIsolatedTree();
+        if (tree) {
+            stream << "Loading progress: " << tree->loadingProgress() << ", isEmptyContentTree: " << (tree->isEmptyContentTree() ? "yes" : "no") << ", nodeMapSize: " << tree->nodeMapSize() << "\n";
+            if (auto focusID = tree->unsafeFocusedNodeID())
+                stream << "Focused object: ID=" << focusID->loggingString() << "\n";
+            else
+                stream << "Focused object: none\n";
+
+            stream << "Page activity state: " << tree->pageActivityState() << "\n";
+            if (RefPtr replacingTree = tree->replacingTreeForLogging())
+                stream << "Has m_replacingTree (isEmptyContentTree=" << (replacingTree->isEmptyContentTree() ? "yes" : "no") << ", nodeMapSize=" << replacingTree->nodeMapSize() << ")\n";
+        }
+
         if (RefPtr root = tree ? tree->rootNode() : nullptr) {
             OptionSet<AXStreamOptions> options = { AXStreamOptions::ObjectID, AXStreamOptions::ParentID, AXStreamOptions::Role };
             if (additionalOptions)

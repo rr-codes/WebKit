@@ -430,6 +430,7 @@ public:
     // Creates a tree consisting of only the Scrollview and the WebArea objects. This tree is used as a temporary placeholder while the whole tree is being built.
     static Ref<AXIsolatedTree> createEmpty(AXObjectCache&);
     constexpr bool isEmptyContentTree() const { return m_isEmptyContentTree; }
+    unsigned nodeMapSize() const { return m_nodeMap.size(); }
     virtual ~AXIsolatedTree();
 
     static void removeTreeForFrameID(FrameIdentifier);
@@ -453,6 +454,8 @@ public:
     WEBCORE_EXPORT RefPtr<AXIsolatedObject> focusedNode();
 
     bool unsafeHasObjectForID(AXID axID) const;
+    // Not threadsafe, only for debug snapshot use.
+    std::optional<AXID> unsafeFocusedNodeID() const { return m_focusedNodeID; }
     inline AXIsolatedObject* objectForID(AXID axID) const
     {
         AX_ASSERT(!isMainThread());
@@ -559,6 +562,8 @@ public:
 
     AXTextMarker firstMarker();
     AXTextMarker lastMarker();
+
+    RefPtr<AXIsolatedTree> replacingTreeForLogging() const { return m_replacingTree; }
 
 private:
     AXIsolatedTree(AXObjectCache&);
