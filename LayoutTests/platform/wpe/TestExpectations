@@ -1206,6 +1206,7 @@ webkit.org/b/308540 fast/repaint/border-radius-partial-repaint-corner.html [ Pas
 
 webkit.org/b/310411 [ arm64 ] fast/events/event-timing-back-forward-cache-duration.html [ Pass Failure ]
 
+webkit.org/b/311654 [ arm64 ] imported/w3c/web-platform-tests/event-timing/gap-keydown-keyup.html [ Failure ]
 webkit.org/b/309744 [ arm64 ] fast/events/monotonic-event-time.html [ Failure ]
 webkit.org/b/309627 [ arm64 ] fast/forms/textarea/textarea-placeholder-paint-order-2.html [ Pass ImageOnlyFailure ]
 
