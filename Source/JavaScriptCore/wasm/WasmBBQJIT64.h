@@ -538,8 +538,8 @@ void BBQJIT::emitShuffleMove(Vector<Value, N, OverflowHandler>& srcVector, Vecto
     statusVector[index] = ShuffleStatus::Moved;
 }
 
-template<typename Func, size_t N>
-void BBQJIT::emitCCall(Func function, const Vector<Value, N>& arguments)
+template<typename Func>
+void BBQJIT::emitCCall(Func function, std::span<const Value> arguments)
 {
     // Currently, we assume the Wasm calling convention is the same as the C calling convention
     Vector<Type, 16> resultTypes;
@@ -564,8 +564,8 @@ void BBQJIT::emitCCall(Func function, const Vector<Value, N>& arguments)
     m_jit.call(wasmScratchGPR, OperationPtrTag);
 }
 
-template<typename Func, size_t N>
-void BBQJIT::emitCCall(Func function, const Vector<Value, N>& arguments, Value& result)
+template<typename Func>
+void BBQJIT::emitCCall(Func function, std::span<const Value> arguments, Value& result)
 {
     ASSERT(result.isTemp());
 

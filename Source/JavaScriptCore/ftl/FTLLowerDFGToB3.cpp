@@ -114,7 +114,9 @@
 #include "WasmModuleInformation.h"
 #include "WebAssemblyFunction.h"
 #include "YarrJITRegisters.h"
+#include <array>
 #include <atomic>
+#include <span>
 #include <wtf/Box.h>
 #include <wtf/GenericHashKey.h>
 #include <wtf/RecursableLambda.h>
@@ -22898,11 +22900,12 @@ IGNORE_CLANG_WARNINGS_END
     template<typename Functor, typename... ArgumentTypes>
     PatchpointValue* lazySlowPath(const Functor& functor, ArgumentTypes... arguments)
     {
-        return lazySlowPath(functor, Vector<LValue>{ arguments... });
+        std::array<LValue, sizeof...(ArgumentTypes)> args { arguments... };
+        return lazySlowPath(functor, std::span<const LValue> { args });
     }
 
     template<typename Functor>
-    PatchpointValue* lazySlowPath(const Functor& functor, const Vector<LValue>& userArguments)
+    PatchpointValue* lazySlowPath(const Functor& functor, std::span<const LValue> userArguments)
     {
         CodeOrigin origin = m_origin.semantic;
 

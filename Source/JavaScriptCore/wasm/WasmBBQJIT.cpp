@@ -2852,7 +2852,7 @@ PartialResult BBQJIT::addI32Extend8S(Value operand, Value& result)
                 // We avoid this by consuming the result before passing it to emitCCall, which also saves us the mov for spilling.
                 consume(result);
                 auto arg = Value::pinned(TypeKind::I32, operandLocation);
-                emitCCall(&operationPopcount32, Vector<Value, 8> { arg }, result);
+                emitCCall(&operationPopcount32, singleElementSpan(arg), result);
             }
         )
     )
@@ -2877,7 +2877,7 @@ PartialResult BBQJIT::addI32Extend8S(Value operand, Value& result)
                 // We avoid this by consuming the result before passing it to emitCCall, which also saves us the mov for spilling.
                 consume(result);
                 auto arg = Value::pinned(TypeKind::I64, operandLocation);
-                emitCCall(&operationPopcount64, Vector<Value, 8> { arg }, result);
+                emitCCall(&operationPopcount64, singleElementSpan(arg), result);
             }
         )
     )

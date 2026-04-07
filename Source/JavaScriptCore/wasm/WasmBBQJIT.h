@@ -34,6 +34,7 @@
 #include "WasmFunctionParser.h"
 #include "WasmLimits.h"
 #include "js/JSWebAssemblyInstance.h"
+#include <span>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 
@@ -2055,11 +2056,11 @@ public:
     template<size_t N>
     void returnValuesFromCall(Vector<Value, N>& results, const FunctionSignature& functionType, const CallInformation& callInfo);
 
-    template<typename Func, size_t N>
-    void emitCCall(Func function, const Vector<Value, N>& arguments);
+    template<typename Func>
+    void emitCCall(Func function, std::span<const Value> arguments);
 
-    template<typename Func, size_t N>
-    void emitCCall(Func function, const Vector<Value, N>& arguments, Value& result);
+    template<typename Func>
+    void emitCCall(Func function, std::span<const Value> arguments, Value& result);
 
     void emitTailCall(FunctionSpaceIndex, const TypeDefinition& signature, ArgumentList& arguments);
     [[nodiscard]] PartialResult addCall(unsigned, FunctionSpaceIndex, const TypeDefinition& signature, ArgumentList& arguments, ResultList& results, CallType = CallType::Call);
