@@ -3492,6 +3492,10 @@ bool LocalFrameView::scrollRectToVisible(const LayoutRect& absoluteRect, const R
     EnumSet<BoxAxis> isFixed(insideFixed ? EnumSet<BoxAxis> { BoxAxis::Horizontal, BoxAxis::Vertical } : EnumSet<BoxAxis> { });
 
     for (; layer; layer = layer->enclosingContainingBlockLayer(CrossFrameBoundaries::No)) {
+        // Per the CSSOM View spec, scrollIntoView should scroll the element's ancestor scroll
+        // containers, but not the element itself if it happens to be a scroller.
+        if (options.skipScrollingTargetElement == SkipScrollingTargetElement::Yes && &layer->renderer() == &renderer)
+            continue;
         if (layer->shouldTryToScrollForScrollIntoView(adjustedOptions)) {
             adjustScrollRectToVisibleOptionsForHiddenOverflow(adjustedOptions, layer->renderer().style());
             adjustedRect = layer->ensureLayerScrollableArea()->scrollRectToVisible(adjustedRect, adjustedOptions);

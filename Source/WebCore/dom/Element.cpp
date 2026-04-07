@@ -1250,11 +1250,11 @@ void Element::scrollIntoView(Variant<bool, ScrollIntoViewOptions>&& arg)
 
     bool isHorizontal = writingMode.isHorizontal();
     auto visibleOptions = ScrollRectToVisibleOptions {
-        SelectionRevealMode::Reveal,
-        isHorizontal ? alignX : alignY,
-        isHorizontal ? alignY : alignX,
-        ShouldAllowCrossOriginScrolling::No,
-        options.behavior
+        .revealMode = SelectionRevealMode::Reveal,
+        .alignX = isHorizontal ? alignX : alignY,
+        .alignY = isHorizontal ? alignY : alignX,
+        .behavior = options.behavior,
+        .skipScrollingTargetElement = SkipScrollingTargetElement::Yes
     };
     LocalFrameView::scrollRectToVisible(absoluteBounds, *renderer, insideFixed, visibleOptions);
 }
@@ -1271,11 +1271,17 @@ void Element::scrollIntoView(bool alignToTop)
     LayoutRect absoluteBounds = renderer->absoluteAnchorRectWithScrollMargin(&insideFixed).marginRect;
 
     // Align to the top / bottom and to the closest edge.
-    auto alignY = alignToTop ? ScrollAlignment::alignTopAlways : ScrollAlignment::alignBottomAlways;
     auto alignX = ScrollAlignment::alignToEdgeIfNeeded;
     alignX.disableLegacyHorizontalVisibilityThreshold();
 
-    LocalFrameView::scrollRectToVisible(absoluteBounds, *renderer, insideFixed, { SelectionRevealMode::Reveal, alignX, alignY, ShouldAllowCrossOriginScrolling::No });
+    auto options = ScrollRectToVisibleOptions {
+        .revealMode = SelectionRevealMode::Reveal,
+        .alignX = alignX,
+        .alignY = alignToTop ? ScrollAlignment::alignTopAlways : ScrollAlignment::alignBottomAlways,
+        .skipScrollingTargetElement = SkipScrollingTargetElement::Yes
+    };
+
+    LocalFrameView::scrollRectToVisible(absoluteBounds, *renderer, insideFixed, options);
 }
 
 void Element::scrollIntoViewIfNeeded(bool centerIfNeeded)
@@ -1292,11 +1298,16 @@ void Element::scrollIntoViewIfNeeded(bool centerIfNeeded)
     bool insideFixed;
     LayoutRect absoluteBounds = renderer->absoluteAnchorRectWithScrollMargin(&insideFixed).marginRect;
 
-    auto alignY = centerIfNeeded ? ScrollAlignment::alignCenterIfNeeded : ScrollAlignment::alignToEdgeIfNeeded;
     auto alignX = centerIfNeeded ? ScrollAlignment::alignCenterIfNeeded : ScrollAlignment::alignToEdgeIfNeeded;
     alignX.disableLegacyHorizontalVisibilityThreshold();
 
-    LocalFrameView::scrollRectToVisible(absoluteBounds, *renderer, insideFixed, { SelectionRevealMode::Reveal, alignX, alignY, ShouldAllowCrossOriginScrolling::No });
+    auto options = ScrollRectToVisibleOptions {
+        .revealMode = SelectionRevealMode::Reveal,
+        .alignX = alignX,
+        .alignY = centerIfNeeded ? ScrollAlignment::alignCenterIfNeeded : ScrollAlignment::alignToEdgeIfNeeded,
+        .skipScrollingTargetElement = SkipScrollingTargetElement::Yes
+    };
+    LocalFrameView::scrollRectToVisible(absoluteBounds, *renderer, insideFixed, options);
 }
 
 void Element::scrollIntoViewIfNotVisible(bool centerIfNotVisible, AllowScrollingOverflowHidden allowScrollingOverflowHidden)
@@ -1310,12 +1321,12 @@ void Element::scrollIntoViewIfNotVisible(bool centerIfNotVisible, AllowScrolling
     bool insideFixed;
     LayoutRect absoluteBounds = renderer->absoluteAnchorRectWithScrollMargin(&insideFixed).marginRect;
     auto align = centerIfNotVisible ? ScrollAlignment::alignCenterIfNotVisible : ScrollAlignment::alignToEdgeIfNotVisible;
-    ScrollRectToVisibleOptions options = {
+    auto options = ScrollRectToVisibleOptions {
         .revealMode = SelectionRevealMode::Reveal,
         .alignX = align,
         .alignY = align,
-        .shouldAllowCrossOriginScrolling = ShouldAllowCrossOriginScrolling::No,
-        .allowScrollingOverflowHidden = allowScrollingOverflowHidden
+        .allowScrollingOverflowHidden = allowScrollingOverflowHidden,
+        .skipScrollingTargetElement = SkipScrollingTargetElement::Yes
     };
 
     LocalFrameView::scrollRectToVisible(absoluteBounds, *renderer, insideFixed, options);

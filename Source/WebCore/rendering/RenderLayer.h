@@ -146,6 +146,7 @@ enum class IndirectCompositingReason {
 };
 
 enum class ShouldAllowCrossOriginScrolling : bool { No, Yes };
+enum class SkipScrollingTargetElement : bool { No, Yes };
 
 struct ScrollRectToVisibleOptions {
     SelectionRevealMode revealMode { SelectionRevealMode::Reveal };
@@ -156,6 +157,7 @@ struct ScrollRectToVisibleOptions {
     OnlyAllowForwardScrolling onlyAllowForwardScrolling { OnlyAllowForwardScrolling::No };
     AllowScrollingOverflowHidden allowScrollingOverflowHidden { AllowScrollingOverflowHidden::Yes };
     std::optional<LayoutRect> visibilityCheckRect { std::nullopt };
+    SkipScrollingTargetElement skipScrollingTargetElement { SkipScrollingTargetElement::No };
 };
 
 enum class UpdateBackingSharingFlags {
