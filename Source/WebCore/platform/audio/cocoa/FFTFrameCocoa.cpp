@@ -61,7 +61,7 @@ FFTFrame::FFTFrame(unsigned fftSize)
     , m_imagData(fftSize)
 {
     m_FFTSize = fftSize;
-    m_log2FFTSize = static_cast<unsigned>(log2(fftSize));
+    m_log2FFTSize = std::bit_width(fftSize) - 1;
 
     // We only allow power of two
     ASSERT(1UL << m_log2FFTSize == m_FFTSize);
@@ -133,7 +133,7 @@ void FFTFrame::doInverseFFT(std::span<float> data)
 
 FFTSetup FFTFrame::fftSetupForSize(unsigned fftSize)
 {
-    auto pow2size = static_cast<size_t>(log2(fftSize));
+    auto pow2size = static_cast<size_t>(std::bit_width(fftSize) - 1);
     ASSERT(pow2size < kMaxFFTPow2Size);
 
     Locker locker { fftSetupsLock };
