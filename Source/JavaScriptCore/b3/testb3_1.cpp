@@ -1131,6 +1131,13 @@ void run(const TestConfig* config)
     if (isARM64()) {
         RUN(testTernarySubInstructionSelection(Identity, Int64, Air::Sub64));
         RUN(testTernarySubInstructionSelection(Trunc, Int32, Air::Sub32));
+        RUN(testVectorTransposeEven());
+        RUN(testVectorTransposeOdd());
+        RUN(testVectorSwizzleBinaryToUnzipOdd());
+        RUN(testVectorSwizzleBinaryToEXT());
+        RUN(testVectorSwizzleBinaryCanonical());
+        RUN(testVectorSwizzleComposition());
+        RUN(testVectorSwizzleCompositionMultiUse());
     }
 
     RUN(testReportUsedRegistersLateUseFollowedByEarlyDefDoesNotMarkUseAsDead());
@@ -1156,8 +1163,6 @@ void run(const TestConfig* config)
         RUN(testVectorFmulByElementDouble());
         RUN(testVectorXorRotateRight64());
         RUN(testVectorXor3());
-        RUN(testVectorTransposeEven());
-        RUN(testVectorTransposeOdd());
         RUN(testVectorShlImmediate());
         RUN(testVectorShrImmediate());
         RUN(testVectorUnzipEven());
@@ -1167,17 +1172,12 @@ void run(const TestConfig* config)
         RUN(testVectorReverse());
         RUN(testVectorShlByOne());
         RUN(testVectorSwizzleToUnzipEven());
-        RUN(testVectorSwizzleBinaryToUnzipOdd());
-        RUN(testVectorSwizzleBinaryCanonical());
         RUN(testVectorSwizzleUnaryCanonical());
         RUN(testVectorExtractPair());
-        RUN(testVectorSwizzleBinaryToEXT());
         RUN(testVectorSwizzleUnaryToEXT());
         RUN(testVectorCanonicalSameInputFolding());
         RUN(testVectorSwizzleToDupElement());
-        RUN(testVectorSwizzleComposition());
         RUN(testVectorSwizzleUnaryComposition());
-        RUN(testVectorSwizzleCompositionMultiUse());
         RUN(testMulHigh32());
         RUN(testMulHigh64());
         RUN(testUMulHigh32());
