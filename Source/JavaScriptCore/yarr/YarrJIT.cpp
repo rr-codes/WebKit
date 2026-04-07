@@ -5080,6 +5080,10 @@ class YarrGenerator final : public YarrJITInfo {
 
                     // No context available - propagate failure
                     noContext.link(&m_jit);
+                    if (shouldRecordSubpatterns() && term->containsAnyCaptures()) {
+                        for (unsigned subpattern = term->parentheses.subpatternId; subpattern <= term->parentheses.lastSubpatternId; subpattern++)
+                            clearSubpattern(subpattern);
+                    }
                     storeToFrame(MacroAssembler::TrustedImm32(-1), parenthesesFrameLocation + BackTrackInfoParentheses::beginIndex());
                     m_backtrackingState.fallthrough();
                     break;
@@ -5226,8 +5230,13 @@ class YarrGenerator final : public YarrJITInfo {
                     // is treated as a successful match - jump to the end of the
                     // subpattern. We already have adjusted the input position
                     // back to that before the assertion, which is correct.
-                    if (term->invert())
+                    if (term->invert()) {
+                        if (shouldRecordSubpatterns() && term->containsAnyCaptures()) {
+                            for (unsigned subpattern = term->parentheses.subpatternId; subpattern <= term->parentheses.lastSubpatternId; subpattern++)
+                                clearSubpattern(subpattern);
+                        }
                         m_jit.jump(endOp.m_reentry);
+                    }
 
                     m_backtrackingState.fallthrough();
                 }
