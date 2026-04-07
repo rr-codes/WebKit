@@ -74,7 +74,7 @@ public:
     WEBCORE_EXPORT static bool isSupportedImageMIMETypeForEncoding(const String& mimeType);
 
     // Check to see if a MIME type is suitable for being loaded as a JavaScript or JSON resource.
-    WEBCORE_EXPORT static bool isSupportedJavaScriptMIMEType(const String& mimeType);
+    WEBCORE_EXPORT static bool isSupportedJavaScriptMIMEType(StringView mimeType);
     WEBCORE_EXPORT static bool isSupportedJSONMIMEType(const String& mimeType);
 
     // Check to see if a MIME type is suitable for being loaded as a WebAssembly module.

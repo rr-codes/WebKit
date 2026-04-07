@@ -518,7 +518,7 @@ bool MIMETypeRegistry::isSupportedImageMIMETypeForEncoding(const String& mimeTyp
     return threadGlobalDataSingleton().mimeTypeRegistryThreadGlobalData().supportedImageMIMETypesForEncoding().contains(mimeType);
 }
 
-bool MIMETypeRegistry::isSupportedJavaScriptMIMEType(const String& mimeType)
+bool MIMETypeRegistry::isSupportedJavaScriptMIMEType(StringView mimeType)
 {
     return supportedJavaScriptMIMETypes.contains(mimeType);
 }

@@ -117,12 +117,13 @@ ValueOrReference<String> EmailInputType::sanitizeValue(const String& proposedVal
     ASSERT(element());
     if (!protect(element())->multiple())
         return noLineBreakValue.trim(isASCIIWhitespace);
-    Vector<String> addresses = noLineBreakValue.splitAllowingEmptyEntries(',');
     StringBuilder strippedValue;
-    for (unsigned i = 0; i < addresses.size(); ++i) {
-        if (i > 0)
+    bool first = true;
+    for (auto address : StringView(noLineBreakValue).splitAllowingEmptyEntries(',')) {
+        if (!first)
             strippedValue.append(',');
-        strippedValue.append(addresses[i].trim(isASCIIWhitespace));
+        first = false;
+        strippedValue.append(address.trim(isASCIIWhitespace));
     }
     return String { strippedValue.toString() };
 }

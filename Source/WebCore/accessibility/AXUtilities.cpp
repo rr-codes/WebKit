@@ -137,11 +137,8 @@ bool hasAccNameAttribute(Element& element)
 
     // For title, check that it's not whitespace-only.
     const auto& titleValue = element.attributeWithoutSynchronization(titleAttr);
-    if (!titleValue.isEmpty()) {
-        auto titleCopy = titleValue.string();
-        if (!titleCopy.trim(isASCIIWhitespace).isEmpty())
-            return true;
-    }
+    if (!titleValue.string().containsOnly<isASCIIWhitespace>())
+        return true;
 
     return false;
 }

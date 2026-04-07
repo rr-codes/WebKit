@@ -152,8 +152,7 @@ public:
     StringView left(unsigned length) const { return substring(0, length); }
     StringView right(unsigned length) const { return substring(this->length() - length, length); }
 
-    template<typename MatchedCharacterPredicate>
-    StringView trim(const MatchedCharacterPredicate&) const;
+    StringView trim(CodeUnitMatchFunction) const;
 
     class SplitResult;
     SplitResult split(char16_t) const;
@@ -1249,8 +1248,7 @@ inline StringView StringView::trim(std::span<const CharacterType> characters, co
     return result;
 }
 
-template<typename MatchedCharacterPredicate>
-StringView StringView::trim(const MatchedCharacterPredicate& predicate) const
+inline StringView StringView::trim(CodeUnitMatchFunction predicate) const
 {
     if (is8Bit())
         return trim<Latin1Character>(span8(), predicate);

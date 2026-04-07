@@ -824,8 +824,8 @@ static AtomString extractContentLanguageFromHeader(const String& header)
 {
     auto commaIndex = header.find(',');
     if (commaIndex == notFound)
-        return AtomString { header.trim(isASCIIWhitespace) };
-    return StringView(header).left(commaIndex).trim(isASCIIWhitespace<char16_t>).toAtomString();
+        return StringView(header).trim(isASCIIWhitespace).toAtomString();
+    return StringView(header).left(commaIndex).trim(isASCIIWhitespace).toAtomString();
 }
 
 void FrameLoader::didBeginDocument(bool dispatch, LocalDOMWindow* previousWindow)

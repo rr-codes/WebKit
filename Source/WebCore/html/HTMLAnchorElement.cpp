@@ -551,7 +551,7 @@ void HTMLAnchorElement::handleClick(Event& event)
         return;
 
     StringBuilder url;
-    url.append(attributeWithoutSynchronization(hrefAttr).string().trim(isASCIIWhitespace));
+    url.append(StringView(attributeWithoutSynchronization(hrefAttr).string()).trim(isASCIIWhitespace));
     appendServerMapMousePosition(url, event);
     URL completedURL = document->completeURL(url.toString());
 
