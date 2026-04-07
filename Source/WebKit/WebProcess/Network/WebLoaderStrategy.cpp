@@ -537,7 +537,16 @@ void WebLoaderStrategy::scheduleLoadFromNetworkProcess(ResourceLoader& resourceL
             loadParameters.sourceOrigin = SecurityOrigin::createFromString(origin);
     }
     if (isMainFrameNavigation) {
-        if (request.url().protocolIsBlob() && resourceLoader.documentLoader() && !resourceLoader.documentLoader()->triggeringAction().isEmpty() && resourceLoader.documentLoader()->triggeringAction().requester())
+        // For blob URLs, use the requester's top origin so it matches what the BlobRegistry
+        // stored at creation time. Skip this for back-forward navigations: the requester is
+        // the document being navigated away from, whose top origin may be cross-origin with
+        // the blob. Deriving from the URL is correct since the main frame IS the top frame.
+        bool shouldUseBlobRequesterTopOrigin = request.url().protocolIsBlob()
+            && resourceLoader.documentLoader()
+            && !resourceLoader.documentLoader()->triggeringAction().isEmpty()
+            && resourceLoader.documentLoader()->triggeringAction().requester()
+            && resourceLoader.documentLoader()->triggeringAction().type() != NavigationType::BackForward;
+        if (shouldUseBlobRequesterTopOrigin)
             loadParameters.topOrigin = resourceLoader.documentLoader()->triggeringAction().requester()->topOrigin.ptr();
         else
             loadParameters.topOrigin = SecurityOrigin::create(request.url());
