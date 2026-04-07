@@ -37,9 +37,7 @@
 
 namespace WebKit {
 
-WebCacheStorageConnection::WebCacheStorageConnection()
-{
-}
+WebCacheStorageConnection::WebCacheStorageConnection() = default;
 
 WebCacheStorageConnection::~WebCacheStorageConnection() = default;
 
