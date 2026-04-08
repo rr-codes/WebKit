@@ -7088,12 +7088,8 @@ ExceptionOr<Ref<Event>> Document::createEvent(const String& type)
 
     if (equalLettersIgnoringASCIICase(type, "keyboardevents"_s))
         return Ref<Event> { KeyboardEvent::createForBindings() };
-    if (equalLettersIgnoringASCIICase(type, "mutationevent"_s) || equalLettersIgnoringASCIICase(type, "mutationevents"_s))
+    if (document().settings().mutationEventsEnabled() && (equalLettersIgnoringASCIICase(type, "mutationevent"_s) || equalLettersIgnoringASCIICase(type, "mutationevents"_s)))
         return Ref<Event> { MutationEvent::createForBindings() };
-    if (equalLettersIgnoringASCIICase(type, "popstateevent"_s))
-        return Ref<Event> { PopStateEvent::createForBindings() };
-    if (equalLettersIgnoringASCIICase(type, "wheelevent"_s))
-        return Ref<Event> { WheelEvent::createForBindings() };
 
     return Exception { ExceptionCode::NotSupportedError };
 }
