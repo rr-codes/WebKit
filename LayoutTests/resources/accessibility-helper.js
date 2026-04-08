@@ -290,6 +290,23 @@ async function waitForElementById(id) {
     return element;
 }
 
+async function waitUntilIDHasPathWith(id, minimumCount, pathComponent) {
+    await waitFor(() => {
+        var element = accessibilityController.accessibleElementById(id);
+        if (!element)
+            return false;
+        var matches = element.pathDescription.match(new RegExp(pathComponent, "g"));
+        return matches && matches.length >= minimumCount;
+    });
+}
+
+function pathSegmentCountOfID(id, segmentType) {
+    var element = accessibilityController.accessibleElementById(id);
+    if (!element)
+        return 0;
+    return (element.pathDescription.match(new RegExp(segmentType, "g")) || []).length;
+}
+
 // Executes the operation and waits until an accessibility notification of the provided
 // `notificationName` is received. A notification listener is added to the passed
 // AccessibilityUIElement if not null, or a global listener is installed, before
