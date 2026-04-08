@@ -24,6 +24,7 @@
 #include <JavaScriptCore/CellAttributes.h>
 #include <JavaScriptCore/DestructionMode.h>
 #include <JavaScriptCore/HeapCell.h>
+#include <JavaScriptCore/JSExportMacros.h>
 #include <JavaScriptCore/WeakSet.h>
 #include <algorithm>
 #include <type_traits>

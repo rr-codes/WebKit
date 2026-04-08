@@ -464,8 +464,8 @@ public:
 
     HandleSet* handleSet() LIFETIME_BOUND { return &m_handleSet; }
 
-    void willStartIterating();
-    void didFinishIterating();
+    JS_EXPORT_PRIVATE void willStartIterating();
+    JS_EXPORT_PRIVATE void didFinishIterating();
 
     Seconds lastFullGCLength() const { return m_lastFullGCLength; }
     Seconds lastEdenGCLength() const { return m_lastEdenGCLength; }

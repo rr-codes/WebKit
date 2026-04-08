@@ -1486,6 +1486,8 @@ enum ContentsFormat {
 
     SelectorFilterHashCounts selectorFilterHashCounts(DOMString selector);
 
+    any dumpJSNodeStatistics();
+
     undefined setHistoryTotalStateObjectPayloadLimitOverride(unsigned long limit);
 
     readonly attribute boolean isVisuallyNonEmpty;

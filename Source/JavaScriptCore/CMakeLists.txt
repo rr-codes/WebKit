@@ -817,6 +817,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     heap/HeapCellType.h
     heap/HeapFinalizerCallback.h
     heap/HeapInlines.h
+    heap/HeapIterationScope.h
     heap/HeapObserver.h
     heap/HeapSnapshotBuilder.h
     heap/IncrementalSweeper.h
@@ -833,6 +834,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     heap/MarkedBlockInlines.h
     heap/MarkedBlockSet.h
     heap/MarkedSpace.h
+    heap/MarkedSpaceInlines.h
     heap/MarkingConstraint.h
     heap/MutatorState.h
     heap/PackedCellPtr.h

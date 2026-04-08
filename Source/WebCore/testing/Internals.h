@@ -1636,6 +1636,8 @@ public:
     };
     SelectorFilterHashCounts selectorFilterHashCounts(const String& selector);
 
+    JSC::JSValue dumpJSNodeStatistics();
+
     bool NODELETE isVisuallyNonEmpty() const;
         
     bool isUsingUISideCompositing() const;

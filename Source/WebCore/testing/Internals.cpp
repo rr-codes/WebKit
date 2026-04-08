@@ -145,6 +145,7 @@
 #include "JSDOMPromiseDeferred.h"
 #include "JSFile.h"
 #include "JSInternals.h"
+#include "JSNode.h"
 #include "LegacySchemeRegistry.h"
 #include "LoaderStrategy.h"
 #include "LocalDOMWindow.h"
@@ -278,10 +279,13 @@
 #include "XMLHttpRequest.h"
 #include <JavaScriptCore/CodeBlock.h>
 #include <JavaScriptCore/FunctionExecutable.h>
+#include <JavaScriptCore/HeapInlines.h>
+#include <JavaScriptCore/HeapIterationScope.h>
 #include <JavaScriptCore/InspectorAgentBase.h>
 #include <JavaScriptCore/InspectorFrontendChannel.h>
 #include <JavaScriptCore/JSCInlines.h>
 #include <JavaScriptCore/JSCJSValue.h>
+#include <JavaScriptCore/MarkedSpaceInlines.h>
 #include <wtf/FileHandle.h>
 #include <wtf/FileSystem.h>
 #include <wtf/HexNumber.h>
@@ -8042,10 +8046,75 @@ Internals::SelectorFilterHashCounts Internals::selectorFilterHashCounts(const St
     auto selectorList = CSSSelectorParser::parseSelectorList(selector, CSSParserContext(*contextDocument()));
     if (!selectorList)
         return { };
-    
+
     auto hashes = SelectorFilter::collectHashesForTesting(selectorList->first());
 
     return { hashes.ids.size(), hashes.classes.size(), hashes.tags.size(), hashes.attributes.size() };
+}
+
+// This produces statistics for every JS wrapper (including duplicate JS wrappers for the same dom node).
+JSC::JSValue Internals::dumpJSNodeStatistics()
+{
+    auto* document = contextDocument();
+    if (!document)
+        return JSC::jsNull();
+
+    auto& vm = document->vm();
+    auto* globalObject = vm.topCallFrame->lexicalGlobalObject(vm);
+
+    vm.heap.collectNow(JSC::Sync, JSC::CollectionScope::Full);
+
+    struct Entry {
+        size_t connected { 0 };
+        size_t count { 0 };
+    };
+    HashMap<String, Entry> stats;
+    Entry totals;
+
+    {
+        JSC::HeapIterationScope iterationScope(vm.heap);
+        vm.heap.objectSpace().forEachLiveCell(iterationScope, [&](JSC::HeapCell* heapCell, JSC::HeapCell::Kind kind) {
+            if (!isJSCellKind(kind))
+                return IterationStatus::Continue;
+            SUPPRESS_MEMORY_UNSAFE_CAST auto* jsNode = JSC::jsDynamicCast<JSNode*>(static_cast<JSC::JSCell*>(heapCell));
+            if (!jsNode)
+                return IterationStatus::Continue;
+
+            auto& node = jsNode->wrapped();
+            String nodeName;
+            if (node.isElementNode())
+                nodeName = downcast<Element>(node).tagName();
+            else
+                nodeName = node.localName();
+            bool connected = node.isConnected();
+
+            if (!nodeName)
+                return IterationStatus::Continue;
+
+            auto& entry = stats.add(WTF::move(nodeName), Entry { }).iterator->value;
+            ++entry.count;
+            ++totals.count;
+            if (connected) {
+                ++entry.connected;
+                ++totals.connected;
+            }
+
+            return IterationStatus::Continue;
+        });
+    }
+
+    auto* result = JSC::constructEmptyObject(globalObject);
+    auto makeEntry = [&](const Entry& e) {
+        auto* obj = JSC::constructEmptyObject(globalObject);
+        obj->putDirect(vm, JSC::Identifier::fromString(vm, "connected"_s), JSC::jsNumber(e.connected));
+        obj->putDirect(vm, JSC::Identifier::fromString(vm, "count"_s), JSC::jsNumber(e.count));
+        return obj;
+    };
+    result->putDirect(vm, JSC::Identifier::fromString(vm, "nodes"_s), makeEntry(totals));
+    for (auto& [key, entry] : stats)
+        result->putDirect(vm, JSC::Identifier::fromString(vm, key), makeEntry(entry));
+
+    return result;
 }
 
 bool Internals::isVisuallyNonEmpty() const
