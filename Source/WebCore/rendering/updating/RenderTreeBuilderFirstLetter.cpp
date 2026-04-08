@@ -150,9 +150,14 @@ void RenderTreeBuilder::FirstLetter::updateAfterDescendants(RenderBlock& block)
     if (CheckedPtr anonymousFirstLetterContainer = dynamicDowncast<RenderBoxModelObject>(firstLetter->parent()); anonymousFirstLetterContainer && anonymousFirstLetterContainer->style().pseudoElementType() == PseudoElementType::FirstLetter) {
         CheckedPtr remainingText = anonymousFirstLetterContainer->firstLetterRemainingText();
         auto isFirstLetterStale = [&] {
-            // The first-letter split is anchored to the remaining fragment's text node.
             if (!remainingText)
                 return false;
+            if (auto* firstLetterNextSibling = dynamicDowncast<RenderElement>(anonymousFirstLetterContainer->nextSibling()); firstLetterNextSibling && firstLetterNextSibling->style().pseudoElementType() == PseudoElementType::Before) {
+                // When ::before is dynamically added, its renderer is placed after the existing first-letter wrapper (which already holds the first-child slot).
+                // If the first letter were already from ::before content, the wrapper would be inside the ::before renderer, not beside it.
+                return true;
+            }
+            // The first-letter split is anchored to the remaining fragment's text node.
             auto* textNode = remainingText->textNode();
             if (!textNode)
                 return false;
