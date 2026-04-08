@@ -505,7 +505,7 @@ public:
             return;
         }
 
-        auto separator = (useMarkdownOutput() || useHTMLOutput()) ? " "_s : ","_s;
+        static constexpr auto separator = " "_s;
         auto text = makeStringByJoining(WTF::move(components), separator);
 
         if (!m_lines[lineIndex].first.isEmpty()) {
@@ -1119,11 +1119,19 @@ static void populateJSONForItem(JSON::Object& jsonObject, const TextExtraction::
     }
 }
 
+static String quoteValue(const String& value, bool conditionalQuoting)
+{
+    if (!conditionalQuoting || value.contains(' '))
+        return makeString('\'', value, '\'');
+    return value;
+}
+
 enum class IncludeRectForParentItem : bool { No, Yes };
 
 static Vector<String> partsForItem(const TextExtraction::Item& item, const TextExtractionAggregator& aggregator, IncludeRectForParentItem includeRectForParentItem)
 {
     Vector<String> parts;
+    bool streamlined = aggregator.useTextTreeOutput();
 
     if (item.nodeIdentifier)
         parts.append(makeString("uid="_s, aggregator.stringForIdentifiers(item.frameIdentifier, *item.nodeIdentifier)));
@@ -1137,24 +1145,45 @@ static Vector<String> partsForItem(const TextExtraction::Item& item, const TextE
     }
 
     if (!item.accessibilityRole.isEmpty())
-        parts.append(makeString("role='"_s, escapeString(item.accessibilityRole), '\''));
+        parts.append(makeString("role="_s, quoteValue(escapeString(item.accessibilityRole), streamlined)));
 
     if (!item.title.isEmpty())
-        parts.append(makeString("title='"_s, escapeString(item.title), '\''));
+        parts.append(makeString("title="_s, quoteValue(escapeString(item.title), streamlined)));
 
-    auto listeners = eventListenerTypesToStringArray(item.eventListeners);
-    if (!listeners.isEmpty() && !aggregator.useHTMLOutput()) {
-        if (listeners.size() == 1)
-            parts.append(makeString("events="_s, listeners.first()));
-        else
-            parts.append(makeString("events=["_s, commaSeparatedString(listeners), ']'));
+    if (!streamlined) {
+        auto listeners = eventListenerTypesToStringArray(item.eventListeners);
+        if (!listeners.isEmpty() && !aggregator.useHTMLOutput()) {
+            if (listeners.size() == 1)
+                parts.append(makeString("events="_s, listeners.first()));
+            else
+                parts.append(makeString("events=["_s, commaSeparatedString(listeners), ']'));
+        }
     }
 
-    for (auto& key : sortedKeys(item.ariaAttributes))
-        parts.append(makeString(key, "='"_s, escapeString(item.ariaAttributes.get(key)), '\''));
+    StringView firstChildText;
+    if (streamlined && !item.children.isEmpty()) {
+        if (auto* textData = std::get_if<TextExtraction::TextItemData>(&item.children[0].data))
+            firstChildText = textData->content;
+    }
+
+    for (auto& key : sortedKeys(item.ariaAttributes)) {
+        auto value = item.ariaAttributes.get(key);
+        auto outputKey = streamlined && key.startsWith("aria-"_s) ? key.substring(5) : key;
+
+        if (streamlined && value == "false"_s)
+            continue;
+
+        if (streamlined && outputKey == "label"_s) {
+            auto trimmed = firstChildText.trim(isASCIIWhitespace);
+            if (!trimmed.isEmpty() && trimmed.contains(value))
+                continue;
+        }
+
+        parts.append(makeString(outputKey, '=', quoteValue(escapeString(value), streamlined)));
+    }
 
     for (auto& key : sortedKeys(item.clientAttributes))
-        parts.append(makeString(key, "='"_s, item.clientAttributes.get(key), '\''));
+        parts.append(makeString(key, '=', quoteValue(item.clientAttributes.get(key), streamlined)));
 
     return parts;
 }
@@ -1261,6 +1290,7 @@ static void addPartsForText(const TextExtraction::TextItemData& textItem, Vector
 static void addPartsForItem(const TextExtraction::Item& item, std::optional<NodeIdentifier>&& enclosingNode, const TextExtractionLine& line, TextExtractionAggregator& aggregator, IncludeRectForParentItem includeRectForParentItem, HasAdjacentLinkAfter hasAdjacentLinkAfter = HasAdjacentLinkAfter::No)
 {
     Vector<String> parts;
+    bool streamlined = aggregator.useTextTreeOutput();
     WTF::switchOn(item.data,
         [&](const TextExtraction::ContainerType& containerType) {
             auto containerString = containerTypeString(containerType);
@@ -1337,10 +1367,10 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                 parts.append("form"_s);
                 parts.appendVector(partsForItem(item, aggregator, includeRectForParentItem));
                 if (!formData.autocomplete.isEmpty())
-                    parts.append(makeString("autocomplete='"_s, formData.autocomplete, '\''));
+                    parts.append(makeString("autocomplete="_s, quoteValue(formData.autocomplete, streamlined)));
 
                 if (!formData.name.isEmpty())
-                    parts.append(makeString("name='"_s, escapeString(formData.name), '\''));
+                    parts.append(makeString("name="_s, quoteValue(escapeString(formData.name), streamlined)));
             }
             aggregator.addResult(line, WTF::move(parts));
         },
@@ -1389,7 +1419,7 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                     parts.insert(1, makeString('\'', controlData.controlType, '\''));
 
                 if (!controlData.autocomplete.isEmpty())
-                    parts.append(makeString("autocomplete='"_s, controlData.autocomplete, '\''));
+                    parts.append(makeString("autocomplete="_s, quoteValue(controlData.autocomplete, streamlined)));
 
                 if (controlData.isReadonly)
                     parts.append("readonly"_s);
@@ -1400,17 +1430,27 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                 if (controlData.isChecked)
                     parts.append("checked"_s);
 
-                if (!controlData.editable.label.isEmpty())
-                    parts.append(makeString("label='"_s, escapeString(controlData.editable.label), '\''));
+                if (!controlData.editable.label.isEmpty()) {
+                    bool skipLabel = false;
+                    if (streamlined && !item.children.isEmpty()) {
+                        if (auto* textData = std::get_if<TextExtraction::TextItemData>(&item.children[0].data)) {
+                            auto trimmed = StringView(textData->content).trim(isASCIIWhitespace);
+                            if (!trimmed.isEmpty() && trimmed.contains(controlData.editable.label))
+                                skipLabel = true;
+                        }
+                    }
+                    if (!skipLabel)
+                        parts.append(makeString("label="_s, quoteValue(escapeString(controlData.editable.label), streamlined)));
+                }
 
                 if (!controlData.editable.placeholder.isEmpty())
-                    parts.append(makeString("placeholder='"_s, escapeString(controlData.editable.placeholder), '\''));
+                    parts.append(makeString("placeholder="_s, quoteValue(escapeString(controlData.editable.placeholder), streamlined)));
 
                 if (!controlData.pattern.isEmpty())
-                    parts.append(makeString("pattern='"_s, escapeString(controlData.pattern), '\''));
+                    parts.append(makeString("pattern="_s, quoteValue(escapeString(controlData.pattern), streamlined)));
 
                 if (!controlData.name.isEmpty())
-                    parts.append(makeString("name='"_s, escapeString(controlData.name), '\''));
+                    parts.append(makeString("name="_s, quoteValue(escapeString(controlData.name), streamlined)));
 
                 if (auto minLength = controlData.minLength)
                     parts.append(makeString("minlength="_s, *minLength));
@@ -1446,7 +1486,7 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                 parts.appendVector(partsForItem(item, aggregator, includeRectForParentItem));
 
                 if (!linkData.completedURL.isEmpty() && aggregator.includeURLs())
-                    parts.append(makeString("url='"_s, aggregator.stringForURL(linkData), '\''));
+                    parts.append(makeString("url="_s, quoteValue(aggregator.stringForURL(linkData), streamlined)));
             }
 
             aggregator.addResult(line, WTF::move(parts));
@@ -1467,7 +1507,7 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                 parts.appendVector(partsForItem(item, aggregator, includeRectForParentItem));
 
                 if (!iframeData.origin.isEmpty())
-                    parts.append(makeString("origin='"_s, iframeData.origin, '\''));
+                    parts.append(makeString("origin="_s, quoteValue(iframeData.origin, streamlined)));
             }
 
             aggregator.addResult(line, WTF::move(parts));
@@ -1522,7 +1562,7 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                         if (option.isSelected)
                             optionParts.append("selected"_s);
                         if (!option.value.isEmpty())
-                            optionParts.append(makeString("value='"_s, escapeString(option.value), '\''));
+                            optionParts.append(makeString("value="_s, quoteValue(escapeString(option.value), streamlined)));
                         if (!option.label.isEmpty() && !equalIgnoringASCIICase(option.label, option.value))
                             optionParts.append(makeString('\'', escapeString(option.label), '\''));
                         aggregator.addResult(optionLine, WTF::move(optionParts));
@@ -1565,10 +1605,10 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                 parts.appendVector(partsForItem(item, aggregator, includeRectForParentItem));
 
                 if (!imageData.completedSource.isEmpty() && aggregator.includeURLs())
-                    parts.append(makeString("src='"_s, aggregator.stringForURL(imageData), '\''));
+                    parts.append(makeString("src="_s, quoteValue(aggregator.stringForURL(imageData), streamlined)));
 
                 if (!imageData.altText.isEmpty())
-                    parts.append(makeString("alt='"_s, escapeString(imageData.altText), '\''));
+                    parts.append(makeString("alt="_s, quoteValue(escapeString(imageData.altText), streamlined)));
             }
 
             aggregator.addResult(line, WTF::move(parts));
