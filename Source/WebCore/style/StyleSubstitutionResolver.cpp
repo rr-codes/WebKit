@@ -46,6 +46,8 @@
 #include "Document.h"
 #include "Element.h"
 #include "HTMLSelectElement.h"
+#include "MatchResult.h"
+#include "MutableStyleProperties.h"
 #include "RenderStyle+GettersInlines.h"
 #include "RenderStyle+SettersInlines.h"
 #include "SelectPopoverElement.h"
@@ -166,7 +168,7 @@ bool SubstitutionResolver::substituteVariableFunction(CSSParserTokenRange range,
     return true;
 }
 
-bool SubstitutionResolver::substituteDashedFunction(StringView functionName, CSSParserTokenRange, Vector<CSSParserToken>& tokens)
+bool SubstitutionResolver::substituteDashedFunction(StringView functionName, CSSParserTokenRange range, Vector<CSSParserToken>& tokens)
 {
     // https://drafts.csswg.org/css-mixins/#evaluating-custom-functions
 
@@ -185,15 +187,71 @@ bool SubstitutionResolver::substituteDashedFunction(StringView functionName, CSS
     if (!customFunction)
         return false;
 
-    // FIXME: Evaluate the function instead of just substituting.
+    auto guard = m_styleBuilder.state().guardSubstitutionContext({ SubstitutionContext::Type::Function, scopedFunctionName.name });
 
-    auto properties = customFunction->properties;
-    auto resultValue = dynamicDowncast<CSSCustomPropertyValue>(properties->getPropertyCSSValue(CSSPropertyResult));
+    if (guard.isCyclicContext())
+        return false;
+
+    auto& parameters = customFunction->parameters;
+
+    // Parse and resolve arguments.
+    Vector<Vector<CSSParserToken>> resolvedArguments;
+    for (unsigned i = 0; !range.atEnd(); ++i) {
+        auto argumentRange = CSSPropertyParserHelpers::consumeArgument(range, i);
+        if (!argumentRange)
+            break;
+        auto substituted = substituteTokenRange(*argumentRange, m_substitutionValue->context());
+        if (!substituted)
+            return false;
+        resolvedArguments.append(WTF::move(*substituted));
+    }
+
+    // Too many arguments is invalid.
+    if (resolvedArguments.size() > parameters.size())
+        return false;
+
+    // Build argument properties: bind each parameter to its argument value or default.
+    auto argumentProperties = MutableStyleProperties::create();
+    for (unsigned i = 0; i < parameters.size(); ++i) {
+        auto& parameter = parameters[i];
+        auto argumentData = [&] -> RefPtr<CSSVariableData> {
+            if (i < resolvedArguments.size() && !resolvedArguments[i].isEmpty())
+                return CSSVariableData::create(CSSParserTokenRange { resolvedArguments[i] }, m_substitutionValue->context());
+            return parameter.defaultValue;
+        }();
+        if (!argumentData)
+            return false;
+
+        auto value = CSSCustomPropertyValue::createSyntaxAll(parameter.name, argumentData.releaseNonNull());
+        argumentProperties->addParsedProperty({ CSSPropertyCustom, WTF::move(value) });
+    }
+
+    Ref functionProperties = customFunction->properties;
+
+    RefPtr resultValue = dynamicDowncast<CSSCustomPropertyValue>(functionProperties->getPropertyCSSValue(CSSPropertyResult));
     if (!resultValue)
         return false;
 
-    auto data = resultValue->asVariableData();
-    tokens.appendVector(data->tokens());
+    // Build a MatchResult with argument properties and function body properties.
+    auto matchResult = MatchResult::create();
+    matchResult->authorDeclarations.append({ WTF::move(argumentProperties) });
+    matchResult->authorDeclarations.append({ WTF::move(functionProperties) });
+
+    // Create an isolated style and builder for function evaluation.
+    auto functionStyle = RenderStyle::createPtr();
+
+    auto builderContext = BuilderContext {
+        m_styleBuilder.state().document(),
+        &m_styleBuilder.state().renderStyle()
+    };
+
+    Builder functionBuilder(*functionStyle, WTF::move(builderContext), matchResult.get());
+
+    auto resolvedResult = functionBuilder.resolveFunctionResult(*resultValue);
+    if (!resolvedResult)
+        return false;
+
+    tokens.appendVector(resolvedResult->tokens());
     return true;
 }
 

@@ -638,6 +638,22 @@ RefPtr<const CustomProperty> Builder::resolveCustomPropertyForContainerQueries(c
     );
 }
 
+RefPtr<const CustomProperty> Builder::resolveFunctionResult(const CSSCustomPropertyValue& value)
+{
+    auto resolvedValue = resolveCustomPropertyValue(const_cast<CSSCustomPropertyValue&>(value));
+    if (!resolvedValue)
+        return nullptr;
+
+    return WTF::switchOn(*resolvedValue,
+        [&](const CSSWideKeyword&) -> RefPtr<const CustomProperty> {
+            return nullptr;
+        },
+        [](const Ref<const CustomProperty>& resolved) -> RefPtr<const CustomProperty> {
+            return resolved.copyRef();
+        }
+    );
+}
+
 std::optional<Variant<Ref<const Style::CustomProperty>, CSSWideKeyword>> Builder::resolveCustomPropertyValue(CSSCustomPropertyValue& value)
 {
     auto name = value.name();
@@ -646,7 +662,6 @@ std::optional<Variant<Ref<const Style::CustomProperty>, CSSWideKeyword>> Builder
         return { { *keyword } };
 
     auto* registered = m_state->document().customPropertyRegistry().get(name);
-
     auto preResolved = switchOn(value.value(),
         [&](const Ref<CSSSubstitutionValue>&) -> std::optional<Variant<Ref<const Style::CustomProperty>, CSSWideKeyword>> {
             return { };

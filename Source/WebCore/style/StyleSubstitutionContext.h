@@ -35,7 +35,7 @@ namespace Style {
 // https://drafts.csswg.org/css-values-5/#substitution-context
 // A substitution context is «dependency type, name».
 struct SubstitutionContext {
-    enum class Type : uint8_t { Property, Attribute };
+    enum class Type : uint8_t { Property, Attribute, Function };
     Type type;
     AtomString name;
 
