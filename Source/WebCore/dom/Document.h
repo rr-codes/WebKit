@@ -564,7 +564,7 @@ public:
     AsyncNodeDeletionQueue& asyncNodeDeletionQueue() LIFETIME_BOUND { return m_asyncNodeDeletionQueue; };
     static constexpr ptrdiff_t documentElementMemoryOffset() { return OBJECT_OFFSETOF(Document, m_documentElement); }
 
-    WEBCORE_EXPORT Element* activeElement();
+    WEBCORE_EXPORT Element* NODELETE activeElement();
     WEBCORE_EXPORT bool hasFocus() const;
     void whenVisible(Function<void()>&&);
 
@@ -714,7 +714,7 @@ public:
     const CSSFontSelector* fontSelectorIfExists() const { return m_fontSelector.get(); }
     inline CSSFontSelector& fontSelector() const; // Defined in DocumentInlines.h.
 
-    WEBCORE_EXPORT bool haveStylesheetsLoaded() const;
+    WEBCORE_EXPORT bool NODELETE haveStylesheetsLoaded() const;
     bool isIgnoringPendingStylesheets() const { return m_ignorePendingStylesheets; }
 
     WEBCORE_EXPORT StyleSheetList& styleSheets();
@@ -753,7 +753,7 @@ public:
 
     WEBCORE_EXPORT float deviceScaleFactor() const;
 
-    WEBCORE_EXPORT bool useElevatedUserInterfaceLevel() const;
+    WEBCORE_EXPORT bool NODELETE useElevatedUserInterfaceLevel() const;
     WEBCORE_EXPORT bool useDarkAppearance(const RenderStyle*) const;
     WEBCORE_EXPORT bool useDarkAppearance(const Style::ComputedStyle*) const;
 #if ENABLE(DARK_MODE_CSS)
@@ -1764,7 +1764,7 @@ public:
     size_t gatherResizeObservations(size_t deeperThan);
     void deliverResizeObservations();
     bool NODELETE hasSkippedResizeObservations() const;
-    void setHasSkippedResizeObservations(bool);
+    void NODELETE setHasSkippedResizeObservations(bool);
     void updateResizeObservations(Page&);
 
     size_t gatherResizeObservationsForContainIntrinsicSize();
@@ -1827,15 +1827,15 @@ public:
     void orientationChanged(IntDegrees orientation);
     OrientationNotifier& orientationNotifier();
 
-    WEBCORE_EXPORT const AtomString& bgColor() const;
+    WEBCORE_EXPORT const AtomString& NODELETE bgColor() const;
     WEBCORE_EXPORT void setBgColor(const AtomString&);
-    WEBCORE_EXPORT const AtomString& fgColor() const;
+    WEBCORE_EXPORT const AtomString& NODELETE fgColor() const;
     WEBCORE_EXPORT void setFgColor(const AtomString&);
-    WEBCORE_EXPORT const AtomString& alinkColor() const;
+    WEBCORE_EXPORT const AtomString& NODELETE alinkColor() const;
     WEBCORE_EXPORT void setAlinkColor(const AtomString&);
-    WEBCORE_EXPORT const AtomString& linkColorForBindings() const;
+    WEBCORE_EXPORT const AtomString& NODELETE linkColorForBindings() const;
     WEBCORE_EXPORT void setLinkColorForBindings(const AtomString&);
-    WEBCORE_EXPORT const AtomString& vlinkColor() const;
+    WEBCORE_EXPORT const AtomString& NODELETE vlinkColor() const;
     WEBCORE_EXPORT void setVlinkColor(const AtomString&);
 
     // Per https://html.spec.whatwg.org/multipage/obsolete.html#dom-document-clear, this method does nothing.
@@ -1915,7 +1915,7 @@ public:
     bool handlingTouchEvent() const { return m_handlingTouchEvent; }
 #endif
 
-    WEBCORE_EXPORT bool hasRequestedPageSpecificStorageAccessWithUserInteraction(const RegistrableDomain&);
+    WEBCORE_EXPORT bool NODELETE hasRequestedPageSpecificStorageAccessWithUserInteraction(const RegistrableDomain&);
     WEBCORE_EXPORT void setHasRequestedPageSpecificStorageAccessWithUserInteraction(const RegistrableDomain&);
     WEBCORE_EXPORT void wasLoadedWithDataTransferFromPrevalentResource();
     void downgradeReferrerToRegistrableDomain();
@@ -2048,12 +2048,12 @@ public:
 
     unsigned unloadCounter() const { return m_unloadCounter; }
 
-    WEBCORE_EXPORT FrameMemoryMonitor& frameMemoryMonitor();
+    WEBCORE_EXPORT FrameMemoryMonitor& NODELETE frameMemoryMonitor();
 
 #if ENABLE(CONTENT_EXTENSIONS)
     ResourceMonitor* NODELETE resourceMonitorIfExists();
     ResourceMonitor& resourceMonitor();
-    ResourceMonitor* parentResourceMonitorIfExists();
+    ResourceMonitor* NODELETE parentResourceMonitorIfExists();
 
     bool shouldSkipResourceMonitorThrottling() const { return m_shouldSkipResourceMonitorThrottling; }
     void setShouldSkipResourceMonitorThrottling(bool flag) { m_shouldSkipResourceMonitorThrottling = flag; }

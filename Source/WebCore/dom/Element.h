@@ -794,9 +794,9 @@ public:
 
     LayoutRect absoluteEventHandlerBounds(bool& includesFixedPositionElements) override;
 
-    const RenderStyle* existingComputedStyle() const LIFETIME_BOUND;
-    WEBCORE_EXPORT const RenderStyle* renderOrDisplayContentsStyle() const LIFETIME_BOUND;
-    WEBCORE_EXPORT const RenderStyle* renderOrDisplayContentsStyle(const std::optional<Style::PseudoElementIdentifier>&) const LIFETIME_BOUND;
+    const RenderStyle* NODELETE existingComputedStyle() const LIFETIME_BOUND;
+    WEBCORE_EXPORT const RenderStyle* NODELETE renderOrDisplayContentsStyle() const LIFETIME_BOUND;
+    WEBCORE_EXPORT const RenderStyle* NODELETE renderOrDisplayContentsStyle(const std::optional<Style::PseudoElementIdentifier>&) const LIFETIME_BOUND;
 
     void clearBeforePseudoElement();
     void clearAfterPseudoElement();
@@ -914,8 +914,8 @@ public:
 
     void addShadowRoot(Ref<ShadowRoot>&&);
 
-    bool shouldNotifyTextManipulationControllerIfDisplayed() const;
-    void clearShouldNotifyTextManipulationControllerIfDisplayed();
+    bool NODELETE shouldNotifyTextManipulationControllerIfDisplayed() const;
+    void NODELETE clearShouldNotifyTextManipulationControllerIfDisplayed();
 
 protected:
     Element(const QualifiedName&, Document&, OptionSet<TypeFlag>);
@@ -950,13 +950,13 @@ private:
     LocalFrame* documentFrameWithNonNullView() const;
     void hideNonceSlow();
 
-    bool isUserActionElementInActiveChain() const;
-    bool isUserActionElementActive() const;
-    bool isUserActionElementFocused() const;
-    bool isUserActionElementHovered() const;
-    bool isUserActionElementDragged() const;
-    bool isUserActionElementHasFocusVisible() const;
-    bool isUserActionElementHasFocusWithin() const;
+    bool NODELETE isUserActionElementInActiveChain() const;
+    bool NODELETE isUserActionElementActive() const;
+    bool NODELETE isUserActionElementFocused() const;
+    bool NODELETE isUserActionElementHovered() const;
+    bool NODELETE isUserActionElementDragged() const;
+    bool NODELETE isUserActionElementHasFocusVisible() const;
+    bool NODELETE isUserActionElementHasFocusWithin() const;
 
     bool isNonceable() const;
 
