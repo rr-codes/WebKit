@@ -1335,7 +1335,7 @@ inline void JSObject::setStructure(VM& vm, Structure* structure)
 inline JSObject* asObject(JSCell* cell)
 {
     ASSERT(cell);
-    ASSERT(cell->isObject());
+    ASSERT(cell->isObjectSlow());
     return jsCast<JSObject*>(cell);
 }
 

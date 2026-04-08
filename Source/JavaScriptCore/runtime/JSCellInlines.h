@@ -131,31 +131,6 @@ inline void JSCell::finishCreation(VM& vm, Structure* structure, CreatingEarlyCe
     ASSERT(m_structureID || !vm.structureStructure);
 }
 
-inline JSType JSCell::type() const
-{
-    return m_type;
-}
-
-inline IndexingType JSCell::indexingTypeAndMisc() const
-{
-    return m_indexingTypeAndMisc;
-}
-
-inline IndexingType JSCell::indexingType() const
-{
-    return indexingTypeAndMisc() & AllWritableArrayTypes;
-}
-
-inline IndexingType JSCell::indexingMode() const
-{
-    return indexingTypeAndMisc() & AllArrayTypes;
-}
-
-ALWAYS_INLINE Structure* JSCell::structure() const
-{
-    return m_structureID.decode();
-}
-
 template<typename Visitor>
 void JSCell::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
@@ -228,41 +203,6 @@ void* tryAllocateCell(VM& vm, GCDeferralContext* deferralContext, size_t size)
     return tryAllocateCellHelper<T, AllocationFailureMode::ReturnNull>(vm, size, deferralContext);
 }
 
-inline bool JSCell::isObject() const
-{
-    return TypeInfo::isObject(m_type);
-}
-
-inline bool JSCell::isString() const
-{
-    return m_type == StringType;
-}
-
-inline bool JSCell::isHeapBigInt() const
-{
-    return m_type == HeapBigIntType;
-}
-
-inline bool JSCell::isSymbol() const
-{
-    return m_type == SymbolType;
-}
-
-inline bool JSCell::isGetterSetter() const
-{
-    return m_type == GetterSetterType;
-}
-
-inline bool JSCell::isCustomGetterSetter() const
-{
-    return m_type == CustomGetterSetterType;
-}
-
-inline bool JSCell::isProxy() const
-{
-    return m_type == GlobalProxyType || m_type == ProxyObjectType;
-}
-
 // FIXME: Consider making getCallData concurrency-safe once NPAPI support is removed.
 // https://bugs.webkit.org/show_bug.cgi?id=215801
 template<Concurrency concurrency>
@@ -308,11 +248,6 @@ ALWAYS_INLINE bool JSCell::isConstructor()
     auto result = isConstructorWithConcurrency<Concurrency::MainThread>();
     ASSERT(result != TriState::Indeterminate);
     return result == TriState::True;
-}
-
-inline bool JSCell::isAPIValueWrapper() const
-{
-    return m_type == APIValueWrapperType;
 }
 
 ALWAYS_INLINE void JSCell::setStructure(VM& vm, Structure* structure)

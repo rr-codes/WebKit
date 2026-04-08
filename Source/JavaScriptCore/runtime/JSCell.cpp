@@ -169,6 +169,16 @@ double JSCell::toNumber(JSGlobalObject* globalObject) const
     return jsSecureCast<const JSObject*>(this)->toNumber(globalObject);
 }
 
+bool JSCell::isObjectSlow() const
+{
+    return isObject();
+}
+
+bool JSCell::inheritsSlow(const ClassInfo* info) const
+{
+    return inherits(info);
+}
+
 JSObject* JSCell::toObjectSlow(JSGlobalObject* globalObject) const
 {
     Integrity::auditStructureID(structureID());

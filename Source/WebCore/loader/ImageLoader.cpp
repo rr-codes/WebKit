@@ -58,6 +58,7 @@
 #include "RenderImage.h"
 #include "RenderSVGImage.h"
 #include "Settings.h"
+#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/Scope.h>
 #include <wtf/text/MakeString.h>

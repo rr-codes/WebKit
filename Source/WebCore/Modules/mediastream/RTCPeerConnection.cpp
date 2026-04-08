@@ -69,6 +69,7 @@
 #include "RTCSessionDescription.h"
 #include "RTCSessionDescriptionInit.h"
 #include "Settings.h"
+#include <JavaScriptCore/StrongInlines.h>
 #include <algorithm>
 #include <wtf/MainThread.h>
 #include <wtf/TZoneMallocInlines.h>

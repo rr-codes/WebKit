@@ -49,6 +49,7 @@
 #include "HTMLElement.h"
 #include "HTMLMediaElement.h"
 #include "HTMLVideoElement.h"
+#include "JSValueInWrappedObjectInlines.h"
 #include "LocalDOMWindow.h"
 #include "LocalizedStrings.h"
 #include "Logging.h"

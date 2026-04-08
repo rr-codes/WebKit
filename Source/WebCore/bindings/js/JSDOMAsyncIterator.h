@@ -558,7 +558,7 @@ template<typename JSWrapper, typename IteratorTraits>
 void JSDOMAsyncIteratorPrototype<JSWrapper, IteratorTraits>::finishCreation(JSC::VM& vm, JSC::JSGlobalObject* globalObject)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    ASSERT(inheritsSlow(info()));
 
     JSC_NATIVE_FUNCTION_WITHOUT_TRANSITION(vm.propertyNames->next, next, 0, 0, JSC::ImplementationVisibility::Public);
     addReturnMethodIfNeeded<typename DOMWrapped::Iterator>(vm, globalObject);

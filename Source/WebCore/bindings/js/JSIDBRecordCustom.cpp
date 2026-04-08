@@ -44,7 +44,7 @@ JSC::JSValue JSIDBRecord::primaryKey(JSC::JSGlobalObject& lexicalGlobalObject) c
 JSC::JSValue JSIDBRecord::value(JSC::JSGlobalObject& lexicalGlobalObject) const
 {
     auto result = deserializeIDBValueWithKeyInjection(lexicalGlobalObject, wrapped().value(), wrapped().primaryKey(), wrapped().keyPath());
-    return result ? result.value() : jsNull();
+    return result ? result.value() : JSC::jsNull();
 }
 
 } // namespace WebCore

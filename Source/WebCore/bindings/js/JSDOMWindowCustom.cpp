@@ -52,6 +52,7 @@
 #include <JavaScriptCore/ConsoleTypes.h>
 #include <JavaScriptCore/GlobalObjectMethodTable.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
+#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/InternalFunction.h>
 #include <JavaScriptCore/JSCInlines.h>
 #include <JavaScriptCore/JSFunction.h>

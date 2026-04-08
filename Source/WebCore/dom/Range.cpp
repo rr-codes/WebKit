@@ -54,6 +54,7 @@
 #include "VisibleUnits.h"
 #include "WebCoreOpaqueRootInlines.h"
 #include "markup.h"
+#include <JavaScriptCore/AbstractSlotVisitorInlines.h>
 #include <stdio.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/text/CString.h>

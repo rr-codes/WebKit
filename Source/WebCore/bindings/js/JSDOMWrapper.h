@@ -22,12 +22,15 @@
 #pragma once
 
 #include <JavaScriptCore/JSDestructibleObject.h>
-#include <JavaScriptCore/StructureInlines.h>
 #include <WebCore/JSDOMGlobalObject.h>
 #include <WebCore/NodeType.h>
 #include <wtf/Compiler.h>
 #include <wtf/SignedPtr.h>
 #include <wtf/StdLibExtras.h>
+
+namespace JSC {
+class Structure;
+}
 
 namespace WebCore {
 

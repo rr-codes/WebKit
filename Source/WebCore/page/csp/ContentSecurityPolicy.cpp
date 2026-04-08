@@ -36,6 +36,7 @@
 #include "ContentSecurityPolicySource.h"
 #include "ContentSecurityPolicySourceList.h"
 #include "DOMStringList.h"
+#include "DOMWrapperWorld.h"
 #include "DocumentLoader.h"
 #include "DocumentPage.h"
 #include "EventNames.h"
@@ -57,6 +58,7 @@
 #include "SubresourceIntegrity.h"
 #include "ViolationReportType.h"
 #include "WorkerGlobalScope.h"
+#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/JSGlobalObject.h>
 #include <JavaScriptCore/ScriptCallStack.h>
 #include <JavaScriptCore/ScriptCallStackFactory.h>

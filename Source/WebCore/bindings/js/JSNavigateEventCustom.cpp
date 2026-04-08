@@ -26,6 +26,8 @@
 #include "config.h"
 #include "JSNavigateEvent.h"
 
+#include "JSValueInWrappedObjectInlines.h"
+
 namespace WebCore {
 
 template<typename Visitor>

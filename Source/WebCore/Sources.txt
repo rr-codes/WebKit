@@ -695,7 +695,9 @@ bindings/js/JSDOMBindingSecurity.cpp
 bindings/js/JSDOMBuiltinConstructorBase.cpp
 bindings/js/JSDOMConstructorBase.cpp
 bindings/js/JSDOMConstructorWithDocument.cpp
+bindings/js/JSDOMConvertAny.cpp
 bindings/js/JSDOMConvertBoolean.cpp
+bindings/js/JSDOMConvertBufferSource.cpp
 bindings/js/JSDOMConvertDate.cpp
 bindings/js/JSDOMConvertNumbers.cpp
 bindings/js/JSDOMConvertStrings.cpp

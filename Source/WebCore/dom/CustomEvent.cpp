@@ -27,6 +27,7 @@
 #include "config.h"
 #include "CustomEvent.h"
 
+#include "JSValueInWrappedObjectInlines.h"
 #include "ScriptWrappableInlines.h"
 #include <JavaScriptCore/JSCInlines.h>
 #include <wtf/TZoneMallocInlines.h>

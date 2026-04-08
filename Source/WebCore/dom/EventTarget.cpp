@@ -48,6 +48,8 @@
 #include "ScriptController.h"
 #include "ScriptDisallowedScope.h"
 #include "Settings.h"
+#include <JavaScriptCore/HeapCellInlines.h>
+#include <JavaScriptCore/JSCJSValueCellInlines.h>
 #include <wtf/MainThread.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/Ref.h>

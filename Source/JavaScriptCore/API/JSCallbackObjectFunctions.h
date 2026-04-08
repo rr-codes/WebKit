@@ -45,7 +45,7 @@ namespace JSC {
 template <class Parent>
 inline JSCallbackObject<Parent>* JSCallbackObject<Parent>::asCallbackObject(JSValue value)
 {
-    ASSERT(asObject(value)->inherits(info()));
+    ASSERT(asObject(value)->inheritsSlow(info()));
     return jsCast<JSCallbackObject*>(asObject(value));
 }
 
@@ -53,7 +53,7 @@ template <class Parent>
 inline JSCallbackObject<Parent>* JSCallbackObject<Parent>::asCallbackObject(EncodedJSValue encodedValue)
 {
     JSValue value = JSValue::decode(encodedValue);
-    ASSERT(asObject(value)->inherits(info()));
+    ASSERT(asObject(value)->inheritsSlow(info()));
     return jsCast<JSCallbackObject*>(asObject(value));
 }
 

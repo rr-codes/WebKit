@@ -33,13 +33,15 @@
 #include "JSDOMPromise.h"
 #include "JSDOMPromiseDeferred.h"
 #include "JSReadableStreamReadResult.h"
-#include "JSValueInWrappedObject.h"
+#include "JSValueInWrappedObjectInlines.h"
 #include "ReadableByteStreamController.h"
 #include "ReadableStream.h"
 #include "ReadableStreamBYOBReader.h"
 #include "ReadableStreamBYOBRequest.h"
 #include "ReadableStreamDefaultReader.h"
 #include "ScriptExecutionContextInlines.h"
+#include <JavaScriptCore/JSGlobalObjectInlines.h>
+#include <JavaScriptCore/MarkedVector.h>
 #include <wtf/RefCountedAndCanMakeWeakPtr.h>
 
 namespace WebCore {

@@ -82,6 +82,7 @@
 #include "ScriptController.h"
 #include "Settings.h"
 #include <JavaScriptCore/ConsoleTypes.h>
+#include <JavaScriptCore/HeapInlines.h>
 #include <wtf/Seconds.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/URL.h>
