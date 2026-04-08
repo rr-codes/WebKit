@@ -571,6 +571,7 @@ public:
     bool isKnownNotOther(Node* node) { return !(m_state.forNode(node).m_type & SpecOther); }
 
     bool canBeRope(Edge);
+    std::optional<unsigned> tryGetConstantStringLength(Edge);
 
     UniquedStringImpl* identifierUID(unsigned index)
     {

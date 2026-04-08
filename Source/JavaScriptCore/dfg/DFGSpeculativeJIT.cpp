@@ -1940,7 +1940,10 @@ void SpeculativeJIT::compileStringCodePointAt(Node* node)
     GPRReg scratch4GPR = scratch4.gpr();
 
     loadPtr(Address(stringGPR, JSString::offsetOfValue()), scratch1GPR);
-    load32(Address(scratch1GPR, StringImpl::lengthMemoryOffset()), scratch2GPR);
+    if (auto stringLength = tryGetConstantStringLength(node->child1()))
+        move(TrustedImm32(*stringLength), scratch2GPR);
+    else
+        load32(Address(scratch1GPR, StringImpl::lengthMemoryOffset()), scratch2GPR);
 
     // unsigned comparison so we can filter out negative indices and indices that are too large
     speculationCheck(Uncountable, JSValueRegs(), nullptr, branch32(AboveOrEqual, indexGPR, scratch2GPR));
@@ -2631,9 +2634,12 @@ void SpeculativeJIT::compileGetCharCodeAt(Node* node)
     GPRReg scratchReg = scratch.gpr();
 
     loadPtr(Address(stringReg, JSString::offsetOfValue()), scratchReg);
-    
+
     // unsigned comparison so we can filter out negative indices and indices that are too large
-    speculationCheck(Uncountable, JSValueRegs(), nullptr, branch32(AboveOrEqual, indexReg, Address(scratchReg, StringImpl::lengthMemoryOffset())));
+    if (auto stringLength = tryGetConstantStringLength(node->child1()))
+        speculationCheck(Uncountable, JSValueRegs(), nullptr, branch32(AboveOrEqual, indexReg, TrustedImm32(*stringLength)));
+    else
+        speculationCheck(Uncountable, JSValueRegs(), nullptr, branch32(AboveOrEqual, indexReg, Address(scratchReg, StringImpl::lengthMemoryOffset())));
 
     // Load the character into scratchReg
     Jump is16Bit = branchTest32(Zero, Address(scratchReg, StringImpl::flagsOffset()), TrustedImm32(StringImpl::flagIs8Bit()));
@@ -2674,21 +2680,30 @@ void SpeculativeJIT::compileGetByValOnString(Node* node, const ScopedLambda<std:
 
     move(propertyReg, propertyTempReg);
 
+    auto stringLength = tryGetConstantStringLength(m_graph.child(node, 0));
+
     if (node->op() == StringAt) {
         Jump isNotNegativeIndex = branch32(GreaterThanOrEqual, propertyTempReg, TrustedImm32(0));
 
-        loadPtr(Address(baseReg, JSString::offsetOfValue()), scratchReg);
-        load32(Address(scratchReg, StringImpl::lengthMemoryOffset()), scratchReg);
-        add32(scratchReg, propertyTempReg, propertyTempReg);
+        if (stringLength)
+            add32(TrustedImm32(*stringLength), propertyTempReg, propertyTempReg);
+        else {
+            loadPtr(Address(baseReg, JSString::offsetOfValue()), scratchReg);
+            load32(Address(scratchReg, StringImpl::lengthMemoryOffset()), scratchReg);
+            add32(scratchReg, propertyTempReg, propertyTempReg);
+        }
 
         isNotNegativeIndex.link(this);
     }
 
     // unsigned comparison so we can filter out negative indices and indices that are too large
     loadPtr(Address(baseReg, JSString::offsetOfValue()), scratchReg);
-    Jump outOfBounds = branch32(
-        AboveOrEqual, propertyTempReg,
-        Address(scratchReg, StringImpl::lengthMemoryOffset()));
+    Jump outOfBounds;
+    if (stringLength)
+        outOfBounds = branch32(AboveOrEqual, propertyTempReg, TrustedImm32(*stringLength));
+    else
+        outOfBounds = branch32(AboveOrEqual, propertyTempReg, Address(scratchReg, StringImpl::lengthMemoryOffset()));
+
     if (node->op() != StringCharAt && node->arrayMode().isInBounds())
         speculationCheck(OutOfBounds, JSValueRegs(), nullptr, outOfBounds);
 
@@ -8381,6 +8396,18 @@ bool SpeculativeJIT::canBeRope(Edge edge)
     return true;
 }
 
+std::optional<unsigned> SpeculativeJIT::tryGetConstantStringLength(Edge edge)
+{
+    String string = edge->tryGetString(m_graph);
+    if (!!string)
+        return string.length();
+    if (JSValue value = m_state.forNode(edge).m_value) {
+        if (value.isCell() && value.asCell()->type() == StringType)
+            return asString(value)->length();
+    }
+    return std::nullopt;
+}
+
 void SpeculativeJIT::compileGetArrayLength(Node* node)
 {
     switch (node->arrayMode().type()) {
@@ -8411,6 +8438,16 @@ void SpeculativeJIT::compileGetArrayLength(Node* node)
         break;
     }
     case Array::String: {
+        if (auto stringLength = tryGetConstantStringLength(node->child1())) {
+            SpeculateCellOperand base(this, node->child1());
+            GPRTemporary result(this, Reuse, base);
+            base.gpr(); // Perform Cell speculation.
+            GPRReg resultGPR = result.gpr();
+            move(TrustedImm32(*stringLength), resultGPR);
+            strictInt32Result(resultGPR, node);
+            break;
+        }
+
         SpeculateCellOperand base(this, node->child1());
         GPRTemporary result(this, Reuse, base);
         GPRTemporary temp(this);

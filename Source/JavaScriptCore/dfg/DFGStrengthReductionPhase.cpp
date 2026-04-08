@@ -662,11 +662,16 @@ private:
         }
 
         case GetArrayLength: {
-            if (m_node->arrayMode().type() == Array::Generic
-                || m_node->arrayMode().type() == Array::String) {
+            if (m_node->arrayMode().type() == Array::Generic || m_node->arrayMode().type() == Array::String) {
                 String string = m_node->child1()->tryGetString(m_graph);
                 if (!!string) {
                     m_graph.convertToConstant(m_node, jsNumber(string.length()));
+                    m_changed = true;
+                    break;
+                }
+
+                if (JSString* jsString = m_node->child1()->dynamicCastConstant<JSString*>()) {
+                    m_graph.convertToConstant(m_node, jsNumber(jsString->length()));
                     m_changed = true;
                     break;
                 }
