@@ -1659,7 +1659,6 @@ webkit.org/b/254521 imported/w3c/web-platform-tests/media-source/mediasource-get
 webkit.org/b/311462 imported/w3c/web-platform-tests/media-source/mediasource-config-change-mp4-av-framesize.html [ Pass Failure Timeout Crash ]
 webkit.org/b/308601 [ Release ] imported/w3c/web-platform-tests/media-source/SourceBuffer-abort-updating.html [ Failure Pass ]
 webkit.org/b/254522 media/video-volume.html [ Pass Failure ]
-webkit.org/b/254525 http/tests/media/video-throttled-load-metadata.html [ Pass Failure ]
 media/video-seek-to-current-time.html [ Pass Failure ]
 webkit.org/b/264680 media/video-seek-past-end-playing.html [ Timeout Pass ]
 webkit.org/b/285595 media/video-seek-after-end-play.html [ Skip ]
