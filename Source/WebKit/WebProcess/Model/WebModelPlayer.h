@@ -29,6 +29,7 @@
 #if ENABLE(GPU_PROCESS_MODEL)
 
 #include "ModelTypes.h"
+#include <WebCore/Color.h>
 #include <WebCore/Model.h>
 #include <WebCore/ModelPlayer.h>
 #include <WebCore/ModelPlayerAnimationState.h>
@@ -65,7 +66,7 @@ public:
 
     WebCore::ModelPlayerIdentifier identifier() const final;
     bool isPlaceholder() const final;
-    void update();
+    void scheduleUpdateIfNeeded();
 
 private:
     WebModelPlayer(WebCore::Page&, WebCore::ModelPlayerClient&);
@@ -115,10 +116,15 @@ private:
     Seconds currentTime() const final;
     void setCurrentTime(Seconds, CompletionHandler<void()>&&) final;
     void play(bool);
-    void simulate(float elapsedTime);
+    bool simulate(float elapsedTime);
     double duration() const final;
 
     void ensureOnMainThreadWithProtectedThis(Function<void(Ref<WebModelPlayer>)>&& task);
+    void startUpdateLoopIfNeeded();
+    void update();
+    bool render();
+    void scheduleDisplayUpdate();
+
     void setStageMode(WebCore::StageModeOperation) final;
     void notifyEntityTransformUpdated();
     void setEnvironmentMap(Ref<WebCore::SharedBuffer>&&) final;
@@ -132,8 +138,11 @@ private:
     RetainPtr<NSData> m_retainedData;
     WeakRef<WebCore::Page> m_page;
     mutable RefPtr<ModelDisplayBufferDisplayDelegate> m_contentsDisplayDelegate;
-    uint32_t m_currentTexture { 0 };
+    WeakPtr<WebCore::GraphicsLayer> m_graphicsLayer;
+    uint32_t m_renderTextureIndex { 0 };
+    uint32_t m_displayTextureIndex { 0 };
     WebCore::StageModeOperation m_stageMode { WebCore::StageModeOperation::None };
+    std::optional<WebCore::Color> m_backgroundColor;
     WebCore::IntSize m_currentPixelSize;
     bool m_didFinishLoading { false };
     enum class PauseState {
@@ -149,8 +158,12 @@ private:
     std::optional<WebCore::ModelPlayerAnimationState> m_cachedAnimationState;
     std::optional<std::unique_ptr<WebCore::ModelPlayerTransformState>> m_cachedTransformState;
     float m_playbackRate { 1.0f };
-    uint32_t m_completedFrames { 0 };
     bool m_isLooping { false };
+
+    bool m_isUpdateLoopRunning { false };
+    bool m_isUpdateScheduled { false };
+    bool m_isUpdating { false };
+    bool m_needsEntityTransformNotification { false };
 };
 
 }

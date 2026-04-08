@@ -3521,10 +3521,6 @@ void RenderLayerBacking::contentChanged(ContentChangeType changeType, const std:
 
 #if ENABLE(MODEL_ELEMENT)
     if (changeType == ContentChangeType::Model) {
-#if ENABLE(GPU_PROCESS_MODEL)
-        if (m_graphicsLayer && m_graphicsLayer->drawsContent())
-            m_graphicsLayer->setNeedsDisplay();
-#endif
         compositor().scheduleCompositingLayerUpdate();
         return;
     }
