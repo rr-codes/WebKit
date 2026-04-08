@@ -631,6 +631,9 @@ public:
     void initializeAccessibilityIfNecessary();
 #endif
 
+    void setAllowAXAuthenticationForTesting(bool allow) { m_allowAXAuthenticationForTesting = allow; }
+    bool allowAXAuthenticationForTesting() const { return m_allowAXAuthenticationForTesting; }
+
     void setPLTResourceDelayInterval(Seconds interval) { m_pltResourceDelayInterval = interval; }
     Seconds pltResourceDelayInterval() const { return m_pltResourceDelayInterval; }
 
@@ -1039,6 +1042,7 @@ private:
 #endif
 
     bool m_hasReceivedAXRequestInUIProcess { false };
+    bool m_allowAXAuthenticationForTesting { false };
     bool m_suppressEDR { false };
 
     Seconds m_pltResourceDelayInterval { 100_ms };

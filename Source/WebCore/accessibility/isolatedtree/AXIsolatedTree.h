@@ -382,6 +382,11 @@ struct NodeUpdateOptions {
 
 void setPropertyIn(AXProperty, AXPropertyValueVariant&&, AXPropertyVector&, OptionSet<AXPropertyFlag>&);
 
+struct NodeAndParentID {
+    AXID nodeID;
+    Markable<AXID> parentID;
+};
+
 struct IsolatedObjectData {
     Vector<AXID> childrenIDs;
     AXPropertyVector properties;
@@ -575,6 +580,7 @@ private:
     void queueForDestruction();
 
     void applyPendingChangesLocked() WTF_REQUIRES_LOCK(m_changeLogLock);
+    void removeStaleAppends(const Vector<NodeAndParentID>&) WTF_REQUIRES_LOCK(m_changeLogLock);
     void clearTreeContentsLocked() WTF_REQUIRES_LOCK(m_changeLogLock);
 
     static std::atomic<bool> s_anyTreeNeedsTearDown;
@@ -610,11 +616,11 @@ private:
     void collectNodeChangesForSubtree(AccessibilityObject&);
     bool isCollectingNodeChanges() const { return m_isCollectingNodeChanges; }
     void queueChange(NodeChange&&) WTF_REQUIRES_LOCK(m_changeLogLock);
-    void queueRemovals(Vector<AXID>&&);
-    void queueRemovalsLocked(Vector<AXID>&&) WTF_REQUIRES_LOCK(m_changeLogLock);
+    void queueRemovals(Vector<NodeAndParentID>&&);
+    void queueRemovalsLocked(Vector<NodeAndParentID>&&) WTF_REQUIRES_LOCK(m_changeLogLock);
     void queueRemovalsAndUnresolvedChanges();
     Vector<NodeChange> resolveAppends();
-    void queueAppendsAndRemovals(Vector<NodeChange>&&, Vector<AXID>&&);
+    void queueAppendsAndRemovals(Vector<NodeChange>&&, Vector<NodeAndParentID>&&);
 
     void objectChangedIgnoredState(const AccessibilityObject&);
 
@@ -646,7 +652,7 @@ private:
     // While performing tree updates, we append nodes to this list that are no longer connected
     // in the tree and should be removed. This list turns into m_pendingSubtreeRemovals when
     // handed off to the secondary thread.
-    Vector<AXID> m_subtreesToRemove;
+    Vector<NodeAndParentID> m_subtreesToRemove;
     // Only accessed on the main thread.
     // This is used when updating the isolated tree in response to dynamic children changes.
     // It is required to protect objects from being incorrectly deleted when they are re-parented,
@@ -665,7 +671,7 @@ private:
     Markable<AXID> m_pendingRootNodeID WTF_GUARDED_BY_LOCK(m_changeLogLock);
     Vector<NodeChange> m_pendingAppends WTF_GUARDED_BY_LOCK(m_changeLogLock); // Nodes to be added to the tree and platform-wrapped.
     Vector<AXPropertyChange> m_pendingPropertyChanges WTF_GUARDED_BY_LOCK(m_changeLogLock);
-    HashSet<AXID> m_pendingSubtreeRemovals WTF_GUARDED_BY_LOCK(m_changeLogLock); // Nodes whose subtrees are to be removed from the tree.
+    Vector<NodeAndParentID> m_pendingSubtreeRemovals WTF_GUARDED_BY_LOCK(m_changeLogLock); // Nodes whose subtrees are to be removed from the tree, paired with the parent they were removed from.
     Vector<std::pair<AXID, Vector<AXID>>> m_pendingChildrenUpdates WTF_GUARDED_BY_LOCK(m_changeLogLock);
     HashSet<AXID> m_pendingProtectedFromDeletionIDs WTF_GUARDED_BY_LOCK(m_changeLogLock);
     HashMap<AXID, AXID> m_pendingParentUpdates WTF_GUARDED_BY_LOCK(m_changeLogLock);
