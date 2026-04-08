@@ -385,6 +385,7 @@ def parse_args(args):
             "--prefer-integrated-gpu", action="store_true", default=False,
             help=("Prefer using the lower-power integrated GPU on a dual-GPU system. Note that other running applications and the tests themselves can override this request.")),
         optparse.make_option("--show-window", action="store_true", default=False, help="Make the test runner window visible during testing."),
+        optparse.make_option("--show-cursor", action="store_true", default=False, help="Show the cursor overlay in the test runner window during testing (for debugging). Use with --show-window"),
         optparse.make_option("--self-compare-with-header", help="Run all tests as A/B tests between the default configuration and the given test features header (ignoring expected results)."),
     ]))
 

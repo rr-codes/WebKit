@@ -540,6 +540,10 @@ static void cursorDidChangeForTesting(WKStringRef cursorInfo, const void*)
 void TestController::cursorDidChange(WKStringRef cursorInfo)
 {
     m_cursorCallbacks.notifyListeners(cursorInfo);
+#if PLATFORM(MAC)
+    if (m_mainWebView)
+        m_mainWebView->updateCursorOverlayImage();
+#endif
 }
 
 void TestController::Callbacks::append(WKJSHandleRef handle)
@@ -1626,7 +1630,10 @@ bool TestController::resetStateToConsistentValues(const TestOptions& options, Re
 
     m_tooltipCallbacks.clear();
     m_cursorCallbacks.clear();
-    WKPageSetCursorDidChangeCallbackForTesting(mainWebView()->page(), nullptr, nullptr);
+    if (m_mainWebView && m_mainWebView->options().shouldShowCursor())
+        WKPageSetCursorDidChangeCallbackForTesting(mainWebView()->page(), cursorDidChangeForTesting, nullptr);
+    else
+        WKPageSetCursorDidChangeCallbackForTesting(mainWebView()->page(), nullptr, nullptr);
     m_beginSwipeCallbacks.clear();
     m_willEndSwipeCallbacks.clear();
     m_didEndSwipeCallbacks.clear();
