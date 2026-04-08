@@ -1371,4 +1371,35 @@ TEST(WKWebsiteDataStore, DoNotLogNetworkConnectionsInEphemeralSessions)
 
 #endif // PLATFORM(MAC)
 
+TEST(StorageSiteValidation, LoadWebArchive)
+{
+    RetainPtr websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
+    [websiteDataStore _setStorageSiteValidationEnabled:YES];
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    RetainPtr messageHandler = adoptNS([[WKWebsiteDataStoreMessageHandler alloc] init]);
+    [[configuration userContentController] addScriptMessageHandler:messageHandler.get() name:@"testHandler"];
+    [configuration setWebsiteDataStore:websiteDataStore];
+    RetainPtr<NSURL> webArchiveURL = [NSBundle.test_resourcesBundle URLForResource:@"example" withExtension:@"webarchive"];
+    RetainPtr webView = adoptNS([[WKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600) configuration:configuration.get()]);
+    RetainPtr navigationDelegate = adoptNS([[TestNavigationDelegate alloc] init]);
+    __block bool webContentProcessTerminated = false;
+    navigationDelegate.get().webContentProcessDidTerminate = ^(WKWebView *view, _WKProcessTerminationReason reason) {
+        // Setting receivedScriptMessage to end wait if web process is terminated.
+        receivedScriptMessage = true;
+        webContentProcessTerminated = true;
+    };
+    [webView setNavigationDelegate:navigationDelegate.get()];
+    [webView loadRequest:[NSURLRequest requestWithURL:webArchiveURL.get()]];
+    [navigationDelegate waitForDidFinishNavigation];
+
+    receivedScriptMessage = false;
+    NSString *javaScriptString = @"request = window.indexedDB.open('testDB'); \
+        request.onsuccess = () => { window.webkit.messageHandlers.testHandler.postMessage('Success'); }; \
+        request.onerror = () => { window.webkit.messageHandlers.testHandler.postMessage('Error'); };";
+    [webView evaluateJavaScript:javaScriptString completionHandler:nil];
+    TestWebKitAPI::Util::run(&receivedScriptMessage);
+    EXPECT_WK_STREQ(@"Success", [lastScriptMessage body]);
+    EXPECT_FALSE(webContentProcessTerminated);
+}
+
 } // namespace TestWebKitAPI
