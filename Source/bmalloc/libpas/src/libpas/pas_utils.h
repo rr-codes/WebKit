@@ -234,7 +234,7 @@ PAS_API PAS_NO_RETURN PAS_NEVER_INLINE void pas_reallocation_did_fail(const char
 PAS_IGNORE_WARNINGS_BEGIN("missing-noreturn")
 PAS_IGNORE_WARNINGS_BEGIN("return-type")
 
-#if PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED
+#if (PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED
 
 #define PAS_VA_COUNT6(x, ...) + 1
 #define PAS_VA_COUNT5(x, ...) __VA_OPT__(PAS_VA_COUNT6(__VA_ARGS__)) + 1
@@ -267,7 +267,7 @@ PAS_NEVER_INLINE PAS_NO_RETURN void pas_crash_with_info_impl6(size_t reason, siz
 }
 #endif
 
-#else /* PAS_OS(DARWIN) */
+#else /* (PAS_OS(DARWIN) || PAS_OS(LINUX)) */
 
 #if PAS_ENABLE_TESTING
 static PAS_ALWAYS_INLINE PAS_NO_RETURN void pas_assertion_failed_inline(const char* filename, int line, const char* function, const char* expression)
@@ -290,7 +290,7 @@ static PAS_ALWAYS_INLINE PAS_NO_RETURN void pas_assertion_failed_inline(
 PAS_API PAS_NO_RETURN PAS_NEVER_INLINE void pas_assertion_failed_no_inline(const char* filename, int line, const char* function, const char* expression);
 PAS_API PAS_NO_RETURN PAS_NEVER_INLINE void pas_assertion_failed_no_inline_with_extra_detail(const char* filename, int line, const char* function, const char* expression, size_t extra);
 
-#if PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED
+#if (PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED
 
 /*
    FIXME: Also consider converting PAS_ASSERT_WITH_DETAIL and PAS_ASSERT_WITH_EXTRA_DETAIL
@@ -433,7 +433,7 @@ static PAS_ALWAYS_INLINE void pas_assertion_failed_noreturn_silencer6(
 #define PAS_ASSERT_FAIL6(count, file, line, function, exp, misc1, misc2, misc3, misc4, misc5, misc6, ...) \
         pas_assertion_failed_noreturn_silencer6(file, line, function, exp, (uint64_t)misc1, (uint64_t)misc2, (uint64_t)misc3, (uint64_t)misc4, (uint64_t)misc5, (uint64_t)misc6)
 
-#else /* !(PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED) */
+#else /* !((PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED) */
 
 static PAS_ALWAYS_INLINE void pas_assertion_failed_noreturn_silencer(
     const char* filename, int line, const char* function, const char* expression)
@@ -441,12 +441,12 @@ static PAS_ALWAYS_INLINE void pas_assertion_failed_noreturn_silencer(
     pas_assertion_failed_inline(filename, line, function, expression);
 }
 
-#endif /* PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED */
+#endif /* (PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED */
 
 #define PAS_LIKELY(x) __PAS_LIKELY(x)
 #define PAS_UNLIKELY(x) __PAS_UNLIKELY(x)
 
-#if PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED
+#if (PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED
 
 #define PAS_ASSERT_IF(cond, exp, ...) \
     do { \
@@ -462,7 +462,7 @@ static PAS_ALWAYS_INLINE void pas_assertion_failed_noreturn_silencer(
 #define PAS_TESTING_ASSERT(exp, ...) \
     PAS_ASSERT_IF(PAS_ENABLE_TESTING, exp __VA_OPT__(,) __VA_ARGS__)
 
-#else /* not PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED */
+#else /* not (PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED */
 
 #define PAS_ASSERT(exp, ...) \
     do { \
@@ -482,7 +482,7 @@ static PAS_ALWAYS_INLINE void pas_assertion_failed_noreturn_silencer(
         pas_assertion_failed_noreturn_silencer(__FILE__, __LINE__, __PRETTY_FUNCTION__, #exp); \
     } while (0)
 
-#endif /* PAS_OS(DARWIN) && PAS_VA_OPT_SUPPORTED */
+#endif /* (PAS_OS(DARWIN) || PAS_OS(LINUX)) && PAS_VA_OPT_SUPPORTED */
 
 #define PAS_ASSERT_WITH_DETAIL(exp) \
     do { \
@@ -1014,6 +1014,9 @@ PAS_IGNORE_WARNINGS_BEGIN("atomic-alignment")
 PAS_IGNORE_WARNINGS_END
 #elif PAS_ARM32
     PAS_ASSERT_IF(true, !"Should not be reached");
+    PAS_UNUSED_PARAM(raw_ptr);
+    PAS_UNUSED_PARAM(old_value);
+    PAS_UNUSED_PARAM(new_value);
     return false;
 #else
     return __atomic_compare_exchange_n((pas_pair*)raw_ptr, &old_value, new_value, true, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
@@ -1061,6 +1064,8 @@ PAS_IGNORE_WARNINGS_END
     return old_value;
 #elif PAS_ARM32
     PAS_ASSERT_IF(true, !"Should not be reached");
+    PAS_UNUSED_PARAM(raw_ptr);
+    PAS_UNUSED_PARAM(new_value);
     return old_value;
 #else
     __atomic_compare_exchange_n((pas_pair*)raw_ptr, &old_value, new_value, false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST);
@@ -1077,7 +1082,8 @@ PAS_IGNORE_WARNINGS_BEGIN("atomic-alignment")
 PAS_IGNORE_WARNINGS_END
 #elif PAS_ARM32
     PAS_ASSERT_IF(true, !"Should not be reached");
-    return old_value;
+    PAS_UNUSED_PARAM(raw_ptr);
+    return *(pas_pair*)raw_ptr;
 #else
     return __atomic_load_n((pas_pair*)raw_ptr, __ATOMIC_RELAXED);
 #endif
@@ -1105,6 +1111,8 @@ PAS_IGNORE_WARNINGS_BEGIN("atomic-alignment")
 PAS_IGNORE_WARNINGS_END
 #elif PAS_ARM32
     PAS_ASSERT_IF(true, !"Should not be reached");
+    PAS_UNUSED_PARAM(raw_ptr);
+    PAS_UNUSED_PARAM(value);
 #else
     __atomic_store_n((pas_pair*)raw_ptr, value, __ATOMIC_SEQ_CST);
 #endif
@@ -1119,7 +1127,8 @@ PAS_IGNORE_WARNINGS_BEGIN("atomic-alignment")
 PAS_IGNORE_WARNINGS_END
 #elif PAS_ARM32
     PAS_ASSERT_IF(true, !"Should not be reached");
-    return old_value;
+    PAS_UNUSED_PARAM(raw_ptr);
+    PAS_UNUSED_PARAM(value);
 #else
     __atomic_store_n((pas_pair*)raw_ptr, value, __ATOMIC_RELAXED);
 #endif
