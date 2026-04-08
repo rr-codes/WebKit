@@ -449,6 +449,7 @@ endif
 
 SANDBOX_PROFILES_WITHOUT_WEBPUSHD = \
 	com.apple.WebProcess.sb \
+	com.apple.WebProcess.x86.sb \
 	com.apple.WebKit.NetworkProcess.sb \
 	com.apple.WebKit.GPUProcess.sb
 
@@ -498,6 +499,7 @@ NOTIFICATION_ALLOW_LISTS = \
 com.apple.WebKit.GPUProcess.sb : $(SANITIZE_FLAGS_STAMP)
 com.apple.WebKit.NetworkProcess.sb : $(SANITIZE_FLAGS_STAMP)
 com.apple.WebProcess.sb : $(SANITIZE_FLAGS_STAMP)
+com.apple.WebProcess.x86.sb : $(SANITIZE_FLAGS_STAMP)
 
 JSON_RPC_GENERATOR_SCRIPTS = \
 	$(JavaScriptCore_SCRIPTS_DIR)/cpp_generator_templates.py \

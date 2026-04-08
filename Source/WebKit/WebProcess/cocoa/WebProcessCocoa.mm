@@ -1062,7 +1062,11 @@ void WebProcess::initializeSandbox(const AuxiliaryProcessInitializationParameter
 
     auto webKitBundle = [NSBundle bundleForClass:NSClassFromString(@"WKWebView")];
 
+#if CPU(ARM64)
     sandboxParameters.setOverrideSandboxProfilePath(makeString(String([webKitBundle resourcePath]), "/com.apple.WebProcess.sb"_s));
+#else
+    sandboxParameters.setOverrideSandboxProfilePath(makeString(String([webKitBundle resourcePath]), "/com.apple.WebProcess.x86.sb"_s));
+#endif
 
     AuxiliaryProcess::initializeSandbox(parameters, sandboxParameters);
 #elif ENABLE(SIMULATOR_SANDBOX)
