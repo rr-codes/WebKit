@@ -31,7 +31,6 @@
 #include "JSDOMConvertInterface.h"
 #include "ShadowRoot.h"
 #include "TreeScope.h"
-#include <JavaScriptCore/JSGlobalObjectInlines.h>
 
 namespace WebCore {
 

@@ -43,7 +43,6 @@
 #include <JavaScriptCore/JSCInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
-#include <JavaScriptCore/StructureInlines.h>
 #include <JavaScriptCore/SubspaceInlines.h>
 #include <wtf/GetPtr.h>
 #include <wtf/PointerPreparations.h>
@@ -141,11 +140,6 @@ JSTestAsyncKeyValueIterable::JSTestAsyncKeyValueIterable(Structure* structure, J
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestAsyncKeyValueIterable>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
-
-JSC::Structure* JSTestAsyncKeyValueIterable::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-{
-    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info(), JSC::NonArray);
-}
 
 JSObject* JSTestAsyncKeyValueIterable::createPrototype(VM& vm, JSDOMGlobalObject& globalObject)
 {

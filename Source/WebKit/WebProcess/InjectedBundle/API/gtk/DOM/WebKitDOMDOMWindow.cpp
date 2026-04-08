@@ -23,7 +23,6 @@
 #include <WebCore/CSSImportRule.h>
 #include "DOMObjectCache.h"
 #include <WebCore/DOMException.h>
-#include <WebCore/DOMWrapperWorld.h>
 #include <WebCore/Document.h>
 #include "GObjectEventListener.h"
 #include <JavaScriptCore/APICast.h>

@@ -30,7 +30,6 @@
 #include "JSDOMConvertSequences.h"
 #include "JSReadableStream.h"
 #include "JSTransformStream.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "JSWritableStream.h"
 #include "MessagePort.h"
 #include "StreamTransferUtilities.h"

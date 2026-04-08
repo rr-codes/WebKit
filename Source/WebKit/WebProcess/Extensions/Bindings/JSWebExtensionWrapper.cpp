@@ -32,7 +32,6 @@
 #include "WebExtensionAPIRuntime.h"
 #include "WebFrame.h"
 #include "WebPage.h"
-#include <JavaScriptCore/JSClassRef.h>
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSWeakObjectMapRefPrivate.h>
 

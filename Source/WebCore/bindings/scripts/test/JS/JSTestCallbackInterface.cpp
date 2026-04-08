@@ -47,9 +47,7 @@
 #include "SerializedScriptValue.h"
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/JSCInlines.h>
-#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSString.h>
-#include <JavaScriptCore/MarkedVector.h>
 #include <type_traits>
 #include <wtf/IsIncreasing.h>
 #include <wtf/NeverDestroyed.h>

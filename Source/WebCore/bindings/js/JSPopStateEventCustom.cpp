@@ -33,7 +33,7 @@
 #include "JSPopStateEvent.h"
 
 #include "JSHistory.h"
-#include "JSValueInWrappedObjectInlines.h"
+#include "JSValueInWrappedObject.h"
 #include <JavaScriptCore/HeapInlines.h>
 #include <JavaScriptCore/JSCJSValueInlines.h>
 

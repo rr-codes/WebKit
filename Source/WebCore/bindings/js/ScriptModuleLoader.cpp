@@ -55,7 +55,6 @@
 #include <JavaScriptCore/AbstractModuleRecord.h>
 #include <JavaScriptCore/BuiltinNames.h>
 #include <JavaScriptCore/Completion.h>
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/ImportMap.h>
 #include <JavaScriptCore/JSInternalPromise.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>

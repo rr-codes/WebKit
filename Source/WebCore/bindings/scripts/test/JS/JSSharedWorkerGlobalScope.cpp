@@ -40,7 +40,6 @@
 #include <JavaScriptCore/JSCInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
-#include <JavaScriptCore/StructureInlines.h>
 #include <JavaScriptCore/SubspaceInlines.h>
 #include <wtf/GetPtr.h>
 #include <wtf/PointerPreparations.h>
@@ -129,11 +128,6 @@ void JSSharedWorkerGlobalScope::finishCreation(VM& vm, JSGlobalProxy* proxy)
 
 }
 #endif
-
-JSC::Structure* JSSharedWorkerGlobalScope::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-{
-    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::GlobalObjectType, StructureFlags), info(), JSC::NonArray);
-}
 
 JSValue JSSharedWorkerGlobalScope::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {

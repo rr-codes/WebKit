@@ -34,7 +34,6 @@
 #include "JSMediaKeyStatusMap.h"
 #include "MediaKeySession.h"
 #include "SharedBuffer.h"
-#include <JavaScriptCore/JSCJSValueInlines.h>
 #include <ranges>
 #include <wtf/StdLibExtras.h>
 

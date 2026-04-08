@@ -1954,7 +1954,6 @@ sub printWrapperFactoryCppFile
 
 #include "DeprecatedGlobalSettings.h"
 #include "Document.h"
-#include "JSDOMWrapperCache.h"
 #include "NodeName.h"
 #include "Settings.h"
 #include <wtf/NeverDestroyed.h>
@@ -1964,6 +1963,8 @@ END
     printConditionalElementIncludes($F, 1);
 
     print F <<END;
+
+using namespace JSC;
 
 namespace WebCore {
 

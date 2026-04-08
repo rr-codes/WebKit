@@ -28,7 +28,6 @@
 
 #include "AbortSignal.h"
 #include "JSAbortController.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "ScriptWrappableInlines.h"
 #include <wtf/TZoneMallocInlines.h>
 

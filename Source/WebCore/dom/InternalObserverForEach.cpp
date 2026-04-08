@@ -30,7 +30,6 @@
 #include "ContextDestructionObserverInlines.h"
 #include "InternalObserver.h"
 #include "JSDOMPromiseDeferred.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "Observable.h"
 #include "ScriptExecutionContext.h"
 #include "SubscribeOptions.h"

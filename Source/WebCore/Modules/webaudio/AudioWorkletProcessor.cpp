@@ -37,14 +37,10 @@
 #include "AudioWorkletProcessorConstructionData.h"
 #include "JSCallbackData.h"
 #include "JSDOMExceptionHandling.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "MessagePort.h"
 #include "ScriptWrappableInlines.h"
 #include "WebCoreOpaqueRoot.h"
-#include <JavaScriptCore/JSArray.h>
-#include <JavaScriptCore/JSGlobalObjectInlines.h>
 #include <JavaScriptCore/JSTypedArrays.h>
-#include <JavaScriptCore/ObjectConstructor.h>
 #include <wtf/GetPtr.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>

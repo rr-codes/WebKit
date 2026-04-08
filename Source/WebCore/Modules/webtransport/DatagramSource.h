@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include "Exception.h"
 #include "ReadableStreamSource.h"
 #include <wtf/AbstractRefCounted.h>
 
@@ -37,6 +36,7 @@ class JSValue;
 namespace WebCore {
 
 class WebTransport;
+class Exception;
 
 class DatagramSource : public AbstractRefCounted {
 public:

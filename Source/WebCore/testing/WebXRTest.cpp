@@ -37,7 +37,6 @@
 #include "UserGestureIndicator.h"
 #include "WebXRSystem.h"
 #include "XRSessionMode.h"
-#include <JavaScriptCore/JSCJSValueInlines.h>
 
 namespace WebCore {
 

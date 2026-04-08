@@ -30,7 +30,6 @@
 #include "EventNames.h"
 #include "JSDOMConvertInterface.h"
 #include "JSExtendableMessageEvent.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "SecurityOrigin.h"
 #include <wtf/TZoneMallocInlines.h>
 

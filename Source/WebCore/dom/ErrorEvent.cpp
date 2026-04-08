@@ -33,7 +33,6 @@
 #include "ErrorEvent.h"
 
 #include "EventNames.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include <JavaScriptCore/HeapInlines.h>
 #include <JavaScriptCore/StrongInlines.h>
 #include <wtf/TZoneMallocInlines.h>

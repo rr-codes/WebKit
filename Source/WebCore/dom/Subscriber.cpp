@@ -30,7 +30,6 @@
 #include "Document.h"
 #include "InternalObserver.h"
 #include "JSDOMExceptionHandling.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "ScriptWrappableInlines.h"
 #include "SubscriberCallback.h"
 #include "SubscriptionObserverCallback.h"

@@ -26,7 +26,6 @@
 #include "config.h"
 #include "JSAbortSignal.h"
 
-#include "JSValueInWrappedObjectInlines.h"
 #include "WebCoreOpaqueRootInlines.h"
 
 namespace WebCore {

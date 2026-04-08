@@ -36,7 +36,6 @@
 #include "RTCEncodedStreamProducer.h"
 #include "ScriptExecutionContextInlines.h"
 #include "WorkerThread.h"
-#include <JavaScriptCore/HeapCellInlines.h>
 
 namespace WebCore {
 

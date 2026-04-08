@@ -29,10 +29,6 @@
 #include "CallbackResult.h"
 #include <wtf/RefCounted.h>
 
-namespace JSC {
-class JSValue;
-}
-
 namespace WebCore {
 
 class SubscriptionObserverCallback : public RefCounted<SubscriptionObserverCallback>, public ActiveDOMCallback {

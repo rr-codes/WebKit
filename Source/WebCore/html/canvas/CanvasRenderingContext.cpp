@@ -37,7 +37,6 @@
 #include "Image.h"
 #include "ImageBitmap.h"
 #include "InspectorInstrumentation.h"
-#include <JavaScriptCore/HeapInlines.h>
 #include "OriginAccessPatterns.h"
 #include "PixelFormat.h"
 #include "SVGImageElement.h"

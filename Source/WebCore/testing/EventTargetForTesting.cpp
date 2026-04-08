@@ -30,9 +30,6 @@
 #include "CustomEvent.h"
 #include "MessageForTesting.h"
 #include "MessageTargetForTesting.h"
-#include <JavaScriptCore/HeapInlines.h>
-#include <JavaScriptCore/JSCellInlines.h>
-#include <JavaScriptCore/JSString.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

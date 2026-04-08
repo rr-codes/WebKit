@@ -31,12 +31,9 @@
 #include "config.h"
 #include "ReadableStreamDefaultController.h"
 
-#include "JSDOMConvertBufferSource.h"
 #include "WebCoreJSClientData.h"
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/HeapInlines.h>
 #include <JavaScriptCore/IdentifierInlines.h>
-#include <JavaScriptCore/JSGenericTypedArrayViewInlines.h>
 #include <JavaScriptCore/JSObjectInlines.h>
 #include <JavaScriptCore/TopExceptionScope.h>
 

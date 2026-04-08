@@ -332,8 +332,8 @@ public:
 
     bool isMarked(const void*);
     static bool testAndSetMarked(HeapVersion, const void*);
-
-    static inline size_t cellSize(const void*);
+    
+    static size_t cellSize(const void*);
 
     void writeBarrier(const JSCell* from);
     void writeBarrier(const JSCell* from, JSValue to);
@@ -373,8 +373,8 @@ public:
 
     MutatorState mutatorState() const { return m_mutatorState; }
     std::optional<CollectionScope> collectionScope() const { return m_collectionScope; }
-    bool hasHeapAccess() const { return m_worldState.load() & hasAccessBit; }
-    bool worldIsStopped() const { return m_worldIsStopped; }
+    bool hasHeapAccess() const;
+    bool worldIsStopped() const;
     bool worldIsRunning() const { return !worldIsStopped(); }
 
     // We're always busy on the collection threads. On the main thread, this returns true if we're
@@ -428,16 +428,8 @@ public:
     // 2. Use this API may trigger JSRopeString::resolveRope. If this API need
     // to be used when resolving a rope string, then make sure to call this API
     // after the rope string is completely resolved.
-    void reportExtraMemoryAllocated(const JSCell* cell, size_t size)
-    {
-        if (size > minExtraMemory)
-            reportExtraMemoryAllocatedSlowCase(nullptr, cell, size);
-    }
-    void reportExtraMemoryAllocated(GCDeferralContext* deferralContext, const JSCell* cell, size_t size)
-    {
-        if (size > minExtraMemory)
-            reportExtraMemoryAllocatedSlowCase(deferralContext, cell, size);
-    }
+    void reportExtraMemoryAllocated(const JSCell*, size_t);
+    void reportExtraMemoryAllocated(GCDeferralContext*, const JSCell*, size_t);
     JS_EXPORT_PRIVATE void reportExtraMemoryVisited(size_t);
 
 #if ENABLE(RESOURCE_USAGE)
@@ -447,11 +439,7 @@ public:
 #endif
 
     // Use this API to report non-GC memory if you can't use the better API above.
-    void deprecatedReportExtraMemory(size_t size)
-    {
-        if (size > minExtraMemory)
-            deprecatedReportExtraMemorySlowCase(size);
-    }
+    void deprecatedReportExtraMemory(size_t);
 
     JS_EXPORT_PRIVATE void reportAbandonedObjectGraph();
 
@@ -468,11 +456,11 @@ public:
     JS_EXPORT_PRIVATE TypeCountSet protectedObjectTypeCounts();
     JS_EXPORT_PRIVATE TypeCountSet objectTypeCounts();
 
-    UncheckedKeyHashSet<MarkedVectorBase*>& markListSet() { return m_markListSet; }
+    UncheckedKeyHashSet<MarkedVectorBase*>& markListSet();
 
-    template<typename Functor> inline void forEachProtectedCell(const Functor&);
-    template<typename Functor> inline void forEachCodeBlock(NOESCAPE const Functor&);
-    template<typename Functor> inline void forEachCodeBlockIgnoringJITPlans(const AbstractLocker& codeBlockSetLocker, NOESCAPE const Functor&);
+    template<typename Functor> void forEachProtectedCell(const Functor&);
+    template<typename Functor> void forEachCodeBlock(NOESCAPE const Functor&);
+    template<typename Functor> void forEachCodeBlockIgnoringJITPlans(const AbstractLocker& codeBlockSetLocker, NOESCAPE const Functor&);
 
     HandleSet* handleSet() LIFETIME_BOUND { return &m_handleSet; }
 
@@ -503,10 +491,10 @@ public:
     CodeBlockSet& codeBlockSet() { return *m_codeBlocks; }
 
 #if USE(FOUNDATION)
-    template<typename T> inline void releaseSoon(RetainPtr<T>&&);
+    template<typename T> void releaseSoon(RetainPtr<T>&&);
 #endif
 #ifdef JSC_GLIB_API_ENABLED
-    inline void releaseSoon(std::unique_ptr<JSCGLibWrapperObject>&&);
+    void releaseSoon(std::unique_ptr<JSCGLibWrapperObject>&&);
 #endif
 
     JS_EXPORT_PRIVATE void registerWeakGCHashTable(WeakGCHashTable*);
@@ -530,7 +518,7 @@ public:
     // If true, the GC believes that the mutator is currently messing with the heap. We call this
     // "having heap access". The GC may block if the mutator is in this state. If false, the GC may
     // currently be doing things to the heap that make the heap unsafe to access for the mutator.
-    bool hasAccess() const { return m_worldState.loadRelaxed() & hasAccessBit; }
+    bool hasAccess() const;
     
     // If the mutator does not currently have heap access, this function will acquire it. If the GC
     // is currently using the lack of heap access to do dangerous things to the heap then this
@@ -548,12 +536,7 @@ public:
     // Ordinarily, you should use the ReleaseHeapAccessScope to release and then reacquire heap
     // access. You should do this anytime you're about do perform a blocking operation, like waiting
     // on the ParkingLot.
-    void releaseAccess()
-    {
-        if (m_worldState.compareExchangeWeak(hasAccessBit, 0))
-            return;
-        releaseAccessSlow();
-    }
+    void releaseAccess();
     
     // This is like a super optimized way of saying:
     //
@@ -573,12 +556,12 @@ public:
     // mutator has permanent heap access (like the DOM does). If you have good event handling
     // discipline (i.e. you don't block the runloop) then you can be sure that stopIfNecessary() will
     // already be called for you at the right times.
-    inline void stopIfNecessary();
+    void stopIfNecessary();
     
     // This gives the conn to the collector.
     void relinquishConn();
     
-    bool mayNeedToStop() { return m_worldState.loadRelaxed() != hasAccessBit; }
+    bool mayNeedToStop();
 
     void performIncrement(size_t bytes);
     
@@ -611,7 +594,7 @@ public:
     }
 
     template<typename Func>
-    inline void forEachSlotVisitor(const Func&);
+    void forEachSlotVisitor(const Func&);
     
     Seconds totalGCTime() const { return m_totalGCTime; }
 
@@ -789,9 +772,9 @@ private:
 
     bool shouldDoFullCollection();
 
-    inline void incrementDeferralDepth();
-    inline void decrementDeferralDepth();
-    inline void decrementDeferralDepthAndGCIfNeeded();
+    void incrementDeferralDepth();
+    void decrementDeferralDepth();
+    void decrementDeferralDepthAndGCIfNeeded();
     JS_EXPORT_PRIVATE void decrementDeferralDepthAndGCIfNeededSlow();
 
     size_t visitCount();
@@ -1254,7 +1237,7 @@ public:
     Heap(JSC::Heap&);
     ~Heap();
 
-    inline VM& vm() const;
+    VM& vm() const;
     JSC::Heap& server() { return m_server; }
 
     // FIXME GlobalGC: need a GCClient::Heap::lastChanceToFinalize() and in there,

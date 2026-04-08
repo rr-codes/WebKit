@@ -28,7 +28,6 @@
 
 #if ENABLE(WEBXR)
 
-#include "JSValueInWrappedObjectInlines.h"
 #include "WebXRFrame.h"
 #include "WebXRRigidTransform.h"
 #include <JavaScriptCore/TypedArrayInlines.h>

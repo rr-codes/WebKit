@@ -33,18 +33,6 @@
 namespace WebCore {
 using namespace JSC;
 
-auto Converter<IDLDOMString>::convert(JSC::JSGlobalObject& lexicalGlobalObject, JSC::JSValue value) -> Result
-{
-    auto& vm = lexicalGlobalObject.vm();
-    auto scope = DECLARE_THROW_SCOPE(vm);
-
-    auto string = value.toWTFString(&lexicalGlobalObject);
-
-    RETURN_IF_EXCEPTION(scope, Result::exception());
-
-    return Result { WTF::move(string) };
-}
-
 String identifierToString(JSGlobalObject& lexicalGlobalObject, const Identifier& identifier)
 {
     if (identifier.isSymbol()) [[unlikely]] {

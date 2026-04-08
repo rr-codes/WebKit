@@ -80,7 +80,7 @@ template<typename JSClass> inline JSC::Structure* JSDOMConstructorNotCallable<JS
 template<typename JSClass> inline void JSDOMConstructorNotCallable<JSClass>::finishCreation(JSC::VM& vm, JSDOMGlobalObject& globalObject)
 {
     Base::finishCreation(vm);
-    ASSERT(inheritsSlow(info()));
+    ASSERT(inherits(info()));
     initializeProperties(vm, globalObject);
 }
 

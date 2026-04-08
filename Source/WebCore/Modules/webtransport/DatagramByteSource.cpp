@@ -32,7 +32,6 @@
 #include "ReadableStream.h"
 #include "ReadableStreamBYOBRequest.h"
 #include <JavaScriptCore/ArrayBuffer.h>
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/StdLibExtras.h>
 
 namespace WebCore {

@@ -26,7 +26,6 @@
 #import "DOMInternal.h"
 
 #import "DOMNodeInternal.h"
-#import <WebCore/DOMWrapperWorld.h>
 #import <WebCore/Document.h>
 #import <WebCore/FrameDestructionObserverInlines.h>
 #import <WebCore/JSNode.h>

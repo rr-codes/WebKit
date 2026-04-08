@@ -33,7 +33,6 @@
 #include "DOMPointReadOnly.h"
 #include "JSDOMPromiseDeferred.h"
 #include "WebFakeXRInputController.h"
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/CompletionHandler.h>
 #include <wtf/MathExtras.h>
 #include <wtf/TZoneMallocInlines.h>

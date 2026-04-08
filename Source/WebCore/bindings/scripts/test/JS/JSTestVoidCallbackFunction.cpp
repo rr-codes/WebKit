@@ -38,8 +38,6 @@
 #include "JSTestNode.h"
 #include "ScriptExecutionContext.h"
 #include "SerializedScriptValue.h"
-#include <JavaScriptCore/JSCellInlines.h>
-#include <JavaScriptCore/MarkedVector.h>
 
 
 namespace WebCore {

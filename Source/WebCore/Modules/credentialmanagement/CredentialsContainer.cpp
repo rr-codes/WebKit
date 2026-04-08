@@ -38,7 +38,6 @@
 #include "JSDOMConvertInterface.h"
 #include "JSDOMConvertNullable.h"
 #include "JSDigitalCredential.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "LocalFrame.h"
 #include "Navigator.h"
 #include "Page.h"

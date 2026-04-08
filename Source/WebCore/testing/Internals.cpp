@@ -278,7 +278,6 @@
 #include "XMLHttpRequest.h"
 #include <JavaScriptCore/CodeBlock.h>
 #include <JavaScriptCore/FunctionExecutable.h>
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/InspectorAgentBase.h>
 #include <JavaScriptCore/InspectorFrontendChannel.h>
 #include <JavaScriptCore/JSCInlines.h>

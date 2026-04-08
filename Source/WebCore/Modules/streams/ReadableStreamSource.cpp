@@ -82,18 +82,13 @@ void ReadableStreamSource::pullFinished()
     setInactive();
 }
 
-void ReadableStreamSource::cancelFinished()
+void ReadableStreamSource::cancelFinished(std::optional<Exception>&& exception)
 {
     ASSERT(m_promise);
-    m_promise->resolve();
-    m_promise = nullptr;
-    setInactive();
-}
-
-void ReadableStreamSource::cancelFinished(Exception&& exception)
-{
-    ASSERT(m_promise);
-    m_promise->reject(WTF::move(exception));
+    if (exception)
+        m_promise->reject(WTF::move(*exception));
+    else
+        m_promise->resolve();
     m_promise = nullptr;
     setInactive();
 }

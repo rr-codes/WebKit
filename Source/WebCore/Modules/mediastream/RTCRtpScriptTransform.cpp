@@ -36,7 +36,6 @@
 #include "RTCRtpScriptTransformer.h"
 #include "RTCRtpTransformBackend.h"
 #include "Worker.h"
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/WeakPtr.h>
 

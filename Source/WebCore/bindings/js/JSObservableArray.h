@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "JSDOMWrapperCache.h"
+#include "JSDOMBinding.h"
 #include <JavaScriptCore/ArrayPrototype.h>
 
 namespace JSC {
@@ -88,7 +88,10 @@ public:
         return globalObject.arrayPrototype();
     }
 
-    static Structure* createStructure(VM&, JSGlobalObject*, JSValue);
+    static Structure* createStructure(VM& vm, JSGlobalObject* globalObject, JSValue prototype)
+    {
+        return Structure::create(vm, globalObject, prototype, TypeInfo(DerivedArrayType, StructureFlags), info(), NonArray);
+    }
 
 private:
     JSObservableArray(VM&, Structure*);

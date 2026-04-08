@@ -26,8 +26,6 @@
 #include "config.h"
 #include "JSPaymentResponse.h"
 
-#include "JSValueInWrappedObjectInlines.h"
-
 #if ENABLE(PAYMENT_REQUEST)
 
 namespace WebCore {

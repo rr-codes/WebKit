@@ -33,13 +33,11 @@
 #include "InternalWritableStreamWriter.h"
 #include "JSDOMPromise.h"
 #include "JSDOMPromiseDeferred.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "ReadableStream.h"
 #include "ReadableStreamDefaultReader.h"
 #include "ScriptExecutionContextInlines.h"
 #include "StreamPipeOptions.h"
 #include "WritableStream.h"
-#include <JavaScriptCore/StrongInlines.h>
 
 namespace WebCore {
 

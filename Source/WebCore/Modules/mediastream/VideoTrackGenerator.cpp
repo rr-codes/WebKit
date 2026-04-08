@@ -35,7 +35,7 @@
 #include "VideoFrame.h"
 #include "WritableStream.h"
 #include "WritableStreamSink.h"
-#include <JavaScriptCore/JSCellInlines.h>
+
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

@@ -40,7 +40,6 @@
 #include "JSDOMConvertStrings.h"
 #include "JSEventTarget.h"
 #include "JSMessagePort.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include <JavaScriptCore/JSArray.h>
 #include <JavaScriptCore/JSArrayBuffer.h>
 

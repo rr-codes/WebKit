@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <JavaScriptCore/JSCJSValueInlines.h>
 #include <JavaScriptCore/PureNaN.h>
 #include <WebCore/IDLTypes.h>
 #include <WebCore/JSDOMConvertBase.h>
@@ -264,7 +265,11 @@ template<> struct JSConverter<IDLDouble> {
     static constexpr bool needsState = false;
     static constexpr bool needsGlobalObject = false;
 
-    WEBCORE_EXPORT static JSC::JSValue convert(Type);
+    static JSC::JSValue convert(Type value)
+    {
+        ASSERT(!std::isnan(value));
+        return JSC::jsNumber(value);
+    }
 };
 
 template<> struct Converter<IDLUnrestrictedDouble> : DefaultConverter<IDLUnrestrictedDouble> {
@@ -294,10 +299,16 @@ template<> struct JSConverter<IDLUnrestrictedDouble> {
     static constexpr bool needsState = false;
     static constexpr bool needsGlobalObject = false;
 
-    WEBCORE_EXPORT static JSC::JSValue convert(Type);
+    static JSC::JSValue convert(Type value)
+    {
+        return JSC::jsNumber(JSC::purifyNaN(value));
+    }
 
     // Add overload for MediaTime.
-    WEBCORE_EXPORT static JSC::JSValue convert(const MediaTime&);
+    static JSC::JSValue convert(const MediaTime& value)
+    {
+        return JSC::jsNumber(JSC::purifyNaN(value.toDouble()));
+    }
 };
 
 } // namespace WebCore

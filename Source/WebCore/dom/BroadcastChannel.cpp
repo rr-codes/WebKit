@@ -39,7 +39,6 @@
 #include "WorkerGlobalScope.h"
 #include "WorkerLoaderProxy.h"
 #include "WorkerThread.h"
-#include <JavaScriptCore/TopExceptionScope.h>
 #include <wtf/CallbackAggregator.h>
 #include <wtf/HashMap.h>
 #include <wtf/Identified.h>

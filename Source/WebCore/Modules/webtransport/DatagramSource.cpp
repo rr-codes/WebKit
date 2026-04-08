@@ -26,7 +26,6 @@
 #include "config.h"
 #include "DatagramSource.h"
 
-#include "Exception.h"
 #include <JavaScriptCore/ArrayBuffer.h>
 #include <wtf/StdLibExtras.h>
 

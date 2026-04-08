@@ -59,13 +59,19 @@ template<> struct JSConverter<IDLAny> {
         return value.get();
     }
 
-    static JSC::JSValue convert(const JSValueInWrappedObject&);
+    static JSC::JSValue convert(const JSValueInWrappedObject& value)
+    {
+        return value.getValue();
+    }
 };
 
 template<> struct VariadicConverter<IDLAny> {
     using Item = JSC::Strong<JSC::Unknown>;
 
-    static std::optional<Item> convert(JSC::JSGlobalObject&, JSC::JSValue);
+    static std::optional<Item> convert(JSC::JSGlobalObject& lexicalGlobalObject, JSC::JSValue value)
+    {
+        return Item { JSC::getVM(&lexicalGlobalObject), value };
+    }
 };
 
 } // namespace WebCore

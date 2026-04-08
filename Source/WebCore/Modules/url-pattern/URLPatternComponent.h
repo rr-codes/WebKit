@@ -26,6 +26,7 @@
 #pragma once
 
 #include <JavaScriptCore/Strong.h>
+#include <JavaScriptCore/StrongInlines.h>
 
 namespace JSC {
 class RegExp;
@@ -51,7 +52,7 @@ public:
     bool matchSpecialSchemeProtocol(ScriptExecutionContext&) const;
     JSC::JSValue componentExec(ScriptExecutionContext&, StringView) const;
     URLPatternComponentResult createComponentMatchResult(JSC::JSGlobalObject*, String&& input, const JSC::JSValue& execResult) const;
-    URLPatternComponent();
+    URLPatternComponent() = default;
 
 private:
     URLPatternComponent(String&&, JSC::Strong<JSC::RegExp>&&, Vector<String>&&, bool);

@@ -28,7 +28,7 @@
 #include "JSErrorEvent.h"
 
 #include "JSDOMGlobalObject.h"
-#include "JSValueInWrappedObjectInlines.h"
+#include "JSValueInWrappedObject.h"
 
 namespace WebCore {
 using namespace JSC;

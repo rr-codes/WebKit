@@ -29,10 +29,6 @@
 #include "CallbackResult.h"
 #include <wtf/RefCounted.h>
 
-namespace JSC {
-class JSValue;
-}
-
 namespace WebCore {
 
 class PredicateCallback : public RefCounted<PredicateCallback>, public ActiveDOMCallback {

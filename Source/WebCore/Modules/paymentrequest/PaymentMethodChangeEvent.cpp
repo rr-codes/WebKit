@@ -28,7 +28,6 @@
 
 #if ENABLE(PAYMENT_REQUEST)
 
-#include "JSValueInWrappedObjectInlines.h"
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

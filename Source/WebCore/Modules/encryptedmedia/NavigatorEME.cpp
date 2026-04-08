@@ -39,7 +39,6 @@
 #include "JSMediaKeySystemAccess.h"
 #include "Logging.h"
 #include "MediaKeySystemRequest.h"
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/text/StringBuilder.h>
 
 namespace WTF {

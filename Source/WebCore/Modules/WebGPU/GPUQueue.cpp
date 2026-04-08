@@ -47,7 +47,6 @@
 #include "VideoFrame.h"
 #include "WebCodecsVideoFrame.h"
 #include "WebGPUDevice.h"
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/MallocSpan.h>
 

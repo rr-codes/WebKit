@@ -66,7 +66,17 @@ inline AtomString propertyNameToAtomString(JSC::PropertyName propertyName)
 template<> struct Converter<IDLDOMString> : DefaultConverter<IDLDOMString> {
     using Result = ConversionResult<IDLDOMString>;
 
-    WEBCORE_EXPORT static Result convert(JSC::JSGlobalObject&, JSC::JSValue);
+    static Result convert(JSC::JSGlobalObject& lexicalGlobalObject, JSC::JSValue value)
+    {
+        auto& vm = lexicalGlobalObject.vm();
+        auto scope = DECLARE_THROW_SCOPE(vm);
+
+        auto string = value.toWTFString(&lexicalGlobalObject);
+
+        RETURN_IF_EXCEPTION(scope, Result::exception());
+
+        return Result { WTF::move(string) };
+    }
 };
 
 template<> struct JSConverter<IDLDOMString> {

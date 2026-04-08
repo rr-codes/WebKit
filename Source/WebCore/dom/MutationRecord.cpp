@@ -36,7 +36,6 @@
 #include "JSNode.h"
 #include "StaticNodeList.h"
 #include "WebCoreOpaqueRootInlines.h"
-#include <JavaScriptCore/AbstractSlotVisitorInlines.h>
 #include <wtf/NeverDestroyed.h>
 #include <wtf/StdLibExtras.h>
 

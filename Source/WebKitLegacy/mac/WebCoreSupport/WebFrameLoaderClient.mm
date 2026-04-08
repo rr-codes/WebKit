@@ -83,7 +83,6 @@
 #import <WebCore/Chrome.h>
 #import <WebCore/ContainerNodeInlines.h>
 #import <WebCore/DNS.h>
-#import <WebCore/DOMWrapperWorld.h>
 #import <WebCore/DocumentLoader.h>
 #import <WebCore/DocumentPage.h>
 #import <WebCore/DocumentView.h>

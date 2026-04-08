@@ -43,7 +43,6 @@
 #include "JSDOMConvertNullable.h"
 #include "JSDOMPromiseDeferred.h"
 #include "JSDigitalCredential.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "Page.h"
 #include "SecurityOriginData.h"
 #include <JavaScriptCore/JSObject.h>

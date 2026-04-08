@@ -26,8 +26,6 @@
 #include "config.h"
 #include "JSMediaControlsHost.h"
 
-#include "JSValueInWrappedObjectInlines.h"
-
 #if ENABLE(VIDEO)
 
 namespace WebCore {

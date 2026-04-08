@@ -85,7 +85,6 @@
 #include <JavaScriptCore/ErrorInstance.h>
 #include <JavaScriptCore/Exception.h>
 #include <JavaScriptCore/ExceptionHelpers.h>
-#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/IterationKind.h>
 #include <JavaScriptCore/JSArrayBuffer.h>
 #include <JavaScriptCore/JSArrayBufferView.h>

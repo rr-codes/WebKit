@@ -45,7 +45,6 @@
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/PropertyNameArray.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
-#include <JavaScriptCore/StructureInlines.h>
 #include <JavaScriptCore/SubspaceInlines.h>
 #include <wtf/GetPtr.h>
 #include <wtf/PointerPreparations.h>
@@ -140,11 +139,6 @@ JSTestNamedSetterWithIndexedGetter::JSTestNamedSetterWithIndexedGetter(Structure
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestNamedSetterWithIndexedGetter>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
-
-JSC::Structure* JSTestNamedSetterWithIndexedGetter::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-{
-    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info(), JSC::MayHaveIndexedAccessors);
-}
 
 JSObject* JSTestNamedSetterWithIndexedGetter::createPrototype(VM& vm, JSDOMGlobalObject& globalObject)
 {

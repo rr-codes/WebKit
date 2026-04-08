@@ -32,7 +32,6 @@
 #include "JSDOMConvertSequences.h"
 #include "JSDOMConvertStrings.h"
 #include "JSMessagePort.h"
-#include "JSValueInWrappedObjectInlines.h"
 
 namespace WebCore {
 

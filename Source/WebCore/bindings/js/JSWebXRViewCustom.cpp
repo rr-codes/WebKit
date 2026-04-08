@@ -29,7 +29,6 @@
 #include "JSWebXRView.h"
 
 #include "JSDOMConvertBufferSource.h"
-#include "JSValueInWrappedObjectInlines.h"
 #include "WebXRView.h"
 
 namespace WebCore {

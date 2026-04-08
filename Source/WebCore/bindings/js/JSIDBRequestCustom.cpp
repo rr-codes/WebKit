@@ -35,7 +35,6 @@
 #include "JSIDBCursor.h"
 #include "JSIDBDatabase.h"
 #include "JSIDBRecord.h"
-#include "JSValueInWrappedObjectInlines.h"
 
 namespace WebCore {
 using namespace JSC;

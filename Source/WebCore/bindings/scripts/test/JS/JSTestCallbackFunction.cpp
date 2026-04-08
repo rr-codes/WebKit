@@ -25,10 +25,7 @@
 #include "JSDOMConvertNumbers.h"
 #include "JSDOMConvertStrings.h"
 #include "JSDOMExceptionHandling.h"
-#include "JSDOMGlobalObject.h"
 #include "ScriptExecutionContext.h"
-#include <JavaScriptCore/JSCellInlines.h>
-#include <JavaScriptCore/MarkedVector.h>
 
 
 namespace WebCore {

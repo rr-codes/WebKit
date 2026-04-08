@@ -40,7 +40,7 @@ template<typename T> struct Converter<IDLPromise<T>> : DefaultConverter<IDLPromi
     template<typename ExceptionThrower = DefaultExceptionThrower>
     static Result convert(JSC::JSGlobalObject& lexicalGlobalObject, JSC::JSValue value, ExceptionThrower&& exceptionThrower = ExceptionThrower())
     {
-        auto& vm = lexicalGlobalObject.vm();
+        JSC::VM& vm = JSC::getVM(&lexicalGlobalObject);
         auto scope = DECLARE_THROW_SCOPE(vm);
         auto* globalObject = JSC::jsDynamicCast<JSDOMGlobalObject*>(&lexicalGlobalObject);
         RELEASE_ASSERT(globalObject);

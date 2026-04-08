@@ -19,10 +19,9 @@
 
 #pragma once
 
-#include <JavaScriptCore/SourceTaintedOrigin.h>
 #include <JavaScriptCore/Strong.h>
+#include <JavaScriptCore/StrongInlines.h>
 #include <memory>
-#include <wtf/FixedVector.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/text/WTFString.h>
 
