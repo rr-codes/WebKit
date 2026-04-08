@@ -31,6 +31,8 @@
 #include "JSTestCallbackFunction.h"
 #include "JSTestDictionary.h"
 #include "ScriptExecutionContext.h"
+#include <JavaScriptCore/JSCellInlines.h>
+#include <JavaScriptCore/MarkedVector.h>
 #include <wtf/Variant.h>
 
 

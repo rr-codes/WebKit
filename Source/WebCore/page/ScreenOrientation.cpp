@@ -40,6 +40,7 @@
 #include "Page.h"
 #include "Settings.h"
 #include "VisibilityState.h"
+#include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/TZoneMallocInlines.h>
 
 namespace WebCore {

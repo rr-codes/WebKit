@@ -54,6 +54,7 @@
 #include "JSDOMPromise.h"
 #include "JSDOMPromiseDeferred.h"
 #include "JSNavigationHistoryEntry.h"
+#include "JSValueInWrappedObjectInlines.h"
 #include "Logging.h"
 #include "MessagePort.h"
 #include "NavigateEvent.h"
@@ -68,6 +69,8 @@
 #include "SerializedScriptValue.h"
 #include "ShouldTreatAsContinuingLoad.h"
 #include "UserGestureIndicator.h"
+#include <JavaScriptCore/JSGlobalObjectInlines.h>
+#include <JavaScriptCore/StrongInlines.h>
 #include <optional>
 #include <wtf/Assertions.h>
 #include <wtf/TZoneMallocInlines.h>

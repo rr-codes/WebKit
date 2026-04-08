@@ -35,6 +35,7 @@
 #include "JSDOMPromiseDeferred.h"
 #include "JSReadableByteStreamController.h"
 #include "JSReadableStreamReadResult.h"
+#include "JSValueInWrappedObjectInlines.h"
 #include "ReadableStream.h"
 #include "ReadableStreamBYOBReader.h"
 #include "ReadableStreamBYOBRequest.h"

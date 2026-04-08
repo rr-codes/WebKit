@@ -37,6 +37,7 @@
 #include "AudioFileReader.h"
 #include "AudioUtilities.h"
 #include "ExceptionOr.h"
+#include "JSValueInWrappedObjectInlines.h"
 #include "ScriptWrappableInlines.h"
 #include "WebCoreOpaqueRoot.h"
 #include <JavaScriptCore/JSCInlines.h>

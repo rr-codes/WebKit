@@ -48,6 +48,8 @@
 #include "PasteboardCustomData.h"
 #include "SharedBuffer.h"
 #include "markup.h"
+#include <JavaScriptCore/HeapCellInlines.h>
+#include <JavaScriptCore/JSCJSValueCellInlines.h>
 #include <wtf/Function.h>
 #include <wtf/TZoneMallocInlines.h>
 

@@ -30,6 +30,8 @@
 #include "JSDOMGlobalObject.h"
 #include "ScriptExecutionContext.h"
 #include <JavaScriptCore/JSArray.h>
+#include <JavaScriptCore/JSCellInlines.h>
+#include <JavaScriptCore/MarkedVector.h>
 
 
 namespace WebCore {

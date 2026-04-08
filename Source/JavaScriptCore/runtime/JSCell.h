@@ -82,7 +82,7 @@ template<typename T> void* tryAllocateCell(VM&, GCDeferralContext*, size_t = siz
     ALWAYS_INLINE void finishCreation(JSC::VM& vm) \
     { \
         Base::finishCreation(vm); \
-        ASSERT(inherits(info())); \
+        ASSERT(inheritsSlow(info())); \
     } \
     static constexpr int __unusedFooterAfterDefaultFinishCreation = 0
 #else
@@ -124,21 +124,23 @@ protected:
 
 public:
     // Querying the type.
-    bool isString() const;
-    bool isHeapBigInt() const;
-    bool isSymbol() const;
-    bool isObject() const;
-    bool isGetterSetter() const;
-    bool isCustomGetterSetter() const;
-    bool isProxy() const;
+    bool isString() const { return m_type == StringType; }
+    bool isHeapBigInt() const { return m_type == HeapBigIntType; }
+    bool isSymbol() const { return m_type == SymbolType; }
+    JS_EXPORT_PRIVATE bool isObjectSlow() const;
+    bool isObject() const { return TypeInfo::isObject(m_type); }
+    bool isGetterSetter() const { return m_type == GetterSetterType; }
+    bool isCustomGetterSetter() const { return m_type == CustomGetterSetterType; }
+    bool isProxy() const { return m_type == GlobalProxyType || m_type == ProxyObjectType; }
     bool isCallable();
     bool isConstructor();
     template<Concurrency> TriState isCallableWithConcurrency();
     template<Concurrency> TriState isConstructorWithConcurrency();
-    bool inherits(const ClassInfo*) const;
-    template<typename Target> bool inherits() const;
+    inline bool inherits(const ClassInfo*) const; // Defined inline in Structure.h
+    JS_EXPORT_PRIVATE bool inheritsSlow(const ClassInfo*) const;
+    template<typename Target> inline bool inherits() const; // Defined inline in Structure.h
     JS_EXPORT_PRIVATE bool NODELETE isValidCallee() const;
-    bool isAPIValueWrapper() const;
+    bool isAPIValueWrapper() const { return m_type == APIValueWrapperType; }
     
     // Each cell has a built-in lock. Currently it's simply available for use if you need it. It's
     // a full-blown WTF::Lock. Note that this lock is currently used in JSArray and that lock's
@@ -149,12 +151,12 @@ public:
     // Locker locker { cell->cellLock() };
     JSCellLock& cellLock() const { return *reinterpret_cast<JSCellLock*>(const_cast<JSCell*>(this)); }
     
-    JSType type() const;
-    IndexingType indexingTypeAndMisc() const;
-    IndexingType indexingMode() const;
-    IndexingType indexingType() const;
+    JSType type() const { return m_type; }
+    IndexingType indexingTypeAndMisc() const { return m_indexingTypeAndMisc; }
+    IndexingType indexingMode() const { return indexingTypeAndMisc() & AllArrayTypes; }
+    IndexingType indexingType() const { return indexingTypeAndMisc() & AllWritableArrayTypes; }
     StructureID structureID() const { return m_structureID; }
-    Structure* structure() const;
+    Structure* structure() const { return m_structureID.decode(); }
     void setStructure(VM&, Structure*);
     void setStructureIDDirectly(StructureID id) { m_structureID = id; }
     void clearStructure() { m_structureID = StructureID(); }
@@ -181,7 +183,7 @@ public:
     // Basic conversions.
     JS_EXPORT_PRIVATE JSValue toPrimitive(JSGlobalObject*, PreferredPrimitiveType) const;
     bool toBoolean(JSGlobalObject*) const;
-    TriState pureToBoolean() const;
+    inline TriState pureToBoolean() const;
     JS_EXPORT_PRIVATE double toNumber(JSGlobalObject*) const;
     JSObject* toObject(JSGlobalObject*) const;
 
@@ -200,7 +202,8 @@ public:
     JS_EXPORT_PRIVATE static void NODELETE analyzeHeap(JSCell*, HeapAnalyzer&);
 
     // Object operations, with the toObject operation included.
-    const ClassInfo* classInfo() const;
+    inline const ClassInfo* classInfo() const; // Defined inline in Structure.h
+    JS_EXPORT_PRIVATE bool validateIsNotSweeping() const;
     const MethodTable* methodTable() const;
     static bool put(JSCell*, JSGlobalObject*, PropertyName, JSValue, PutPropertySlot&);
     static bool putByIndex(JSCell*, JSGlobalObject*, unsigned propertyName, JSValue, bool shouldThrow);
@@ -210,8 +213,8 @@ public:
     JS_EXPORT_PRIVATE static bool deleteProperty(JSCell*, JSGlobalObject*, PropertyName);
     static bool deletePropertyByIndex(JSCell*, JSGlobalObject*, unsigned propertyName);
 
-    static bool canUseFastGetOwnProperty(const Structure&);
-    JSValue fastGetOwnProperty(VM&, Structure&, PropertyName);
+    static inline bool canUseFastGetOwnProperty(const Structure&);
+    inline JSValue fastGetOwnProperty(VM&, Structure&, PropertyName);
 
     // The recommended idiom for using cellState() is to switch on it or perform an == comparison on it
     // directly. We deliberately avoid helpers for this, because we want transparency about how the various
@@ -301,10 +304,10 @@ private:
 
 class JSCellLock : public JSCell {
 public:
-    void lock();
-    bool tryLock();
-    void unlock();
-    bool isLocked() const;
+    inline void lock();
+    inline bool tryLock();
+    inline void unlock();
+    inline bool isLocked() const;
 private:
     JS_EXPORT_PRIVATE void lockSlow();
     JS_EXPORT_PRIVATE void unlockSlow();
@@ -325,7 +328,7 @@ inline auto subspaceForConcurrently(VM& vm)
 }
 
 #if CPU(X86_64)
-JS_EXPORT_PRIVATE NEVER_INLINE NO_RETURN_DUE_TO_CRASH NOT_TAIL_CALLED void reportZappedCellAndCrash(Heap&, const JSCell*);
+JS_EXPORT_PRIVATE NEVER_INLINE NO_RETURN_DUE_TO_CRASH NOT_TAIL_CALLED void reportZappedCellAndCrash(const JSCell*);
 #endif
 
 } // namespace JSC

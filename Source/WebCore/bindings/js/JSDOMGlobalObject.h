@@ -28,14 +28,12 @@
 
 #include <JavaScriptCore/JSGlobalObject.h>
 #include <JavaScriptCore/WeakGCMap.h>
-#if ENABLE(WEBASSEMBLY)
-#include <JavaScriptCore/WebAssemblyCompileOptions.h>
-#endif
 #include <wtf/Compiler.h>
 #include <wtf/Forward.h>
 
 namespace JSC {
 
+class WebAssemblyCompileOptions;
 enum class JSPromiseRejectionOperation : unsigned;
 
 }

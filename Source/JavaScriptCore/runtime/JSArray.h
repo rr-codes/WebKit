@@ -65,9 +65,9 @@ protected:
     }
 
 public:
-    static JSArray* tryCreate(VM&, Structure*, unsigned initialLength = 0);
-    static JSArray* tryCreate(VM&, Structure*, unsigned initialLength, unsigned vectorLengthHint);
-    static JSArray* create(VM&, Structure*, unsigned initialLength = 0);
+    inline static JSArray* tryCreate(VM&, Structure*, unsigned initialLength = 0);
+    inline static JSArray* tryCreate(VM&, Structure*, unsigned initialLength, unsigned vectorLengthHint);
+    inline static JSArray* create(VM&, Structure*, unsigned initialLength = 0);
     static JSArray* createWithButterfly(VM&, GCDeferralContext*, Structure*, Butterfly*);
 
     // tryCreateUninitializedRestricted is used for fast construction of arrays whose size and
@@ -222,60 +222,6 @@ inline Butterfly* tryCreateArrayButterfly(VM& vm, JSObject* intendedOwner, unsig
     storage->m_indexBias = 0;
     storage->m_numValuesInVector = 0;
     return butterfly;
-}
-
-inline JSArray* JSArray::tryCreate(VM& vm, Structure* structure, unsigned initialLength, unsigned vectorLengthHint)
-{
-    ASSERT(vectorLengthHint >= initialLength);
-    unsigned outOfLineStorage = structure->outOfLineCapacity();
-
-    Butterfly* butterfly;
-    IndexingType indexingType = structure->indexingType();
-    if (!hasAnyArrayStorage(indexingType)) [[likely]] {
-        ASSERT(
-            hasUndecided(indexingType)
-            || hasInt32(indexingType)
-            || hasDouble(indexingType)
-            || hasContiguous(indexingType));
-
-        if (vectorLengthHint > MAX_STORAGE_VECTOR_LENGTH) [[unlikely]]
-            return nullptr;
-
-        unsigned vectorLength = Butterfly::optimalContiguousVectorLength(structure, vectorLengthHint);
-        void* temp = vm.auxiliarySpace().allocate(
-            vm,
-            Butterfly::totalSize(0, outOfLineStorage, true, vectorLength * sizeof(EncodedJSValue)),
-            nullptr, AllocationFailureMode::ReturnNull);
-        if (!temp)
-            return nullptr;
-        butterfly = Butterfly::fromBase(temp, 0, outOfLineStorage);
-        butterfly->setVectorLength(vectorLength);
-        butterfly->setPublicLength(initialLength);
-        Butterfly::clearRange(indexingType, butterfly, 0, vectorLength);
-    } else {
-        ASSERT(
-            indexingType == ArrayWithSlowPutArrayStorage
-            || indexingType == ArrayWithArrayStorage);
-        butterfly = tryCreateArrayButterfly(vm, nullptr, initialLength);
-        if (!butterfly)
-            return nullptr;
-        for (unsigned i = 0; i < BASE_ARRAY_STORAGE_VECTOR_LEN; ++i)
-            butterfly->arrayStorage()->m_vector[i].clear();
-    }
-
-    return createWithButterfly(vm, nullptr, structure, butterfly);
-}
-
-inline JSArray* JSArray::tryCreate(VM& vm, Structure* structure, unsigned initialLength)
-{
-    return tryCreate(vm, structure, initialLength, initialLength);
-}
-
-inline JSArray* JSArray::create(VM& vm, Structure* structure, unsigned initialLength)
-{
-    JSArray* result = JSArray::tryCreate(vm, structure, initialLength);
-    RELEASE_ASSERT_RESOURCE_AVAILABLE(result, MemoryExhaustion, "Crash intentionally because memory is exhausted.");
-    return result;
 }
 
 inline JSArray* JSArray::createWithButterfly(VM& vm, GCDeferralContext* deferralContext, Structure* structure, Butterfly* butterfly)

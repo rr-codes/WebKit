@@ -59,16 +59,16 @@ public:
     unsigned boundArgsLength() const { return m_boundArgsLength; }
     JSArray* boundArgsCopy(JSGlobalObject*);
     JSString* nameMayBeNull() LIFETIME_BOUND { return m_nameMayBeNull.get(); }
-    JSString* name()
+    JSString* name(VM& vm)
     {
         if (m_nameMayBeNull)
             return m_nameMayBeNull.get();
-        return nameSlow(vm());
+        return nameSlow(vm);
     }
-    String nameString()
+    String nameString(VM& vm)
     {
         if (!m_nameMayBeNull)
-            name();
+            name(vm);
         ASSERT(!m_nameMayBeNull->isRope());
         bool allocationAllowed = false;
         return m_nameMayBeNull->tryGetValue(allocationAllowed);

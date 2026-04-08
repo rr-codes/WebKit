@@ -2632,7 +2632,7 @@ inline IterationStatus ObjectsWithBrokenIndexingFinder<mode>::visit(JSObject* ob
                 if (mode == BadTimeFinderMode::SingleGlobal && m_needsMultiGlobalsScan)
                     return IterationStatus::Done; // Bailing early and let the MultipleGlobals path handle everything.
                 if (isRelevantGlobalObject)
-                    rareData->clearInternalFunctionAllocationProfile("have a bad time breaking internal function allocation");
+                    rareData->clearInternalFunctionAllocationProfile(function->vm(), "have a bad time breaking internal function allocation");
             }
         }
     }

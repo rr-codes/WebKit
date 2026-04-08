@@ -36,6 +36,7 @@
 #include "HistoryItem.h"
 #include "LocalFrame.h"
 #include "LocalFrameLoaderClient.h"
+#include "JSValueInWrappedObjectInlines.h"
 #include "Logging.h"
 #include "Navigation.h"
 #include "NavigationScheduler.h"

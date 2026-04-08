@@ -54,6 +54,8 @@
 #include "SecurityOriginData.h"
 #include "Settings.h"
 #include "SharedBuffer.h"
+#include <JavaScriptCore/HeapCellInlines.h>
+#include <JavaScriptCore/StrongInlines.h>
 #include <wtf/HashCountedSet.h>
 #include <wtf/LoggerHelper.h>
 #include <wtf/TZoneMallocInlines.h>

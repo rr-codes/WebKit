@@ -33,6 +33,8 @@
 #include "WebTransport.h"
 #include "WebTransportError.h"
 #include "WebTransportSession.h"
+#include <JavaScriptCore/HeapCellInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <wtf/Scope.h>
 
 namespace WebCore {

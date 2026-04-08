@@ -220,7 +220,7 @@ String JSFunction::name(VM& vm)
 {
     if (isHostFunction()) {
         if (this->inherits<JSBoundFunction>())
-            return jsCast<JSBoundFunction*>(this)->nameString();
+            return jsCast<JSBoundFunction*>(this)->nameString(vm);
         NativeExecutable* executable = jsCast<NativeExecutable*>(this->executable());
         return executable->name();
     }
@@ -275,7 +275,7 @@ JSString* JSFunction::toString(JSGlobalObject* globalObject)
     if (inherits<JSBoundFunction>()) {
         JSBoundFunction* function = jsCast<JSBoundFunction*>(this);
         auto scope = DECLARE_THROW_SCOPE(vm);
-        JSValue string = jsMakeNontrivialString(globalObject, "function "_s, function->nameString(), "() {\n    [native code]\n}"_s);
+        JSValue string = jsMakeNontrivialString(globalObject, "function "_s, function->nameString(vm), "() {\n    [native code]\n}"_s);
         RETURN_IF_EXCEPTION(scope, nullptr);
         return asString(string);
     } else if (inherits<JSRemoteFunction>()) {
@@ -685,7 +685,7 @@ JSFunction::PropertyStatus JSFunction::reifyLazyBoundNameIfNeeded(VM& vm, JSGlob
         RELEASE_AND_RETURN(scope, reifyName(vm, globalObject));
     else if (this->inherits<JSBoundFunction>()) {
         FunctionRareData* rareData = this->ensureRareData(vm);
-        JSString* name = jsCast<JSBoundFunction*>(this)->name();
+        JSString* name = jsCast<JSBoundFunction*>(this)->name(vm);
         JSString* string = jsString(globalObject, vm.smallStrings.boundPrefixString(), name);
         RETURN_IF_EXCEPTION(scope, PropertyStatus::Lazy);
         unsigned initialAttributes = PropertyAttribute::DontEnum | PropertyAttribute::ReadOnly;

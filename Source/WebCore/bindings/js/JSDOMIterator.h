@@ -29,6 +29,7 @@
 #include <JavaScriptCore/JSIteratorPrototype.h>
 #include <JavaScriptCore/PropertySlot.h>
 #include <WebCore/JSDOMConvert.h>
+#include <WebCore/ScriptExecutionContext.h>
 #include <type_traits>
 
 namespace WebCore {
@@ -276,7 +277,7 @@ template<typename JSWrapper, typename IteratorTraits>
 void JSDOMIteratorPrototype<JSWrapper, IteratorTraits>::finishCreation(JSC::VM& vm, JSC::JSGlobalObject* globalObject)
 {
     Base::finishCreation(vm);
-    ASSERT(inherits(info()));
+    ASSERT(inheritsSlow(info()));
 
     JSC_NATIVE_FUNCTION_WITHOUT_TRANSITION(vm.propertyNames->next, next, 0, 0, JSC::ImplementationVisibility::Public);
     JSC_TO_STRING_TAG_WITHOUT_TRANSITION();

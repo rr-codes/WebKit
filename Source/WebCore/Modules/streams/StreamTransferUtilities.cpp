@@ -36,6 +36,7 @@
 #include "StructuredSerializeOptions.h"
 #include "WritableStream.h"
 #include "WritableStreamSink.h"
+#include <JavaScriptCore/JSString.h>
 #include <JavaScriptCore/ObjectConstructor.h>
 
 namespace WebCore {

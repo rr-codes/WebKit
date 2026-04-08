@@ -26,7 +26,6 @@
 #include <WebCore/LocalDOMWindow.h>
 #include <WebCore/NodeDocument.h>
 #include "WebCoreJSClientData.h"
-#include <JavaScriptCore/StrongInlines.h>
 #include <JavaScriptCore/Weak.h>
 #include <JavaScriptCore/WeakInlines.h>
 #include <wtf/Ref.h>
