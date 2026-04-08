@@ -209,7 +209,6 @@ private:
     AccessibilitySVGObject* remoteSVGRootElement(CreateIfNecessary) const;
     RefPtr<AccessibilityObject> remoteSVGElementHitTest(const IntPoint&) const;
     void offsetBoundingBoxForRemoteSVGElement(LayoutRect&) const;
-    bool supportsPath() const final;
 
 #if USE(ATSPI)
     void addNodeOnlyChildren();

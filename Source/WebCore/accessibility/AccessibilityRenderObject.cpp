@@ -41,6 +41,7 @@
 #include "AccessibilityObjectInlines.h"
 #include "AccessibilitySVGObject.h"
 #include "AccessibilitySpinButton.h"
+#include "BorderShape.h"
 #include "CachedImage.h"
 #include "Chrome.h"
 #include "ChromeClient.h"
@@ -103,8 +104,10 @@
 #include "ProgressTracker.h"
 #include "Range.h"
 #include "RenderBlockFlowInlines.h"
+#include "RenderBox.h"
 #include "RenderButton.h"
 #include "RenderElementInlines.h"
+#include "RenderElementStyleInlines.h"
 #include "RenderFileUploadControl.h"
 #include "RenderHTMLCanvas.h"
 #include "RenderImage.h"
@@ -705,9 +708,15 @@ bool AccessibilityRenderObject::isNonLayerSVGObject() const
     return renderer ? is<RenderSVGInlineText>(renderer) || is<LegacyRenderSVGModelObject>(renderer) : false;
 }
 
-bool AccessibilityRenderObject::supportsPath() const
+static Path computePathForRenderBox(const RenderBox& renderBox)
 {
-    return is<RenderText>(renderer()) || (renderer() && renderer()->isRenderOrLegacyRenderSVGShape());
+    auto borderShape = BorderShape::shapeForBorderRect(renderBox.style(), renderBox.borderBoxRect());
+    auto path = borderShape.pathForOuterShape(renderBox.document().deviceScaleFactor());
+    // borderBoxRect() is in local coordinates. Offset it to absolute document coordinates
+    // to match the coordinate system used by SVG, RenderText, and RenderInline paths.
+    auto absoluteOrigin = flooredLayoutPoint(renderBox.localToAbsolute());
+    path.transform(AffineTransform().translate(absoluteOrigin.x(), absoluteOrigin.y()));
+    return path;
 }
 
 Path AccessibilityRenderObject::elementPath() const
@@ -782,6 +791,26 @@ Path AccessibilityRenderObject::elementPath() const
             path.transform(AffineTransform().translate(parentOffset.x(), parentOffset.y()));
         }
         return path;
+    }
+
+    if (CheckedPtr renderBox = dynamicDowncast<RenderBox>(*m_renderer)) {
+        if (renderBox->hasClipPath()) {
+            std::optional<Path> clipPathResult;
+            WTF::switchOn(renderBox->style().clipPath(),
+                [&](const Style::BasicShapePath& clipPath) {
+                    auto referenceBox = FloatRect(renderBox->borderBoxRect());
+                    auto path = Style::path(clipPath.shape(), referenceBox, renderBox->style().usedZoomForLength());
+                    auto absoluteOrigin = flooredLayoutPoint(renderBox->localToAbsolute());
+                    path.transform(AffineTransform().translate(absoluteOrigin.x(), absoluteOrigin.y()));
+                    clipPathResult = WTF::move(path);
+                },
+                [](const auto&) { }
+            );
+            if (clipPathResult)
+                return *clipPathResult;
+        }
+        if (renderBox->style().border().hasBorderRadius())
+            return computePathForRenderBox(*renderBox);
     }
 
     return { };

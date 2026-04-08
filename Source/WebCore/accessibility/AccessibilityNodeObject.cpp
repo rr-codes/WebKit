@@ -335,6 +335,22 @@ Path AccessibilityNodeObject::elementPath() const
     return Path();
 }
 
+bool AccessibilityNodeObject::supportsPath() const
+{
+    if (auto* renderer = this->renderer()) {
+        if (is<RenderText>(renderer) || renderer->isRenderOrLegacyRenderSVGShape())
+            return true;
+        if (CheckedPtr renderBox = dynamicDowncast<RenderBox>(renderer)) {
+            if (renderBox->style().border().hasBorderRadius())
+                return true;
+        }
+        if (auto* renderElement = dynamicDowncast<RenderElement>(renderer); renderElement && renderElement->hasClipPath())
+            return true;
+    }
+
+    return isImageMapLink() || AXCoreObject::supportsPath();
+}
+
 LayoutRect AccessibilityNodeObject::boundingBoxRect() const
 {
     if (hasDisplayContents()) {

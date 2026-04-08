@@ -162,7 +162,6 @@ bool isDefaultValue(AXProperty property, AXPropertyValueVariant& value)
         [](Vector<AXID>& typedValue) { return typedValue.isEmpty(); },
         [](Vector<std::pair<Markable<AXID>, Markable<AXID>>>& typedValue) { return typedValue.isEmpty(); },
         [](Vector<String>& typedValue) { return typedValue.isEmpty(); },
-        [](std::unique_ptr<Path>& typedValue) { return !typedValue || typedValue->isEmpty(); },
         [](OptionSet<AXAncestorFlag>& typedValue) { return typedValue.isEmpty(); },
 #if PLATFORM(COCOA)
         [](RetainPtr<NSAttributedString>& typedValue) { return !typedValue; },
@@ -871,19 +870,18 @@ URL AXIsolatedObject::urlAttributeValue(AXProperty property) const
     );
 }
 
-Path AXIsolatedObject::pathAttributeValue(AXProperty property) const
+bool AXIsolatedObject::supportsPath() const
 {
-    size_t index = indexOfProperty(property);
-    if (index == notFound)
-        return Path();
+    return boolAttributeValue(AXProperty::SupportsPath) || AXCoreObject::supportsPath();
+}
 
-    return WTF::switchOn(m_properties[index].second,
-        [] (const std::unique_ptr<Path>& typedValue) -> Path {
-            AX_ASSERT(typedValue.get());
-            return *typedValue.get();
-        },
-        [] (auto&) { return Path(); }
-    );
+Path AXIsolatedObject::elementPath() const
+{
+    if (RefPtr geometryManager = tree().geometryManager()) {
+        auto cachedPath = geometryManager->cachedPathForID(objectID());
+        return cachedPath.value_or(Path { });
+    }
+    return { };
 }
 
 static Color getColor(const AXPropertyValueVariant& value)

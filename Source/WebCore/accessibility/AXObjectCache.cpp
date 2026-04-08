@@ -59,6 +59,7 @@
 #include "AccessibilityTableColumn.h"
 #include "AccessibilityTableHeaderContainer.h"
 #include "AriaNotifyOptions.h"
+#include "BorderShape.h"
 #include "CaretRectComputation.h"
 #include "Chrome.h"
 #include "ChromeClient.h"
@@ -107,6 +108,8 @@
 #include "RemoteFrame.h"
 #include "RemoteFrameView.h"
 #include "RenderAttachment.h"
+#include "RenderBox.h"
+#include "RenderElementStyleInlines.h"
 #include "RenderImage.h"
 #include "RenderInline.h"
 #include "RenderLayer.h"
@@ -5660,6 +5663,7 @@ void AXObjectCache::startUpdateTreeSnapshotTimer()
 void AXObjectCache::onPaint(const RenderObject& renderer, IntRect&& paintRect) const
 {
     if (std::optional axID = getAXID(const_cast<RenderObject&>(renderer))) {
+        auto paintRectOrigin = paintRect.location();
         bool cachedNewRect = m_geometryManager->cacheRectIfNeeded(*axID, WTF::move(paintRect));
 
         if (cachedNewRect) {
@@ -5667,10 +5671,51 @@ void AXObjectCache::onPaint(const RenderObject& renderer, IntRect&& paintRect) c
             if (RefPtr imageMap = renderImage ? renderImage->imageMap() : nullptr) {
                 // <area> elements have no renderers and thus will never be painted themselves.
                 // If the image was repainted in a new location, the associated area elements
-                // probably need new rects cached too.
+                // probably need new rects and paths cached too.
                 for (Ref area : descendantsOfType<HTMLAreaElement>(*imageMap)) {
-                    if (RefPtr areaObject = get(area.get()))
-                        std::ignore = m_geometryManager->cacheRectIfNeeded(areaObject->objectID(), snappedIntRect(LayoutRect(areaObject->relativeFrame())));
+                    if (RefPtr areaObject = get(area.get())) {
+                        bool areaCachedNewRect = m_geometryManager->cacheRectIfNeeded(areaObject->objectID(), snappedIntRect(LayoutRect(areaObject->relativeFrame())));
+                        if (areaCachedNewRect)
+                            m_geometryManager->cachePathForID(areaObject->objectID(), WTF::makeUnique<Path>(areaObject->elementPath()));
+                    }
+                }
+            }
+
+            // FIXME: SVG shapes (RenderSVGShape / LegacyRenderSVGShape) never trigger
+            // AccessibilityRegionContext::takeBounds, so this onPaint is never called for
+            // them and their paths aren't cached in the geometry manager. This means
+            // AXIsolatedObject::elementPath() returns empty for SVG in isolated tree mode.
+
+            // Some assistive technologies (e.g. VoiceOver) use the path to draw their cursor.
+            // Inflating the path a bit makes the cursor look better.
+            static constexpr unsigned shapePathInflationPx = 4;
+
+            // Recompute the element path when the rect changes for border-radius or
+            // clip-path boxes. Multi-line inlines compute their path on-demand from
+            // text runs (see AXIsolatedObject::elementPath).
+            if (auto* renderBox = dynamicDowncast<RenderBox>(renderer)) {
+                if (renderBox->hasClipPath()) {
+                    WTF::switchOn(renderBox->style().clipPath(),
+                        [&](const Style::BasicShapePath& clipPath) {
+                            auto borderRect = renderBox->borderBoxRect();
+                            borderRect.inflate(shapePathInflationPx);
+                            auto referenceBox = FloatRect(WTF::move(borderRect));
+                            auto path = Style::path(clipPath.shape(), referenceBox, renderBox->style().usedZoomForLength());
+                            path.transform(AffineTransform().translate(paintRectOrigin.x(), paintRectOrigin.y()));
+                            m_geometryManager->cachePathForID(*axID, WTF::makeUnique<Path>(WTF::move(path)));
+                        },
+                        [](const auto&) { }
+                    );
+                } else if (renderBox->style().border().hasBorderRadius()) {
+                    auto borderRect = renderBox->borderBoxRect();
+                    borderRect.inflate(shapePathInflationPx);
+                    auto borderShape = BorderShape::shapeForBorderRect(renderBox->style(), WTF::move(borderRect));
+                    auto path = borderShape.pathForOuterShape(renderer.document().deviceScaleFactor());
+                    // borderBoxRect() is in local coordinates starting at (0, 0). Use the paint
+                    // rect's origin to position the path, since it's already gone through
+                    // contentsToRootView and matches the relativeFrame coordinate system.
+                    path.transform(AffineTransform().translate(paintRectOrigin.x(), paintRectOrigin.y()));
+                    m_geometryManager->cachePathForID(*axID, WTF::makeUnique<Path>(WTF::move(path)));
                 }
             }
         }

@@ -2118,10 +2118,8 @@ IsolatedObjectData createIsolatedObjectData(const Ref<AccessibilityObject>& axOb
             setProperty(AXProperty::IsFocusedWebArea, object.isFocused());
         }
 
-        if (object.supportsPath()) {
+        if (object.supportsPath())
             setProperty(AXProperty::SupportsPath, true);
-            setProperty(AXProperty::Path, WTF::makeUnique<Path>(object.elementPath()));
-        }
 
         if (object.supportsKeyShortcuts()) {
             setProperty(AXProperty::SupportsKeyShortcuts, true);

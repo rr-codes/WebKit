@@ -229,7 +229,7 @@ public:
 
     LayoutRect elementRect() const override;
     Path elementPath() const override;
-    bool supportsPath() const override { return isImageMapLink(); }
+    bool supportsPath() const override;
 
     bool isLabelContainingOnlyStaticText() const;
     bool isNativeLabel() const override;
