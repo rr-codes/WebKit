@@ -426,6 +426,11 @@ function maccatalyst_process_webcontent_shared_entitlements()
 
     if [[ "${WK_USE_RESTRICTED_ENTITLEMENTS}" == YES ]]
     then
+        if (( "${TARGET_MAC_OS_X_VERSION_MAJOR}" >= 110000 ))
+        then
+            plistbuddy Add :com.apple.security.cs.jit-write-allowlist bool YES
+        fi
+
         if (( "${TARGET_MAC_OS_X_VERSION_MAJOR}" >= 260000 ))
         then
             plistbuddy Add :com.apple.security.hardened-process.checked-allocations.no-tagged-receive bool YES
@@ -441,14 +446,6 @@ function maccatalyst_process_webcontent_shared_entitlements()
 function maccatalyst_process_webcontent_entitlements()
 {
     plistbuddy Add :com.apple.security.cs.allow-jit bool YES
-
-    if [[ "${WK_USE_RESTRICTED_ENTITLEMENTS}" == YES ]]
-    then
-        if (( "${TARGET_MAC_OS_X_VERSION_MAJOR}" >= 110000 ))
-        then
-            plistbuddy Add :com.apple.security.cs.jit-write-allowlist bool YES
-        fi
-    fi
 
     if (( "${TARGET_MAC_OS_X_VERSION_MAJOR}" >= 120000 ))
     then
@@ -467,30 +464,11 @@ function maccatalyst_process_webcontent_captiveportal_entitlements()
     plistbuddy Add :com.apple.imageio.allowabletypes:2 string public.png
     plistbuddy Add :com.apple.imageio.allowabletypes:3 string com.compuserve.gif
 
-    if [[ "${WK_USE_RESTRICTED_ENTITLEMENTS}" == YES ]]
-    then
-        if (( "${TARGET_MAC_OS_X_VERSION_MAJOR}" >= 110000 ))
-        then
-            plistbuddy Add :com.apple.security.cs.jit-write-allowlist bool YES
-        fi
-    fi
-
-    if (( "${TARGET_MAC_OS_X_VERSION_MAJOR}" >= 120000 ))
-    then
-        plistbuddy Add :com.apple.private.verified-jit bool YES
-        plistbuddy Add :com.apple.security.cs.single-jit bool YES
-    fi
-
     maccatalyst_process_webcontent_shared_entitlements
 }
 
 function maccatalyst_process_webcontent_enhancedsecurity_entitlements()
 {
-    if [[ "${WK_USE_RESTRICTED_ENTITLEMENTS}" == YES ]]
-    then
-        plistbuddy Add :com.apple.security.cs.jit-write-allowlist bool YES
-    fi
-
     maccatalyst_process_webcontent_shared_entitlements
 }
 
