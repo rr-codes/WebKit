@@ -876,21 +876,15 @@ static std::span<const IntSize, 4> NODELETE popupButtonSizes()
     return sizes;
 }
 
-static std::span<const int, 4> NODELETE popupButtonPadding(NSControlSize size, bool isRTL)
+static std::span<const int, 4> NODELETE popupButtonPadding(NSControlSize size)
 {
-    static constexpr std::array paddingLTR {
+    static constexpr std::array padding {
         std::array { 2, 26, 3, 8 },
         std::array { 2, 23, 3, 8 },
         std::array { 2, 22, 3, 10 },
         std::array { 2, 26, 3, 8 },
     };
-    static constexpr std::array paddingRTL {
-        std::array { 2, 8, 3, 26 },
-        std::array { 2, 8, 3, 23 },
-        std::array { 2, 8, 3, 22 },
-        std::array { 2, 8, 3, 26 },
-    };
-    return isRTL ? paddingRTL[size] : paddingLTR[size];
+    return padding[size];
 }
 
 // Checkboxes and radio buttons
@@ -1363,7 +1357,7 @@ static Style::PaddingEdge NODELETE toTruncatedPaddingEdge(auto value)
 Style::PaddingBox RenderThemeMac::platformPopupInternalPaddingBox(const RenderStyle& style) const
 {
     if (style.usedAppearance() == StyleAppearance::Menulist) {
-        auto padding = popupButtonPadding(controlSizeForFont(style), style.writingMode().isBidiRTL());
+        auto padding = popupButtonPadding(controlSizeForFont(style));
         return {
             toTruncatedPaddingEdge(padding[topPadding]),
             toTruncatedPaddingEdge(padding[rightPadding]),
@@ -1376,8 +1370,6 @@ Style::PaddingBox RenderThemeMac::platformPopupInternalPaddingBox(const RenderSt
         float arrowWidth = baseArrowWidth * (style.computedFontSize() / baseFontSize);
         float rightPadding = ceilf(arrowWidth + (arrowPaddingBefore + arrowPaddingAfter + paddingBeforeSeparator) * style.usedZoom());
         float leftPadding = styledPopupPaddingLeft;
-        if (style.writingMode().isBidiRTL())
-            std::swap(rightPadding, leftPadding);
 
         return {
             toTruncatedPaddingEdge(styledPopupPaddingTop),

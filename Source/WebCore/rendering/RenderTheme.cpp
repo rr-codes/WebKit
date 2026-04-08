@@ -1697,13 +1697,19 @@ void RenderTheme::adjustSwitchStyle(RenderStyle& style, const Element*) const
 Style::PaddingBox RenderTheme::popupInternalPaddingBox(const RenderStyle& style) const
 {
     auto padding = platformPopupInternalPaddingBox(style);
-    if (!style.writingMode().isHorizontal()) {
-        if (style.writingMode().computedWritingMode() == StyleWritingMode::SidewaysLr)
-            padding = { padding.right(), padding.bottom(), padding.left(), padding.top() };
-        else
-            padding = { padding.left(), padding.top(), padding.right(), padding.bottom() };
+    auto mode = style.writingMode();
+    // Platform returns padding in horizontal-tb LTR.
+    Style::PaddingBox result { 0_css_px };
+    if (mode.isLineInverted()) {
+        result.after(mode) = padding.top();
+        result.before(mode) = padding.bottom();
+    } else {
+        result.before(mode) = padding.top();
+        result.after(mode) = padding.bottom();
     }
-    return padding;
+    result.start(mode) = padding.left();
+    result.end(mode) = padding.right();
+    return result;
 }
 
 Style::PaddingBox RenderTheme::platformPopupInternalPaddingBox(const RenderStyle&) const

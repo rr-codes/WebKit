@@ -358,14 +358,12 @@ Style::PaddingBox RenderThemeAdwaita::platformPopupInternalPaddingBox(const Rend
         return { 0_css_px };
 
     auto zoomedArrowSize = menuListButtonArrowSize * style.usedZoom();
-    int leftPadding = menuListButtonPadding + (style.writingMode().isBidiRTL() ? zoomedArrowSize : 0);
-    int rightPadding = menuListButtonPadding + (style.writingMode().isBidiLTR() ? zoomedArrowSize : 0);
 
     return {
         Style::PaddingEdge::Fixed { static_cast<float>(menuListButtonPadding) },
-        Style::PaddingEdge::Fixed { static_cast<float>(rightPadding) },
+        Style::PaddingEdge::Fixed { static_cast<float>(menuListButtonPadding + zoomedArrowSize) },
         Style::PaddingEdge::Fixed { static_cast<float>(menuListButtonPadding) },
-        Style::PaddingEdge::Fixed { static_cast<float>(leftPadding) },
+        Style::PaddingEdge::Fixed { static_cast<float>(menuListButtonPadding) },
     };
 }
 

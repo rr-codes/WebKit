@@ -18,6 +18,28 @@ PASS sidewaysRL.offsetHeight is horizontal.offsetWidth
 sideways-lr
 PASS sidewaysLR.offsetWidth is horizontal.offsetHeight
 PASS sidewaysLR.offsetHeight is horizontal.offsetWidth
+
+direction: rtl should not change dimensions
+
+horizontal rtl
+PASS horizontalRTL.offsetWidth is horizontal.offsetWidth
+PASS horizontalRTL.offsetHeight is horizontal.offsetHeight
+
+vertical-rl rtl
+PASS verticalRL_RTL.offsetWidth is verticalRL.offsetWidth
+PASS verticalRL_RTL.offsetHeight is verticalRL.offsetHeight
+
+vertical-lr rtl
+PASS verticalLR_RTL.offsetWidth is verticalLR.offsetWidth
+PASS verticalLR_RTL.offsetHeight is verticalLR.offsetHeight
+
+sideways-rl rtl
+PASS sidewaysRL_RTL.offsetWidth is sidewaysRL.offsetWidth
+PASS sidewaysRL_RTL.offsetHeight is sidewaysRL.offsetHeight
+
+sideways-lr rtl
+PASS sidewaysLR_RTL.offsetWidth is sidewaysLR.offsetWidth
+PASS sidewaysLR_RTL.offsetHeight is sidewaysLR.offsetHeight
 PASS successfullyParsed is true
 
 TEST COMPLETE
