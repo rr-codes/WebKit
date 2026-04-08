@@ -122,7 +122,6 @@ public:
 
 protected:
     HTMLTextFormControlElement(const QualifiedName&, Document&, HTMLFormElement*);
-    bool isPlaceholderEmpty() const;
     virtual void updatePlaceholderText() = 0;
 
     void attributeChanged(const QualifiedName&, const AtomString& oldValue, const AtomString& newValue, AttributeModificationReason) override;

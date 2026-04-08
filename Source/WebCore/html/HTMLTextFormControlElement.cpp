@@ -224,19 +224,11 @@ void HTMLTextFormControlElement::forwardEvent(Event& event)
         innerText->defaultEventHandler(event);
 }
 
-static bool NODELETE isNotLineBreak(char16_t ch) { return ch != newlineCharacter && ch != carriageReturn; }
-
-bool HTMLTextFormControlElement::isPlaceholderEmpty() const
-{
-    const AtomString& attributeValue = attributeWithoutSynchronization(placeholderAttr);
-    return attributeValue.string().find(isNotLineBreak) == notFound;
-}
-
 bool HTMLTextFormControlElement::placeholderShouldBeVisible() const
 {
     // This function is used by the style resolver to match the :placeholder-shown pseudo class.
     // Since it is used for styling, it must not use any value depending on the style.
-    return supportsPlaceholder() && isEmptyValue() && !isPlaceholderEmpty() && m_canShowPlaceholder && !(hovered() && m_pointerType == penPointerEventType());
+    return supportsPlaceholder() && isEmptyValue() && hasAttributeWithoutSynchronization(placeholderAttr) && m_canShowPlaceholder && !(hovered() && m_pointerType == penPointerEventType());
 }
 
 void HTMLTextFormControlElement::updatePlaceholderVisibility()
