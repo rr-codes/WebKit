@@ -5051,7 +5051,8 @@ private:
 
     void compileCheckPrivateBrand()
     {
-        compilePrivateBrandAccess(lowJSValue(m_node->child1()), lowSymbol(m_node->child2()), AccessType::CheckPrivateBrand);
+        DFG_ASSERT(m_graph, m_node, m_node->child1().useKind() == CellUse, m_node->child1().useKind());
+        compilePrivateBrandAccess(lowCell(m_node->child1()), lowSymbol(m_node->child2()), AccessType::CheckPrivateBrand);
     }
 
     void compileSetPrivateBrand()

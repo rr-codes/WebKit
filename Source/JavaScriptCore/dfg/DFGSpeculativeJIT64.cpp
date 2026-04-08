@@ -7706,10 +7706,11 @@ void SpeculativeJIT::compilePutPrivateName(Node* node)
 
 void SpeculativeJIT::compileCheckPrivateBrand(Node* node)
 {
-    JSValueOperand base(this, node->child1());
+    ASSERT(node->child1().useKind() == CellUse);
+    SpeculateCellOperand base(this, node->child1());
     SpeculateCellOperand brandValue(this, node->child2());
 
-    JSValueRegs baseRegs = base.jsValueRegs();
+    GPRReg baseGPR = base.gpr();
     GPRReg brandGPR = brandValue.gpr();
 
     speculateSymbol(node->child2(), brandGPR);
@@ -7723,7 +7724,7 @@ void SpeculativeJIT::compileCheckPrivateBrand(Node* node)
     auto [ propertyCache, propertyCacheConstant ] = addPropertyInlineCache();
     shuffleRegisters<GPRReg, 2>(
         {
-            baseRegs.payloadGPR(),
+            baseGPR,
             brandGPR,
         },
         {
@@ -7734,8 +7735,6 @@ void SpeculativeJIT::compileCheckPrivateBrand(Node* node)
         codeBlock(), propertyCache, JITType::DFGJIT, codeOrigin, callSite, AccessType::CheckPrivateBrand, usedRegisters,
         BaselineJITRegisters::PrivateBrand::baseJSR, BaselineJITRegisters::PrivateBrand::propertyJSR, BaselineJITRegisters::PrivateBrand::propertyCacheGPR);
     JumpList slowCases;
-    if (needsTypeCheck(node->child1(), SpecCell))
-        slowCases.append(branchIfNotCell(BaselineJITRegisters::PrivateBrand::baseJSR));
 
     WTF::visit([&](auto* propertyCache) {
         propertyCache->propertyIsSymbol = true;
