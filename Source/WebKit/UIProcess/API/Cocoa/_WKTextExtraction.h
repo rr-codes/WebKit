@@ -39,22 +39,22 @@ typedef NS_OPTIONS(NSUInteger, _WKTextExtractionFilterOptions) {
     _WKTextExtractionFilterClassifier = 1 << 1,
     _WKTextExtractionFilterRules = 1 << 2,
     _WKTextExtractionFilterAll = NSUIntegerMax,
-} WK_API_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4));
+} WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
 
 typedef NS_ENUM(NSInteger, _WKTextExtractionNodeIdentifierInclusion) {
     _WKTextExtractionNodeIdentifierInclusionNone = 0,
     _WKTextExtractionNodeIdentifierInclusionEditableOnly,
     _WKTextExtractionNodeIdentifierInclusionInteractive,
     _WKTextExtractionNodeIdentifierInclusionAllContainers,
-} WK_API_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4));
+} WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
 
 typedef NS_ENUM(NSInteger, _WKTextExtractionOutputFormat) {
     _WKTextExtractionOutputFormatTextTree = 0,
     _WKTextExtractionOutputFormatHTML,
     _WKTextExtractionOutputFormatMarkdown,
     _WKTextExtractionOutputFormatJSON,
-    _WKTextExtractionOutputFormatPlainText WK_API_AVAILABLE(mac(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA)),
-} WK_API_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4));
+    _WKTextExtractionOutputFormatPlainText,
+} WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
 
 #define WK_TEXT_EXTRACTION_HAS_EVENT_LISTENER_CATEGORIES 1
 
@@ -84,7 +84,7 @@ typedef NS_ENUM(NSInteger, _WKTextExtractionWordLimitPolicy) {
     _WKTextExtractionWordLimitPolicyDiscretionary,
 } WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
 
-WK_CLASS_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4))
+WK_CLASS_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA))
 @interface _WKTextExtractionConfiguration : NSObject
 
 @property (nonatomic, class, copy, readonly) _WKTextExtractionConfiguration *configurationForVisibleTextOnly WK_API_DEPRECATED_WITH_REPLACEMENT("_WKTextExtractionOutputFormatPlainText", macos(WK_MAC_TBA, WK_MAC_TBA), ios(WK_IOS_TBA, WK_IOS_TBA), visionos(WK_XROS_TBA, WK_XROS_TBA)) NS_SWIFT_NAME(visibleTextOnly);
@@ -238,7 +238,7 @@ WK_CLASS_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4))
 
 @end
 
-WK_CLASS_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4))
+WK_CLASS_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA))
 @interface _WKTextExtractionResult : NSObject
 
 @property (nonatomic, readonly) NSString *textContent;
@@ -297,11 +297,11 @@ typedef NS_ENUM(NSInteger, _WKTextExtractionAction) {
     _WKTextExtractionActionTextInput,
     _WKTextExtractionActionKeyPress,
     _WKTextExtractionActionHighlightText,
-    _WKTextExtractionActionScroll WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA)),
+    _WKTextExtractionActionScroll,
     _WKTextExtractionActionScrollBy = _WKTextExtractionActionScroll,
-} WK_API_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4));
+} WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA));
 
-WK_CLASS_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4))
+WK_CLASS_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA))
 WK_SWIFT_UI_ACTOR
 NS_REQUIRES_PROPERTY_DEFINITIONS
 @interface _WKTextExtractionInteraction : NSObject
@@ -325,7 +325,7 @@ NS_REQUIRES_PROPERTY_DEFINITIONS
 
 @end
 
-WK_CLASS_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4))
+WK_CLASS_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA))
 WK_SWIFT_UI_ACTOR
 NS_REQUIRES_PROPERTY_DEFINITIONS
 @interface _WKTextExtractionInteractionResult : NSObject
