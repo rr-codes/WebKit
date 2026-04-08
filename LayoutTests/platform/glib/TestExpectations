@@ -2220,9 +2220,12 @@ webkit.org/b/305509 http/tests/security/webaudio-render-remote-audio-blocked-no-
 webkit.org/b/273486 svg/filters/svg-gaussianblur-edgeMode-duplicate.svg [ ImageOnlyFailure ]
 
 # Canvas tests that fail only with skia-gpu.
-webkit.org/b/272582 fast/canvas/canvas-strokePath-gradient-shadow.html [ Failure ]
-webkit.org/b/272582 fast/canvas/canvas-strokeRect-alpha-shadow.html [ Failure ]
-webkit.org/b/272582 fast/canvas/canvas-strokeRect-gradient-shadow.html [ Failure ]
+webkit.org/b/272582 [ x86_64 ] fast/canvas/canvas-strokePath-gradient-shadow.html [ Failure ]
+webkit.org/b/272582 [ x86_64 ] fast/canvas/canvas-strokeRect-alpha-shadow.html [ Failure ]
+webkit.org/b/272582 [ x86_64 ] fast/canvas/canvas-strokeRect-gradient-shadow.html [ Failure ]
+webkit.org/b/272582 [ arm64 ] fast/canvas/canvas-strokePath-gradient-shadow.html [ Pass ]
+webkit.org/b/272582 [ arm64 ] fast/canvas/canvas-strokeRect-alpha-shadow.html [ Pass ]
+webkit.org/b/272582 [ arm64 ] fast/canvas/canvas-strokeRect-gradient-shadow.html [ Pass ]
 webkit.org/b/274513 imported/w3c/web-platform-tests/css/css-contain/content-visibility/content-visibility-canvas.html [ ImageOnlyFailure ]
 
 webkit.org/b/273766 fast/canvas/canvas-scale-shadowBlur.html [ Failure ]
@@ -2736,7 +2739,8 @@ webkit.org/b/251107 webgl/2.0.y/conformance2/reading/read-pixels-from-fbo-test.h
 webkit.org/b/251107 webgl/2.0.y/conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 webkit.org/b/251107 webgl/2.0.y/conformance/context/premultiplyalpha-test.html [ Failure ]
 webkit.org/b/251107 webgl/2.0.y/conformance2/extensions/ext-texture-norm16.html [ Failure ]
-webkit.org/b/308025 webgl/2.0.y/conformance2/query/occlusion-query-scissor.html [ Failure ]
+webkit.org/b/308025 [ x86_64 ] webgl/2.0.y/conformance2/query/occlusion-query-scissor.html [ Failure ]
+webkit.org/b/308025 [ arm64 ] webgl/2.0.y/conformance2/query/occlusion-query-scissor.html [ Pass ]
 webkit.org/b/251107 fast/canvas/webgl/webgl2-texture-upload-enums.html [ Failure ]
 
 
@@ -3949,7 +3953,8 @@ webkit.org/b/49179 animations/stop-animation-on-suspend.html [ Failure Pass ]
 webkit.org/b/133151 js/cached-window-properties.html [ Skip ] # Timeout.
 
 # Fails when built with GCC but passes with Clang
-webkit.org/b/218220 editing/execCommand/switch-list-type-with-orphaned-li.html [ Failure ]
+webkit.org/b/218220 [ x86_64 ] editing/execCommand/switch-list-type-with-orphaned-li.html [ Failure ]
+webkit.org/b/218220 [ arm64 ] editing/execCommand/switch-list-type-with-orphaned-li.html [ Pass ]
 
 # ENABLE(DRAGGABLE_REGION) is disabled
 Bug(GLIB) fast/css/draggable-region-parser.html [ Failure ]
