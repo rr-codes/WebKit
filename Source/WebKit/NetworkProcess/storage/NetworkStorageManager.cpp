@@ -555,7 +555,7 @@ void NetworkStorageManager::performEviction(HashMap<WebCore::SecurityOriginData,
         return a.second.lastAccessTime > b.second.lastAccessTime;
     });
 
-    uint64_t deletedOriginCount = 0;
+    Vector<WebCore::RegistrableDomain> deletedDomains;
     while (!sortedOriginRecords.isEmpty() && *m_totalUsage > *m_totalQuota) {
         auto [topOrigin, record] = sortedOriginRecords.takeLast();
         if (record.isActive || valueOrDefault(record.isPersisted))
@@ -568,11 +568,13 @@ void NetworkStorageManager::performEviction(HashMap<WebCore::SecurityOriginData,
         }
 
         m_totalUsage = *m_totalUsage - record.usage;
-        ++deletedOriginCount;
+        deletedDomains.append(WebCore::RegistrableDomain { topOrigin });
     }
 
-    UNUSED_PARAM(deletedOriginCount);
-    RELEASE_LOG(Storage, "%p - NetworkStorageManager::performEviction evicts %" PRIu64 " origins, current usage %" PRIu64 ", total quota %" PRIu64, this, deletedOriginCount, valueOrDefault(m_totalUsage), *m_totalQuota);
+    RELEASE_LOG(Storage, "%p - NetworkStorageManager::performEviction evicts %" PRIu64 " origins, current usage %" PRIu64 ", total quota %" PRIu64, this, static_cast<uint64_t>(deletedDomains.size()), valueOrDefault(m_totalUsage), *m_totalQuota);
+
+    if (!deletedDomains.isEmpty() && m_parentConnection)
+        IPC::Connection::send(*m_parentConnection, Messages::NetworkProcessProxy::DidPerformEvictionForDomains(m_sessionID, WTF::move(deletedDomains)), 0);
 }
 
 OriginQuotaManager::Parameters NetworkStorageManager::originQuotaManagerParameters(const WebCore::ClientOrigin& origin)
