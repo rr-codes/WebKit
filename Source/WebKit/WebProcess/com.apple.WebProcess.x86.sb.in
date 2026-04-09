@@ -783,8 +783,7 @@
     (iokit-user-client-class "AppleJPEGDriverUserClient"))
 
 (when (not webcontent_gpu_sandbox_extensions_blocking?)
-    (allow-iokit-with-extension)
-    (allow-iokit-with-extension-arm64))
+    (allow-iokit-with-extension))
 
 ;; Audio
 (allow ipc-posix-shm-read* ipc-posix-shm-write-data
