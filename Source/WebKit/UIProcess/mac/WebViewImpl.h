@@ -1119,7 +1119,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
     std::optional<Vector<WebCore::KeypressCommand>> m_collectedKeypressCommands;
     std::optional<NSRange> m_stagedMarkedRange;
-    Vector<CompletionHandler<void()>> m_interpretKeyEventHoldingTank;
+    Vector<Function<void()>> m_interpretKeyEventHoldingTank;
 
     String m_lastStringForCandidateRequest;
     NSInteger m_lastCandidateRequestSequenceNumber;

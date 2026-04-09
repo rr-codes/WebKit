@@ -97,9 +97,11 @@
 @interface MockTextInputContextAction : NSObject
 
 - (instancetype)initWithMarkedText:(NSString *)markedText selectedRange:(NSRange)selectedRange replacementRange:(NSRange)replacementRange;
+- (instancetype)initWithInsertText:(NSString *)insertedText replacementRange:(NSRange)replacementRange;
 
 @property (nonatomic) double delay;
 @property (nonatomic, assign) NSString *markedText;
+@property (nonatomic, assign) NSString *insertedText;
 @property (nonatomic) NSRange selectedRange;
 @property (nonatomic) NSRange replacementRange;
 @end
@@ -116,6 +118,15 @@
     return self;
 }
 
+- (instancetype)initWithInsertText:(NSString *)insertedText replacementRange:(NSRange)replacementRange
+{
+    if (self = [super init]) {
+        _insertedText = insertedText;
+        _replacementRange = replacementRange;
+    }
+    return self;
+}
+
 @end
 
 @interface MockTextInputContext : NSTextInputContext
@@ -127,16 +138,18 @@
 - (void)handleEventByInputMethod:(NSEvent *)event completionHandler:(void(^)(BOOL handled))completionHandler
 {
     [super handleEventByInputMethod:event completionHandler:^(BOOL handled) {
-        if (!_actions.count) {
+        if (!_actions.count || event.type != NSEventTypeKeyDown) {
             completionHandler(NO);
             return;
         }
-        MockTextInputContextAction *lastItem = _actions.lastObject;
-        [_actions removeLastObject];
+        MockTextInputContextAction *lastItem = _actions.firstObject;
+        [_actions removeObjectAtIndex:0];
         double delay = lastItem ? lastItem.delay : 10;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), mainDispatchQueueSingleton(), ^{
-            if (lastItem)
+            if (lastItem.markedText)
                 [self.client setMarkedText:lastItem.markedText selectedRange:lastItem.selectedRange replacementRange:lastItem.replacementRange];
+            else
+                [self.client insertText:lastItem.insertedText replacementRange:lastItem.replacementRange];
             completionHandler(!!lastItem);
         });
     }];
@@ -270,6 +283,7 @@ TEST(WKWebViewMacEditingTests, KeyDownFiresBeforeCompositionEvent)
         [[[MockTextInputContextAction alloc] initWithMarkedText:@"n" selectedRange:NSMakeRange(0, 1) replacementRange:NSMakeRange(NSNotFound, 0)] autorelease],
         [[[MockTextInputContextAction alloc] initWithMarkedText:@"ni" selectedRange:NSMakeRange(0, 2) replacementRange:NSMakeRange(NSNotFound, 0)] autorelease],
         [[[MockTextInputContextAction alloc] initWithMarkedText:@"\u4F60" selectedRange:NSMakeRange(0, 1) replacementRange:NSMakeRange(NSNotFound, 0)] autorelease],
+        [[[MockTextInputContextAction alloc] initWithInsertText:@"\u4F60" replacementRange:NSMakeRange(NSNotFound, 0)] autorelease],
     ].mutableCopy autorelease];
     [webView synchronouslyLoadHTMLString:[NSString stringWithFormat:@"<body contenteditable>Hello world</body>"]];
     [webView stringByEvaluatingJavaScript:@"const target = document.body; const logs = [];"
@@ -283,8 +297,41 @@ TEST(WKWebViewMacEditingTests, KeyDownFiresBeforeCompositionEvent)
     Util::runFor(1_s);
     [webView typeCharacter:' '];
     Util::runFor(1_s);
+    [webView typeCharacter:'\r'];
+    Util::runFor(1_s);
 
-    EXPECT_STREQ("keydown,compositionstart,compositionupdate,input,keyup,keydown,compositionupdate,input,keyup,keydown,input,input,compositionend,keyup",
+    EXPECT_STREQ("keydown,compositionstart,compositionupdate,input,keyup,keydown,compositionupdate,input,keyup,keydown,compositionupdate,input,keyup,keydown,input,input,compositionend,keyup",
+        [webView stringByEvaluatingJavaScript:@"logs.map((event) => event.type).join(',')"].UTF8String);
+}
+
+TEST(WKWebViewMacEditingTests, KeyDownInsertAccentedCharacterOnce)
+{
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    for (_WKFeature *feature in WKPreferences._features) {
+        NSString *key = feature.key;
+        if ([key isEqualToString:@"InputMethodUsesCorrectKeyEventOrder"])
+            [[configuration preferences] _setEnabled:YES forFeature:feature];
+    }
+
+    RetainPtr webView = adoptNS([[TestWebViewWithMockTextInputContext alloc] initWithFrame:NSMakeRect(0, 0, 400, 400) configuration:configuration.get()]);
+    [webView _web_superInputContext].actions = [@[
+        [[[MockTextInputContextAction alloc] initWithMarkedText:@"\u00B4" selectedRange:NSMakeRange(0, 1) replacementRange:NSMakeRange(NSNotFound, 0)] autorelease],
+        [[[MockTextInputContextAction alloc] initWithInsertText:@"\u00E9" replacementRange:NSMakeRange(NSNotFound, 0)] autorelease],
+    ].mutableCopy autorelease];
+    [webView synchronouslyLoadHTMLString:[NSString stringWithFormat:@"<body contenteditable></body>"]];
+    [webView stringByEvaluatingJavaScript:@"const target = document.body; const logs = [];"
+        "['keydown', 'keyup', 'compositionstart', 'compositionend', 'compositionupdate']"
+        ".forEach((type) => { target.addEventListener(type, (event) => logs.push(event)); }); document.body.focus()"];
+    [webView waitForNextPresentationUpdate];
+    [webView removeFromSuperview];
+    [webView typeCharacter:'e' modifiers:NSEventModifierFlagOption];
+    Util::runFor(1_s);
+    [webView typeCharacter:'e'];
+    Util::runFor(1_s);
+
+    EXPECT_STREQ(@"\u00E9".UTF8String, [webView stringByEvaluatingJavaScript:@"document.body.textContent"].UTF8String);
+
+    EXPECT_STREQ("keydown,compositionstart,compositionupdate,keyup,keydown,compositionend,keyup",
         [webView stringByEvaluatingJavaScript:@"logs.map((event) => event.type).join(',')"].UTF8String);
 }
 
