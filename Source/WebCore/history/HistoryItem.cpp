@@ -342,16 +342,6 @@ HistoryItem* HistoryItem::childItemWithFrameID(FrameIdentifier frameID)
     return nullptr;
 }
 
-HistoryItem* HistoryItem::childItemWithDocumentSequenceNumber(long long number)
-{
-    unsigned size = m_children.size();
-    for (unsigned i = 0; i < size; ++i) {
-        if (m_children[i]->documentSequenceNumber() == number)
-            return m_children[i].ptr();
-    }
-    return nullptr;
-}
-
 const Vector<Ref<HistoryItem>>& HistoryItem::children() const
 {
     return m_children;

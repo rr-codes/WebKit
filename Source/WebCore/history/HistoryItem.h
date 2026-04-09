@@ -164,7 +164,6 @@ public:
     void setChildItem(Ref<HistoryItem>&&);
     WEBCORE_EXPORT HistoryItem* NODELETE childItemWithTarget(const AtomString&);
     WEBCORE_EXPORT HistoryItem* NODELETE childItemWithFrameID(FrameIdentifier);
-    HistoryItem* NODELETE childItemWithDocumentSequenceNumber(long long number);
     WEBCORE_EXPORT const Vector<Ref<HistoryItem>>& NODELETE children() const LIFETIME_BOUND;
     void clearChildren();
 
