@@ -2556,7 +2556,8 @@ public:
     bool isServiceWorkerPage() const { return m_isServiceWorkerPage; }
 
 #if PLATFORM(IOS_FAMILY)
-    void dispatchWheelEventWithoutScrolling(const WebWheelEvent&, CompletionHandler<void(bool)>&&);
+    void handleWheelEventWithoutScrolling(const WebWheelEvent&, CompletionHandler<void(bool)>&&);
+    void sendWheelEventWithoutScrolling(WebCore::FrameIdentifier, const WebWheelEvent&, CompletionHandler<void(bool)>&&);
 #endif
 
 #if ENABLE(CONTEXT_MENUS) && ENABLE(IMAGE_ANALYSIS)

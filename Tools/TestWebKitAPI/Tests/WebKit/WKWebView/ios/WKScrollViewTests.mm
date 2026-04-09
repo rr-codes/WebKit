@@ -29,8 +29,10 @@
 
 #import "InstanceMethodSwizzler.h"
 #import "Helpers/PlatformUtilities.h"
+#import "Helpers/cocoa/HTTPServer.h"
 #import "Helpers/cocoa/TestCocoa.h"
 #import "Helpers/cocoa/TestNavigationDelegate.h"
+#import "Helpers/cocoa/TestUIDelegate.h"
 #import "Helpers/cocoa/TestWKWebView.h"
 #import "UIKitSPIForTesting.h"
 #import "Helpers/ios/UserInterfaceSwizzler.h"
@@ -38,12 +40,16 @@
 #import <WebCore/ColorCocoa.h>
 #import <WebCore/ColorSerialization.h>
 #import <WebCore/WebEvent.h>
+#import <WebKit/WKFrameInfoPrivate.h>
 #import <WebKit/WKPreferencesPrivate.h>
+#import <WebKit/WKWebViewConfigurationPrivate.h>
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WKWebViewPrivateForTesting.h>
 #import <WebKit/WKWebViewPrivateForTestingIOS.h>
 #import <WebKit/_WKFeature.h>
+#import <WebKit/_WKFrameTreeNode.h>
 #import <wtf/BlockPtr.h>
+#import <wtf/cocoa/TypeCastsCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
 
 constexpr CGFloat blackColorComponents[4] = { 0, 0, 0, 1 };
@@ -471,6 +477,222 @@ TEST(WKScrollViewTests, WheelEventDispatchedToSubframe)
     [webView synchronouslyHandleScrollEventWithPhase:WKBEScrollViewScrollUpdatePhaseBegan location:CGPointMake(100, 100) delta:CGVectorMake(0, 10)];
 #endif
     EXPECT_TRUE([[webView objectByEvaluatingJavaScript:@"window.subframeHit"] intValue]);
+}
+
+TEST(WKScrollViewTests, WheelEventDispatchedToCrossOriginSubframeWithSiteIsolation)
+{
+    using namespace TestWebKitAPI;
+
+    static const char* mainHTML = R"PAGEDATA(
+        <!DOCTYPE html>
+        <html>
+        <body style='margin: 0'>
+            <iframe id='subframe' src='https://webkit.org/webkit' style='width: 200px; height: 200px; border: none;'></iframe>
+        </body>
+        </html>
+        )PAGEDATA";
+
+    static const char* iframeHTML = R"PAGEDATA(
+        <style>body { margin: 0; padding: 0; }</style>
+        <div id='overflow' style='position: absolute; left: 20px; top: 20px; width: 160px; height: 160px; overflow: scroll;'>
+            <div style='width: 300px; height: 300px;'></div>
+        </div>
+        <script>
+            var activeData = null;
+            var passiveData = null;
+            var activeHandler = null;
+            var passiveHandler = null;
+            var currentTarget = null;
+
+            function serialize(e) {
+                return JSON.stringify({
+                    cancelable: e.cancelable,
+                    deltaX: e.deltaX, deltaY: e.deltaY, deltaZ: e.deltaZ, deltaMode: e.deltaMode,
+                    wheelDelta: e.wheelDelta, wheelDeltaX: e.wheelDeltaX, wheelDeltaY: e.wheelDeltaY,
+                    clientX: e.clientX, clientY: e.clientY, pageX: e.pageX, pageY: e.pageY,
+                    screenX: e.screenX, screenY: e.screenY,
+                    offsetX: e.offsetX, offsetY: e.offsetY,
+                    layerX: e.layerX, layerY: e.layerY,
+                    movementX: e.movementX, movementY: e.movementY,
+                    x: e.x, y: e.y,
+                    button: e.button, buttons: e.buttons,
+                    altKey: e.altKey, ctrlKey: e.ctrlKey, shiftKey: e.shiftKey, metaKey: e.metaKey,
+                    defaultPrevented: e.defaultPrevented,
+                    webkitForce: e.webkitForce,
+                    relatedTarget: e.relatedTarget
+                });
+            }
+
+            function addListeners(name, mode) {
+                activeData = null;
+                passiveData = null;
+                var t = name === 'window' ? window : name === 'body' ? document.body : name === 'document' ? document : document.getElementById('overflow');
+                currentTarget = t;
+                if (mode === 'active') {
+                    activeHandler = function(e) { e.preventDefault(); activeData = serialize(e); };
+                    t.addEventListener('wheel', activeHandler, { passive: false });
+                } else if (mode === 'setup') {
+                    activeHandler = function(e) { };
+                    t.addEventListener('wheel', activeHandler, { passive: false });
+                } else {
+                    passiveHandler = function(e) { e.preventDefault(); passiveData = serialize(e); };
+                    t.addEventListener('wheel', passiveHandler, { passive: true });
+                }
+            }
+
+            function removeListeners() {
+                currentTarget.removeEventListener('wheel', activeHandler, { passive: false });
+                currentTarget.removeEventListener('wheel', passiveHandler, { passive: true });
+                currentTarget = null;
+                activeHandler = null;
+                passiveHandler = null;
+            }
+
+            alert('loaded');
+        </script>
+        )PAGEDATA";
+
+    HTTPServer server({
+        { "/example"_s, { String::fromUTF8(mainHTML) } },
+        { "/webkit"_s, { String::fromUTF8(iframeHTML) } },
+    }, HTTPServer::Protocol::HttpsProxy);
+
+    auto captureAttributes = [&](bool enableSiteIsolation) -> RetainPtr<NSMutableDictionary> {
+        auto configuration = server.httpsProxyConfiguration();
+        if (enableSiteIsolation) {
+            for (_WKFeature *feature in [WKPreferences _features]) {
+                if ([feature.key isEqualToString:@"SiteIsolationEnabled"]) {
+                    [configuration.preferences _setEnabled:YES forFeature:feature];
+                    break;
+                }
+            }
+        }
+
+        RetainPtr uiDelegate = adoptNS([TestUIDelegate new]);
+        RetainPtr navigationDelegate = adoptNS([TestNavigationDelegate new]);
+        [navigationDelegate allowAnyTLSCertificate];
+        RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 200, 200) configuration:configuration]);
+        [webView setNavigationDelegate:navigationDelegate.get()];
+        [webView setUIDelegate:uiDelegate.get()];
+
+        [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://example.com/example"]]];
+        EXPECT_WK_STREQ([uiDelegate waitForAlert], "loaded");
+
+        RetainPtr childFrame = [webView firstChildFrame];
+        EXPECT_TRUE(childFrame.get() != nil);
+
+        RetainPtr allResults = adoptNS([NSMutableDictionary new]);
+
+        for (NSString *target in @[@"window", @"body", @"document", @"element"]) {
+            [webView objectByEvaluatingJavaScript:[NSString stringWithFormat:@"addListeners('%@', 'active')", target] inFrame:childFrame.get()];
+            [webView waitForNextPresentationUpdate];
+
+            [webView synchronouslyHandleScrollEventWithPhase:WKBEScrollViewScrollUpdatePhaseBegan location:CGPointMake(50, 50) delta:CGVectorMake(0, 10)];
+
+            id activeResult = [webView objectByEvaluatingJavaScript:@"activeData" inFrame:childFrame.get()];
+            EXPECT_TRUE(activeResult != nil);
+            if (activeResult)
+                [allResults setObject:activeResult forKey:[NSString stringWithFormat:@"active_%@", target]];
+
+            [webView objectByEvaluatingJavaScript:@"removeListeners()" inFrame:childFrame.get()];
+            [webView waitForNextPresentationUpdate];
+
+            [webView synchronouslyHandleScrollEventWithPhase:WKBEScrollViewScrollUpdatePhaseEnded location:CGPointMake(50, 50) delta:CGVectorMake(0, 0)];
+            [webView waitForNextPresentationUpdate];
+
+            // Establish a NonBlocking gesture with a non-passive, non-preventing listener
+            // so that subsequent Changed events are correctly non-cancelable.
+            [webView objectByEvaluatingJavaScript:[NSString stringWithFormat:@"addListeners('%@', 'setup')", target] inFrame:childFrame.get()];
+            [webView waitForNextPresentationUpdate];
+
+            [webView synchronouslyHandleScrollEventWithPhase:WKBEScrollViewScrollUpdatePhaseBegan location:CGPointMake(50, 50) delta:CGVectorMake(0, 10)];
+
+            [webView objectByEvaluatingJavaScript:@"removeListeners()" inFrame:childFrame.get()];
+            [webView waitForNextPresentationUpdate];
+
+            [webView objectByEvaluatingJavaScript:[NSString stringWithFormat:@"addListeners('%@', 'passive')", target] inFrame:childFrame.get()];
+            [webView waitForNextPresentationUpdate];
+
+            [webView synchronouslyHandleScrollEventWithPhase:WKBEScrollViewScrollUpdatePhaseChanged location:CGPointMake(50, 50) delta:CGVectorMake(0, 10)];
+            // With only passive listeners, the scroll event completion is synchronous
+            // (isCancelable is false), so the event hasn't been dispatched to the
+            // iframe's web process yet. Wait for the main frame to forward it.
+            [webView waitForNextPresentationUpdate];
+
+            id passiveResult = [webView objectByEvaluatingJavaScript:@"passiveData" inFrame:childFrame.get()];
+            EXPECT_TRUE(passiveResult != nil);
+            if (passiveResult)
+                [allResults setObject:passiveResult forKey:[NSString stringWithFormat:@"passive_%@", target]];
+
+            [webView objectByEvaluatingJavaScript:@"removeListeners()" inFrame:childFrame.get()];
+            [webView waitForNextPresentationUpdate];
+
+            [webView synchronouslyHandleScrollEventWithPhase:WKBEScrollViewScrollUpdatePhaseEnded location:CGPointMake(50, 50) delta:CGVectorMake(0, 0)];
+        }
+
+        return allResults;
+    };
+
+    auto withSiteIsolation = captureAttributes(true);
+    auto withoutSiteIsolation = captureAttributes(false);
+
+    auto parseJSON = [](id jsonString) -> RetainPtr<NSDictionary> {
+        if (![jsonString isKindOfClass:[NSString class]])
+            return nil;
+        return [NSJSONSerialization JSONObjectWithData:[jsonString dataUsingEncoding:NSUTF8StringEncoding] options:0 error:nil];
+    };
+
+    auto checkCommonAttributes = [](NSDictionary *data) {
+        EXPECT_EQ([data[@"deltaX"] intValue], 0);
+        EXPECT_EQ([data[@"deltaY"] intValue], -10);
+        EXPECT_EQ([data[@"deltaZ"] intValue], 0);
+        EXPECT_EQ([data[@"deltaMode"] intValue], 0);
+        EXPECT_EQ([data[@"wheelDelta"] intValue], 30);
+        EXPECT_EQ([data[@"wheelDeltaX"] intValue], 0);
+        EXPECT_EQ([data[@"wheelDeltaY"] intValue], 30);
+        EXPECT_EQ([data[@"clientX"] intValue], 50);
+        EXPECT_EQ([data[@"clientY"] intValue], 50);
+        EXPECT_EQ([data[@"pageX"] intValue], 50);
+        EXPECT_EQ([data[@"pageY"] intValue], 50);
+        EXPECT_EQ([data[@"screenX"] intValue], 50);
+        EXPECT_EQ([data[@"screenY"] intValue], 50);
+        EXPECT_EQ([data[@"offsetX"] intValue], 30);
+        EXPECT_EQ([data[@"offsetY"] intValue], 30);
+        EXPECT_EQ([data[@"layerX"] intValue], 30);
+        EXPECT_EQ([data[@"layerY"] intValue], 30);
+        EXPECT_EQ([data[@"movementX"] intValue], 0);
+        EXPECT_EQ([data[@"movementY"] intValue], 0);
+        EXPECT_EQ([data[@"x"] intValue], 50);
+        EXPECT_EQ([data[@"y"] intValue], 50);
+        EXPECT_EQ([data[@"button"] intValue], 0);
+        EXPECT_EQ([data[@"buttons"] intValue], 0);
+        EXPECT_FALSE([data[@"altKey"] boolValue]);
+        EXPECT_FALSE([data[@"ctrlKey"] boolValue]);
+        EXPECT_FALSE([data[@"shiftKey"] boolValue]);
+        EXPECT_FALSE([data[@"metaKey"] boolValue]);
+        EXPECT_EQ([data[@"webkitForce"] intValue], 0);
+        EXPECT_TRUE([data[@"relatedTarget"] isEqual:[NSNull null]]);
+    };
+
+    for (NSString *target in @[@"window", @"body", @"document", @"element"]) {
+        RetainPtr activeKey = [NSString stringWithFormat:@"active_%@", target];
+        RetainPtr passiveKey = [NSString stringWithFormat:@"passive_%@", target];
+
+        RetainPtr activeData = parseJSON([withoutSiteIsolation objectForKey:activeKey.get()]);
+        RetainPtr passiveData = parseJSON([withoutSiteIsolation objectForKey:passiveKey.get()]);
+
+        checkCommonAttributes(activeData.get());
+        EXPECT_TRUE([activeData.get()[@"cancelable"] boolValue]);
+        EXPECT_TRUE([activeData.get()[@"defaultPrevented"] boolValue]);
+
+        checkCommonAttributes(passiveData.get());
+        EXPECT_FALSE([passiveData.get()[@"cancelable"] boolValue]);
+        EXPECT_FALSE([passiveData.get()[@"defaultPrevented"] boolValue]);
+
+        // Site isolation should produce identical results.
+        EXPECT_WK_STREQ([withSiteIsolation objectForKey:activeKey.get()], [withoutSiteIsolation objectForKey:activeKey.get()]);
+        EXPECT_WK_STREQ([withSiteIsolation objectForKey:passiveKey.get()], [withoutSiteIsolation objectForKey:passiveKey.get()]);
+    }
 }
 
 #endif // HAVE(UISCROLLVIEW_ASYNCHRONOUS_SCROLL_EVENT_HANDLING)

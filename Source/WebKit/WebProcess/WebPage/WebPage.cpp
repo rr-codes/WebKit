@@ -3927,18 +3927,19 @@ std::pair<HandleUserInputEventResult, OptionSet<EventHandling>> WebPage::wheelEv
 }
 
 #if PLATFORM(IOS_FAMILY)
-void WebPage::dispatchWheelEventWithoutScrolling(FrameIdentifier frameID, const WebWheelEvent& wheelEvent, CompletionHandler<void(bool)>&& completionHandler)
+void WebPage::dispatchWheelEventWithoutScrolling(FrameIdentifier frameID, const WebWheelEvent& wheelEvent, CompletionHandler<void(bool, std::optional<RemoteUserInputEventData>)>&& completionHandler)
 {
 #if ENABLE(KINETIC_SCROLLING)
-    RefPtr localMainFrame = this->localMainFrame();
-    auto gestureState =  localMainFrame ? localMainFrame->eventHandler().wheelScrollGestureState() : std::nullopt;
+    RefPtr frame = WebProcess::singleton().webFrame(frameID);
+    RefPtr localFrame = frame ? frame->coreLocalFrame() : nullptr;
+    auto gestureState = localFrame ? localFrame->eventHandler().wheelScrollGestureState() : std::nullopt;
     bool isCancelable = !gestureState || gestureState == WheelScrollGestureState::Blocking || wheelEvent.phase() == WebWheelEvent::Phase::Began;
 #else
     bool isCancelable = true;
 #endif
     auto [result, handling] = this->wheelEvent(frameID, wheelEvent, { isCancelable ? WheelEventProcessingSteps::BlockingDOMEventDispatch : WheelEventProcessingSteps::NonBlockingDOMEventDispatch });
     // The caller of dispatchWheelEventWithoutScrolling never cares about DidReceiveEvent being sent back.
-    completionHandler(result.wasHandled() && handling.contains(EventHandling::DefaultPrevented));
+    completionHandler(result.wasHandled() && handling.contains(EventHandling::DefaultPrevented), result.remoteUserInputEventData());
 }
 #endif
 

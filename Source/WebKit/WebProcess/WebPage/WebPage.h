@@ -1984,7 +1984,7 @@ public:
     void didAddOrRemoveViewportConstrainedObjects();
 
 #if PLATFORM(IOS_FAMILY)
-    void dispatchWheelEventWithoutScrolling(WebCore::FrameIdentifier, const WebWheelEvent&, CompletionHandler<void(bool)>&&);
+    void dispatchWheelEventWithoutScrolling(WebCore::FrameIdentifier, const WebWheelEvent&, CompletionHandler<void(bool, std::optional<WebCore::RemoteUserInputEventData>)>&&);
 #endif
 
 #if ENABLE(PDF_PLUGIN)
