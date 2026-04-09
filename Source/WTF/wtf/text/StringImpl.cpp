@@ -295,29 +295,18 @@ RefPtr<StringImpl> StringImpl::create(std::span<const char8_t> codeUnits)
         return create(byteCast<Latin1Character>(codeUnits));
 
     auto inputLength = codeUnits.size();
-#if CPU(ARM64)
     auto input = reinterpret_cast<const char*>(codeUnits.data());
-    if (!simdutf::validate_utf8(input, inputLength))
-        return nullptr;
 
-    size_t utf16Length = simdutf::utf16_length_from_utf8(input, inputLength);
-
-    std::span<char16_t> data;
-    auto string = createUninitializedInternalNonEmpty(utf16Length, data);
-
-    size_t written = simdutf::convert_valid_utf8_to_utf16le(input, inputLength, data.data());
-    RELEASE_ASSERT_WITH_SECURITY_IMPLICATION(written == utf16Length);
-
-    return string;
-#else
+    // We are observing some clients changing the string content while converting!
+    // This makes it impossible to use utf16_length_from_utf8 & convert_valid_utf8_to_utf16le
+    // because of TOCTOU issue. For now, we use pre-allocated Vector (with maximally possible length)
+    // and use convert_utf8_to_utf16 instead.
     Vector<char16_t, 1024> buffer(inputLength);
-    auto result = Unicode::convert(codeUnits, buffer.mutableSpan());
-    if (result.code != Unicode::ConversionResultCode::Success)
+    size_t written = simdutf::convert_utf8_to_utf16(input, inputLength, buffer.mutableSpan().data());
+    if (!written)
         return nullptr;
-
-    RELEASE_ASSERT_WITH_SECURITY_IMPLICATION(result.buffer.size() <= inputLength);
-    return create(result.buffer);
-#endif
+    RELEASE_ASSERT_WITH_SECURITY_IMPLICATION(written <= inputLength);
+    return create(buffer.span().first(written));
 }
 
 Ref<StringImpl> StringImpl::createStaticStringImpl(std::span<const Latin1Character> characters)
