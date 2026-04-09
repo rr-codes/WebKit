@@ -806,7 +806,10 @@ static bool frameUsesDarkAppearanceForPrefersColorScheme(const Frame& frame)
         // > the preferred color scheme must reflect the value of the used color scheme on the
         // > embedding node in the embedding document.
         // FIXME (webkit.org/b/309611): this should recurse up to the main frame.
-        return protect(parent->virtualView())->ownerElementOfChildFrameUsesDarkAppearance(frame);
+        if (RefPtr ownerRenderer = frame.ownerRenderer()) {
+            if (ownerRenderer->style().hasExplicitlySetColorScheme())
+                return protect(parent->virtualView())->ownerElementOfChildFrameUsesDarkAppearance(frame);
+        }
     }
 
     return protect(frame.page())->useDarkAppearance();

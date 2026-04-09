@@ -423,6 +423,9 @@ imported/w3c/web-platform-tests/intersection-observer/cross-origin-tall-iframe-r
 media/media-vp8-hiddenframes.html [ ImageOnlyFailure ]
 svg/animations/mozilla/animateMotion-mpath-pathLength-1.svg [ ImageOnlyFailure ]
 svg/custom/svg-image-dark-mode-initial.html [ ImageOnlyFailure ]
+webkit.org/b/311812 http/tests/css/prefers-color-scheme-in-cross-origin-iframe-follows-system-preference-without-parent-color-scheme.html [ ImageOnlyFailure ]
+webkit.org/b/311812 imported/w3c/web-platform-tests/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-preferred-cross-origin.sub.html [ ImageOnlyFailure ]
+webkit.org/b/311812 imported/w3c/web-platform-tests/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-preferred-page-dark-cross-origin.sub.html [ ImageOnlyFailure ]
 
 ####################################
 # Tests with missing expectations #
