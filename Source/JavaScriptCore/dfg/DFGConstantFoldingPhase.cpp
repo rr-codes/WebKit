@@ -413,7 +413,8 @@ private:
             }
                 
             case CheckIsConstant: {
-                if (m_state.forNode(node->child1()).value() != node->constant()->value())
+                AbstractValue& value = m_state.forNode(node->child1());
+                if (value.value() != node->constant()->value() || value.valueIsTop())
                     break;
                 node->remove(m_graph);
                 eliminated = true;

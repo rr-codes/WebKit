@@ -200,7 +200,7 @@ struct AbstractValue {
     
     bool valueIsTop() const
     {
-        return !m_value && m_type;
+        return !m_value && m_type != SpecEmpty;
     }
 
     bool isInt52Any() const

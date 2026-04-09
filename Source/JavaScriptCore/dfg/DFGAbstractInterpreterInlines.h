@@ -5196,7 +5196,7 @@ bool AbstractInterpreter<AbstractStateType>::executeEffects(unsigned clobberLimi
 
     case CheckIsConstant: {
         AbstractValue& value = forNode(node->child1());
-        if (value.value() == node->constant()->value() && (value.value() || value.m_type == SpecEmpty))
+        if (value.value() == node->constant()->value() && !value.valueIsTop())
             break;
         filterByValue(node->child1(), *node->constant());
         break;
