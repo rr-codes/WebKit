@@ -194,6 +194,11 @@ WebProcessProxy& ProvisionalPageProxy::process()
     return m_frameProcess->process();
 }
 
+bool ProvisionalPageProxy::hasActiveLoadForNavigation(const API::Navigation& navigation) const
+{
+    return !m_didFailProvisionalLoad && m_navigationID == navigation.navigationID();
+}
+
 void ProvisionalPageProxy::processDidTerminate()
 {
     PROVISIONALPAGEPROXY_RELEASE_LOG_ERROR(ProcessSwapping, "processDidTerminate:");

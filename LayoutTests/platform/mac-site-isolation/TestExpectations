@@ -3,7 +3,6 @@
 ####################
 # Tests that crash #
 ####################
-http/tests/inspector/target/provisional-load-cancels-previous-load.html [ Crash ]
 http/tests/security/referrer-policy-header-empty.html [ Crash ]
 http/tests/security/referrer-policy-header-invalid.html [ Crash ]
 http/tests/security/referrer-policy-header-no-referrer-when-downgrade.html [ Crash ]
