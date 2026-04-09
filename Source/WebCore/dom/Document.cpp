@@ -4780,12 +4780,17 @@ void Document::processSpeculationRules()
     RefPtr frame = this->frame();
     ASSERT(frame);
 
-    auto anchors = links();
-    auto iterator = anchors->createIterator(this);
-    for (RefPtr element = iterator.next(); element; element = iterator.next()) {
-        if (RefPtr anchorElement = dynamicDowncast<HTMLAnchorElement>(element.get())) {
-            if (auto prefetchRule = SpeculationRulesMatcher::hasMatchingRule(*this, *anchorElement))
-                anchorElement->setShouldBePrefetched(prefetchRule->eagerness, WTF::move(prefetchRule->tags), WTF::move(prefetchRule->referrerPolicy));
+    // Only scan all anchors if there are rules requiring eager matching
+    // (Immediate/Eager/Moderate). Conservative rules are matched lazily
+    // on user interaction in HTMLAnchorElement::defaultEventHandler().
+    if (speculationRules().hasNonConservativePrefetchRules()) {
+        auto anchors = links();
+        auto iterator = anchors->createIterator(this);
+        for (RefPtr element = iterator.next(); element; element = iterator.next()) {
+            if (RefPtr anchorElement = dynamicDowncast<HTMLAnchorElement>(element.get())) {
+                if (auto prefetchRule = SpeculationRulesMatcher::hasMatchingRule(*this, *anchorElement))
+                    anchorElement->setShouldBePrefetched(prefetchRule->eagerness, WTF::move(prefetchRule->tags), WTF::move(prefetchRule->referrerPolicy));
+            }
         }
     }
     // Prefetch all the URL lists that need to be prefetched immediately

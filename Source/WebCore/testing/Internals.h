@@ -358,6 +358,7 @@ public:
     Node* NODELETE parentTreeScope(Node&);
 
     String visiblePlaceholder(Element&);
+    String anchorPrefetchEagerness(Element&);
     void setCanShowPlaceholder(Element&, bool);
 
     RefPtr<Element> insertTextPlaceholder(int width, int height);

@@ -1765,6 +1765,13 @@ String Internals::visiblePlaceholder(Element& element)
     return String();
 }
 
+String Internals::anchorPrefetchEagerness(Element& element)
+{
+    if (auto* anchor = dynamicDowncast<HTMLAnchorElement>(element))
+        return anchor->prefetchEagernessForTesting();
+    return String();
+}
+
 void Internals::setCanShowPlaceholder(Element& element, bool canShowPlaceholder)
 {
     if (auto* textFormControlElement = dynamicDowncast<HTMLTextFormControlElement>(element))

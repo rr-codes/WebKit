@@ -165,6 +165,16 @@ void HTMLAnchorElement::defaultEventHandler(Event& event)
 {
     if (m_prefetchEagerness == PrefetchEagerness::Conservative && (event.type() == eventNames().keydownEvent || event.type() == eventNames().mousedownEvent || event.type() == eventNames().pointerdownEvent))
         protect(document())->prefetch(href(), m_speculationRulesTags, m_prefetchReferrerPolicy);
+    else if (m_prefetchEagerness == PrefetchEagerness::None
+        && document().settings().speculationRulesPrefetchEnabled()
+        && (event.type() == eventNames().keydownEvent || event.type() == eventNames().mousedownEvent || event.type() == eventNames().pointerdownEvent)) {
+        // Lazy matching for conservative rules: evaluate at interaction time
+        // instead of scanning all links on every style recalculation.
+        if (auto prefetchRule = SpeculationRulesMatcher::hasMatchingRule(protect(document()), *this)) {
+            if (prefetchRule->eagerness != SpeculationRules::Eagerness::Immediate)
+                protect(document())->prefetch(href(), prefetchRule->tags, prefetchRule->referrerPolicy);
+        }
+    }
 
     if (isLink()) {
         if (focused() && isEnterKeyKeydownEvent(event) && treatLinkAsLiveForEventType(NonMouseEvent)) {
@@ -748,10 +758,30 @@ void HTMLAnchorElement::setShouldBePrefetched(SpeculationRules::Eagerness eagern
         protect(document())->prefetch(href(), m_speculationRulesTags, m_prefetchReferrerPolicy, true);
 }
 
+String HTMLAnchorElement::prefetchEagernessForTesting() const
+{
+    switch (m_prefetchEagerness) {
+    case PrefetchEagerness::None:
+        return "none"_s;
+    case PrefetchEagerness::Conservative:
+        return "conservative"_s;
+    case PrefetchEagerness::Immediate:
+        return "immediate"_s;
+    }
+    return "none"_s;
+}
+
 void HTMLAnchorElement::checkForSpeculationRules()
 {
     if (!document().settings().speculationRulesPrefetchEnabled())
         return;
+    // For conservative-only rules, defer matching to interaction time.
+    if (!document().speculationRules().hasNonConservativePrefetchRules()) {
+        m_prefetchEagerness = PrefetchEagerness::None;
+        m_speculationRulesTags.clear();
+        m_prefetchReferrerPolicy = std::nullopt;
+        return;
+    }
     if (auto prefetchRule = SpeculationRulesMatcher::hasMatchingRule(protect(document()), *this))
         setShouldBePrefetched(prefetchRule->eagerness, WTF::move(prefetchRule->tags), WTF::move(prefetchRule->referrerPolicy));
     else {
