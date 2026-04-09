@@ -27,8 +27,8 @@
 
 #if ENABLE(WEBASSEMBLY_DEBUGGER)
 
-#include <JavaScriptCore/WasmDebugServerUtilities.h>
-#include <JavaScriptCore/WasmVirtualAddress.h>
+#include "WasmDebugServerUtilities.h"
+#include "WasmVirtualAddress.h"
 
 #include <wtf/HashMap.h>
 #include <wtf/Vector.h>

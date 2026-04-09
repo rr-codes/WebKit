@@ -27,9 +27,9 @@
 
 #if ENABLE(WEBASSEMBLY_DEBUGGER)
 
-#include <JavaScriptCore/WasmInstanceAnchor.h>
-#include <JavaScriptCore/WasmModule.h>
-#include <JavaScriptCore/WasmVirtualAddress.h>
+#include "WasmInstanceAnchor.h"
+#include "WasmModule.h"
+#include "WasmVirtualAddress.h"
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>

@@ -2507,10 +2507,21 @@ static void testBytecodeCacheValidation()
 
 static NSURL *resolvePathToScripts()
 {
-    // [NSBundle bundleForClass:[JSValue class]] always returns the JavaScriptCore.framework
-    // bundle for both installed and local builds, so scripts are always at
-    // Resources/testapiScripts/ within it.
-    return [[NSBundle bundleForClass:[JSValue class]].resourceURL URLByAppendingPathComponent:@"testapiScripts" isDirectory:YES];
+    NSString *arg0 = NSProcessInfo.processInfo.arguments[0];
+    NSURL *base;
+    if ([arg0 hasPrefix:@"/"])
+        base = [NSURL fileURLWithPath:arg0 isDirectory:NO];
+    else {
+        const size_t maxLength = 10000;
+        char cwd[maxLength];
+        if (!getcwd(cwd, maxLength)) {
+            NSLog(@"getcwd errored with code: %s", safeStrerror(errno).data());
+            exitProcess(1);
+        }
+        NSURL *cwdURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%s", cwd]];
+        base = [NSURL fileURLWithPath:arg0 isDirectory:NO relativeToURL:cwdURL];
+    }
+    return [NSURL fileURLWithPath:@"./testapiScripts/" isDirectory:YES relativeToURL:base];
 }
 
 - (JSScript *)fetchModuleScript:(NSString *)relativePath
