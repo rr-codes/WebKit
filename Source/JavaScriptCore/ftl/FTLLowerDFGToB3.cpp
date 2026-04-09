@@ -171,8 +171,9 @@ public:
     LowerDFGToB3(State& state)
         : m_graph(state.graph)
         , m_ftlState(state)
-        , m_out(state)
         , m_proc(*state.proc)
+        , m_heaps(m_proc.heaps())
+        , m_out(state)
         , m_tupleValues(m_graph.m_tupleData.size())
         , m_availabilityCalculator(m_graph)
         , m_state(state.graph)
@@ -25901,9 +25902,9 @@ IGNORE_CLANG_WARNINGS_END
 
     Graph& m_graph;
     State& m_ftlState;
-    AbstractHeapRepository m_heaps;
-    Output m_out;
     Procedure& m_proc;
+    AbstractHeapRepository& m_heaps;
+    Output m_out;
 
     LBasicBlock m_handleExceptions;
     UncheckedKeyHashMap<DFG::BasicBlock*, LBasicBlock> m_blocks;

@@ -362,6 +362,10 @@ enum Opcode : uint8_t {
     // to be able to perform such optimizations.
     WasmBoundsCheck,
 
+    WasmArrayGet,
+    WasmArraySet,
+    WasmArrayNew,
+    WasmArrayLength,
     WasmStructGet,
     WasmStructSet,
     WasmStructNew,
