@@ -81,6 +81,27 @@ TEST(ColorInputTests, SetColorWithAlphaUsingColorPicker)
     EXPECT_WK_STREQ(colorValue, "#0000ff");
 }
 
+TEST(ColorInputTests, ColorPickerWithSuggestionsDoesNotCrash)
+{
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+    [webView synchronouslyLoadHTMLString:
+        @"<input type='color' id='color' value='#ff0000' list='suggestions' style='width: 200px; height: 200px;'>"
+        "<datalist id='suggestions'><option value='#00ff00'></datalist>"];
+
+    [webView sendClickAtPoint:NSMakePoint(50, 350)];
+
+    bool appeared = Util::waitFor([&] {
+        return isShowingColorPicker(webView.get());
+    });
+    EXPECT_TRUE(appeared);
+
+    [webView stringByEvaluatingJavaScript:@"document.getElementById('color').blur()"];
+
+    Util::waitFor([&] {
+        return !isShowingColorPicker(webView.get());
+    });
+}
+
 } // namespace TestWebKitAPI
 
 #endif // PLATFORM(MAC)
