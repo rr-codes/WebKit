@@ -139,6 +139,7 @@ enum class SDKAlignedBehavior {
     SuppressKeypressForModifierShortcuts,
     ScrollColorExtensionGrowsDuringRubberBanding,
     ManagedRefreshControlAppearance,
+    EnableUserScriptAndUserStyleInterning,
 
     NumberOfBehaviors
 };
