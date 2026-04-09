@@ -1333,11 +1333,16 @@ void GraphicsContextCG::strokeRect(const FloatRect& rect, float lineWidth)
 void GraphicsContextCG::strokeArc(const PathArc& arc)
 {
 #if HAVE(CGCONTEXT_STROKE_ARC)
-    CGContextRef context = platformContext();
-    CGContextStrokeArc(context, arc.center.x(), arc.center.y(), arc.radius, arc.startAngle, arc.endAngle, arc.direction == RotationDirection::Counterclockwise);
-#else
-    GraphicsContext::strokeArc(arc);
+    if (!strokeGradient()) {
+        if (strokePattern())
+            applyStrokePattern();
+
+        CGContextRef context = platformContext();
+        CGContextStrokeArc(context, arc.center.x(), arc.center.y(), arc.radius, arc.startAngle, arc.endAngle, arc.direction == RotationDirection::Counterclockwise);
+        return;
+    }
 #endif
+    GraphicsContext::strokeArc(arc);
 }
 
 void GraphicsContextCG::setLineCap(LineCap cap)
