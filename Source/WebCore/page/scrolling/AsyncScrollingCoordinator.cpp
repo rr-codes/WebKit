@@ -410,6 +410,10 @@ bool AsyncScrollingCoordinator::requestScrollToPosition(ScrollableArea& scrollab
                 .updateLayerPositionAction = ScrollingLayerPositionAction::Set,
             },
         };
+
+        if (scrollingNodeID == frameView->scrollingNodeID())
+            frameView->adjustExposedContentRectForProgrammaticScroll(adjustedScrollPosition);
+
         applyScrollUpdate(WTF::move(scrollUpdate), ScrollType::Programmatic);
     }
 

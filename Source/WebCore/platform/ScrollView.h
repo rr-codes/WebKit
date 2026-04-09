@@ -218,6 +218,8 @@ public:
     // The given rects are only used if there is no platform widget.
     WEBCORE_EXPORT void NODELETE setExposedContentRect(const FloatRect&);
 
+    void adjustExposedContentRectForProgrammaticScroll(ScrollPosition);
+
     WEBCORE_EXPORT FloatSize NODELETE unobscuredContentSize() const;
     WEBCORE_EXPORT void setUnobscuredContentSize(const FloatSize&);
 
