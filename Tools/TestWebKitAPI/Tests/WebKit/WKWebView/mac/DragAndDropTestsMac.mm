@@ -169,6 +169,17 @@ TEST(DragAndDropTests, DragEndEventCoordinatesWithNestedIframes)
     }
 }
 
+TEST(DragAndDropTests, DraggableElementWithTinyDragImageDoesNotCrash)
+{
+    RetainPtr simulator = adoptNS([[DragAndDropSimulator alloc] initWithWebViewFrame:NSMakeRect(0, 0, 400, 400)]);
+    RetainPtr webView = [simulator webView];
+    [webView synchronouslyLoadTestPageNamed:@"draggable-with-tiny-drag-image"];
+    [simulator runFrom:NSMakePoint(150, 50) to:NSMakePoint(150, 200)];
+    TestWebKitAPI::Util::waitForConditionWithLogging([&] -> bool {
+        return [webView stringByEvaluatingJavaScript:@"window.dragStartFired"].boolValue;
+    }, 2, @"Expected dragstart to fire for the tiny drag image case.");
+}
+
 TEST(DragAndDropTests, DropUserSelectAllUserDragElementDiv)
 {
     auto simulator = adoptNS([[DragAndDropSimulator alloc] initWithWebViewFrame:NSMakeRect(0, 0, 320, 500)]);
