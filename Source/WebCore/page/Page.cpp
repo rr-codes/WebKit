@@ -4872,8 +4872,8 @@ OptionSet<FilterRenderingMode> Page::preferredFilterRenderingModes(const Graphic
         modes.add(FilterRenderingMode::Accelerated);
 #endif
 
-#if USE(SKIA)
-    if (settings().acceleratedCompositingEnabled())
+#if USE(SKIA) && (!PLATFORM(WPE) || ENABLE(WPE_PLATFORM))
+    if (settings().hardwareAccelerationEnabled())
         modes.add(FilterRenderingMode::Accelerated);
 #endif
 
