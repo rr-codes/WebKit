@@ -87,4 +87,38 @@ TEST(NavigationAPI, ReplaceStateUpdatesCurrentEntryIDWithoutAllowPrivacySensitiv
     EXPECT_FALSE([idBefore isEqualToString:idAfter]);
 }
 
+TEST(NavigationAPI, ReplaceStateAfterBackPreservesKey)
+{
+    HTTPServer server({
+        { "/example"_s, { "example"_s } }
+    }, HTTPServer::Protocol::HttpsProxy);
+
+    RetainPtr configuration = server.httpsProxyConfiguration();
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 300, 300) configuration:configuration.get()]);
+
+    RetainPtr navigationDelegate = adoptNS([TestNavigationDelegate new]);
+    [navigationDelegate allowAnyTLSCertificate];
+    [webView setNavigationDelegate:navigationDelegate.get()];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://example.com/example"]]];
+    [navigationDelegate waitForDidFinishNavigation];
+
+    [webView stringByEvaluatingJavaScript:@"history.pushState({}, '', '/page-a')"];
+    NSString *keyPageA = [webView stringByEvaluatingJavaScript:@"navigation.currentEntry.key"];
+
+    [webView stringByEvaluatingJavaScript:@"history.pushState({}, '', '/page-b')"];
+    NSString *keyPageB = [webView stringByEvaluatingJavaScript:@"navigation.currentEntry.key"];
+    EXPECT_FALSE([keyPageA isEqualToString:keyPageB]);
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.back()" completionHandler:nil];
+    [navigationDelegate waitForDidSameDocumentNavigation];
+
+    NSString *keyAfterBack = [webView stringByEvaluatingJavaScript:@"navigation.currentEntry.key"];
+    EXPECT_TRUE([keyPageA isEqualToString:keyAfterBack]);
+
+    [webView stringByEvaluatingJavaScript:@"history.replaceState({ updated: true }, '')"];
+    NSString *keyAfterReplace = [webView stringByEvaluatingJavaScript:@"navigation.currentEntry.key"];
+    EXPECT_TRUE([keyPageA isEqualToString:keyAfterReplace]);
+}
+
 } // namespace TestWebKitAPI
