@@ -180,6 +180,26 @@ TEST(DragAndDropTests, DraggableElementWithTinyDragImageDoesNotCrash)
     }, 2, @"Expected dragstart to fire for the tiny drag image case.");
 }
 
+TEST(DragAndDropTests, DraggableElementWithOnlyCustomPasteboardDataFiresDragEvents)
+{
+    RetainPtr simulator = adoptNS([[DragAndDropSimulator alloc] initWithWebViewFrame:NSMakeRect(0, 0, 400, 400)]);
+    RetainPtr webView = [simulator webView];
+    [webView synchronouslyLoadTestPageNamed:@"draggable-only-custom-data"];
+    [simulator runFrom:NSMakePoint(150, 50) to:NSMakePoint(150, 200)];
+
+    TestWebKitAPI::Util::waitForConditionWithLogging([&] -> bool {
+        return [webView stringByEvaluatingJavaScript:@"window.dragEventCount"].intValue > 0;
+    }, 2, @"Expected drag events to fire on the source element.");
+
+    TestWebKitAPI::Util::waitForConditionWithLogging([&] -> bool {
+        return [webView stringByEvaluatingJavaScript:@"window.dragOverEventCount"].intValue > 0;
+    }, 2, @"Expected dragover events to fire on the drop target.");
+
+    // WebDummyPboardType should be on the drag pasteboard so
+    // AppKit recognizes the view as a valid drag destination.
+    EXPECT_TRUE([simulator containsDraggedType:@"Apple WebKit dummy pasteboard type"]);
+}
+
 TEST(DragAndDropTests, DropUserSelectAllUserDragElementDiv)
 {
     auto simulator = adoptNS([[DragAndDropSimulator alloc] initWithWebViewFrame:NSMakeRect(0, 0, 320, 500)]);

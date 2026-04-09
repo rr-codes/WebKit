@@ -4793,6 +4793,7 @@ void WebViewImpl::startDrag(const WebCore::DragItem& item, ShareableBitmap::Hand
                     if (page->sessionID().isEphemeral())
                         [pasteboard _setExpirationDate:[NSDate dateWithTimeIntervalSinceNow:pasteboardExpirationDelay.seconds()]];
                 }
+                [pasteboard setString:@"" forType:PasteboardTypes::WebDummyPboardType];
                 page->didStartDrag(frameID);
             }
         });
