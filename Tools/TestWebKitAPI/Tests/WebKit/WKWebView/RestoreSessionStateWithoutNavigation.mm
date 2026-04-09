@@ -31,14 +31,17 @@
 #import "Helpers/PlatformUtilities.h"
 #import "Helpers/PlatformWebView.h"
 #import "Helpers/Test.h"
+#import <WebKit/WKBackForwardListItemPrivate.h>
 #import <WebKit/WKBackForwardListItemRef.h>
 #import <WebKit/WKBackForwardListRef.h>
 #import <WebKit/WKData.h>
+#import <WebKit/WKNavigationDelegatePrivate.h>
 #import <WebKit/WKPagePrivate.h>
 #import <WebKit/WKSessionStateRef.h>
 #import <WebKit/WKURL.h>
 #import <WebKit/WKURLCF.h>
 #import <WebKit/WKWebViewPrivate.h>
+#import <WebKit/_WKSessionState.h>
 #import <wtf/RetainPtr.h>
 
 @interface WKWebView ()
@@ -47,7 +50,8 @@
 
 static bool didFinishNavigationForSessionState;
 static bool didChangeBackForwardList;
-    
+static bool didNavigate;
+
 @interface SessionStateDelegate : NSObject <WKNavigationDelegate>
 @end
 
@@ -56,6 +60,13 @@ static bool didChangeBackForwardList;
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
     didFinishNavigationForSessionState = true;
+    didNavigate = true;
+}
+
+- (void)_webView:(WKWebView *)webView navigation:(WKNavigation *)navigation didSameDocumentNavigation:(_WKSameDocumentNavigationType)navigationType
+{
+    if (navigationType == _WKSameDocumentNavigationTypeSessionStatePush || navigationType == _WKSameDocumentNavigationTypeSessionStatePop)
+        didNavigate = true;
 }
 
 - (void)_webView:(WKWebView *)webView backForwardListItemAdded:(WKBackForwardListItem *)itemAdded removed:(NSArray<WKBackForwardListItem *> *)itemsRemoved
@@ -101,6 +112,40 @@ TEST(WebKit, RestoreSessionStateWithoutNavigation)
     auto expectedURL = adoptWK(WKURLCreateWithCFURL((__bridge CFURLRef)[NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"]));
     EXPECT_NOT_NULL(expectedURL);
     EXPECT_TRUE(WKURLIsEqual(currentItemURL.get(), expectedURL.get()));
+}
+
+TEST(WebKit, RestoreSessionStateWithoutNavigationPreservesWasCreatedByJSWithoutUserInteraction)
+{
+    auto delegate = adoptNS([SessionStateDelegate new]);
+    auto view = adoptNS([WKWebView new]);
+    [view setNavigationDelegate:delegate.get()];
+
+    [view loadRequest:[NSURLRequest requestWithURL:[NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"]]];
+    didNavigate = false;
+    Util::run(&didNavigate);
+
+    // Create some history entries via JS without a user gesture.
+    didNavigate = false;
+    [view _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, document.title, location.pathname + '#a');" completionHandler:nil];
+    Util::run(&didNavigate);
+    didNavigate = false;
+    [view _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, document.title, location.pathname + '#b');" completionHandler:nil];
+    Util::run(&didNavigate);
+
+    EXPECT_EQ([view backForwardList].backList.count, 2U);
+    EXPECT_FALSE([view backForwardList].backList[0]._wasCreatedByJSWithoutUserInteraction);
+    EXPECT_TRUE([view backForwardList].backList[1]._wasCreatedByJSWithoutUserInteraction);
+    EXPECT_TRUE([view backForwardList].currentItem._wasCreatedByJSWithoutUserInteraction);
+
+    // Restore session state into a new web view.
+    auto restoredView = adoptNS([WKWebView new]);
+    auto sessionState = adoptNS([[_WKSessionState alloc] initWithData:[view _sessionStateData]]);
+    [restoredView _restoreSessionState:sessionState.get() andNavigate:NO];
+
+    EXPECT_EQ([restoredView backForwardList].backList.count, 2U);
+    EXPECT_FALSE([restoredView backForwardList].backList[0]._wasCreatedByJSWithoutUserInteraction);
+    EXPECT_TRUE([restoredView backForwardList].backList[1]._wasCreatedByJSWithoutUserInteraction);
+    EXPECT_TRUE([restoredView backForwardList].currentItem._wasCreatedByJSWithoutUserInteraction);
 }
 
 } // namespace TestWebKitAPI

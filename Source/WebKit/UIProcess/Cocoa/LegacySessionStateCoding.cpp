@@ -61,6 +61,7 @@ static const CFStringRef sessionHistoryEntryOriginalURLKey = CFSTR("SessionHisto
 static const CFStringRef sessionHistoryEntryDataKey = CFSTR("SessionHistoryEntryData");
 static const CFStringRef sessionHistoryEntryShouldOpenExternalURLsPolicyKey = CFSTR("SessionHistoryEntryShouldOpenExternalURLsPolicyKey");
 static const CFStringRef sessionHistoryEntryNavigatedFrameIDKey = CFSTR("SessionHistoryEntryNavigatedFrameID");
+static const CFStringRef sessionHistoryEntryWasCreatedByJSWithoutUserInteractionKey = CFSTR("SessionHistoryEntryWasCreatedByJSWithoutUserInteraction");
 
 // Session history entry data.
 const uint32_t sessionHistoryEntryDataVersion = 2;
@@ -437,6 +438,7 @@ static RetainPtr<CFDictionaryRef> encodeSessionHistory(const BackForwardListStat
         auto url = frameState->urlString.createCFString();
         auto title = frameState->title.createCFString();
         auto originalURL = frameState->originalURLString.createCFString();
+        auto createdByJS = frameState->wasCreatedByJSWithoutUserInteraction ? kCFBooleanTrue : kCFBooleanFalse;
 
         auto shouldOpenExternalURLsPolicyValue = static_cast<uint64_t>(frameState->shouldOpenExternalURLsPolicy);
         auto shouldOpenExternalURLsPolicy = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &shouldOpenExternalURLsPolicyValue));
@@ -446,6 +448,7 @@ static RetainPtr<CFDictionaryRef> encodeSessionHistory(const BackForwardListStat
             { sessionHistoryEntryTitleKey, title.get() },
             { sessionHistoryEntryOriginalURLKey, originalURL.get() },
             { sessionHistoryEntryShouldOpenExternalURLsPolicyKey, shouldOpenExternalURLsPolicy.get() },
+            { sessionHistoryEntryWasCreatedByJSWithoutUserInteractionKey, createdByJS },
         }).get()));
 
         // We allow the first item to be unlimited in size. We refrain from serializing the data for subsequent items if they would cause us to trip over the maximumSessionStateDataSize limit.
@@ -1045,6 +1048,10 @@ static void decodeBackForwardTreeNode(HistoryEntryDataDecoder& decoder, FrameSta
             CFNumberGetValue(navigatedFrameIDNumber.get(), kCFNumberSInt64Type, &value);
             navigatedFrameID = WebCore::FrameIdentifier(value);
         }
+
+        RetainPtr createdByJS = dynamic_cf_cast<CFBooleanRef>(CFDictionaryGetValue(entryDictionary.get(), sessionHistoryEntryWasCreatedByJSWithoutUserInteractionKey));
+        if (createdByJS)
+            frameState->wasCreatedByJSWithoutUserInteraction = CFBooleanGetValue(createdByJS.get());
 
         entries.append({ WTF::move(frameState), navigatedFrameID });
     }
