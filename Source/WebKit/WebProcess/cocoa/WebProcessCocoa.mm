@@ -1743,11 +1743,6 @@ void WebProcess::initializeAccessibility(Vector<SandboxExtension::Handle>&& hand
 
     [NSApplication _accessibilityInitialize];
 
-    // Now that the accessibility server is registered, send any deferred
-    // remote tokens so the UI process can resolve the remote elements.
-    for (auto& webPage : m_pageMap.values())
-        webPage->sendAccessibilityTokenIfNeeded();
-
     for (auto& extension : extensions)
         extension->revoke();
 }
