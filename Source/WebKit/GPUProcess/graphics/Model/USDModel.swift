@@ -104,9 +104,8 @@ private func makeMTLTextureFromImageAsset(
     _ imageAsset: WKBridgeImageAsset,
     device: any MTLDevice,
     generateMips: Bool,
-    memoryOwner: task_id_token_t,
-    overridePixelFormat: Bool = false
-) -> (any MTLTexture)? {
+    memoryOwner: task_id_token_t
+) -> ((any MTLTexture), Int)? {
     guard let imageAssetData = imageAsset.data else {
         logError("no image data")
         return nil
@@ -115,19 +114,7 @@ private func makeMTLTextureFromImageAsset(
         "imageAssetData = \(imageAssetData)  -  width = \(imageAsset.width)  -  height = \(imageAsset.height)  -  bytesPerPixel = \(imageAsset.bytesPerPixel) imageAsset.pixelFormat:  \(imageAsset.pixelFormat)"
     )
 
-    var pixelFormat = imageAsset.pixelFormat
-    if overridePixelFormat {
-        switch imageAsset.bytesPerPixel {
-        case 1:
-            pixelFormat = .r8Unorm
-        case 2:
-            pixelFormat = .rg8Unorm
-        case 4:
-            pixelFormat = .rgba8Unorm
-        default:
-            pixelFormat = .rgba8Unorm
-        }
-    }
+    let pixelFormat = imageAsset.pixelFormat
 
     let (textureDescriptor, sliceCount) =
         switch imageAsset.textureType {
@@ -159,36 +146,94 @@ private func makeMTLTextureFromImageAsset(
     }
     mtlTexture.__setOwnerWithIdentity(memoryOwner)
 
-    let bytesPerRow = imageAsset.width * imageAsset.bytesPerPixel
-    let bytesPerImage = bytesPerRow * imageAsset.height
-    let totalBytesNeeded = sliceCount * bytesPerImage
+    func mipDimension(_ base: Int, level: Int) -> Int {
+        max(1, base >> level)
+    }
 
+    var mipLevelsInData = 0
     unsafe imageAssetData.bytes.withUnsafeBytes { textureBytes in
-        guard let textureBytesBaseAddress = textureBytes.baseAddress else {
+        guard let baseAddress = textureBytes.baseAddress else {
+            logError("nil base address in imageAssetData")
             return
         }
 
-        // Validate that we have enough data
-        guard textureBytes.count >= totalBytesNeeded else {
+        // ---------------------------------------------------------------
+        // Compute how many mip levels are actually present in the data
+        // by accumulating expected byte counts level by level until we
+        // account for all bytes in the buffer.
+        // ---------------------------------------------------------------
+        var bytesAccounted = 0
+
+        for mipLevel in 0..<mtlTexture.mipmapLevelCount {
+            let mipWidth = mipDimension(imageAsset.width, level: mipLevel)
+            let mipHeight = mipDimension(imageAsset.height, level: mipLevel)
+            let mipBytes = mipWidth * imageAsset.bytesPerPixel * mipHeight * sliceCount
+
+            // Stop if adding this level would exceed the available data
+            guard bytesAccounted + mipBytes <= textureBytes.count else { break }
+
+            bytesAccounted += mipBytes
+            mipLevelsInData += 1
+        }
+
+        guard mipLevelsInData > 0 else {
+            logError(
+                "imageAssetData too small: have \(textureBytes.count) bytes, "
+                    + "need at least \(mipDimension(imageAsset.width, level: 0) * imageAsset.bytesPerPixel * mipDimension(imageAsset.height, level: 0) * sliceCount) "
+                    + "for mip level 0"
+            )
             return
         }
+
+        if bytesAccounted != textureBytes.count {
+            logError(
+                "imageAssetData has \(textureBytes.count - bytesAccounted) unexpected trailing bytes "
+                    + "after \(mipLevelsInData) mip level(s) — ignoring"
+            )
+        }
+
+        logInfo("uploading \(mipLevelsInData) of \(mtlTexture.mipmapLevelCount) mip level(s) from imageAssetData")
+
+        // ---------------------------------------------------------------
+        // Layout expected in imageAssetData:
+        //
+        //   Face 0 | Mip 0 | Mip 1 | Mip 2 | …
+        //   Face 1 | Mip 0 | Mip 1 | Mip 2 | …
+        //   …
+        // ---------------------------------------------------------------
+        var offset = 0
 
         for face in 0..<sliceCount {
-            let offset = face * bytesPerImage
-            let facePointer = unsafe textureBytesBaseAddress.advanced(by: offset)
+            for mipLevel in 0..<mipLevelsInData {
+                let mipWidth = mipDimension(imageAsset.width, level: mipLevel)
+                let mipHeight = mipDimension(imageAsset.height, level: mipLevel)
 
-            unsafe mtlTexture.replace(
-                region: MTLRegionMake2D(0, 0, imageAsset.width, imageAsset.height),
-                mipmapLevel: 0,
-                slice: face,
-                withBytes: facePointer,
-                bytesPerRow: bytesPerRow,
-                bytesPerImage: bytesPerImage
-            )
+                let mipBytesPerRow = mipWidth * imageAsset.bytesPerPixel
+                let mipBytesPerImage = mipBytesPerRow * mipHeight
+
+                let mipPointer = unsafe baseAddress.advanced(by: offset)
+
+                unsafe mtlTexture.replace(
+                    region: .init(
+                        origin: .init(x: 0, y: 0, z: 0),
+                        size: .init(width: mipWidth, height: mipHeight, depth: 1)
+                    ),
+                    mipmapLevel: mipLevel,
+                    slice: face,
+                    withBytes: mipPointer,
+                    bytesPerRow: mipBytesPerRow,
+                    bytesPerImage: mipBytesPerImage
+                )
+
+                offset += mipBytesPerImage
+            }
         }
     }
 
-    return mtlTexture
+    guard mipLevelsInData > 0 else {
+        return nil
+    }
+    return (mtlTexture, mipLevelsInData)
 }
 
 private func makeTextureFromImageAsset(
@@ -198,17 +243,15 @@ private func makeTextureFromImageAsset(
     commandQueue: any MTLCommandQueue,
     generateMips: Bool,
     memoryOwner: task_id_token_t,
-    overridePixelFormat: Bool,
     swizzle: MTLTextureSwizzleChannels = .init(red: .red, green: .green, blue: .blue, alpha: .alpha),
     existingTexture: _Proto_LowLevelTextureResource_v1? = nil
 ) -> _Proto_LowLevelTextureResource_v1? {
     guard
-        let mtlTexture = makeMTLTextureFromImageAsset(
+        let (mtlTexture, mipLevelsInData) = makeMTLTextureFromImageAsset(
             imageAsset,
             device: device,
             generateMips: generateMips,
-            memoryOwner: memoryOwner,
-            overridePixelFormat: overridePixelFormat
+            memoryOwner: memoryOwner
         )
     else {
         logError("could not create metal texture")
@@ -223,7 +266,7 @@ private func makeTextureFromImageAsset(
         guard let blitEncoder = commandBuffer.makeBlitCommandEncoder() else {
             fatalError("Could not create blit encoder")
         }
-        if generateMips {
+        if generateMips && mtlTexture.mipmapLevelCount > mipLevelsInData {
             blitEncoder.generateMipmaps(for: mtlTexture)
         }
 
@@ -246,7 +289,6 @@ private func makeTextureFromImageAsset(
     commandQueue: any MTLCommandQueue,
     generateMips: Bool,
     memoryOwner: task_id_token_t,
-    overridePixelFormat: Bool,
     swizzle: MTLTextureSwizzleChannels = .init(red: .red, green: .green, blue: .blue, alpha: .alpha)
 ) -> _Proto_LowLevelTextureResource_v1? {
     makeTextureFromImageAsset(
@@ -256,7 +298,6 @@ private func makeTextureFromImageAsset(
         commandQueue: commandQueue,
         generateMips: generateMips,
         memoryOwner: memoryOwner,
-        overridePixelFormat: overridePixelFormat,
         swizzle: swizzle,
         existingTexture: nil
     )
@@ -269,7 +310,6 @@ private func makeTextureFromImageAsset(
     commandQueue: any MTLCommandQueue,
     generateMips: Bool,
     memoryOwner: task_id_token_t,
-    overridePixelFormat: Bool,
     existingTexture: _Proto_LowLevelTextureResource_v1?
 ) -> _Proto_LowLevelTextureResource_v1? {
     makeTextureFromImageAsset(
@@ -279,7 +319,6 @@ private func makeTextureFromImageAsset(
         commandQueue: commandQueue,
         generateMips: generateMips,
         memoryOwner: memoryOwner,
-        overridePixelFormat: overridePixelFormat,
         swizzle: .init(red: .red, green: .green, blue: .blue, alpha: .alpha),
         existingTexture: existingTexture
     )
@@ -502,9 +541,8 @@ extension WKBridgeReceiver {
                 device: device,
                 renderContext: renderContext,
                 commandQueue: configuration.commandQueue,
-                generateMips: true,
+                generateMips: false,
                 memoryOwner: configuration.appRenderer.memoryOwner,
-                overridePixelFormat: false,
                 swizzle: .init(red: .red, green: .red, blue: .red, alpha: .one)
             )
         else {
@@ -518,7 +556,6 @@ extension WKBridgeReceiver {
                 commandQueue: configuration.commandQueue,
                 generateMips: true,
                 memoryOwner: configuration.appRenderer.memoryOwner,
-                overridePixelFormat: false,
                 swizzle: .init(red: .red, green: .red, blue: .red, alpha: .one)
             )
         else {
@@ -638,7 +675,6 @@ extension WKBridgeReceiver {
                 commandQueue: commandQueue,
                 generateMips: true,
                 memoryOwner: self.memoryOwner,
-                overridePixelFormat: false,
                 existingTexture: needsNewTexture ? nil : existingTexture
             ) {
                 textureHashesAndResources[textureData.identifier] = (textureData.hashString, textureResource)
@@ -862,7 +898,7 @@ extension WKBridgeReceiver {
     func setEnvironmentMap(_ imageAsset: WKBridgeImageAsset) {
         do {
             guard
-                let mtlTextureEquirectangular = makeMTLTextureFromImageAsset(
+                let (mtlTextureEquirectangular, _) = makeMTLTextureFromImageAsset(
                     imageAsset,
                     device: device,
                     generateMips: true,
