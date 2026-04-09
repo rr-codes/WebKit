@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2025 Apple Inc. All rights reserved.
+ * Copyright (C) 2014-2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -55,6 +55,7 @@ DECLARE_SYSTEM_HEADER
 #include <CoreGraphics/CGPathPrivate.h>
 #include <CoreGraphics/CGShadingPrivate.h>
 #include <CoreGraphics/CGStylePrivate.h>
+#include <CoreGraphics/CGToneMappingPrivate.h>
 #include <CoreGraphics/CoreGraphicsPrivate.h>
 
 #if PLATFORM(MAC)
@@ -229,6 +230,9 @@ typedef CF_ENUM (int32_t, CGStyleType)
     kCGStyleColorMatrix = 4,
 #endif
 };
+
+extern const const CFStringRef kCGConstrainedDynamicRange;
+extern const const CFStringRef kCGContentEDRStrength;
 
 #if PLATFORM(MAC)
 

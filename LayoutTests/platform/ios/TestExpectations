@@ -4641,15 +4641,17 @@ fast/images/pagewide-play-pause-offscreen-animations.html [ Pass ]
 # Only applicable on platforms with HDR support
 compositing/hdr [ Pass ]
 fast/canvas/hdr [ Pass ]
-fast/images/hdr-basic-image.html [ Pass ]
-fast/images/hdr-basic-image-dynamic-range-limit.html [ Pass ]
-fast/images/hdr-background-image.html [ Pass ]
-fast/images/hdr-border-image.html [ Pass ]
-fast/images/hdr-image-layer-sdr-dynamic-range-limit.html [ Pass ]
-fast/images/hdr-pseudo-before-image.html [ Pass ]
-fast/images/hdr-svg-inline-image.html [ Pass ]
-fast/images/hdr-unaccelerated-basic-image.html [ Pass ]
-fast/images/hdr-unaccelerated-image-blur-filter.html [ Pass ]
+
+# These tests do not draw the HDR images correctly on iPhone 12 simulator
+fast/images/hdr-basic-image.html [ ImageOnlyFailure ]
+fast/images/hdr-basic-image-dynamic-range-limit.html [ ImageOnlyFailure ]
+fast/images/hdr-background-image.html [ ImageOnlyFailure ]
+fast/images/hdr-border-image.html [ ImageOnlyFailure ]
+fast/images/hdr-image-layer-sdr-dynamic-range-limit.html [ ImageOnlyFailure ]
+fast/images/hdr-pseudo-before-image.html [ ImageOnlyFailure ]
+fast/images/hdr-svg-inline-image.html [ ImageOnlyFailure ]
+fast/images/hdr-unaccelerated-basic-image.html [ ImageOnlyFailure ]
+fast/images/hdr-unaccelerated-image-blur-filter.html [ ImageOnlyFailure ]
 
 # Re-enabling tests fixed by DocumentManager in iOS16+ rdar://102159271
 fast/forms/ios/show-file-upload-context-menu-above-keyboard.html [ Pass ]
