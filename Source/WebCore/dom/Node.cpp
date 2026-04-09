@@ -2593,14 +2593,13 @@ void Node::registerMutationObserver(MutationObserver& observer, MutationObserver
     RefPtr<MutationObserverRegistration> registration;
     auto& registry = ensureRareData().mutationObserverData().registry;
 
-    for (auto& candidateRegistration : registry) {
-        if (&candidateRegistration->observer() == &observer) {
-            registration = candidateRegistration.ptr();
-            registration->resetObservation(options, attributeFilter);
-        }
-    }
-
-    if (!registration) {
+    auto index = registry.findIf([&observer](auto& candidateRegistration) {
+        return &candidateRegistration->observer() == &observer;
+    });
+    if (index != notFound) {
+        registration = registry[index].copyRef();
+        registration->resetObservation(options, attributeFilter);
+    } else {
         registry.append(MutationObserverRegistration::create(observer, *this, options, attributeFilter));
         registration = registry.last().ptr();
     }
