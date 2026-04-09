@@ -170,6 +170,12 @@ See [RWI_ARCHITECTURE.md](./RWI_ARCHITECTURE.md) for complete setup instructions
 
 ## Known Issues and Future Improvements
 
+### Per-Page Debuggable Targets
+
+- **Issue**: Ideally each page (URL) hosted by a WebContent process should appear as a separate debuggable target in `lldb platform process list`, so users can attach to a specific website. Currently there is one `WasmDebuggerDebuggable` per WebContent process, so when Safari places multiple pages into the same process (and therefore the same VM), all their hostnames are aggregated into a single target entry (e.g. `"earth.google.com, github.com"`).
+- **Why aggregation is acceptable for now**: A single WebContent process runs a single `WasmDebugServer` that owns all Wasm execution for every page it hosts. Splitting that into per-page debuggables would create multiple LLDB sessions backed by the same VM state, which is architecturally incorrect. Aggregation correctly reflects that one LLDB attach covers all pages in the process.
+- **Future improvement**: If the architecture evolves so that each page gets its own isolated VM (and thus its own `WasmDebugServer`), replace the aggregated URL with a per-page `WasmDebuggerDebuggable` so each URL appears as a distinct, independently attachable target.
+
 ### WASM Stack Value Type Support
 
 - **Issue**: Current implementation only supports WASM local variable inspection, missing WASM stack value types

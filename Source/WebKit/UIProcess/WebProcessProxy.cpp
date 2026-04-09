@@ -937,6 +937,13 @@ void WebProcessProxy::removeWebPage(WebPageProxy& webPage, EndsUsingDataStore en
     UserMediaProcessManager::singleton().revokeSandboxExtensionsIfNeeded(protect(*this));
 #endif
 
+#if ENABLE(WEBASSEMBLY_DEBUGGER) && ENABLE(REMOTE_INSPECTOR)
+    // Refresh the WASM debugger listing for this process since it lost a page.
+    // remoteInspectorInformationDidChange() does not cover this case — on a process
+    // swap it only updates the new process, and on page close it does not fire at all.
+    updateWasmDebuggerTarget();
+#endif
+
     maybeShutDown();
 }
 
@@ -3261,6 +3268,12 @@ void WebProcessProxy::sendWasmDebuggerResponse(const String& response)
     }
 
     debuggable->sendResponseToFrontend(response);
+}
+
+void WebProcessProxy::updateWasmDebuggerTarget()
+{
+    if (RefPtr debuggable = m_wasmDebuggerDebuggable)
+        debuggable->update();
 }
 
 #endif // ENABLE(WEBASSEMBLY_DEBUGGER) && ENABLE(REMOTE_INSPECTOR)

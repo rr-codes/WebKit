@@ -605,6 +605,7 @@ public:
     void NODELETE setWasmDebuggerTargetIndicating(bool);
 
     void sendWasmDebuggerResponse(const String& response);
+    void updateWasmDebuggerTarget();
 #endif
 
 #if ENABLE(IPC_TESTING_API)
