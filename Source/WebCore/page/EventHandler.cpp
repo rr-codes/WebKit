@@ -4160,7 +4160,7 @@ bool EventHandler::keyEvent(const PlatformKeyboardEvent& keyEvent)
     RefPtr page = frame->page();
     RefPtr mainFrameDocument = frame->document() ? frame->document()->mainFrameDocument() : nullptr;
     MonotonicTime savedLastHandledUserGestureTimestamp;
-    bool savedUserDidInteractWithPage = page ? page->userDidInteractWithPage() : false;
+    bool savedUserDidInteractWithPage = page && page->userDidInteractWithPage();
 
     if (auto* document = frame->document())
         savedLastHandledUserGestureTimestamp = document->lastHandledUserGestureTimestamp();

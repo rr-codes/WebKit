@@ -9382,7 +9382,7 @@ void Document::updateLastHandledUserGestureTimestamp(MonotonicTime time)
 bool Document::mainFrameDocumentHasHadUserInteraction() const
 {
     RefPtr mainFrameDocument = this->mainFrameDocument();
-    return mainFrameDocument ? mainFrameDocument->hasHadUserInteraction() : false;
+    return mainFrameDocument && mainFrameDocument->hasHadUserInteraction();
 }
 
 bool Document::processingUserGestureForMedia() const

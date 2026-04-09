@@ -155,7 +155,7 @@ void RenderTable::styleDidChange(Style::Difference diff, const RenderStyle* oldS
     RenderBlock::styleDidChange(diff, oldStyle);
     propagateStyleToAnonymousChildren(StylePropagationType::AllChildren);
 
-    bool oldFixedTableLayout = oldStyle ? oldStyle->isFixedTableLayout() : false;
+    bool oldFixedTableLayout = oldStyle && oldStyle->isFixedTableLayout();
 
     // In the collapsed border model, there is no cell spacing.
     m_hSpacing = collapseBorders() ? 0 : style().borderHorizontalSpacing().resolveZoom(style().usedZoomForLength());

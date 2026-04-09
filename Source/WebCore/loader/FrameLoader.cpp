@@ -3972,7 +3972,7 @@ static bool NODELETE shouldAskForNavigationConfirmation(Document& document, cons
         return false;
 
     auto* page = document.page();
-    bool userDidInteractWithPage = page ? page->userDidInteractWithPage() : false;
+    bool userDidInteractWithPage = page && page->userDidInteractWithPage();
 
     // Web pages can request we ask for confirmation before navigating by:
     // - Cancelling the BeforeUnloadEvent (modern way)

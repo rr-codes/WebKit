@@ -171,7 +171,7 @@ ExceptionOr<void> History::forward(Document& document)
 ExceptionOr<void> History::go(int distance)
 {
     RefPtr frame = this->frame();
-    LOG(History, "History %p go(%d) frame %p (main frame %d)", this, distance, frame.get(), frame ? frame->isMainFrame() : false);
+    LOG(History, "History %p go(%d) frame %p (main frame %d)", this, distance, frame.get(), frame && frame->isMainFrame());
 
     if (!isDocumentFullyActive(frame.get()))
         return documentNotFullyActive();
@@ -183,7 +183,7 @@ ExceptionOr<void> History::go(int distance)
 ExceptionOr<void> History::go(Document& document, int distance)
 {
     RefPtr frame = this->frame();
-    LOG(History, "History %p go(%d) in document %p frame %p (main frame %d)", this, distance, &document, frame.get(), frame ? frame->isMainFrame() : false);
+    LOG(History, "History %p go(%d) in document %p frame %p (main frame %d)", this, distance, &document, frame.get(), frame && frame->isMainFrame());
 
     if (!isDocumentFullyActive(frame.get()))
         return documentNotFullyActive();

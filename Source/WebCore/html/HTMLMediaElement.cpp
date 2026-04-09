@@ -3819,7 +3819,7 @@ void HTMLMediaElement::addPlayedRange(const MediaTime& start, const MediaTime& e
 bool HTMLMediaElement::supportsScanning() const
 {
     RefPtr player = m_player;
-    return player ? player->supportsScanning() : false;
+    return player && player->supportsScanning();
 }
 
 void HTMLMediaElement::prepareToPlay()
@@ -4144,7 +4144,7 @@ std::optional<MediaSessionGroupIdentifier> HTMLMediaElement::mediaSessionGroupId
 bool HTMLMediaElement::hasAudio() const
 {
     RefPtr player = m_player;
-    return player ? player->hasAudio() : false;
+    return player && player->hasAudio();
 }
 
 bool HTMLMediaElement::seeking() const

@@ -4649,7 +4649,7 @@ bool AccessibilityNodeObject::canSetValueAttribute() const
 
     String readOnly = readOnlyValue();
     if (!readOnly.isEmpty())
-        return readOnly == "true"_s ? false : true;
+        return readOnly != "true"_s;
 
     if (isNonNativeTextControl())
         return true;

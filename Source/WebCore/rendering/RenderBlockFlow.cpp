@@ -1501,9 +1501,9 @@ std::optional<LayoutUnit> RenderBlockFlow::selfCollapsingMarginBeforeWithClear(R
 
 LayoutUnit RenderBlockFlow::collapseMarginsWithChildInfo(RenderBox* child, MarginInfo& marginInfo)
 {
-    bool childIsSelfCollapsing = child ? child->isSelfCollapsingBlock() : false;
-    bool beforeQuirk = child ? hasMarginBeforeQuirk(*child) : false;
-    bool afterQuirk = child ? hasMarginAfterQuirk(*child) : false;
+    bool childIsSelfCollapsing = child && child->isSelfCollapsingBlock();
+    bool beforeQuirk = child && hasMarginBeforeQuirk(*child);
+    bool afterQuirk = child && hasMarginAfterQuirk(*child);
     auto trimChildBlockMargins = [&]() {
         auto childBlockFlow = dynamicDowncast<RenderBlockFlow>(child);
         if (childBlockFlow)

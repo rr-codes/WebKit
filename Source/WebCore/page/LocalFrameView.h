@@ -764,7 +764,7 @@ public:
     struct AutoPreventLayerAccess {
         AutoPreventLayerAccess(LocalFrameView* view)
             : frameView(view)
-            , oldPreventLayerAccess(view ? view->layerAccessPrevented() : false)
+            , oldPreventLayerAccess(view && view->layerAccessPrevented())
         {
             if (view)
                 view->setLayerAcessPrevented(true);

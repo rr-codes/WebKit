@@ -940,7 +940,7 @@ bool ResourceLoader::isPDFJSResourceLoad() const
 
     RefPtr frame = m_frame.get();
     RefPtr document = frame && frame->ownerElement() ? &frame->ownerElement()->document() : nullptr;
-    return document ? document->isPDFDocument() : false;
+    return document && document->isPDFDocument();
 #else
     return false;
 #endif

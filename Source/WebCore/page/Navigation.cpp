@@ -1210,7 +1210,7 @@ Navigation::DispatchResult Navigation::innerDispatchNavigateEvent(NavigationNavi
         return DispatchResult::Completed;
     }
 
-    bool wasBeingDispatched = m_ongoingNavigateEvent ? m_ongoingNavigateEvent->isBeingDispatched() : false;
+    bool wasBeingDispatched = m_ongoingNavigateEvent && m_ongoingNavigateEvent->isBeingDispatched();
 
     abortOngoingNavigationIfNeeded();
 

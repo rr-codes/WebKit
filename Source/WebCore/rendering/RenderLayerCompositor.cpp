@@ -3876,7 +3876,7 @@ bool RenderLayerCompositor::requiresCompositingForTransform(RenderLayerModelObje
         // Continue to allow pages to avoid the very slow software filter path.
         if (styleHas3DTransformOperation(renderer.style()) && renderer.hasFilter())
             return true;
-        return styleTransformOperationsAreRepresentableIn2D(renderer.style()) ? false : true;
+        return !styleTransformOperationsAreRepresentableIn2D(renderer.style());
     }
     return false;
 }

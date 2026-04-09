@@ -153,7 +153,7 @@ static FragmentAndResources createFragmentInternal(LocalFrame& frame, NSAttribut
 
 #if PLATFORM(MAC)
     RefPtr view = frame.view();
-    LocalDefaultSystemAppearance localAppearance(view ? view->useDarkAppearance() : false);
+    LocalDefaultSystemAppearance localAppearance(view && view->useDarkAppearance());
 #endif
 
     NSArray *subresources = nil;
