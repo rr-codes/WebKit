@@ -44,13 +44,11 @@ enum class CursorDirection : uint8_t {
     Prev,
     Prevunique,
 };
-const unsigned CursorDirectionMaximum = 3;
 
 enum class CursorType : bool {
     KeyAndValue,
     KeyOnly,
 };
-const unsigned CursorTypeMaximum = 1;
 
 enum class CursorSource : bool {
     Index,
