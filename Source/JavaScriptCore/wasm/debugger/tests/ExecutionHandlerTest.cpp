@@ -230,8 +230,8 @@ static void testBreakpointContinueCycles()
             return getReplyCount() == expectedReplyCount;
         });
 
-        DebugState* state = executionHandler->debuggeeStateSafe();
-        CHECK(state->atBreakpoint(), "Should stop at a breakpoint");
+        DebugState* state = executionHandler->debuggeeStateForTest();
+        CHECK(state->isStoppedAtBytecode(), "Should stop at a breakpoint");
         VLOG("  Stopped at breakpoint in vm:", RawPointer(executionHandler->debuggeeVM()));
     }
 
@@ -261,11 +261,11 @@ static void testBreakpointSingleStepping()
         bool stopped = getReplyCount() == expectedReplyCount;
         if (!stopped)
             return false;
-        return executionHandler->debuggeeStateSafe()->atBreakpoint();
+        return executionHandler->debuggeeStateForTest()->isStoppedAtBytecode();
     });
 
-    DebugState* state = executionHandler->debuggeeStateSafe();
-    CHECK(state->atBreakpoint(), "Should be at breakpoint");
+    DebugState* state = executionHandler->debuggeeStateForTest();
+    CHECK(state->isStoppedAtBytecode(), "Should be at breakpoint");
 
     // Record initial virtual address
     CHECK(state->stopData, "Should have stopData");
@@ -298,8 +298,8 @@ static void testBreakpointSingleStepping()
         if (breakpoint)
             executionHandler->breakpointManager()->setBreakpoint(beforeStepAddress, WTF::move(breakpointCopy));
 
-        state = executionHandler->debuggeeStateSafe();
-        CHECK(state->atBreakpoint(), "Should be at breakpoint after step");
+        state = executionHandler->debuggeeStateForTest();
+        CHECK(state->isStoppedAtBytecode(), "Should be at breakpoint after step");
 
         JSC::Wasm::VirtualAddress afterStepAddress = state->stopData->address;
         VLOG("  After step: ", afterStepAddress);

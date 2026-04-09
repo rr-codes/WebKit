@@ -1968,3 +1968,73 @@ class WasmOobMemoryTrapTestCase(BaseTestCase):
                 "frame #1: 0xc000000000000000",
             ]
         )
+
+
+class DynamicModuleLoadTestCase(BaseTestCase):
+
+    def __init__(self, build_config: str = None, port: int = None):
+        super().__init__(build_config, port)
+
+    def execute(self):
+        self.setup_debugging_session_or_raise("resources/wasm/dynamic-module-load.js", extra_jsc_options=["--useDollarVM=1"])
+
+        try:
+            self.test()
+
+        except Exception as e:
+            raise Exception(f"Test failed: {e}")
+
+    def test(self):
+        # Set a breakpoint at the 'end' instruction of func_a in module 1 (virtual address
+        # 0x4000000000000023).  Module 1 is already loaded, so the breakpoint resolves immediately.
+        self.send_lldb_command_or_raise("b 0x4000000000000023", patterns=["Breakpoint 1"])
+
+        # Resume: stops at the func_a breakpoint in module 1.
+        # Disassembly confirms the stopped instruction is 'end' at the expected address.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "->  0x4000000000000023: end"])
+
+        # Resume: stops for the module-load notification (library:; T-packet) when module 2 is
+        # instantiated.  LLDB re-queries qXfer:libraries:read and loads module 2.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "new wasm module loaded"])
+
+        # Set a breakpoint at the 'end' instruction of func_b in module 2 (virtual address
+        # 0x4000000100000023).  Module 2 is now loaded, so the breakpoint resolves immediately.
+        self.send_lldb_command_or_raise("b 0x4000000100000023", patterns=["Breakpoint 2"])
+
+        # Resume: stops at the func_b breakpoint in module 2.
+        # Disassembly confirms the stopped instruction is 'end' at the expected address.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "->  0x4000000100000023: end"])
+
+
+class SwiftWasmDynamicModuleLoadTestCase(BaseTestCase):
+
+    def __init__(self, build_config: str = None, port: int = None):
+        super().__init__(build_config, port)
+
+    def execute(self):
+        self.setup_debugging_session_or_raise("resources/swift-wasm/dynamic-module-load/main.js", extra_jsc_options=["--useDollarVM=1"])
+
+        try:
+            self.test()
+
+        except Exception as e:
+            raise Exception(f"Test failed: {e}")
+
+    def test(self):
+        # Module A is loaded at the start, so this breakpoint is resolved immediately.
+        self.send_lldb_command_or_raise("b func_a", patterns=["Breakpoint 1", "func_a"])
+
+        # Module B is loaded dynamically later, so this breakpoint is pending at the start.
+        self.send_lldb_command_or_raise("b func_b", patterns=["pending"])
+
+        # Resume: stops at the func_a breakpoint (module A), confirming that the breakpoint is set and hit correctly.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "func_a"])
+
+        # Resume: stops at when Module B is loaded and the associated instance is created. This stop trigger
+        # LLDB re-querying debug info and resolving the pending breakpoint for func_b, confirming that dynamic
+        # module load triggers pending breakpoint resolution.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "new wasm module loaded"])
+        self.send_lldb_command_or_raise("br list", patterns=["func_a", "func_b"])
+
+        # Resume: stops at the func_b breakpoint (module B) on the first call, confirming that the pending breakpoint was resolved via debug info.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "func_b"])

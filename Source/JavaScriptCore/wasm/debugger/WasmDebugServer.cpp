@@ -297,6 +297,8 @@ void DebugServer::reset()
 {
     // Reset to the init state without stopping the debug server.
     m_executionHandler->reset();
+    m_isDebuggerReady.store(false, std::memory_order_release);
+    m_hasContinued.store(false, std::memory_order_release);
     closeSocket(m_clientSocket);
     m_noAckMode = false;
     m_packetParser.reset();
@@ -403,24 +405,19 @@ void DebugServer::handlePacket(StringView packet)
         m_memoryHandler->write(packet);
         break;
     case 'c':
+    case 'C':
+        // 'C' is ContinueWithSignal — LLDB sends C<sig> instead of 'c' when resuming from a
+        // signal stop (e.g. T05/SIGTRAP). Signal re-delivery is a ptrace concept; we have no
+        // OS-level signal injection so the signal number is irrelevant — treat identically to 'c'.
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Routing continue packet to ExecutionHandler");
         m_executionHandler->resume();
-        break;
-    case 'C':
-        // ContinueWithSignal: LLDB sends C<sig> instead of 'c' when resuming from a signal
-        // stop (e.g. T05/SIGTRAP). Signal re-delivery is a ptrace concept; we have no OS-level
-        // signal injection so the signal number is irrelevant — just resume.
-        dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Routing ContinueWithSignal packet to ExecutionHandler (signal ignored)");
-        m_executionHandler->resume();
+        m_hasContinued.store(true, std::memory_order_release);
         break;
     case 's':
-        dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Routing legacy step packet to ExecutionHandler");
-        m_executionHandler->step();
-        break;
     case 'S':
-        // StepWithSignal: same reasoning as 'C' above — signal re-delivery does not apply
-        // to our WASM VM, so ignore the signal number and treat it as a plain step.
-        dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Routing StepWithSignal packet to ExecutionHandler (signal ignored)");
+        // 'S' is StepWithSignal — same reasoning as 'C': signal re-delivery does not apply
+        // to our WASM VM, so ignore the signal number and treat identically to plain 's'.
+        dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Routing step packet to ExecutionHandler");
         m_executionHandler->step();
         break;
     case 'Z':
@@ -438,10 +435,6 @@ void DebugServer::handlePacket(StringView packet)
     case '?':
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Routing halt reason query to ExecutionHandler");
         m_executionHandler->interrupt();
-        // After the initial interrupt is handled and the stop reply is sent, the debugger has
-        // established a known VM state. Any trap encountered in future execution
-        // (after the user sends 'c') will be properly intercepted.
-        m_executionHandler->setTrapHandlingEnabled(true);
         break;
     case 'k':
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Kill request");
@@ -537,11 +530,18 @@ void DebugServer::trackInstance(JSWebAssemblyInstance* instance)
     if (!m_moduleManager)
         return;
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Tracking WebAssembly instance: ", RawPointer(instance));
-    uint32_t instanceId = m_moduleManager->registerInstance(instance);
-    if (isConnected()) {
-        UNUSED_VARIABLE(instanceId);
-        // FIXME: Should notify LLDB with new module library.
-    }
+    // Notify the debugger here (trackInstance) rather than in trackModule for two reasons:
+    // 1. Module::create covers both the synchronous and streaming-async compilation paths.
+    //    In the async path the JS thread is not at a JS safepoint when the module is created,
+    //    so a stop-the-world request would only fire at the next safepoint — too late for the
+    //    debugger to intercept the load. By the time trackInstance is called the JS thread is
+    //    back at a safepoint and we can stop immediately.
+    // 2. A Module can be compiled speculatively without ever being instantiated (e.g. via
+    //    WebAssembly.compile). Only when a JSWebAssemblyInstance is created do we know the
+    //    module will actually be used, making this the right moment to notify LLDB.
+    m_moduleManager->registerInstance(instance);
+    if (isDebuggerReady() && m_moduleManager->needsNewModuleNotification(instance))
+        m_executionHandler->notifyDebuggerOfNewModule(instance->vm());
 }
 
 void DebugServer::trackModule(Module& module)
@@ -549,11 +549,7 @@ void DebugServer::trackModule(Module& module)
     if (!m_moduleManager)
         return;
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Tracking WebAssembly module: ", RawPointer(&module));
-    uint32_t moduleId = m_moduleManager->registerModule(module);
-    if (isConnected()) {
-        UNUSED_VARIABLE(moduleId);
-        // FIXME: Should notify LLDB with new module library.
-    }
+    m_moduleManager->registerModule(module);
 }
 
 void DebugServer::untrackModule(Module& module)
@@ -564,7 +560,7 @@ void DebugServer::untrackModule(Module& module)
     m_moduleManager->unregisterModule(module);
 }
 
-bool DebugServer::isConnected() const
+bool DebugServer::hasDebugger() const
 {
     if (!isState(State::Running))
         return false;
@@ -573,6 +569,12 @@ bool DebugServer::isConnected() const
         return true;
 #endif
     return isSocketValid(m_clientSocket);
+}
+
+ModuleManager& DebugServer::moduleManager() const
+{
+    RELEASE_ASSERT(m_moduleManager);
+    return *m_moduleManager;
 }
 
 }

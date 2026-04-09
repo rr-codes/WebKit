@@ -83,6 +83,7 @@ public:
     JS_EXPORT_PRIVATE void resume();
     JS_EXPORT_PRIVATE void step();
     JS_EXPORT_PRIVATE void interrupt();
+    void notifyDebuggerOfNewModule(VM&);
     void handleThreadStopInfo(StringView packet);
     String callStackStringFor(uint64_t threadId);
     JS_EXPORT_PRIVATE void reset();
@@ -107,7 +108,7 @@ public:
     void setDebugServerThreadId(uint64_t threadId) { m_debugServerThreadId = threadId; }
 
     JS_EXPORT_PRIVATE DebugState* debuggeeState() const WTF_REQUIRES_LOCK(m_lock);
-    JS_EXPORT_PRIVATE DebugState* debuggeeStateSafe() const; // FIXME: Should be used for test only
+    JS_EXPORT_PRIVATE DebugState* debuggeeStateForTest() const; // FIXME: Should be used for test only
 
     VM* debuggeeVM() const // Used for test only
     {
@@ -127,7 +128,6 @@ public:
     StopTheWorldStatus handleStopTheWorld(VM&, StopTheWorldEvent);
     void handlePostResume();
     bool takeAwaitingResumeNotification() WTF_REQUIRES_LOCK(m_lock) { return std::exchange(m_awaitingResumeNotification, false); }
-    void setTrapHandlingEnabled(bool enabled) { m_trapHandlingEnabled.store(enabled, std::memory_order_release); }
 
 private:
     friend class DebugServer;
@@ -148,8 +148,6 @@ private:
     void sendErrorReply(ProtocolError);
 
     void selectDebuggeeIfNeeded(VM& fallbackVM) WTF_REQUIRES_LOCK(m_lock);
-
-    bool isTrapHandlingEnabled() const { return m_trapHandlingEnabled.load(std::memory_order_acquire); }
 
     bool requiresStopConfirmation() const WTF_REQUIRES_LOCK(m_lock)
     {
@@ -172,7 +170,6 @@ private:
     Condition m_debuggeeContinue;
     DebuggerState m_debuggerState WTF_GUARDED_BY_LOCK(m_lock) { DebuggerState::Replied };
     bool m_awaitingResumeNotification WTF_GUARDED_BY_LOCK(m_lock) { false };
-    std::atomic<bool> m_trapHandlingEnabled { false };
     VM* m_debuggee WTF_GUARDED_BY_LOCK(m_lock) { nullptr };
     std::optional<uint64_t> m_debugServerThreadId;
 };

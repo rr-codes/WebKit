@@ -59,6 +59,7 @@ uint32_t ModuleManager::registerModule(Module& module)
     m_moduleIdToModule.set(moduleId, &module);
     const auto& moduleInfo = module.moduleInformation();
     moduleInfo.debugInfo->id = moduleId;
+    m_unnotifiedModuleIds.add(moduleId);
     dataLogLnIf(Options::verboseWasmDebugger(), "[ModuleManager][registerModule] - registered module with ID: ", moduleId, " size: ", moduleInfo.debugInfo->source.size(), " bytes");
     return moduleId;
 }
@@ -68,6 +69,7 @@ void ModuleManager::unregisterModule(Module& module)
     Locker locker { m_lock };
     uint32_t moduleId = module.debugId();
     m_moduleIdToModule.remove(moduleId);
+    m_unnotifiedModuleIds.remove(moduleId);
     dataLogLnIf(Options::verboseWasmDebugger(), "[ModuleManager][unregisterModule] - unregistered module with debug ID: ", moduleId);
 }
 
@@ -85,6 +87,19 @@ uint32_t ModuleManager::registerInstance(JSWebAssemblyInstance* jsInstance)
     jsInstance->setDebugId(instanceId);
     dataLogLnIf(Options::verboseWasmDebugger(), "[ModuleManager][registerInstance] - registered instance with ID: ", instanceId, " for module ID: ", jsInstance->module().debugId());
     return instanceId;
+}
+
+bool ModuleManager::needsNewModuleNotification(JSWebAssemblyInstance* jsInstance)
+{
+    Locker locker { m_lock };
+    uint32_t moduleId = jsInstance->module().debugId();
+    return m_unnotifiedModuleIds.contains(moduleId);
+}
+
+void ModuleManager::markAllModulesAsNotified()
+{
+    Locker locker { m_lock };
+    m_unnotifiedModuleIds.clear();
 }
 
 Module* ModuleManager::module(uint32_t moduleId) const

@@ -196,12 +196,6 @@ See [RWI_ARCHITECTURE.md](./RWI_ARCHITECTURE.md) for complete setup instructions
 - **Location**: `WasmDebugServer.cpp:348-349`
 - **Solution**: Introduce various stop states and proper termination handling
 
-### Dynamic Module Notifications
-
-- **Issue**: LLDB is not notified when new modules are loaded or unloaded
-- **Location**: `WasmDebugServer.cpp:472, 484`
-- **Solution**: Implement proper LLDB notifications for dynamic module loading/unloading
-
 ### Multi-Thread Display in LLDB
 
 - **Issue**: Thread select and stop reply protocol handlers need improvement to correctly display multi-VM data in LLDB

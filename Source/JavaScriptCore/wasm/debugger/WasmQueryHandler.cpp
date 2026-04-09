@@ -288,6 +288,11 @@ void QueryHandler::handleLibrariesRead(StringView packet)
     if (handleChunkedLibrariesResponse(offset, maxSize, response)) {
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Sending library list chunk: offset=", offset, ", maxSize=", maxSize);
         m_debugServer.sendReply(response);
+        // Only mark modules notified and signal debugger-ready on the final chunk ('l' prefix).
+        if (response[0] == 'l') {
+            m_debugServer.m_isDebuggerReady.store(true, std::memory_order_release);
+            m_debugServer.moduleManager().markAllModulesAsNotified();
+        }
     } else {
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Failed to generate library list chunk");
         m_debugServer.sendErrorReply(ProtocolError::MemoryError);
@@ -354,8 +359,8 @@ void QueryHandler::handleWasmLocal(StringView packet)
 
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] qWasmLocal frame=", frameIndex, ", variable=", localIndex);
 
-    auto* state = m_debugServer.execution().debuggeeStateSafe();
-    if (state->atSystemCall() || state->atPrologue()) {
+    auto* state = m_debugServer.execution().debuggeeStateForTest();
+    if (state->isStoppedAtSystemCall() || state->isStoppedAtPrologue()) {
         m_debugServer.sendErrorReply(ProtocolError::UnknownCommand);
         return;
     }
@@ -436,8 +441,8 @@ void QueryHandler::handleWasmGlobal(StringView packet)
 
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] qWasmGlobal frame=", frameIndex, ", global=", globalIndex);
 
-    auto* state = m_debugServer.execution().debuggeeStateSafe();
-    if (state->atSystemCall()) {
+    auto* state = m_debugServer.execution().debuggeeStateForTest();
+    if (state->isStoppedAtSystemCall()) {
         m_debugServer.sendErrorReply(ProtocolError::UnknownCommand);
         return;
     }

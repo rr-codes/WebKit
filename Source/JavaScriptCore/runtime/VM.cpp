@@ -596,7 +596,7 @@ VM::~VM()
 #if ENABLE(WEBASSEMBLY_DEBUGGER)
     if (Options::enableWasmDebugger()) [[unlikely]] {
         auto& debugServer = Wasm::DebugServer::singleton();
-        if (debugServer.isConnected())
+        if (debugServer.hasDebugger())
             debugServer.execution().notifyVMDestruction(this);
     }
 #endif

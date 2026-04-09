@@ -95,6 +95,10 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 #include "WasmStreamingParser.h"
 #endif
 
+#if ENABLE(WEBASSEMBLY_DEBUGGER)
+#include "WasmDebugServer.h"
+#endif
+
 #if PLATFORM(COCOA)
 #include <wtf/cocoa/CrashReporter.h>
 #endif
@@ -2165,6 +2169,9 @@ static JSC_DECLARE_HOST_FUNCTION(functionCreateWasmStreamingParser);
 static JSC_DECLARE_HOST_FUNCTION(functionCreateWasmStreamingCompilerForCompile);
 static JSC_DECLARE_HOST_FUNCTION(functionCreateWasmStreamingCompilerForInstantiate);
 #endif
+#if ENABLE(WEBASSEMBLY_DEBUGGER)
+static JSC_DECLARE_HOST_FUNCTION(functionHasDebuggerContinued);
+#endif
 static JSC_DECLARE_HOST_FUNCTION(functionCreateStaticCustomAccessor);
 static JSC_DECLARE_HOST_FUNCTION(functionCreateStaticCustomValue);
 static JSC_DECLARE_HOST_FUNCTION(functionCreateStaticDontDeleteDontEnum);
@@ -2407,6 +2414,13 @@ JSC_DEFINE_HOST_FUNCTION(functionOMGTrue, (JSGlobalObject* globalObject, CallFra
 
     return JSValue::encode(jsNumber(2));
 }
+
+#if ENABLE(WEBASSEMBLY_DEBUGGER)
+JSC_DEFINE_HOST_FUNCTION(functionHasDebuggerContinued, (JSGlobalObject*, CallFrame*))
+{
+    return JSValue::encode(jsBoolean(Wasm::DebugServer::singleton().hasContinued()));
+}
+#endif // ENABLE(WEBASSEMBLY_DEBUGGER)
 
 JSC_DEFINE_HOST_FUNCTION(functionCpuMfence, (JSGlobalObject*, CallFrame*))
 {
@@ -4415,6 +4429,9 @@ void JSDollarVM::finishCreation(VM& vm)
     addFunction(vm, "createWasmStreamingParser"_s, functionCreateWasmStreamingParser, 0);
     addFunction(vm, "createWasmStreamingCompilerForCompile"_s, functionCreateWasmStreamingCompilerForCompile, 0);
     addFunction(vm, "createWasmStreamingCompilerForInstantiate"_s, functionCreateWasmStreamingCompilerForInstantiate, 0);
+#endif
+#if ENABLE(WEBASSEMBLY_DEBUGGER)
+    addFunction(vm, "hasDebuggerContinued"_s, functionHasDebuggerContinued, 0);
 #endif
     addFunction(vm, "createStaticCustomAccessor"_s, functionCreateStaticCustomAccessor, 0);
     addFunction(vm, "createStaticCustomValue"_s, functionCreateStaticCustomValue, 0);

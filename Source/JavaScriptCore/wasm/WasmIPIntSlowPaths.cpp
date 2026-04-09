@@ -77,7 +77,7 @@ namespace JSC { namespace IPInt {
 #define IPINT_HANDLE_STEP_INTO_CALL(callerVM, boxedCallee, calleeInstance) do { \
         if (Options::enableWasmDebugger()) [[unlikely]] { \
             Wasm::DebugServer& debugServer = Wasm::DebugServer::singleton(); \
-            if (debugServer.isConnected()) \
+            if (debugServer.hasDebugger()) \
                 debugServer.execution().setStepIntoBreakpointForCall((callerVM), (boxedCallee), (calleeInstance)); \
         } \
     } while (false)
@@ -87,7 +87,7 @@ namespace JSC { namespace IPInt {
 #define IPINT_HANDLE_STEP_INTO_THROW(throwVM) do { \
         if (Options::enableWasmDebugger()) [[unlikely]] { \
             Wasm::DebugServer& debugServer = Wasm::DebugServer::singleton(); \
-            if (debugServer.isConnected()) \
+            if (debugServer.hasDebugger()) \
                 debugServer.execution().setStepIntoBreakpointForThrow((throwVM)); \
         } \
     } while (false)
@@ -1341,7 +1341,7 @@ WASM_IPINT_EXTERN_CPP_DECL(handle_debugger_trap_if_needed, CallFrame* callFrame,
 #if ENABLE(WEBASSEMBLY_DEBUGGER)
     if (Options::enableWasmDebugger()) [[unlikely]] {
         Wasm::DebugServer& debugServer = Wasm::DebugServer::singleton();
-        if (debugServer.isConnected()) {
+        if (debugServer.hasDebugger()) {
             uint8_t* pc = static_cast<uint8_t*>(sp[2].pointer());
             uint8_t* mc = static_cast<uint8_t*>(sp[3].pointer());
             IPIntLocal* pl = static_cast<IPIntLocal*>(sp[0].pointer());
