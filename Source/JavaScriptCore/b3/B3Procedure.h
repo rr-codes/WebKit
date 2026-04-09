@@ -27,7 +27,6 @@
 
 #if ENABLE(B3_JIT)
 
-#include "B3AbstractHeapRepository.h"
 #include "B3Origin.h"
 #include "B3PCToOriginMap.h"
 #include "B3SparseCollection.h"
@@ -308,9 +307,6 @@ public:
     void setIonGraphPasses(Ref<JSON::Array>&&);
     void appendIonGraphPass(ASCIILiteral);
 
-    AbstractHeapRepository& heaps() { return m_heaps.get(); }
-    const AbstractHeapRepository& heaps() const { return m_heaps.get(); }
-
 private:
     friend class BlockInsertionSet;
 
@@ -330,7 +326,6 @@ private:
     const char* m_lastPhaseName;
     std::unique_ptr<OpaqueByproducts> m_byproducts;
     std::unique_ptr<Air::Code> m_code;
-    UniqueRef<AbstractHeapRepository> m_heaps;
     RefPtr<SharedTask<void(PrintStream&, Origin)>> m_originPrinter;
     const void* m_frontendData;
     PCToOriginMap m_pcToOriginMap;

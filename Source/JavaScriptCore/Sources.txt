@@ -191,11 +191,6 @@ b3/B3VariableLiveness.cpp
 b3/B3VariableValue.cpp
 b3/B3WasmAddressValue.cpp
 b3/B3WasmBoundsCheckValue.cpp
-b3/B3WasmArrayElementValue.cpp
-b3/B3WasmArrayGetValue.cpp
-b3/B3WasmArrayLengthValue.cpp
-b3/B3WasmArrayNewValue.cpp
-b3/B3WasmArraySetValue.cpp
 b3/B3WasmStructFieldValue.cpp
 b3/B3WasmStructGetValue.cpp
 b3/B3WasmStructNewValue.cpp

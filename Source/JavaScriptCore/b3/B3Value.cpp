@@ -41,10 +41,6 @@
 #include "B3SlotBaseValue.h"
 #include "B3ValueInlines.h"
 #include "B3ValueKeyInlines.h"
-#include "B3WasmArrayGetValue.h"
-#include "B3WasmArrayLengthValue.h"
-#include "B3WasmArrayNewValue.h"
-#include "B3WasmArraySetValue.h"
 #include "B3WasmBoundsCheckValue.h"
 #include "B3WasmRefTypeCheckValue.h"
 #include "B3WasmStructGetValue.h"
@@ -909,29 +905,6 @@ Effects Value::effects() const
         result.writes = HeapRange::top();
         result.exitsSideways = true;
         break;
-    case WasmArrayGet: {
-        const auto* derived = as<WasmArrayGetValue>();
-        result.reads = derived->range();
-        result.controlDependent = true;
-        result.readsMutability = derived->mutability();
-        break;
-    }
-    case WasmArraySet: {
-        const auto* derived = as<WasmArraySetValue>();
-        result.writes = derived->range();
-        result.controlDependent = true;
-        break;
-    }
-    case WasmArrayNew:
-        result.reads = HeapRange::top();
-        result.writes = HeapRange::top();
-        result.exitsSideways = true;
-        break;
-    case WasmArrayLength:
-        result.reads = as<WasmArrayLengthValue>()->range();
-        result.controlDependent = true;
-        result.readsMutability = Mutability::Immutable;
-        break;
     case WasmRefCast:
         result.reads = HeapRange::top();
         result.controlDependent = true;
@@ -999,7 +972,6 @@ ValueKey Value::key() const
     case Neg:
     case PurifyNaN:
     case Depend:
-    case WasmArrayLength:
         return ValueKey(kind(), type(), child(0));
     case Add:
     case Sub:
@@ -1184,9 +1156,6 @@ ValueKey Value::key() const
     case WasmStructGet:
     case WasmStructSet:
     case WasmStructNew:
-    case WasmArrayGet:
-    case WasmArraySet:
-    case WasmArrayNew:
     case MemoryCopy:
     case MemoryFill:
     case Fence:

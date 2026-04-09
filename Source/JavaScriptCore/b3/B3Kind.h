@@ -134,7 +134,6 @@ public:
         case AtomicXchg:
         case WasmStructGet:
         case WasmStructSet:
-        case WasmArrayLength:
         case WasmRefCast:
             return true;
         default:

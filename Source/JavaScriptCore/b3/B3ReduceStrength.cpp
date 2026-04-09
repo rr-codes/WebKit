@@ -44,8 +44,6 @@
 #include "B3UpsilonValue.h"
 #include "B3ValueKeyInlines.h"
 #include "B3ValueInlines.h"
-#include "B3WasmArrayLengthValue.h"
-#include "B3WasmArrayNewValue.h"
 #include "B3WasmRefTypeCheckValue.h"
 #include "B3WasmStructGetValue.h"
 #include "B3WasmStructSetValue.h"
@@ -3938,31 +3936,6 @@ private:
                     if (!m_value->child(0)->as<WasmRefTypeCheckValue>()->allowNull()) {
                         replaceWithNonTrapping();
                         break;
-                    }
-                    break;
-                }
-                default:
-                    break;
-                }
-            }
-            break;
-        }
-
-        case WasmArrayLength: {
-            // WasmArrayNew always returns a non-null array of the requested size,
-            // so array.len(array.new(instance, structureID, size)) == size.
-            if (m_value->child(0)->opcode() == WasmArrayNew) {
-                replaceWithIdentity(m_value->child(0)->as<WasmArrayNewValue>()->size());
-                break;
-            }
-
-            if (m_value->traps()) {
-                switch (m_value->child(0)->opcode()) {
-                case WasmRefCast: {
-                    if (!m_value->child(0)->as<WasmRefTypeCheckValue>()->allowNull()) {
-                        Value* newValue = m_insertionSet.insert<WasmArrayLengthValue>(m_index, WasmArrayLength, Int32, m_value->origin(), m_value->child(0));
-                        newValue->as<WasmArrayLengthValue>()->setRange(m_value->as<WasmArrayLengthValue>()->range());
-                        replaceWithIdentity(newValue);
                     }
                     break;
                 }

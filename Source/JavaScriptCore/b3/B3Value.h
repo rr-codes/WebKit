@@ -369,7 +369,7 @@ protected:
     virtual void dumpMeta(CommaPrinter&, PrintStream&) const;
 
     // The specific value of VarArgs does not matter, but the value of the others is assumed to match their meaning.
-    enum NumChildren : uint8_t { Zero = 0, One = 1, Two = 2, Three = 3, Four = 4, VarArgs = 5 };
+    enum NumChildren : uint8_t { Zero = 0, One = 1, Two = 2, Three = 3, VarArgs = 4};
 
     char* childrenAlloc() { return std::bit_cast<char*>(this) + m_adjacencyListOffset; }
     const char* childrenAlloc() const { return std::bit_cast<const char*>(this) + m_adjacencyListOffset; }
@@ -454,7 +454,6 @@ protected:
         case WasmAddress:
         case WasmBoundsCheck:
         case WasmStructGet:
-        case WasmArrayLength:
         case VectorExtractLane:
         case VectorSplat:
         case VectorNot:
@@ -520,7 +519,6 @@ protected:
         case Store8:
         case Store16:
         case Store:
-        case WasmArrayGet:
         case WasmStructSet:
         case WasmStructNew:
         case WasmRefCast:
@@ -569,7 +567,6 @@ protected:
         case VectorExtractPair:
         case Stitch:
             return 2 * sizeof(Value*);
-        case WasmArraySet:
         case Select:
         case AtomicWeakCAS:
         case AtomicStrongCAS:
@@ -580,8 +577,6 @@ protected:
         case MemoryFill:
         case MemoryCopy:
             return 3 * sizeof(Value*);
-        case WasmArrayNew:
-            return 4 * sizeof(Value*);
         case CCall:
         case Check:
         case CheckAdd:
@@ -661,9 +656,6 @@ private:
         case VarArgs:
             new (std::bit_cast<char*>(this) + offset) Vector<Value*, 3> (valueToClone.childrenVector());
             break;
-        case Four:
-            std::bit_cast<Value**>(std::bit_cast<char*>(this) + offset)[3] = valueToClone.childrenArray()[3];
-            [[fallthrough]];
         case Three:
             std::bit_cast<Value**>(std::bit_cast<char*>(this) + offset)[2] = valueToClone.childrenArray()[2];
             [[fallthrough]];
@@ -745,7 +737,6 @@ private:
         case VectorDupElement:
         case VectorReverse:
         case VectorRelaxedTruncSat:
-        case WasmArrayLength:
             if (numArgs != 1) [[unlikely]]
                 badKind(kind, numArgs);
             return One;
