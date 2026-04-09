@@ -783,6 +783,20 @@ const RenderStyle* TreeResolver::parentBoxStyleForPseudoElement(const ElementUpd
     }
 }
 
+static HashMap<AnimatableCSSProperty, EnumSet<PropertyCascade::AnimationSource>> animatedPropertySources(const Styleable& styleable, const HashSet<AnimatableCSSProperty>& animatedProperties)
+{
+    HashMap<AnimatableCSSProperty, EnumSet<PropertyCascade::AnimationSource>> result;
+    for (auto& property : animatedProperties)
+        result.add(property, PropertyCascade::AnimationSource::CSSAnimation);
+    if (auto* runningTransitionsByProperty = styleable.runningTransitionsByProperty()) {
+        for (auto& property : runningTransitionsByProperty->keys()) {
+            auto& sources = result.add(property, EnumSet<PropertyCascade::AnimationSource> { }).iterator->value;
+            sources.add(PropertyCascade::AnimationSource::CSSTransition);
+        }
+    }
+    return result;
+}
+
 ElementUpdate TreeResolver::createAnimatedElementUpdate(ResolvedStyle&& resolvedStyle, const Styleable& styleable, OptionSet<Change> parentChanges, const ResolutionContext& resolutionContext, IsInDisplayNoneTree isInDisplayNoneTree)
 {
     Ref element = styleable.element;
@@ -882,8 +896,7 @@ ElementUpdate TreeResolver::createAnimatedElementUpdate(ResolvedStyle&& resolved
         if (resolvedStyle.matchResult) {
             auto animatedStyleBeforeCascadeApplication = RenderStyle::clonePtr(*animatedStyle);
             // The cascade may override animated properties and have dependencies to them.
-            // FIXME: This is wrong if there are both transitions and animations running on the same element.
-            auto overriddenAnimatedProperties = applyCascadeAfterAnimation(*animatedStyle, animatedProperties, styleable.hasRunningTransitions(), *resolvedStyle.matchResult, element, resolutionContext);
+            auto overriddenAnimatedProperties = applyCascadeAfterAnimation(*animatedStyle, animatedPropertySources(styleable, animatedProperties), *resolvedStyle.matchResult, element, resolutionContext);
             ASSERT(styleable.keyframeEffectStack());
             styleable.keyframeEffectStack()->cascadeDidOverrideProperties(overriddenAnimatedProperties, document);
             styleable.setHasPropertiesOverridenAfterAnimation(!overriddenAnimatedProperties.isEmpty());
@@ -1049,7 +1062,7 @@ const RenderStyle& TreeResolver::parentAfterChangeStyle(const Styleable& styleab
     return *resolutionContext.parentStyle;
 }
 
-HashSet<AnimatableCSSProperty> TreeResolver::applyCascadeAfterAnimation(RenderStyle& animatedStyle, const HashSet<AnimatableCSSProperty>& animatedProperties, bool isTransition, const MatchResult& matchResult, const Element& element, const ResolutionContext& resolutionContext)
+HashSet<AnimatableCSSProperty> TreeResolver::applyCascadeAfterAnimation(RenderStyle& animatedStyle, const HashMap<AnimatableCSSProperty, EnumSet<PropertyCascade::AnimationSource>>& animatedProperties, const MatchResult& matchResult, const Element& element, const ResolutionContext& resolutionContext)
 {
     auto builderContext = BuilderContext {
         m_document.get(),
@@ -1063,7 +1076,7 @@ HashSet<AnimatableCSSProperty> TreeResolver::applyCascadeAfterAnimation(RenderSt
         animatedStyle,
         WTF::move(builderContext),
         matchResult,
-        { isTransition ? PropertyCascade::PropertyType::AfterTransition : PropertyCascade::PropertyType::AfterAnimation },
+        { PropertyCascade::PropertyType::AfterAnimation },
         &animatedProperties
     };
 

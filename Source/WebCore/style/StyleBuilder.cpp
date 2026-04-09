@@ -98,8 +98,8 @@ static const StyleProperties* NODELETE positionTryFallbackProperties(const Build
     return context.positionTryFallback ? context.positionTryFallback->properties.get() : nullptr;
 }
 
-Builder::Builder(RenderStyle& style, BuilderContext&& context, const MatchResult& matchResult, PropertyCascade::IncludedProperties&& includedProperties, const HashSet<AnimatableCSSProperty>* animatedPropertes)
-    : m_cascade(matchResult, WTF::move(includedProperties), animatedPropertes, positionTryFallbackProperties(context))
+Builder::Builder(RenderStyle& style, BuilderContext&& context, const MatchResult& matchResult, PropertyCascade::IncludedProperties&& includedProperties, const HashMap<AnimatableCSSProperty, EnumSet<PropertyCascade::AnimationSource>>* animatedProperties)
+    : m_cascade(matchResult, WTF::move(includedProperties), animatedProperties, positionTryFallbackProperties(context))
     , m_state(BuilderState::create(style, WTF::move(context)))
 {
 }

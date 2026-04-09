@@ -123,6 +123,11 @@ struct Styleable {
         return element.hasRunningTransitions(pseudoElementIdentifier);
     }
 
+    const AnimatableCSSPropertyToTransitionMap* runningTransitionsByProperty() const
+    {
+        return element.runningTransitionsByProperty(pseudoElementIdentifier);
+    }
+
     AnimationCollection& ensureAnimations() const
     {
         return element.ensureAnimations(pseudoElementIdentifier);

@@ -28,6 +28,7 @@
 #include "MatchResult.h"
 #include "WebAnimationTypes.h"
 #include <wtf/BitSet.h>
+#include <wtf/EnumSet.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/ValueOrReference.h>
 
@@ -42,14 +43,18 @@ class PropertyCascade {
 public:
     using PropertyBitSet = WTF::BitSet<lastLowPriorityProperty + 1>;
 
+    enum class AnimationSource : uint8_t {
+        CSSAnimation,
+        CSSTransition,
+    };
+
     enum class PropertyType : uint8_t {
         NonInherited = 1 << 0,
         Inherited = 1 << 1,
         ExplicitlyInherited = 1 << 2,
         AfterAnimation = 1 << 3,
-        AfterTransition = 1 << 4,
-        StartingStyle = 1 << 5,
-        NonCacheable = 1 << 6,
+        StartingStyle = 1 << 4,
+        NonCacheable = 1 << 5,
     };
 
     enum class Origin : uint8_t {
@@ -72,7 +77,7 @@ public:
 
     static IncludedProperties normalProperties() { return { normalPropertyTypes() }; }
 
-    PropertyCascade(const MatchResult&, IncludedProperties&&, const HashSet<AnimatableCSSProperty>* = nullptr, const StyleProperties* positionTryFallbackProperties = nullptr);
+    PropertyCascade(const MatchResult&, IncludedProperties&&, const HashMap<AnimatableCSSProperty, EnumSet<AnimationSource>>* animatedProperties = nullptr, const StyleProperties* positionTryFallbackProperties = nullptr);
     PropertyCascade(const PropertyCascade&, Origin, std::optional<ScopeOrdinal> rollbackScope = { }, std::optional<CascadeLayerPriority> maximumCascadeLayerPriorityForRollback = { });
     enum RevertRuleTag { RevertRule };
     PropertyCascade(const PropertyCascade&, RevertRuleTag);
@@ -139,9 +144,9 @@ private:
     const unsigned m_ruleRollbackDepth { 0 };
 
     struct AnimationLayer {
-        AnimationLayer(const HashSet<AnimatableCSSProperty>&);
+        explicit AnimationLayer(const HashMap<AnimatableCSSProperty, EnumSet<AnimationSource>>&);
 
-        const HashSet<AnimatableCSSProperty>& properties;
+        const HashMap<AnimatableCSSProperty, EnumSet<AnimationSource>>& properties;
         HashSet<AnimatableCSSProperty> overriddenProperties;
         bool hasCustomProperties { false };
         bool hasFontSize { false };
