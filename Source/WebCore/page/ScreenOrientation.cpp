@@ -42,6 +42,7 @@
 #include "VisibilityState.h"
 #include <JavaScriptCore/HeapCellInlines.h>
 #include <wtf/TZoneMallocInlines.h>
+#include "DocumentPage.h"
 
 namespace WebCore {
 

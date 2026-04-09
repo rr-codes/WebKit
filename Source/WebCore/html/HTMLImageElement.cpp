@@ -69,6 +69,8 @@
 #include "SizesAttributeParser.h"
 #include "StyleZoomPrimitivesInlines.h"
 #include <wtf/TZoneMallocInlines.h>
+#include "DocumentPage.h"
+#include "FrameDestructionObserverInlines.h"
 #include <wtf/text/StringBuilder.h>
 
 #if ENABLE(SERVICE_CONTROLS)

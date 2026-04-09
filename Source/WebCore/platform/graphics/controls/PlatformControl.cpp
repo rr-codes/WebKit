@@ -24,50 +24,15 @@
  */
 
 #include "config.h"
-#include "MicrotaskCall.h"
+#include "PlatformControl.h"
 
-#include "CodeBlock.h"
-#include "Interpreter.h"
-#include "JSFunctionInlines.h"
-#include "ThrowScope.h"
+#include "ControlPart.h"
 
-namespace JSC {
+namespace WebCore {
 
-void MicrotaskCall::initialize(VM& vm, JSFunction* function)
+PlatformControl::PlatformControl(ControlPart& owningPart)
+    : m_owningPart(owningPart)
 {
-    m_addressForCall = nullptr;
-    m_functionExecutable = function->jsExecutable();
-    relink(vm, function);
 }
 
-void MicrotaskCall::relink(VM& vm, JSFunction* function)
-{
-    auto scope = DECLARE_THROW_SCOPE(vm);
-
-    // Unlink from any prior CodeBlock before we reset state.
-    if (isOnList())
-        remove();
-
-    auto* newCodeBlock = vm.interpreter.prepareForMicrotaskCall(*this, function);
-    RETURN_IF_EXCEPTION_WITH_TRAPS_DEFERRED(scope, void());
-    m_codeBlock = newCodeBlock;
-    m_numParameters = newCodeBlock->numParameters();
-}
-
-void MicrotaskCall::unlinkOrUpgradeImpl(VM&, CodeBlock* oldCodeBlock, CodeBlock* newCodeBlock)
-{
-    if (isOnList())
-        remove();
-
-    if (newCodeBlock && m_codeBlock == oldCodeBlock) {
-        newCodeBlock->m_shouldAlwaysBeInlined = false;
-        m_addressForCall = newCodeBlock->jitCode()->addressForCall();
-        m_codeBlock = newCodeBlock;
-        m_numParameters = newCodeBlock->numParameters();
-        newCodeBlock->linkIncomingCall(nullptr, this);
-        return;
-    }
-    m_addressForCall = nullptr;
-}
-
-} // namespace JSC
+} // namespace WebCore

@@ -23,10 +23,13 @@
 #include "HTMLMeterElement.h"
 
 #include "Attribute.h"
+#include "ContainerNodeInlines.h"
+#include "ElementInlines.h"
 #include "HTMLDivElement.h"
 #include "HTMLNames.h"
 #include "HTMLParserIdioms.h"
 #include "HTMLStyleElement.h"
+#include "NodeDocument.h"
 #include "NodeName.h"
 #include "RenderMeter.h"
 #include "RenderTheme.h"

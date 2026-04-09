@@ -30,6 +30,7 @@
 #include "LayoutIntegrationUtils.h"
 #include "NotImplemented.h"
 #include "PlacedGridItem.h"
+#include "StyleContentAlignmentData.h"
 #include "TrackSizingFunctions.h"
 #include <wtf/Range.h>
 #include <wtf/Vector.h>

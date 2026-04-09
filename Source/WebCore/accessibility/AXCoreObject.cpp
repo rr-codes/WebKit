@@ -29,6 +29,7 @@
 #include "config.h"
 #include "AXCoreObject.h"
 
+#include "AccessibilityNodeObjectInlines.h"
 #include "AXLoggerBase.h"
 #include "AXObjectCache.h"
 #include "AXSearchManager.h"

@@ -26,6 +26,7 @@
 #include "CounterDirectives.h"
 #include "CounterNode.h"
 #include "Document.h"
+#include "ContainerNodeInlines.h"
 #include "ElementInlines.h"
 #include "HTMLNames.h"
 #include "HTMLOListElement.h"

@@ -44,6 +44,7 @@
 #include "JSDOMPromise.h"
 #include "JSDOMPromiseDeferred.h"
 #include "LocalFrame.h"
+#include "LocalFrameInlines.h"
 #include "Page.h"
 #include "PasteboardCustomData.h"
 #include "SharedBuffer.h"

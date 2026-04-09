@@ -45,6 +45,7 @@
 #include "LocalizedStrings.h"
 #include "NodeName.h"
 #include "RenderObjectInlines.h"
+#include "RenderStyle+SettersInlines.h"
 #include "RenderTextControlMultiLine.h"
 #include "ScriptDisallowedScope.h"
 #include "ShadowRoot.h"

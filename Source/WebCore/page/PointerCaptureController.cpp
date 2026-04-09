@@ -32,8 +32,9 @@
 #include "Element.h"
 #include "EventHandler.h"
 #include "EventNames.h"
-#include "EventTargetInlines.h"
 #include "EventTarget.h"
+#include "EventTargetInlines.h"
+#include "FrameDestructionObserverInlines.h"
 #include "FrameInlines.h"
 #include "HitTestResult.h"
 #include "MouseEventTypes.h"
@@ -42,6 +43,7 @@
 #include "PointerEvent.h"
 #include "Quirks.h"
 #include "Settings.h"
+#include "TaskSource.h"
 #include <algorithm>
 #include <ranges>
 #include <wtf/CheckedArithmetic.h>

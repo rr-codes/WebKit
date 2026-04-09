@@ -28,6 +28,7 @@
 
 #include "AcceleratedEffectRayFunction.h"
 #include "GeometryUtilities.h"
+#include "Path.h"
 #include "StylePrimitiveNumericTypes+Evaluation.h"
 #include "StylePrimitiveNumericTypes+Serialization.h"
 #include "TransformOperationData.h"

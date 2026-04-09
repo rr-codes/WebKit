@@ -29,6 +29,7 @@
 #include "config.h"
 #include "AccessibilityObject.h"
 
+#include "AccessibilityNodeObjectInlines.h"
 #include "AXAttributeCacheScope.h"
 #include "AXComputedObjectAttributeCache.h"
 #include "AXIsolatedTree.h"
@@ -50,6 +51,7 @@
 #include "CustomElementDefaultARIA.h"
 #include "DOMTokenList.h"
 #include "DocumentPage.h"
+#include "DocumentView.h"
 #include "EditingInlines.h"
 #include "Editor.h"
 #include "ElementInlines.h"

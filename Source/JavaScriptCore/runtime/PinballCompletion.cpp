@@ -28,12 +28,15 @@
 
 #if ENABLE(WEBASSEMBLY)
 
-#include "CallFrame.h"
+#include "CallFrameInlines.h"
 #include "EvacuatedStack.h"
 #include "Exception.h"
+#include "JSCellInlines.h"
 #include "JSPIContextInlines.h"
 #include "JSPromise.h"
 #include "PinballHandlerContext.h"
+#include "StackAlignment.h"
+#include "StructureInlines.h"
 #include "TopExceptionScope.h"
 
 #include <wtf/StdLibExtras.h>

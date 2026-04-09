@@ -29,6 +29,7 @@
 #if ENABLE(WEBXR_LAYERS)
 
 #include "WebGLOpaqueTexture.h"
+#include "WebXRSession.h"
 #include "XRLayerBacking.h"
 #include <wtf/TZoneMallocInlines.h>
 
@@ -44,6 +45,11 @@ XRCompositionLayer::XRCompositionLayer(ScriptExecutionContext* scriptExecutionCo
 }
 
 XRCompositionLayer::~XRCompositionLayer() = default;
+
+WebXRSession* XRCompositionLayer::session() const
+{
+    return m_session.get();
+}
 
 XRLayerBacking& XRCompositionLayer::backing()
 {

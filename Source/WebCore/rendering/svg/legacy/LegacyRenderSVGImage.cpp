@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "LegacyRenderSVGImage.h"
+#include "LegacyRenderSVGModelObjectInlines.h"
 
 #include "FloatQuad.h"
 #include "GraphicsContext.h"

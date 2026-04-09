@@ -27,6 +27,8 @@
 
 #include "Document.h"
 #include "ElementAncestorIteratorInlines.h"
+#include "ElementChildIterator.h"
+#include "ElementChildIteratorInlines.h"
 #include "ElementIterator.h"
 #include "HTMLDivElement.h"
 #include "HTMLLegendElement.h"
@@ -39,6 +41,7 @@
 #include "NodeRenderStyle.h"
 #include "ScriptDisallowedScope.h"
 #include "ScriptElement.h"
+#include "Settings.h"
 #include "StyleResolver.h"
 #include "Text.h"
 #include "TypedElementDescendantIteratorInlines.h"

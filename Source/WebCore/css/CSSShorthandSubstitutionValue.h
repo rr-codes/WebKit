@@ -29,12 +29,11 @@
 
 #pragma once
 
+#include "CSSProperty.h"
 #include "CSSSubstitutionValue.h"
 #include "CSSValue.h"
 
 namespace WebCore {
-
-class CSSProperty;
 
 // Longhand placeholder for a shorthand value containing substitution functions.
 // Each longhand of the shorthand gets one of these; they share the CSSSubstitutionValue.

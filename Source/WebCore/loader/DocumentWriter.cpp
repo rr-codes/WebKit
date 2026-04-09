@@ -41,6 +41,7 @@
 #include "HistoryItem.h"
 #include "LocalDOMWindow.h"
 #include "LocalFrame.h"
+#include "LocalFrameInlines.h"
 #include "LocalFrameLoaderClient.h"
 #include "LocalFrameView.h"
 #include "MIMETypeRegistry.h"

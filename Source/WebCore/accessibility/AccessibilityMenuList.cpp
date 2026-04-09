@@ -26,6 +26,7 @@
 #include "config.h"
 #include "AccessibilityMenuList.h"
 
+#include "AccessibilityNodeObjectInlines.h"
 #include "AXLoggerBase.h"
 #include "AXNotifications.h"
 #include "AccessibilityObjectInlines.h"

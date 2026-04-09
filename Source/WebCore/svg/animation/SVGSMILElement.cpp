@@ -29,6 +29,7 @@
 
 #include "CSSPropertyNames.h"
 #include "Document.h"
+#include "DocumentPage.h"
 #include "Event.h"
 #include "EventListener.h"
 #include "EventNames.h"

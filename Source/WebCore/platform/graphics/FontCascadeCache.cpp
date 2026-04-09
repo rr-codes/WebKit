@@ -33,6 +33,7 @@
 #include "CSSFontSelector.h"
 #include "FontCache.h"
 #include "FontCascadeDescription.h"
+#include "TextShapingResultAndDisplayList.h"
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 

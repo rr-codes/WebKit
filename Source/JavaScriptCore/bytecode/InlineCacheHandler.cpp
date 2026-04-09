@@ -34,6 +34,7 @@
 #include "InlineCacheCompiler.h"
 #include "InstanceOfAccessCase.h"
 #include "JSModuleEnvironment.h"
+#include "JSModuleNamespaceObject.h"
 #include "ModuleNamespaceAccessCase.h"
 #include "PropertyInlineCache.h"
 #include "SharedJITStubSet.h"

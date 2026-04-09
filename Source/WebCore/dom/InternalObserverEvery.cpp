@@ -30,6 +30,7 @@
 #include "AbortSignal.h"
 #include "ContextDestructionObserverInlines.h"
 #include "InternalObserver.h"
+#include "JSDOMConvertAny.h"
 #include "JSDOMConvertBoolean.h"
 #include "JSDOMPromiseDeferred.h"
 #include "JSValueInWrappedObjectInlines.h"

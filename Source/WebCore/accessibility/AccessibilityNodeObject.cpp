@@ -96,6 +96,7 @@
 #include "KeyboardEvent.h"
 #include "LayoutIntegrationLineLayout.h"
 #include "LocalFrame.h"
+#include "LocalFrameInlines.h"
 #include "LocalFrameView.h"
 #include "LocalizedStrings.h"
 #include "MathMLElement.h"

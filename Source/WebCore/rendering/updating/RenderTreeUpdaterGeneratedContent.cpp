@@ -39,6 +39,7 @@
 #include "RenderImage.h"
 #include "RenderQuote.h"
 #include "RenderStyle+GettersInlines.h"
+#include "RenderStyle+SettersInlines.h"
 #include "RenderTextFragment.h"
 #include "RenderTreeUpdater.h"
 #include "RenderView.h"

@@ -63,6 +63,7 @@
 #include "Page.h"
 #include "PaintInfo.h"
 #include "PositionedLayoutConstraints.h"
+#include "RenderBlockFlowInlines.h"
 #include "RenderBlockInlines.h"
 #include "RenderBoxFragmentInfo.h"
 #include "RenderBoxInlines.h"

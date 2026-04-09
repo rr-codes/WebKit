@@ -26,6 +26,7 @@
 #pragma once
 
 #include "CSSParserTokenRange.h"
+#include "StyleCustomProperty.h"
 
 namespace WebCore {
 

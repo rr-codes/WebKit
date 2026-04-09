@@ -28,6 +28,7 @@
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
 #include "AXIsolatedTree.h"
 
+#include "AccessibilityNodeObjectInlines.h"
 #include "AXAttributeCacheScope.h"
 #include "AXGeometryManager.h"
 #include "AXIsolatedObject.h"

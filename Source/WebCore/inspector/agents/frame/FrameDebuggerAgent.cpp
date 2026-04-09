@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "FrameDebuggerAgent.h"
+#include "DocumentPage.h"
 
 #include "CachedResource.h"
 #include "DOMWrapperWorld.h"

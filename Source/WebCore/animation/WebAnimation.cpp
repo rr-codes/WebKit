@@ -60,6 +60,7 @@
 #include "StylePropertyShorthand.h"
 #include "StyleResolver.h"
 #include "StyledElement.h"
+#include "ViewTimeline.h"
 #include "WebAnimationTypes.h"
 #include "WebAnimationUtilities.h"
 #include <JavaScriptCore/HeapCellInlines.h>

@@ -33,6 +33,7 @@
 
 namespace WebCore {
 
+class Path;
 struct AcceleratedEffectRayFunction;
 struct TransformOperationData;
 

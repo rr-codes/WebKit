@@ -23,9 +23,12 @@
 #include "HTMLProgressElement.h"
 
 #include "AXObjectCache.h"
+#include "ContainerNodeInlines.h"
+#include "ElementInlines.h"
 #include "HTMLDivElement.h"
 #include "HTMLNames.h"
 #include "HTMLParserIdioms.h"
+#include "NodeDocument.h"
 #include "PseudoClassChangeInvalidation.h"
 #include "RenderProgress.h"
 #include "RenderStyle+GettersInlines.h"

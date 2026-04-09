@@ -67,7 +67,7 @@ public:
     void setIsStatic(bool isStatic) { m_isStatic = isStatic; }
 
     XRLayerBacking& backing();
-    WebXRSession* session() const { return m_session.get(); }
+    WebXRSession* session() const;
 
     void destroy() { }
 

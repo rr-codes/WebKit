@@ -36,6 +36,7 @@
 #include "GraphicsContext.h"
 #include "HTMLNames.h"
 #include "HTMLSelectElement.h"
+#include "InlineIteratorBoxInlines.h"
 #include "InlineIteratorInlineBox.h"
 #include "InlineIteratorLineBox.h"
 #include "LegacyRenderSVGModelObject.h"

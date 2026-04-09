@@ -35,6 +35,7 @@
 #include "SVGSVGElement.h"
 #include "SVGViewSpec.h"
 #include <wtf/TZoneMallocInlines.h>
+#include "RenderObjectNode.h"
 
 namespace WebCore {
 

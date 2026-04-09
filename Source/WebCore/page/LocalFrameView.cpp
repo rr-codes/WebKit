@@ -65,6 +65,7 @@
 #include "FrameSelection.h"
 #include "FrameTree.h"
 #include "GraphicsContext.h"
+#include "GraphicsLayer.h"
 #include "HTMLBodyElement.h"
 #include "HTMLEmbedElement.h"
 #include "HTMLFrameElement.h"
