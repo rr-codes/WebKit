@@ -1073,6 +1073,16 @@ PAS_IGNORE_WARNINGS_END
 #endif
 }
 
+#if PAS_COMPILER(CLANG)
+#define PAS_ATOMIC_TYPE(T) _Atomic T
+#define PAS_ATOMIC_LOAD_RELAXED(ptr) __c11_atomic_load((ptr), __ATOMIC_RELAXED)
+#define PAS_ATOMIC_STORE_RELAXED(ptr, val) __c11_atomic_store((ptr), (val), __ATOMIC_RELAXED)
+#else
+#define PAS_ATOMIC_TYPE(T) T
+#define PAS_ATOMIC_LOAD_RELAXED(ptr) __atomic_load_n((ptr), __ATOMIC_RELAXED)
+#define PAS_ATOMIC_STORE_RELAXED(ptr, val) __atomic_store_n((ptr), (val), __ATOMIC_RELAXED)
+#endif
+
 static inline pas_pair pas_atomic_load_pair_relaxed(void* raw_ptr)
 {
 #if PAS_COMPILER(CLANG)
