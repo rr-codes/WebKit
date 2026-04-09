@@ -3302,25 +3302,157 @@
     },
 
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/add_preload_script.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}},
+        "subtests": {
+            "test_add_same_preload_script_twice": {
+                "expected": { "all": { "status": ["PASS"]}}
+            }
+        }
     },
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/arguments.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/contexts.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}},
+        "subtests": {
+            "test_page_script_context_isolation[tab]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_page_script_context_isolation[window]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_identical_contexts": {
+                "expected": { "all": { "status": ["PASS"]}}
+            }
+        }
     },
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/execution_order_tentative.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/invalid.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "subtests": {
+            "test_params_function_declaration_invalid_type[None]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_function_declaration_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_function_declaration_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_function_declaration_invalid_type[function_declaration3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_function_declaration_invalid_type[function_declaration4]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_arguments_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_arguments_invalid_type[SOME_STRING]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_arguments_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_arguments_invalid_type[arguments3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_invalid_type[_UNKNOWN_]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_invalid_type[contexts3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_empty_list": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_type[None]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_type[value3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_type[value4]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_value[]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_contexts_context_invalid_value[somestring]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_sandbox_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_sandbox_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_sandbox_invalid_type[sandbox2]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_sandbox_invalid_type[sandbox3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_invalid_type[_UNKNOWN_]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_invalid_type[user_contexts3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_empty_list": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_type[None]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_type[value3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_type[value4]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_value[]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_contexts_entry_invalid_value[somestring]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_user_context_and_contexts": {
+                "expected": { "all": { "status": ["PASS"]}}
+            }
+        },
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/sandbox.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/add_preload_script/user_contexts.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288057"}}
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288057"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/call_function/arguments.py": {
         "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288058"}}
@@ -3997,13 +4129,46 @@
         }
     },
     "imported/w3c/webdriver/tests/bidi/script/remove_preload_script/invalid.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288062"}}
+        "subtests": {
+            "test_params_script_invalid_type[None]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_script_invalid_type[False]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_script_invalid_type[42]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_script_invalid_type[script3]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_script_invalid_type[script4]": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_params_script_invalid_value": {
+                "expected": { "all": { "status": ["PASS"]}}
+            }
+        },
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288062"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/remove_preload_script/remove_preload_script.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288062"}}
+        "subtests": {
+            "test_remove_preload_script_twice": {
+                "expected": { "all": { "status": ["PASS"]}}
+            },
+            "test_remove_one_of_preload_scripts": {
+                "expected": { "all": { "status": ["PASS"]}}
+            }
+        },
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288062"}}
     },
     "imported/w3c/webdriver/tests/bidi/script/remove_preload_script/sandbox.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288062"}}
+        "subtests": {
+            "test_remove_preload_script_from_sandbox": {
+                "expected": { "all": { "status": ["PASS"]}}
+            }
+        },
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288062"}}
     },
 
     "imported/w3c/webdriver/tests/bidi/session/capabilities/unhandled_prompt_behavior/file/accept.py": {

@@ -154,6 +154,8 @@ static String toBidiErrorCode(int errorCode, const String& inspectorInternalMsg)
         return "no such web extension"_s;
     case Inspector::Protocol::Automation::ErrorMessage::NoSuchUserContext:
         return "no such user context"_s;
+    case Inspector::Protocol::Automation::ErrorMessage::NoSuchScript:
+        return "no such script"_s;
     default:
         return "unknown error"_s;
     }

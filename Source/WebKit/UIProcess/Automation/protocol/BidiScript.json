@@ -187,6 +187,31 @@
     ],
     "commands": [
         {
+            "name": "addPreloadScript",
+            "description": "Adds a preload script to be evaluated on new document creation.",
+            "spec": "https://w3c.github.io/webdriver-bidi/#command-script-addPreloadScript",
+            "async": true,
+            "parameters": [
+                { "name": "functionDeclaration", "type": "string" },
+                { "name": "arguments", "type": "array", "items": { "$ref": "BidiScript.LocalValue" }, "optional": true },
+                { "name": "contexts", "type": "array", "items": { "$ref": "BidiBrowsingContext.BrowsingContext" }, "optional": true },
+                { "name": "sandbox", "type": "string", "optional": true },
+                { "name": "userContexts", "type": "array", "items": { "$ref": "BidiBrowser.UserContext" }, "optional": true }
+            ],
+            "returns": [
+                { "name": "script", "type": "string" }
+            ]
+        },
+        {
+            "name": "removePreloadScript",
+            "description": "Removes a preload script.",
+            "spec": "https://w3c.github.io/webdriver-bidi/#command-script-removePreloadScript",
+            "async": true,
+            "parameters": [
+                { "name": "script", "type": "string" }
+            ]
+        },
+        {
             "name": "callFunction",
             "description": "Calls a provided function with given arguments in a given realm.",
             "spec": "https://w3c.github.io/webdriver-bidi/#command-script-callFunction",

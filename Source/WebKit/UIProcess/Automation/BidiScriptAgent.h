@@ -39,11 +39,16 @@
 #include <wtf/CheckedRef.h>
 #include <wtf/Forward.h>
 #include <wtf/HashMap.h>
+#include <wtf/ObjectIdentifier.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/Variant.h>
 #include <wtf/WeakPtr.h>
 #include <wtf/text/WTFString.h>
 
 namespace WebKit {
+
+enum PreloadScriptIdentifierType { };
+using PreloadScriptIdentifier = ObjectIdentifier<PreloadScriptIdentifierType, uint64_t>;
 
 class WebAutomationSession;
 class WebFrameProxy;
@@ -67,6 +72,8 @@ public:
     ~BidiScriptAgent() override;
 
     // Inspector::BidiScriptBackendDispatcherHandler methods.
+    void addPreloadScript(const String& functionDeclaration, RefPtr<JSON::Array>&& optionalArguments, RefPtr<JSON::Array>&& optionalContexts, const String& optionalSandbox, RefPtr<JSON::Array>&& optionalUserContexts, Inspector::CommandCallback<String>&&) override;
+    void removePreloadScript(const String& script, Inspector::CommandCallback<void>&&) override;
     void callFunction(const String& functionDeclaration, bool awaitPromise, Ref<JSON::Object>&& target, RefPtr<JSON::Array>&& optionalArguments, std::optional<Inspector::Protocol::BidiScript::ResultOwnership>&&, RefPtr<JSON::Object>&& optionalSerializationOptions, RefPtr<JSON::Object>&& optionalThis, std::optional<bool>&& optionalUserActivation, Inspector::CommandCallbackOf<Inspector::Protocol::BidiScript::EvaluateResultType, String, RefPtr<Inspector::Protocol::BidiScript::RemoteValue>, RefPtr<Inspector::Protocol::BidiScript::ExceptionDetails>>&&) override;
     void evaluate(const String& expression, bool awaitPromise, Ref<JSON::Object>&& target, std::optional<Inspector::Protocol::BidiScript::ResultOwnership>&&, RefPtr<JSON::Object>&& optionalSerializationOptions,  std::optional<bool>&& optionalUserActivation, Inspector::CommandCallbackOf<Inspector::Protocol::BidiScript::EvaluateResultType, String, RefPtr<Inspector::Protocol::BidiScript::RemoteValue>, RefPtr<Inspector::Protocol::BidiScript::ExceptionDetails>>&&) override;
     void getRealms(const Inspector::Protocol::BidiBrowsingContext::BrowsingContext& optionalBrowsingContext , std::optional<Inspector::Protocol::BidiScript::RealmType>&& optionalRealmType, Inspector::CommandCallback<Ref<JSON::ArrayOf<Inspector::Protocol::BidiScript::RealmInfo>>>&&) override;
@@ -84,7 +91,19 @@ public:
     // Access active realms for realm destruction without WebFrameProxy.
     const HashMap<RealmIdentifier, RealmInfo>& activeRealms() const { return m_activeRealms; }
 
+    void executePreloadScriptsForContext(const String& browsingContext, const String& frameHandle);
+
 private:
+    struct AllContextsTag { };
+
+    struct PreloadScriptInfo {
+        String functionDeclaration;
+        RefPtr<JSON::Array> arguments;
+        Variant<AllContextsTag, Vector<String>> contexts;
+        String sandbox;
+        std::optional<Vector<String>> userContexts;
+    };
+
     void sendRealmCreatedEvent(const String& realmID, const WebCore::SecurityOriginData&, Inspector::Protocol::BidiScript::RealmType, Inspector::Protocol::BidiBrowsingContext::BrowsingContext);
 
     void processRealmsForPagesAsync(Deque<Ref<WebPageProxy>>&& pagesToProcess, std::optional<Inspector::Protocol::BidiScript::RealmType>&& optionalRealmType, std::optional<String>&& contextHandleFilter, Vector<RefPtr<Inspector::Protocol::BidiScript::RealmInfo>>&& accumulated, Inspector::CommandCallback<Ref<JSON::ArrayOf<Inspector::Protocol::BidiScript::RealmInfo>>>&&);
@@ -106,6 +125,11 @@ private:
 
     // Store active realms (key: realm identifier, value: realm info).
     HashMap<RealmIdentifier, RealmInfo> m_activeRealms;
+
+    // Track realm counters for navigation detection: frame ID -> counter
+    HashMap<WebCore::FrameIdentifier, uint64_t> m_frameRealmCounters;
+
+    Vector<std::pair<PreloadScriptIdentifier, PreloadScriptInfo>> m_preloadScripts;
 };
 
 } // namespace WebKit

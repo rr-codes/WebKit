@@ -58,6 +58,7 @@ using BrowsingContext = Inspector::Protocol::BidiBrowsingContext::BrowsingContex
 using EvaluateResultType = Inspector::Protocol::BidiScript::EvaluateResultType;
 
 static RefPtr<Inspector::Protocol::BidiScript::RemoteValue> deserializeRemoteValue(const JSON::Value*);
+static Ref<JSON::Value> deserializeLocalValue(const JSON::Value&);
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(BidiScriptAgent);
 
@@ -153,6 +154,155 @@ static RefPtr<Inspector::Protocol::BidiScript::RemoteValue> deserializeRemoteVal
     return resultValue.setType(RemoteValueType::Undefined).release();
 }
 
+static Ref<JSON::Value> deserializeLocalValue(const JSON::Value& jsonValue)
+{
+    // Deserializes a BiDi LocalValue into a JSON::Value that can be passed to evaluateJavaScriptFunction.
+    // Per WebDriver BiDi spec: https://w3c.github.io/webdriver-bidi/#type-script-LocalValue
+    // LocalValue represents primitive values (string, number, boolean, etc.) as well as structured
+    // types (array, object, map, set, date, regexp). This function converts them into a format
+    // that WebKit's script evaluation machinery can consume.
+    //
+    // FIXME: Implement RemoteReference and Channel types.
+    // https://bugs.webkit.org/show_bug.cgi?id=288057
+
+    auto object = jsonValue.asObject();
+    if (!object) {
+        // If it's not a LocalValue object, pass it through as-is (backwards compatibility).
+        return const_cast<JSON::Value&>(jsonValue);
+    }
+
+    String typeString = object->getString("type"_s);
+
+    // Primitive types: string, number, bigint, boolean, undefined, null
+    if (typeString == "string"_s)
+        return JSON::Value::create(object->getString("value"_s));
+
+    if (typeString == "number"_s) {
+        // Numbers can be represented as either a double or a special string (NaN, Infinity, -Infinity, -0).
+        if (auto num = object->getDouble("value"_s))
+            return JSON::Value::create(*num);
+        // Special number values like "NaN", "Infinity", "-Infinity", "-0" are strings in BiDi.
+        return JSON::Value::create(object->getString("value"_s));
+    }
+
+    if (typeString == "boolean"_s) {
+        if (auto b = object->getBoolean("value"_s))
+            return JSON::Value::create(*b);
+        return JSON::Value::create(false);
+    }
+
+    if (typeString == "bigint"_s) {
+        // BigInt values are represented as strings in BiDi (e.g., "42n").
+        // Pass them through as strings since JSON doesn't have native bigint support.
+        return JSON::Value::create(object->getString("value"_s));
+    }
+
+    if (typeString == "undefined"_s)
+        return JSON::Value::null(); // JSON doesn't have undefined, use null as proxy.
+
+    if (typeString == "null"_s)
+        return JSON::Value::null();
+
+    // Date type: ISO 8601 string
+    if (typeString == "date"_s)
+        return JSON::Value::create(object->getString("value"_s));
+
+    // RegExp type: object with pattern and flags
+    if (typeString == "regexp"_s) {
+        if (auto value = object->getValue("value"_s))
+            return value.releaseNonNull();
+        return JSON::Value::null();
+    }
+
+    // Array type: recursive deserialization
+    if (typeString == "array"_s) {
+        auto valueArray = object->getArray("value"_s);
+        if (!valueArray)
+            return JSON::Array::create();
+
+        auto resultArray = JSON::Array::create();
+        for (unsigned i = 0; i < valueArray->length(); ++i) {
+            Ref element = valueArray->get(i);
+            resultArray->pushValue(deserializeLocalValue(element.get()));
+        }
+        return resultArray;
+    }
+
+    // Object type: recursive deserialization of properties
+    if (typeString == "object"_s) {
+        auto valueArray = object->getArray("value"_s);
+        if (!valueArray)
+            return JSON::Object::create();
+
+        auto resultObject = JSON::Object::create();
+        // Per BiDi spec, object value is an array of [key, value] pairs.
+        for (unsigned i = 0; i < valueArray->length(); ++i) {
+            auto pairValue = valueArray->get(i);
+            auto pairArray = pairValue->asArray();
+            if (!pairArray || pairArray->length() < 2)
+                continue;
+
+            // Extract key (must be string or convertible to string)
+            String key;
+            Ref keyValue = pairArray->get(0);
+            if (auto keyObj = keyValue->asObject()) {
+                // If key is a LocalValue, deserialize it first
+                auto deserializedKey = deserializeLocalValue(keyValue.get());
+                key = deserializedKey->asString();
+            } else
+                key = keyValue->asString();
+
+            // Extract value
+            if (!key.isEmpty()) {
+                Ref valueElement = pairArray->get(1);
+                resultObject->setValue(key, deserializeLocalValue(valueElement.get()));
+            }
+        }
+        return resultObject;
+    }
+
+    // Map type: convert to array of [key, value] pairs
+    if (typeString == "map"_s) {
+        auto valueArray = object->getArray("value"_s);
+        if (!valueArray)
+            return JSON::Array::create();
+
+        auto resultArray = JSON::Array::create();
+        for (unsigned i = 0; i < valueArray->length(); ++i) {
+            auto pairValue = valueArray->get(i);
+            auto pairArray = pairValue->asArray();
+            if (!pairArray || pairArray->length() < 2)
+                continue;
+
+            auto entryArray = JSON::Array::create();
+            Ref keyElement = pairArray->get(0);
+            entryArray->pushValue(deserializeLocalValue(keyElement.get()));
+            Ref valueElement = pairArray->get(1);
+            entryArray->pushValue(deserializeLocalValue(valueElement.get()));
+
+            resultArray->pushArray(WTF::move(entryArray));
+        }
+        return resultArray;
+    }
+
+    // Set type: convert to array
+    if (typeString == "set"_s) {
+        auto valueArray = object->getArray("value"_s);
+        if (!valueArray)
+            return JSON::Array::create();
+
+        auto resultArray = JSON::Array::create();
+        for (unsigned i = 0; i < valueArray->length(); ++i) {
+            Ref element = valueArray->get(i);
+            resultArray->pushValue(deserializeLocalValue(element.get()));
+        }
+        return resultArray;
+    }
+
+    // For any unknown types or unsupported types, return null as a safe fallback.
+    return JSON::Value::null();
+}
+
 void BidiScriptAgent::callFunction(const String& functionDeclaration, bool awaitPromise, Ref<JSON::Object>&& target, RefPtr<JSON::Array>&& arguments, std::optional<Inspector::Protocol::BidiScript::ResultOwnership>&&, RefPtr<JSON::Object>&& optionalSerializationOptions, RefPtr<JSON::Object>&& optionalThis, std::optional<bool>&& optionalUserActivation, CommandCallbackOf<Inspector::Protocol::BidiScript::EvaluateResultType, String, RefPtr<Inspector::Protocol::BidiScript::RemoteValue>, RefPtr<Inspector::Protocol::BidiScript::ExceptionDetails>>&& callback)
 {
     RefPtr session = m_session.get();
@@ -172,10 +322,21 @@ void BidiScriptAgent::callFunction(const String& functionDeclaration, bool await
     // FIXME: handle custom `this` option.
     // FIXME: handle `userActivation` option.
 
-    Ref<JSON::Array> argumentsArray = arguments ? arguments.releaseNonNull() : JSON::Array::create();
+    // Deserialize LocalValue arguments into plain JSON values for script evaluation.
+    // FIXME: Implement RemoteReference and Channel types for arguments <https://webkit.org/b/288057>
+    auto argumentsArray = JSON::Array::create();
+    if (arguments) {
+        for (unsigned i = 0; i < arguments->length(); ++i) {
+            Ref argValue = arguments->get(i);
+            argumentsArray->pushValue(deserializeLocalValue(argValue.get()));
+        }
+    }
 
     String realmID = generateRealmIdForBrowsingContext(*browsingContext);
     session->evaluateJavaScriptFunction(topLevelContextHandle, frameHandle, functionDeclaration, WTF::move(argumentsArray), false, optionalUserActivation.value_or(false), std::nullopt, [callback = WTF::move(callback), realmID](Inspector::CommandResult<String>&& stringResult) {
+        // FIXME: Properly serialize RemoteValue types according to WebDriver BiDi spec.
+        // https://bugs.webkit.org/show_bug.cgi?id=301159
+
         // FIXME: Properly fill ExceptionDetails remaining fields once we have a way to get them instead of just the error message.
         // https://bugs.webkit.org/show_bug.cgi?id=288058
         if (!stringResult) {
@@ -422,6 +583,153 @@ void BidiScriptAgent::getRealms(const BrowsingContext& optionalBrowsingContext, 
     // Process pages asynchronously using getAllFrameTrees.
     processRealmsForPagesAsync(WTF::move(pagesToProcess), WTF::move(optionalRealmType), WTF::move(contextHandleFilter), { }, WTF::move(callback));
 }
+
+void BidiScriptAgent::addPreloadScript(const String& functionDeclaration, RefPtr<JSON::Array>&& optionalArguments, RefPtr<JSON::Array>&& optionalContexts, const String& optionalSandbox, RefPtr<JSON::Array>&& optionalUserContexts, Inspector::CommandCallback<String>&& callback)
+{
+    // FIXME: Add resource limits to prevent denial of service <https://webkit.org/b/288057>
+    ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(functionDeclaration.isEmpty(), InvalidParameter, "functionDeclaration cannot be empty"_s);
+
+    auto scriptID = PreloadScriptIdentifier::generate();
+
+    // Validate mutual exclusion of contexts and userContexts
+    ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(optionalContexts && optionalUserContexts, InvalidParameter, "contexts and userContexts are mutually exclusive"_s);
+
+    Variant<AllContextsTag, Vector<String>> contexts { AllContextsTag { } };
+    if (optionalContexts) {
+        ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(!optionalContexts->length(), InvalidParameter, "contexts array cannot be empty"_s);
+
+        Vector<String> contextList;
+        for (auto& value : *optionalContexts) {
+            String context;
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(!value->asString(context), InvalidParameter, "contexts array must contain only strings"_s);
+
+            // Look up the context first, then check if it's a top-level context per spec.
+            RefPtr session = m_session.get();
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_IF(!session, InternalError);
+
+            RefPtr page = session->webPageProxyForHandle(context);
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_IF(!page, FrameNotFound);
+
+            // Check if it's a top-level context (page handle format starts with "page-")
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(!context.startsWith("page-"_s), InvalidParameter, "contexts must be top-level browsing contexts"_s);
+
+            contextList.append(context);
+        }
+        contexts = WTF::move(contextList);
+    }
+
+    std::optional<Vector<String>> userContexts;
+    if (optionalUserContexts) {
+        ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(!optionalUserContexts->length(), InvalidParameter, "userContexts array cannot be empty"_s);
+
+        Vector<String> userContextList;
+        for (auto& value : *optionalUserContexts) {
+            String userContext;
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_AND_DETAILS_IF(!value->asString(userContext), InvalidParameter, "userContexts array must contain only strings"_s);
+
+            // Validate userContext ID actually exists
+            RefPtr session = m_session.get();
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_IF(!session, InternalError);
+            ASYNC_FAIL_WITH_PREDEFINED_ERROR_IF(!session->isValidUserContext(userContext), NoSuchUserContext);
+
+            userContextList.append(userContext);
+        }
+        userContexts = WTF::move(userContextList);
+    }
+
+    m_preloadScripts.append(std::make_pair(scriptID, PreloadScriptInfo {
+        functionDeclaration,
+        WTF::move(optionalArguments),
+        WTF::move(contexts),
+        optionalSandbox,
+        WTF::move(userContexts)
+    }));
+
+    callback(makeString("preload-"_s, scriptID.toUInt64()));
+}
+
+void BidiScriptAgent::removePreloadScript(const String& script, Inspector::CommandCallback<void>&& callback)
+{
+    // Parse the script ID from the string (format: "preload-{number}")
+    if (!script.startsWith("preload-"_s))
+        ASYNC_FAIL_WITH_PREDEFINED_ERROR(NoSuchScript);
+
+    auto idString = script.substring(8); // Skip "preload-" prefix
+    auto idValue = parseInteger<uint64_t>(idString);
+    if (!idValue || !PreloadScriptIdentifier::isValidIdentifier(*idValue))
+        ASYNC_FAIL_WITH_PREDEFINED_ERROR(NoSuchScript);
+
+    auto scriptID = PreloadScriptIdentifier(*idValue);
+    bool found = m_preloadScripts.removeFirstMatching([&scriptID](const auto& pair) {
+        return pair.first == scriptID;
+    });
+
+    ASYNC_FAIL_WITH_PREDEFINED_ERROR_IF(!found, NoSuchScript);
+
+    callback({ });
+}
+
+void BidiScriptAgent::executePreloadScriptsForContext(const String& browsingContext, const String& frameHandle)
+{
+    RefPtr session = m_session.get();
+    if (!session)
+        return;
+
+    for (const auto& [scriptID, scriptInfo] : m_preloadScripts) {
+        // Check if this script applies to the current browsing context
+        bool appliesToContext = WTF::switchOn(scriptInfo.contexts,
+            [&] (const AllContextsTag&) {
+                return true;
+            },
+            [&] (const Vector<String>& contextList) {
+                return contextList.contains(browsingContext);
+            });
+        if (!appliesToContext)
+            continue;
+
+        // Check if this script applies to the current user context
+        if (scriptInfo.userContexts) {
+            RefPtr page = session->webPageProxyForHandle(browsingContext);
+            if (!page)
+                continue; // Skip if page no longer exists
+
+            // Get the user context ID for this browsing context
+            String pageUserContextID;
+            if (page->sessionID() == PAL::SessionID::defaultSessionID())
+                pageUserContextID = "default"_s;
+            else
+                pageUserContextID = makeString(hex(page->sessionID().toUInt64(), 16));
+
+            // Check if the script's userContexts list includes this context
+            if (!scriptInfo.userContexts->contains(pageUserContextID))
+                continue;
+        }
+
+        // FIXME: Execute preload scripts in the sandbox realm specified by addPreloadScript. <https://webkit.org/b/305819>
+        // FIXME: Create channels and remote references for preload script arguments in the target realm. <https://webkit.org/b/288057>
+
+        // Deserialize LocalValue arguments into plain JSON values for script evaluation.
+        auto argumentsArray = JSON::Array::create();
+        if (scriptInfo.arguments) {
+            for (unsigned i = 0; i < scriptInfo.arguments->length(); ++i) {
+                Ref argValue = scriptInfo.arguments->get(i);
+                argumentsArray->pushValue(deserializeLocalValue(argValue.get()));
+            }
+        }
+
+        session->evaluateJavaScriptFunction(
+            browsingContext,
+            frameHandle,
+            scriptInfo.functionDeclaration,
+            WTF::move(argumentsArray),
+            false,
+            false,
+            std::nullopt,
+            [](auto) { }
+        );
+    }
+}
+
 
 RefPtr<Inspector::Protocol::BidiScript::RealmInfo> BidiScriptAgent::createRealmInfoForFrame(const FrameInfoData& frameInfo)
 {

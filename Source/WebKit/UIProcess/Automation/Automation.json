@@ -87,7 +87,8 @@
                 "UnableToLoadExtension",
                 "UnableToUnloadExtension",
                 "NoSuchExtension",
-                "NoSuchUserContext"
+                "NoSuchUserContext",
+                "NoSuchScript"
             ]
         },
         {
