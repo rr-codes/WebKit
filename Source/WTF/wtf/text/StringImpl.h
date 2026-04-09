@@ -653,8 +653,7 @@ size_t NODELETE reverseFind(std::span<const Latin1Character>, char16_t matchChar
 template<size_t inlineCapacity> bool NODELETE equalIgnoringNullity(const Vector<char16_t, inlineCapacity>&, StringImpl*);
 
 template<typename CharacterType1, typename CharacterType2>
-std::strong_ordering NODELETE odePointCompare(std::span<const CharacterType1> characters1, std::span<const CharacterType2> characters2);
-std::strong_ordering NODELETE codePointCompare(const StringImpl* string1, const StringImpl* string2);
+SUPPRESS_NODELETE std::strong_ordering NODELETE codePointCompare(std::span<const CharacterType1> characters1, std::span<const CharacterType2> characters2);
 
 bool NODELETE isUnicodeWhitespace(char16_t);
 
@@ -783,7 +782,8 @@ template<size_t inlineCapacity> inline bool equalIgnoringNullity(const Vector<ch
 }
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
-template<typename CharacterType1, typename CharacterType2> inline std::strong_ordering codePointCompare(std::span<const CharacterType1> characters1, std::span<const CharacterType2> characters2)
+template<typename CharacterType1, typename CharacterType2>
+inline std::strong_ordering codePointCompare(std::span<const CharacterType1> characters1, std::span<const CharacterType2> characters2)
 {
     size_t commonLength = std::min(characters1.size(), characters2.size());
 
@@ -837,26 +837,6 @@ template<typename CharacterType1, typename CharacterType2> inline std::strong_or
     return (characters1.size() > characters2.size()) ? std::strong_ordering::greater : std::strong_ordering::less;
 }
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
-
-SUPPRESS_NODELETE inline std::strong_ordering codePointCompare(const StringImpl* string1, const StringImpl* string2)
-{
-    // FIXME: Should null strings compare as less than empty strings rather than equal to them?
-    if (!string1)
-        return (string2 && string2->length()) ? std::strong_ordering::less : std::strong_ordering::equal;
-    if (!string2)
-        return string1->length() ? std::strong_ordering::greater : std::strong_ordering::equal;
-
-    bool string1Is8Bit = string1->is8Bit();
-    bool string2Is8Bit = string2->is8Bit();
-    if (string1Is8Bit) {
-        if (string2Is8Bit)
-            return codePointCompare(string1->span8(), string2->span8());
-        return codePointCompare(string1->span8(), string2->span16());
-    }
-    if (string2Is8Bit)
-        return codePointCompare(string1->span16(), string2->span8());
-    return codePointCompare(string1->span16(), string2->span16());
-}
 
 // FIXME: For Latin1Character, isUnicodeCompatibleASCIIWhitespace(character) || character == 0x0085 || character == noBreakSpace would be enough
 SUPPRESS_NODELETE inline bool isUnicodeWhitespace(char16_t character)

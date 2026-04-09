@@ -1966,20 +1966,20 @@ JSC_DEFINE_HOST_FUNCTION(jsonProtoFuncRawJSON, (JSGlobalObject* globalObject, Ca
         return character == 0x0009 || character == 0x000A || character == 0x000D || character == 0x0020;
     };
 
-    String string = jsString->value(globalObject);
+    auto view = jsString->view(globalObject);
     RETURN_IF_EXCEPTION(scope, { });
-    if (string.isEmpty()) [[unlikely]] {
+    if (view->isEmpty()) [[unlikely]] {
         throwSyntaxError(globalObject, scope, "JSON.rawJSON cannot accept empty string"_s);
         return { };
     }
 
-    char16_t firstCharacter = string[0];
+    char16_t firstCharacter = view->codeUnitAt(0);
     if (isJSONWhitespace(firstCharacter)) [[unlikely]] {
         throwSyntaxError(globalObject, scope, makeString("JSON.rawJSON cannot accept string starting with '"_s, firstCharacter, "'"_s));
         return { };
     }
 
-    char16_t lastCharacter = string[string.length() - 1];
+    char16_t lastCharacter = view->codeUnitAt(view->length() - 1);
     if (isJSONWhitespace(lastCharacter)) [[unlikely]] {
         throwSyntaxError(globalObject, scope, makeString("JSON.rawJSON cannot accept string ending with '"_s, lastCharacter, "'"_s));
         return { };
@@ -1987,8 +1987,8 @@ JSC_DEFINE_HOST_FUNCTION(jsonProtoFuncRawJSON, (JSGlobalObject* globalObject, Ca
 
     {
         JSValue result;
-        if (string.is8Bit()) {
-            LiteralParser<Latin1Character, JSONReviverMode::Disabled> jsonParser(globalObject, string.span8(), StrictJSON);
+        if (view->is8Bit()) {
+            LiteralParser<Latin1Character, JSONReviverMode::Disabled> jsonParser(globalObject, view->span8(), StrictJSON);
             result = jsonParser.tryLiteralParsePrimitiveValue();
             RETURN_IF_EXCEPTION(scope, { });
             if (!result) [[unlikely]] {
@@ -1996,7 +1996,7 @@ JSC_DEFINE_HOST_FUNCTION(jsonProtoFuncRawJSON, (JSGlobalObject* globalObject, Ca
                 return { };
             }
         } else {
-            LiteralParser<char16_t, JSONReviverMode::Disabled> jsonParser(globalObject, string.span16(), StrictJSON);
+            LiteralParser<char16_t, JSONReviverMode::Disabled> jsonParser(globalObject, view->span16(), StrictJSON);
             result = jsonParser.tryLiteralParsePrimitiveValue();
             RETURN_IF_EXCEPTION(scope, { });
             if (!result) [[unlikely]] {

@@ -288,6 +288,12 @@ WTF_EXPORT_PRIVATE String normalizedNFC(const String&);
 inline StringView nullStringView() { return { }; }
 inline StringView emptyStringView() { return ""_span; }
 
+WTF_EXPORT_PRIVATE NODELETE std::strong_ordering codePointCompare(StringView, StringView);
+inline bool NODELETE codePointCompareLessThan(StringView a, StringView b)
+{
+    return codePointCompare(a, b) < 0;
+}
+
 } // namespace WTF
 
 #include <wtf/ValueOrReference.h>
@@ -1271,8 +1277,6 @@ inline bool equalIgnoringNullity(StringView a, StringView b)
     return equal(a, b);
 }
 
-WTF_EXPORT_PRIVATE std::strong_ordering codePointCompare(StringView, StringView);
-
 inline bool hasUnpairedSurrogate(StringView string)
 {
     // Fast path for 8-bit strings; they can't have any surrogates.
@@ -1585,3 +1589,5 @@ using WTF::StringViewWithUnderlyingString;
 using WTF::hasUnpairedSurrogate;
 using WTF::nullStringView;
 using WTF::emptyStringView;
+using WTF::codePointCompare;
+using WTF::codePointCompareLessThan;

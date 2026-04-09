@@ -69,11 +69,6 @@ String::String(const char* nullTerminatedString)
 {
 }
 
-std::strong_ordering codePointCompare(const String& a, const String& b)
-{
-    return codePointCompare(a.impl(), b.impl());
-}
-
 char32_t String::codePointAt(unsigned i) const
 {
     if (!m_impl || i >= m_impl->length())

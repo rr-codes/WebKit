@@ -473,7 +473,7 @@ String makeStringByReplacingAll(StringView string, char16_t target, char16_t rep
     return StringImpl::createByReplacingInCharacters(characters, target, replacement, i);
 }
 
-std::strong_ordering codePointCompare(StringView lhs, StringView rhs)
+SUPPRESS_NODELETE std::strong_ordering codePointCompare(StringView lhs, StringView rhs)
 {
     bool lhsIs8Bit = lhs.is8Bit();
     bool rhsIs8Bit = rhs.is8Bit();

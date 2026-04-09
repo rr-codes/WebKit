@@ -355,9 +355,6 @@ RetainPtr<NSString> nsStringNilIfNull(const String&);
 
 #endif
 
-WTF_EXPORT_PRIVATE std::strong_ordering NODELETE codePointCompare(const String&, const String&);
-bool codePointCompareLessThan(const String&, const String&);
-
 // Shared global empty and null string.
 struct StaticString {
     constexpr StaticString(StringImpl::StaticStringImpl* pointer)
@@ -541,11 +538,6 @@ inline RetainPtr<NSString> nsStringNilIfNull(const String& string)
 
 #endif
 
-inline bool codePointCompareLessThan(const String& a, const String& b)
-{
-    return codePointCompare(a.impl(), b.impl()) < 0;
-}
-
 template<typename Predicate>
 String String::removeCharacters(const Predicate& findMatch) const
 {
@@ -601,6 +593,5 @@ using WTF::equal;
 using WTF::find;
 using WTF::containsOnly;
 using WTF::reverseFind;
-using WTF::codePointCompareLessThan;
 
 #include <wtf/text/AtomString.h>
