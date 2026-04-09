@@ -38,6 +38,8 @@ struct TestRunnerConfiguration {
     let repetitions: Int?
     let force: Bool
     let parallel: Bool
+
+    let gTestLegacyArguments: [String]
 }
 
 extension TestRunner.Configuration {
@@ -71,5 +73,8 @@ extension TestRunner.Configuration {
         self.listTests = Self.flag(arguments, for: "--list-tests")
         self.pretty = Self.flag(arguments, for: "--pretty")
         self.parallel = Self.flag(arguments, for: "--parallel")
+
+        // Maintain backwards compatibility for the `--gtest_*=*` type arguments.
+        self.gTestLegacyArguments = arguments.dropFirst().filter { $0.contains("--gtest") }
     }
 }

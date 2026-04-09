@@ -69,6 +69,8 @@ extension GoogleTestsController {
             result.append("--gtest_repeat=\(repetitions)")
         }
 
+        result.append(contentsOf: configuration.gTestLegacyArguments)
+
         return result
     }
 }
