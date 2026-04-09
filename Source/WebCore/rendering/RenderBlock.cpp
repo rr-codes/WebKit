@@ -2338,7 +2338,7 @@ void RenderBlock::computeChildPreferredLogicalWidths(RenderBox& childBox, Layout
             auto aspectRatioSize = blockSizeFromAspectRatio(
                 childBox.horizontalBorderAndPaddingExtent(),
                 childBox.verticalBorderAndPaddingExtent(),
-                LayoutUnit { childBoxStyle.logicalAspectRatio() },
+                childBoxStyle.logicalAspectRatio(),
                 childBoxStyle.boxSizingForAspectRatio(),
                 LayoutUnit { fixedChildBoxStyleLogicalWidth->resolveZoom(childBoxStyle.usedZoomForLength()) },
                 style().aspectRatio(),
@@ -2952,7 +2952,7 @@ std::optional<LayoutUnit> RenderBlock::availableLogicalHeightForPercentageComput
             return blockSizeFromAspectRatio(
                 horizontalBorderAndPaddingExtent(),
                 verticalBorderAndPaddingExtent(),
-                LayoutUnit { style.logicalAspectRatio() },
+                style.logicalAspectRatio(),
                 style.boxSizingForAspectRatio(),
                 logicalWidth(),
                 style.aspectRatio(),
