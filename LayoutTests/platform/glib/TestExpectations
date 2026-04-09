@@ -5450,6 +5450,8 @@ webkit.org/b/278719 fast/events/touch/inserted-fragment-touch-target.html [ Time
 # This test has been failing on glib ports since its creation.
 imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-supplementary-ideograph.html [ ImageOnlyFailure ]
 
+webkit.org/b/311844 fast/mediastream/mediastreamtrack-configurationchange.html [ Pass Failure ]
+webkit.org/b/311845 media/encrypted-media/mock-navigator-requestMediaKeySystemAccess.html [ Pass Failure ]
 
 # End: Common failures between GTK and WPE.
 

@@ -1482,3 +1482,6 @@ webanimations/simultaneous-animations-removed-separately.html [ Failure ]
 webanimations/transform-accelerated-animation-finishes-before-removal.html [ Failure ]
 
 pointer-lock/lock-lost-on-alert.html [ Pass Failure ]
+
+webkit.org/b/311846 webrtc/h264-high.html [ Pass Failure Timeout ]
+webkit.org/b/311847 webrtc/dtmf-gc.html [ Pass Timeout ]
