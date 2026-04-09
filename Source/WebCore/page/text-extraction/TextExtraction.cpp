@@ -1657,6 +1657,15 @@ static void dispatchSimulatedClick(LocalFrame& frame, IntPoint location, Complet
     completion(true, { });
 }
 
+static void dispatchSimulatedHover(LocalFrame& frame, IntPoint location, CompletionHandler<void(bool, String&&)>&& completion)
+{
+    frame.eventHandler().handleMouseMoveEvent({
+        location, location, MouseButton::None, PlatformEvent::Type::MouseMoved, 0, { }, MonotonicTime::now(), ForceAtClick, SyntheticClickType::NoTap, MouseEventInputSource::UserDriven
+    });
+
+    completion(true, { });
+}
+
 static Node* findNodeAtRootViewLocation(const LocalFrameView& view, Document& document, FloatPoint locationInRootView)
 {
     static constexpr OptionSet defaultHitTestOptions {
@@ -1668,66 +1677,79 @@ static Node* findNodeAtRootViewLocation(const LocalFrameView& view, Document& do
     return document.hitTest(defaultHitTestOptions, result) ? result.innerNode() : nullptr;
 }
 
-static void dispatchSimulatedClick(Node& targetNode, const String& searchText, CompletionHandler<void(bool, String&&)>&& completion)
+struct ResolvedMouseTarget {
+    Ref<Element> element;
+    Ref<LocalFrame> frame;
+    Ref<LocalFrameView> view;
+    IntPoint centerInRootView;
+};
+
+static Expected<ResolvedMouseTarget, String> resolveMouseTarget(Node& targetNode, const String& searchText, ASCIILiteral boxShadowColor)
 {
     RefPtr element = dynamicDowncast<Element>(targetNode);
     if (!element)
         element = targetNode.parentElementInComposedTree();
 
     if (!element || !element->isConnected())
-        return completion(false, "Target has been disconnected from the DOM"_s);
+        return makeUnexpected("Target has been disconnected from the DOM"_s);
 
     {
         CheckedPtr renderer = element->renderer();
         if (!renderer)
-            return completion(false, "Target is not rendered (possibly display: none)"_s);
+            return makeUnexpected("Target is not rendered (possibly display: none)"_s);
 
         if (renderer->style().usedVisibility() != Visibility::Visible)
-            return completion(false, "Target is hidden via CSS visibility"_s);
+            return makeUnexpected("Target is hidden via CSS visibility"_s);
     }
 
     Ref document = element->document();
     RefPtr view = document->view();
     if (!view)
-        return completion(false, "Document is not visible to the user"_s);
+        return makeUnexpected("Document is not visible to the user"_s);
 
     RefPtr frame = document->frame();
     if (!frame)
-        return completion(false, nullFrameDescription);
+        return makeUnexpected(String { nullFrameDescription });
 
-    addBoxShadowIfNeeded(targetNode, "#34c759"_s);
+    addBoxShadowIfNeeded(targetNode, boxShadowColor);
 
     std::optional<FloatRect> targetRectInRootView;
     if (!searchText.isEmpty()) {
         auto foundRange = searchForClickTarget(*element, searchText);
-        if (!foundRange) {
-            // Err on the side of failing, if the text has changed since the interaction was triggered.
-            return completion(false, searchTextNotFoundDescription(searchText));
-        }
+        if (!foundRange)
+            return makeUnexpected(searchTextNotFoundDescription(searchText));
 
-        if (auto absoluteQuads = RenderObject::absoluteTextQuads(*foundRange); !absoluteQuads.isEmpty()) {
-            // If the text match wraps across multiple lines, arbitrarily click over the first rect to avoid
-            // missing the text node altogether.
+        if (auto absoluteQuads = RenderObject::absoluteTextQuads(*foundRange); !absoluteQuads.isEmpty())
             targetRectInRootView = view->contentsToRootView(absoluteQuads.first().boundingBox());
-        }
     }
-
-    if (isInDisabledFormControl(*element))
-        return completion(false, "Click target is disabled"_s);
 
     if (!targetRectInRootView)
         targetRectInRootView = rootViewBounds(*element);
 
-    auto centerInRootView = roundedIntPoint(targetRectInRootView->center());
-    if (RefPtr target = findNodeAtRootViewLocation(*view, document, centerInRootView); target && (target == element || target->isShadowIncludingDescendantOf(*element))) {
+    return ResolvedMouseTarget { element.releaseNonNull(), frame.releaseNonNull(), view.releaseNonNull(), roundedIntPoint(targetRectInRootView->center()) };
+}
+
+static void dispatchSimulatedClick(Node& targetNode, const String& searchText, CompletionHandler<void(bool, String&&)>&& completion)
+{
+    auto resolved = resolveMouseTarget(targetNode, searchText, "#34c759"_s);
+    if (!resolved)
+        return completion(false, WTF::move(resolved.error()));
+
+    auto [element, frame, view, centerInRootView] = WTF::move(*resolved);
+
+    if (isInDisabledFormControl(element))
+        return completion(false, "Click target is disabled"_s);
+
+    Ref document = element->document();
+    if (RefPtr target = findNodeAtRootViewLocation(view, document, centerInRootView); target && (target == element.ptr() || target->isShadowIncludingDescendantOf(element))) {
         // Dispatch mouse events over the center of the element, if possible.
-        return dispatchSimulatedClick(*frame, centerInRootView, WTF::move(completion));
+        return dispatchSimulatedClick(frame, centerInRootView, WTF::move(completion));
     }
 
-    UserGestureIndicator indicator { IsProcessingUserGesture::Yes, protect(element->document()).ptr() };
+    UserGestureIndicator indicator { IsProcessingUserGesture::Yes, document.ptr() };
 
     // Fall back to dispatching a programmatic click.
-    if (element->dispatchSimulatedClick(nullptr, SendMouseUpDownEvents))
+    if (protect(element)->dispatchSimulatedClick(nullptr, SendMouseUpDownEvents))
         completion(true, { });
     else
         completion(false, "Failed to click (tried falling back to dispatching programmatic click since target could not be hit-tested)"_s);
@@ -1740,6 +1762,24 @@ static void dispatchSimulatedClick(NodeIdentifier identifier, const String& sear
         return completion(false, invalidNodeIdentifierDescription(identifier));
 
     dispatchSimulatedClick(*foundNode, searchText, WTF::move(completion));
+}
+
+static void dispatchSimulatedHover(Node& targetNode, const String& searchText, CompletionHandler<void(bool, String&&)>&& completion)
+{
+    auto resolved = resolveMouseTarget(targetNode, searchText, "#ff9500"_s);
+    if (!resolved)
+        return completion(false, WTF::move(resolved.error()));
+
+    return dispatchSimulatedHover(resolved->frame, resolved->centerInRootView, WTF::move(completion));
+}
+
+static void dispatchSimulatedHover(NodeIdentifier identifier, const String& searchText, CompletionHandler<void(bool, String&&)>&& completion)
+{
+    RefPtr foundNode = Node::fromIdentifier(identifier);
+    if (!foundNode)
+        return completion(false, invalidNodeIdentifierDescription(identifier));
+
+    dispatchSimulatedHover(*foundNode, searchText, WTF::move(completion));
 }
 
 struct SelectOptionResult {
@@ -2039,6 +2079,18 @@ void handleInteraction(Interaction&& interaction, LocalFrame& frame, CompletionH
             return completion(false, "Scroll delta is zero"_s);
 
         return scrollBy(frame, WTF::move(interaction.nodeIdentifier), interaction.scrollDelta, WTF::move(completion));
+    case Action::Hover: {
+        if (auto location = interaction.locationInRootView)
+            return dispatchSimulatedHover(frame, roundedIntPoint(*location), WTF::move(completion));
+
+        if (auto identifier = interaction.nodeIdentifier)
+            return dispatchSimulatedHover(*identifier, WTF::move(interaction.text), WTF::move(completion));
+
+        if (RefPtr body = documentBodyElement(frame); body && !interaction.text.isEmpty())
+            return dispatchSimulatedHover(*body, WTF::move(interaction.text), WTF::move(completion));
+
+        return completion(false, "Missing nodeIdentifier and/or text"_s);
+    }
     default:
         ASSERT_NOT_REACHED();
         break;
@@ -2286,6 +2338,8 @@ InteractionDescription interactionDescription(const Interaction& interaction, Lo
             return "Highlight text"_s;
         case Action::Scroll:
             return "Scroll"_s;
+        case Action::Hover:
+            return "Hover"_s;
         }
         ASSERT_NOT_REACHED();
         return { };
@@ -2297,6 +2351,7 @@ InteractionDescription interactionDescription(const Interaction& interaction, Lo
         case Action::Click:
         case Action::HighlightText:
         case Action::Scroll:
+        case Action::Hover:
             return true;
         case Action::SelectMenuItem:
         case Action::TextInput:
@@ -2339,6 +2394,8 @@ InteractionDescription interactionDescription(const Interaction& interaction, Lo
                 return interaction.text.isEmpty() ? " in "_s : " to reveal "_s;
             case Action::TextInput:
                 return " into "_s;
+            case Action::Hover:
+                return " over "_s;
             }
             ASSERT_NOT_REACHED();
             return { };

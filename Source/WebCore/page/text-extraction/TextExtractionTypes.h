@@ -56,6 +56,7 @@ enum class Action : uint8_t {
     KeyPress,
     HighlightText,
     Scroll,
+    Hover,
 };
 
 struct Interaction {

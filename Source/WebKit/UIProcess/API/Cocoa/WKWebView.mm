@@ -7167,6 +7167,8 @@ static RetainPtr<_WKTextExtractionResult> createEmptyTextExtractionResult()
             return WebCore::TextExtraction::Action::HighlightText;
         case _WKTextExtractionActionScroll:
             return WebCore::TextExtraction::Action::Scroll;
+        case _WKTextExtractionActionHover:
+            return WebCore::TextExtraction::Action::Hover;
         default:
             ASSERT_NOT_REACHED();
             return WebCore::TextExtraction::Action::Click;
@@ -7225,6 +7227,8 @@ static NSString *nameForAction(_WKTextExtractionAction action)
         return @"HighlightText";
     case _WKTextExtractionActionScrollBy:
         return @"ScrollBy";
+    case _WKTextExtractionActionHover:
+        return @"Hover";
     }
     return @"?";
 }

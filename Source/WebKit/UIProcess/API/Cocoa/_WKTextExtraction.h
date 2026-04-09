@@ -305,6 +305,7 @@ typedef NS_ENUM(NSInteger, _WKTextExtractionAction) {
     _WKTextExtractionActionHighlightText,
     _WKTextExtractionActionScroll WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA)),
     _WKTextExtractionActionScrollBy = _WKTextExtractionActionScroll,
+    _WKTextExtractionActionHover WK_API_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA)),
 } WK_API_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4));
 
 WK_CLASS_AVAILABLE(macos(26.4), ios(26.4), visionos(26.4))

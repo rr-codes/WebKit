@@ -1454,4 +1454,109 @@ TEST(TextExtractionTests, ResultOrigin)
     EXPECT_EQ(server.port(), static_cast<uint16_t>([origin port]));
 }
 
+TEST(TextExtractionTests, HoverInteractionWithTextOnly)
+{
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    [[configuration preferences] _setTextExtractionEnabled:YES];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 600) configuration:configuration.get()]);
+    [webView synchronouslyLoadHTMLString:@"<!DOCTYPE html>"
+        "<html>"
+        "<head>"
+        "    <meta name='viewport' content='width=device-width, initial-scale=1'>"
+        "</head>"
+        "<body>"
+        "    <div id='target' style='padding: 20px;'>Hover Me</div>"
+        "    <div id='result'>none</div>"
+        "    <script>"
+        "        document.getElementById('target').addEventListener('mouseover', () => {"
+        "            document.getElementById('result').textContent = 'hovered';"
+        "        });"
+        "    </script>"
+        "</body>"
+        "</html>"];
+
+    EXPECT_WK_STREQ("none", [webView stringByEvaluatingJavaScript:@"result.textContent"]);
+
+    RetainPtr hover = adoptNS([[_WKTextExtractionInteraction alloc] initWithAction:_WKTextExtractionActionHover]);
+    [hover setText:@"Hover Me"];
+
+    RetainPtr result = [webView synchronouslyPerformInteraction:hover.get()];
+    EXPECT_NULL([result error]);
+    EXPECT_WK_STREQ("hovered", [webView stringByEvaluatingJavaScript:@"result.textContent"]);
+}
+
+TEST(TextExtractionTests, HoverInteractionWithExtractionContext)
+{
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    [[configuration preferences] _setTextExtractionEnabled:YES];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 600) configuration:configuration.get()]);
+    [webView synchronouslyLoadHTMLString:@R"HTML(
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name='viewport' content='width=device-width, initial-scale=1'>
+        </head>
+        <body>
+            <button id='target'>Menu</button>
+            <div id='result'>none</div>
+            <script>
+                document.getElementById('target').addEventListener('mouseenter', () => {
+                    document.getElementById('result').textContent = 'entered';
+                });
+            </script>
+        </body>
+        </html>
+    )HTML"];
+
+    RetainPtr extractionResult = [webView synchronouslyExtractDebugTextResult:nil];
+    EXPECT_TRUE([[extractionResult textContent] containsString:@"Menu"]);
+
+    RetainPtr hover = adoptNS([[_WKTextExtractionInteraction alloc] initWithAction:_WKTextExtractionActionHover extractionContext:extractionResult.get()]);
+    [hover setText:@"Menu"];
+    RetainPtr result = [webView synchronouslyPerformInteraction:hover.get()];
+    EXPECT_NULL([result error]);
+
+    EXPECT_WK_STREQ("entered", [webView stringByEvaluatingJavaScript:@"document.getElementById('result').textContent"]);
+}
+
+TEST(TextExtractionTests, HoverDoesNotClick)
+{
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    [[configuration preferences] _setTextExtractionEnabled:YES];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 600) configuration:configuration.get()]);
+    [webView synchronouslyLoadHTMLString:@R"HTML(
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta name='viewport' content='width=device-width, initial-scale=1'>
+        </head>
+        <body>
+            <div id='target' style='padding: 20px;'>Target</div>
+            <div id='hover-result'>none</div>
+            <div id='click-result'>none</div>
+            <script>
+                let target = document.getElementById('target');
+                target.addEventListener('mouseover', () => {
+                    document.getElementById('hover-result').textContent = 'hovered';
+                });
+                target.addEventListener('click', () => {
+                    document.getElementById('click-result').textContent = 'clicked';
+                });
+            </script>
+        </body>
+        </html>
+    )HTML"];
+
+    RetainPtr hover = adoptNS([[_WKTextExtractionInteraction alloc] initWithAction:_WKTextExtractionActionHover]);
+    [hover setText:@"Target"];
+
+    RetainPtr result = [webView synchronouslyPerformInteraction:hover.get()];
+    EXPECT_NULL([result error]);
+    EXPECT_WK_STREQ("hovered", [webView stringByEvaluatingJavaScript:@"document.getElementById('hover-result').textContent"]);
+    EXPECT_WK_STREQ("none", [webView stringByEvaluatingJavaScript:@"document.getElementById('click-result').textContent"]);
+}
+
 } // namespace TestWebKitAPI
