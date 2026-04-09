@@ -30,6 +30,7 @@
 NS_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 @class WKFrameInfo;
+@class WKSecurityOrigin;
 @class WKWebView;
 @class _WKJSHandle;
 
@@ -242,6 +243,11 @@ WK_CLASS_AVAILABLE(macos(WK_MAC_TBA), ios(WK_IOS_TBA), visionos(WK_XROS_TBA))
 @interface _WKTextExtractionResult : NSObject
 
 @property (nonatomic, readonly) NSString *textContent;
+
+/*!
+ The origin of the committed page at the time text extraction completed.
+ */
+@property (nonatomic, readonly, nullable) WKSecurityOrigin *origin;
 
 /*!
  Set to `YES` if and only if any output text was filtered out as a result

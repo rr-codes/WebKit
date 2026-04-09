@@ -27,6 +27,7 @@
 #import "_WKTextExtractionInternal.h"
 
 #import "WKJSHandleInternal.h"
+#import "WKSecurityOriginInternal.h"
 #import "WKWebViewInternal.h"
 #import <WebKit/WKError.h>
 #import <wtf/HashSet.h>
@@ -150,15 +151,17 @@
 @end
 
 @implementation _WKTextExtractionResult {
+    RetainPtr<WKSecurityOrigin> _origin;
     RetainPtr<NSString> _textContent;
     RetainPtr<NSDictionary<NSString *, NSURL *>> _shortenedURLs;
     HashMap<String, Vector<WebKit::ExtractedNodeInfo>> _textToContainerMap;
     __weak WKWebView *_webView;
 }
 
-- (instancetype)initWithWebView:(WKWebView *)webView textContent:(NSString *)textContent filteredOutAnyText:(BOOL)filteredOutAnyText shortenedURLs:(NSDictionary<NSString *, NSURL *> *)shortenedURLs textToContainerMap:(HashMap<String, Vector<WebKit::ExtractedNodeInfo>>&&)textToContainerMap
+- (instancetype)initWithWebView:(WKWebView *)webView origin:(WKSecurityOrigin *)origin textContent:(NSString *)textContent filteredOutAnyText:(BOOL)filteredOutAnyText shortenedURLs:(NSDictionary<NSString *, NSURL *> *)shortenedURLs textToContainerMap:(HashMap<String, Vector<WebKit::ExtractedNodeInfo>>&&)textToContainerMap
 {
     if (self = [super init]) {
+        _origin = origin;
         _textContent = textContent;
         _filteredOutAnyText = filteredOutAnyText;
         _shortenedURLs = shortenedURLs;
@@ -199,6 +202,11 @@
         return { *interactiveContainer };
 
     return makeUnexpected(makeString("Multiple matches for '"_s, String { searchText }, "'; use a uid to disambiguate"_s));
+}
+
+- (WKSecurityOrigin *)origin
+{
+    return _origin.get();
 }
 
 - (NSString *)textContent

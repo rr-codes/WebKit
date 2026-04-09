@@ -40,6 +40,7 @@
 #import <WebKit/WKContentWorldPrivate.h>
 #import <WebKit/WKFrameInfoPrivate.h>
 #import <WebKit/WKPreferencesPrivate.h>
+#import <WebKit/WKSecurityOrigin.h>
 #import <WebKit/WKWebViewConfigurationPrivate.h>
 #import <WebKit/WKWebViewPrivate.h>
 #import <WebKit/WKWebViewPrivateForTesting.h>
@@ -1427,6 +1428,30 @@ TEST(TextExtractionTests, ExtractionContextPrefersInteractiveElement)
     EXPECT_NULL([result error]);
 
     EXPECT_WK_STREQ("submitted", [webView stringByEvaluatingJavaScript:@"document.getElementById('result').textContent"]);
+}
+
+TEST(TextExtractionTests, ResultOrigin)
+{
+    using namespace TestWebKitAPI;
+
+    HTTPServer server({
+        { "/"_s, { "<html><body>Hello world</body></html>"_s } },
+    });
+
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    [[configuration preferences] _setTextExtractionEnabled:YES];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 600) configuration:configuration.get()]);
+    [webView synchronouslyLoadRequest:server.request()];
+
+    RetainPtr extractionResult = [webView synchronouslyExtractDebugTextResult:nil];
+    EXPECT_TRUE([[extractionResult textContent] containsString:@"Hello world"]);
+
+    WKSecurityOrigin *origin = [extractionResult origin];
+    EXPECT_NOT_NULL(origin);
+    EXPECT_WK_STREQ("http", [origin protocol]);
+    EXPECT_WK_STREQ("127.0.0.1", [origin host]);
+    EXPECT_EQ(server.port(), static_cast<uint16_t>([origin port]));
 }
 
 } // namespace TestWebKitAPI

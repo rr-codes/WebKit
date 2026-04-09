@@ -6905,7 +6905,7 @@ static WebKit::TextExtractionOutputFormat textExtractionOutputFormat(_WKTextExtr
 
 static RetainPtr<_WKTextExtractionResult> createEmptyTextExtractionResult()
 {
-    return adoptNS([[_WKTextExtractionResult alloc] initWithWebView:nil textContent:@"" filteredOutAnyText:NO shortenedURLs:@{ } textToContainerMap:{ }]);
+    return adoptNS([[_WKTextExtractionResult alloc] initWithWebView:nil origin:nil textContent:@"" filteredOutAnyText:NO shortenedURLs:@{ } textToContainerMap:{ }]);
 }
 
 - (void)_extractDebugTextWithConfiguration:(_WKTextExtractionConfiguration *)configuration completionHandler:(void(^)(_WKTextExtractionResult *))completionHandler
@@ -7018,6 +7018,7 @@ static RetainPtr<_WKTextExtractionResult> createEmptyTextExtractionResult()
         replacementStrings = extractReplacementStrings(configuration),
         outputFormat = textExtractionOutputFormat(configuration),
         endTextExtractionScope = WTF::move(endTextExtractionScope),
+        origin = _page->pageLoadState().origin(),
         topHostName = URL { _page->pageLoadState().activeURL() }.host().toString()
     ](auto&& result) mutable {
         RetainPtr strongSelf = weakSelf.get();
@@ -7121,7 +7122,7 @@ static RetainPtr<_WKTextExtractionResult> createEmptyTextExtractionResult()
             WTF::move(maxWordsPerParagraph),
             WTF::move(topHostName),
         };
-        WebKit::convertToText(WTF::move(result->rootItem), WTF::move(options), [weakSelf, startTime, urlCache, completionHandler = WTF::move(completionHandler), endTextExtractionScope = WTF::move(endTextExtractionScope)](auto&& result) {
+        WebKit::convertToText(WTF::move(result->rootItem), WTF::move(options), [weakSelf, startTime, urlCache, origin = WTF::move(origin), completionHandler = WTF::move(completionHandler), endTextExtractionScope = WTF::move(endTextExtractionScope)](auto&& result) {
             RetainPtr strongSelf = weakSelf.get();
             if (!strongSelf)
                 return completionHandler(createEmptyTextExtractionResult().get());
@@ -7137,6 +7138,7 @@ static RetainPtr<_WKTextExtractionResult> createEmptyTextExtractionResult()
             }
             completionHandler(adoptNS([[_WKTextExtractionResult alloc]
                 initWithWebView:strongSelf.get()
+                origin:wrapper(API::SecurityOrigin::create(origin)).get()
                 textContent:text.createNSString().get()
                 filteredOutAnyText:filteredOutAnyText
                 shortenedURLs:shortenedURLs.get()
