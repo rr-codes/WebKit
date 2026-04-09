@@ -129,10 +129,9 @@ void ScrollerCoordinated::updateValues()
 
     auto* grContext = display.skiaGrContext();
     RELEASE_ASSERT(grContext);
+    GLContext::ScopedGLContextCurrent scopedCurrent(*glContext);
 
     Ref texture = BitmapTexturePool::singleton().acquireTexture(state.frameRect.size(), { BitmapTexture::Flags::SupportsAlpha });
-
-    GLContext::ScopedGLContextCurrent scopedCurrent(*glContext);
     auto surface = texture->createSkiaSurface(grContext);
     if (!surface)
         return;
