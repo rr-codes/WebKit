@@ -752,22 +752,6 @@ struct ThreadInfo {
     StringView stopReason;
 };
 
-static Vector<ThreadInfo> collectAllStoppedThreads()
-{
-    Vector<ThreadInfo> threads;
-    VMManager::forEachVM([&](VM& vm) {
-        auto* state = vm.debugState();
-        if (!state->isStopped())
-            return IterationStatus::Continue;
-
-        uint64_t threadId = ExecutionHandler::threadId(vm);
-        auto stopInfo = stopReasonToInfo(*state);
-        threads.append({ threadId, getStopPC(*state), getThreadName(*state, threadId), stopInfo.reasonSuffix });
-        return IterationStatus::Continue;
-    });
-    return threads;
-}
-
 void ExecutionHandler::sendStopReply(AbstractLocker& locker) WTF_REQUIRES_LOCK(m_lock)
 {
     sendStopReplyForThread(locker, threadId(*m_debuggee));
@@ -776,8 +760,14 @@ void ExecutionHandler::sendStopReply(AbstractLocker& locker) WTF_REQUIRES_LOCK(m
 void ExecutionHandler::sendStopReplyForThread(AbstractLocker& locker, uint64_t threadId) WTF_REQUIRES_LOCK(m_lock)
 {
     VM* vm = findVM(threadId);
+    if (!vm) {
+        dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] sendStopReplyForThread: thread ", threadId, " not found");
+        sendErrorReply(ProtocolError::InvalidAddress);
+        return;
+    }
+
     DebugState* state = vm->debugState();
-    if (!vm || !state) {
+    if (!state) {
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] sendStopReplyForThread: thread ", threadId, " not found");
         sendErrorReply(ProtocolError::InvalidAddress);
         return;
@@ -785,11 +775,28 @@ void ExecutionHandler::sendStopReplyForThread(AbstractLocker& locker, uint64_t t
 
     RELEASE_ASSERT(state->isStopped());
 
-    // Gather information for the target thread
-    Vector<ThreadInfo> allThreads = collectAllStoppedThreads();
+    // Collect all stopped threads; swap event thread to index 0 so thread-pcs[i] aligns with threads[i].
+    Vector<ThreadInfo> allThreads;
+    VMManager::forEachVM([&](VM& vm) {
+        auto* state = vm.debugState();
+        if (!state->isStopped())
+            return IterationStatus::Continue;
+        uint64_t tid = ExecutionHandler::threadId(vm);
+        allThreads.append({ tid, getStopPC(*state), getThreadName(*state, tid), stopReasonToInfo(*state).reasonSuffix });
+        if (tid == threadId)
+            std::swap(allThreads[0], allThreads.last());
+        return IterationStatus::Continue;
+    });
 
-    // FIXME: Report different stop reasons for active vs passive threads (currently all use same code).
-    auto stopInfo = stopReasonToInfo(*state);
+    // A "passive thread" is a VM that was collaterally stopped when the world was halted (its
+    // stopReason set to Interrupted by setStopped()), as opposed to the debuggee thread that
+    // actually triggered the stop event (breakpoint/step/trap/interrupt/new-module-load).
+    // Passive threads get signal 0 so LLDB's ShouldSelect() returns false for them, allowing
+    // the event thread to win thread selection in HandleProcessStateChangedEvent.
+    bool isPassiveThread = state->stopReason == DebugState::Reason::Interrupted && m_debuggee && threadId != ExecutionHandler::threadId(*m_debuggee);
+    auto stopInfo = isPassiveThread
+        ? StopReasonInfo { signalStopString(0), "signal"_s }
+        : stopReasonToInfo(*state);
 
     // Build packet with target thread
     StringBuilder reply;

@@ -1567,7 +1567,17 @@ class MultiVMSameModuleSameFunctionTestCase(BaseTestCase):
             raise Exception(f"Test failed: {e}")
 
     def stepTest(self):
-        # FIXME: Add tests when thread select is full supported
+        self.send_lldb_command_or_raise("th list", patterns=["thread #1", "thread #2", "thread #3"])
+        self.send_lldb_command_or_raise("b 0x4000000100000024")
+        self.send_lldb_command_or_raise("c", patterns=["->  0x4000000100000024: nop"])
+        patterns = [
+            ["->  0x4000000100000025: i32.const 42"],
+            ["->  0x4000000100000027: drop"],
+            ["->  0x4000000100000028: nop"],
+            ["->  0x4000000100000029: end"],
+        ]
+        for pattern in patterns:
+            self.send_lldb_command_or_raise("si", patterns=pattern)
         return
 
 
@@ -1589,7 +1599,40 @@ class MultiVMSameModuleDifferentFunctionsTestCase(BaseTestCase):
             raise Exception(f"Test failed: {e}")
 
     def stepTest(self):
-        # FIXME: Add tests when thread select is full supported
+        self.send_lldb_command_or_raise("th list", patterns=["thread #1", "thread #2"])
+
+        self.send_lldb_command_or_raise("b 0x4000000000000034")
+        self.send_lldb_command_or_raise("c", patterns=["->  0x4000000000000034: nop"])
+        patterns = [
+            ["->  0x4000000000000035: i32.const 10"],
+            ["->  0x4000000000000037: drop"],
+            ["->  0x4000000000000038: nop"],
+            ["->  0x4000000000000039: i32.const 20"],
+            ["->  0x400000000000003b: drop"],
+            ["->  0x400000000000003c: end"],
+        ]
+        for pattern in patterns:
+            self.send_lldb_command_or_raise("si", patterns=pattern)
+        self.send_lldb_command_or_raise(
+            "br del -f", patterns=["All breakpoints removed. (1 breakpoint)"]
+        )
+
+        self.send_lldb_command_or_raise("b 0x400000010000003f")
+        self.send_lldb_command_or_raise("c", patterns=["->  0x400000010000003f: nop"])
+        patterns = [
+            ["->  0x4000000100000040: i32.const 30"],
+            ["->  0x4000000100000042: drop"],
+            ["->  0x4000000100000043: nop"],
+            ["->  0x4000000100000044: i32.const 40"],
+            ["->  0x4000000100000046: drop"],
+            ["->  0x4000000100000047: end"],
+        ]
+        for pattern in patterns:
+            self.send_lldb_command_or_raise("si", patterns=pattern)
+        self.send_lldb_command_or_raise(
+            "br del -f", patterns=["All breakpoints removed. (1 breakpoint)"]
+        )
+
         return
 
 

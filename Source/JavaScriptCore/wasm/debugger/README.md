@@ -196,11 +196,6 @@ See [RWI_ARCHITECTURE.md](./RWI_ARCHITECTURE.md) for complete setup instructions
 - **Location**: `WasmDebugServer.cpp:348-349`
 - **Solution**: Introduce various stop states and proper termination handling
 
-### Multi-Thread Display in LLDB
-
-- **Issue**: Thread select and stop reply protocol handlers need improvement to correctly display multi-VM data in LLDB
-- **Current Status**: Multi-VM stop-the-world is implemented, but thread information may not display correctly in LLDB UI
-
 ### X86_64 Support
 
 - **Issue**: The WebAssembly debugger is currently restricted to ARM64 platforms only
