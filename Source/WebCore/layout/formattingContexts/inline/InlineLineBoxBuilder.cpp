@@ -362,8 +362,13 @@ void LineBoxBuilder::setVerticalPropertiesForInlineLevelBox(const LineBox& lineB
         return;
     }
     if (inlineLevelBox.isLineBreakBox()) {
-        auto parentAscentAndDescent = primaryFontMetricsForInlineBox(lineBox.parentInlineBox(inlineLevelBox), lineBox.baselineType());
-        setVerticalProperties(parentAscentAndDescent);
+        auto ascentAndDescent = primaryFontMetricsForInlineBox(lineBox.parentInlineBox(inlineLevelBox), lineBox.baselineType());
+        setVerticalProperties(ascentAndDescent);
+        if (!inlineLevelBox.isPreferredLineHeightFontMetricsBased()) {
+            // When the BR has an explicit line-height, apply the same half-leading model as setLayoutBoundsForInlineBox.
+            auto halfLeading = (InlineFormattingUtils::snapToInt(inlineLevelBox.preferredLineHeight(), inlineLevelBox, InlineFormattingUtils::SnapDirection::Floor) - ascentAndDescent.height()) / 2;
+            inlineLevelBox.setLayoutBounds({ ascentAndDescent.ascent + halfLeading, ascentAndDescent.descent + halfLeading });
+        }
         return;
     }
     if (inlineLevelBox.isListMarker()) {

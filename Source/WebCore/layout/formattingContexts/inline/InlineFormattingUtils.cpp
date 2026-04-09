@@ -110,8 +110,11 @@ bool InlineFormattingUtils::inlineLevelBoxAffectsLineBox(const InlineLevelBox& i
     if (!inlineLevelBox.mayStretchLineBox())
         return false;
 
-    if (inlineLevelBox.isLineBreakBox())
-        return false;
+    if (inlineLevelBox.isLineBreakBox()) {
+        // A line break box affects the line box when it has a non-default
+        // line-height (e.g. br { line-height: 200px }).
+        return !inlineLevelBox.isPreferredLineHeightFontMetricsBased();
+    }
     if (inlineLevelBox.isListMarker()) {
         // This does not match other browser engines. see webkit.org/b/256390.
         return true;
