@@ -27,34 +27,48 @@
 #include "IDBGetAllOptions.h"
 
 #include "IDBKeyRange.h"
+#include "IndexedDB.h"
 #include "JSIDBGetAllOptions.h"
 #include "JSIDBKeyRange.h"
+#include "ScriptExecutionContext.h"
+#include "Settings.h"
 #include <JavaScriptCore/JSGlobalObject.h>
 
 namespace WebCore {
 
-// https://w3c.github.io/IndexedDB/#create-a-request-to-retrieve-multiple-items (Step 9).
-ExceptionOr<ParsedGetAllQueryOrOptions> parseGetAllOptions(JSC::JSGlobalObject& execState, JSC::JSValue keyOrOptions)
+// https://w3c.github.io/IndexedDB/#create-a-request-to-retrieve-multiple-items (Steps 8 and 9).
+ExceptionOr<ParsedGetAllQueryOrOptions> parseQueryOrOptions(JSC::JSGlobalObject& execState, ScriptExecutionContext* context, JSC::JSValue queryOrOptions, std::optional<uint32_t> count)
 {
+    if (queryOrOptions.isUndefinedOrNull())
+        return ParsedGetAllQueryOrOptions { IDBKeyRange::unbounded(), count, IndexedDB::CursorDirection::Next };
+
+    if (IDBKeyRange::isPotentiallyValidKeyRange(execState, queryOrOptions)) {
+        auto keyRangeOrException = IDBKeyRange::fromValue(execState, queryOrOptions);
+        if (keyRangeOrException.hasException())
+            return Exception(ExceptionCode::DataError, "The parameter is not a valid key range."_s);
+
+        return ParsedGetAllQueryOrOptions { keyRangeOrException.releaseReturnValue(), count, IndexedDB::CursorDirection::Next };
+    }
+
+    if (!context || !context->settingsValues().indexedDBGetAllRecordsAndGetAllOptionsEnabled)
+        return Exception(ExceptionCode::DataError, "The parameter is not a valid key range."_s);
+
     auto throwScope = DECLARE_THROW_SCOPE(execState.vm());
-    auto optionsResult = convertDictionary<IDBGetAllOptions>(execState, keyOrOptions);
+    auto optionsOrException = convertDictionary<IDBGetAllOptions>(execState, queryOrOptions);
     if (throwScope.exception())
         return Exception { ExceptionCode::DataError, "The parameter is not a valid options object."_s };
 
-    auto options = optionsResult.releaseReturnValue();
-    auto query = options.query;
+    return parseGetAllOptions(execState, optionsOrException.releaseReturnValue());
+}
 
-    if (query.isUndefinedOrNull())
-        return ParsedGetAllQueryOrOptions { nullptr, options.count, options.direction };
+// https://w3c.github.io/IndexedDB/#create-a-request-to-retrieve-multiple-items (Step 9).
+ExceptionOr<ParsedGetAllQueryOrOptions> parseGetAllOptions(JSC::JSGlobalObject& execState, IDBGetAllOptions options)
+{
+    auto keyRangeOrException = IDBKeyRange::fromValue(execState, options.query);
+    if (keyRangeOrException.hasException())
+        return Exception(ExceptionCode::DataError, "The query specified in options is not a valid key range."_s);
 
-    if (RefPtr keyRange = JSIDBKeyRange::toWrapped(execState.vm(), query))
-        return ParsedGetAllQueryOrOptions { WTF::move(keyRange), options.count, options.direction };
-
-    auto onlyResultFromQuery = IDBKeyRange::only(execState, query);
-    if (onlyResultFromQuery.hasException())
-        return Exception(ExceptionCode::DataError, "The query specified in options is not a valid key."_s);
-
-    return ParsedGetAllQueryOrOptions { onlyResultFromQuery.releaseReturnValue(), options.count, options.direction };
+    return ParsedGetAllQueryOrOptions { keyRangeOrException.releaseReturnValue(), options.count, options.direction };
 }
 
 } // namespace WebCore

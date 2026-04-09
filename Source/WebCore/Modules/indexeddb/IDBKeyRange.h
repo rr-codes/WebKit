@@ -55,6 +55,8 @@ public:
 
     static bool isPotentiallyValidKeyRange(JSC::JSGlobalObject& execState, JSC::JSValue value);
 
+    static ExceptionOr<Ref<IDBKeyRange>> fromValue(JSC::JSGlobalObject&, JSC::JSValue value);
+
     static ExceptionOr<Ref<IDBKeyRange>> only(RefPtr<IDBKey>&& value);
     static ExceptionOr<Ref<IDBKeyRange>> only(JSC::JSGlobalObject&, JSC::JSValue key);
 
@@ -62,6 +64,7 @@ public:
     static ExceptionOr<Ref<IDBKeyRange>> upperBound(JSC::JSGlobalObject&, JSC::JSValue bound, bool open);
 
     static ExceptionOr<Ref<IDBKeyRange>> bound(JSC::JSGlobalObject&, JSC::JSValue lower, JSC::JSValue upper, bool lowerOpen, bool upperOpen);
+    static Ref<IDBKeyRange> unbounded();
 
     ExceptionOr<bool> includes(JSC::JSGlobalObject&, JSC::JSValue key);
 

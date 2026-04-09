@@ -41,12 +41,10 @@
 #include "IDBRequest.h"
 #include "IDBTransaction.h"
 #include "IndexedDB.h"
-#include "JSIDBKeyRange.h"
 #include "Logging.h"
 #include "Page.h"
 #include "ScriptExecutionContext.h"
 #include "SerializedScriptValue.h"
-#include "Settings.h"
 #include "WebCoreOpaqueRootInlines.h"
 #include <JavaScriptCore/HeapInlines.h>
 #include <JavaScriptCore/JSCJSValueInlines.h>
@@ -608,7 +606,7 @@ ExceptionOr<Ref<IDBRequest>> IDBObjectStore::doCount(const IDBKeyRangeData& rang
 }
 
 // https://w3c.github.io/IndexedDB/#create-a-request-to-retrieve-multiple-items
-ExceptionOr<Ref<IDBRequest>> IDBObjectStore::doGetAllShared(IndexedDB::GetAllType getAllType, std::optional<uint32_t> count, NOESCAPE const Function<ExceptionOr<ParsedGetAllQueryOrOptions>()>& function)
+ExceptionOr<Ref<IDBRequest>> IDBObjectStore::doGetAllShared(IndexedDB::GetAllType getAllType, NOESCAPE const Function<ExceptionOr<ParsedGetAllQueryOrOptions>()>& function)
 {
     String callingFunctionExceptionMessagePrefix;
     switch (getAllType) {
@@ -639,67 +637,25 @@ ExceptionOr<Ref<IDBRequest>> IDBObjectStore::doGetAllShared(IndexedDB::GetAllTyp
     }
 
     auto parsedGetAllQueryOrOptions = exceptionOrParsedGetAllQueryOrOptions.releaseReturnValue();
-    if (parsedGetAllQueryOrOptions.count)
-        count = parsedGetAllQueryOrOptions.count;
 
-    return transaction->requestGetAllObjectStoreRecords(*this, parsedGetAllQueryOrOptions.keyRange.get(), getAllType, count, parsedGetAllQueryOrOptions.cursorDirection);
+    return transaction->requestGetAllObjectStoreRecords(*this, parsedGetAllQueryOrOptions.keyRange.get(), getAllType, parsedGetAllQueryOrOptions.count, parsedGetAllQueryOrOptions.cursorDirection);
 }
 
-ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAll(RefPtr<IDBKeyRange>&& range, std::optional<uint32_t> count)
+ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAll(JSGlobalObject& execState, JSValue queryOrOptions, std::optional<uint32_t> count)
 {
     LOG(IndexedDB, "IDBObjectStore::getAll");
 
-    return doGetAllShared(IndexedDB::GetAllType::Values, count, [range = WTF::move(range)]() {
-        return ParsedGetAllQueryOrOptions { range };
+    return doGetAllShared(IndexedDB::GetAllType::Values, [context = RefPtr { scriptExecutionContext() }, execState = &execState, queryOrOptions, count]() -> ExceptionOr<ParsedGetAllQueryOrOptions> {
+        return parseQueryOrOptions(*execState, context, queryOrOptions, count);
     });
 }
 
-ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAll(JSGlobalObject& execState, JSValue keyOrOptions, std::optional<uint32_t> count)
-{
-    LOG(IndexedDB, "IDBObjectStore::getAll");
-
-    return doGetAllShared(IndexedDB::GetAllType::Values, count, [context = RefPtr { scriptExecutionContext() }, execState = &execState, keyOrOptions, count]() -> ExceptionOr<ParsedGetAllQueryOrOptions> {
-        if (IDBKeyRange::isPotentiallyValidKeyRange(*execState, keyOrOptions)) {
-            auto onlyResult = IDBKeyRange::only(*execState, keyOrOptions);
-            if (onlyResult.hasException())
-                return onlyResult.releaseException();
-
-            return ParsedGetAllQueryOrOptions { onlyResult.releaseReturnValue(), count };
-        }
-
-        if (!context || !context->settingsValues().indexedDBGetAllRecordsAndGetAllOptionsEnabled)
-            return Exception(ExceptionCode::DataError, "The parameter is not a valid key."_s);
-
-        return parseGetAllOptions(*execState, keyOrOptions);
-    });
-}
-
-ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAllKeys(RefPtr<IDBKeyRange>&& range, std::optional<uint32_t> count)
+ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAllKeys(JSGlobalObject& execState, JSValue queryOrOptions, std::optional<uint32_t> count)
 {
     LOG(IndexedDB, "IDBObjectStore::getAllKeys");
 
-    return doGetAllShared(IndexedDB::GetAllType::Keys, count, [range = WTF::move(range)]() {
-        return ParsedGetAllQueryOrOptions { range };
-    });
-}
-
-ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAllKeys(JSGlobalObject& execState, JSValue keyOrOptions, std::optional<uint32_t> count)
-{
-    LOG(IndexedDB, "IDBObjectStore::getAllKeys");
-
-    return doGetAllShared(IndexedDB::GetAllType::Keys, count, [context = RefPtr { scriptExecutionContext() }, execState = &execState, keyOrOptions, count]() -> ExceptionOr<ParsedGetAllQueryOrOptions> {
-        if (IDBKeyRange::isPotentiallyValidKeyRange(*execState, keyOrOptions)) {
-            auto onlyResult = IDBKeyRange::only(*execState, keyOrOptions);
-            if (onlyResult.hasException())
-                return onlyResult.releaseException();
-
-            return ParsedGetAllQueryOrOptions { onlyResult.releaseReturnValue(), count };
-        }
-
-        if (!context || !context->settingsValues().indexedDBGetAllRecordsAndGetAllOptionsEnabled)
-            return Exception(ExceptionCode::DataError, "The parameter is not a valid key."_s);
-
-        return parseGetAllOptions(*execState, keyOrOptions);
+    return doGetAllShared(IndexedDB::GetAllType::Keys, [context = RefPtr { scriptExecutionContext() }, execState = &execState, queryOrOptions, count]() -> ExceptionOr<ParsedGetAllQueryOrOptions> {
+        return parseQueryOrOptions(*execState, context, queryOrOptions, count);
     });
 }
 
@@ -707,20 +663,8 @@ ExceptionOr<Ref<IDBRequest>> IDBObjectStore::getAllRecords(JSGlobalObject& execS
 {
     LOG(IndexedDB, "IDBObjectStore::getAllRecords");
 
-    return doGetAllShared(IndexedDB::GetAllType::Records, std::nullopt, [execState = &execState, options]() -> ExceptionOr<ParsedGetAllQueryOrOptions> {
-        auto query = options.query;
-
-        if (query.isUndefinedOrNull())
-            return ParsedGetAllQueryOrOptions { nullptr, options.count, options.direction };
-
-        if (RefPtr keyRange = JSIDBKeyRange::toWrapped(execState->vm(), query))
-            return ParsedGetAllQueryOrOptions { WTF::move(keyRange), options.count, options.direction };
-
-        auto onlyResultFromQuery = IDBKeyRange::only(*execState, query);
-        if (onlyResultFromQuery.hasException())
-            return Exception(ExceptionCode::DataError, "The query specified in options is not a valid key."_s);
-
-        return ParsedGetAllQueryOrOptions { onlyResultFromQuery.releaseReturnValue(), options.count, options.direction };
+    return doGetAllShared(IndexedDB::GetAllType::Records, [execState = &execState, options]() -> ExceptionOr<ParsedGetAllQueryOrOptions> {
+        return parseGetAllOptions(*execState, options);
     });
 }
 

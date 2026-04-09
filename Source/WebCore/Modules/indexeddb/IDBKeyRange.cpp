@@ -67,6 +67,18 @@ IDBKeyRange::IDBKeyRange(RefPtr<IDBKey>&& lower, RefPtr<IDBKey>&& upper, bool is
 
 IDBKeyRange::~IDBKeyRange() = default;
 
+// https://w3c.github.io/IndexedDB/#convert-a-value-to-a-key-range.
+ExceptionOr<Ref<IDBKeyRange>> IDBKeyRange::fromValue(JSC::JSGlobalObject& execState, JSC::JSValue value)
+{
+    if (RefPtr keyRange = JSIDBKeyRange::toWrapped(execState.vm(), value))
+        return { *keyRange };
+
+    if (value.isUndefinedOrNull())
+        return IDBKeyRange::unbounded();
+
+    return IDBKeyRange::only(execState, value);
+}
+
 ExceptionOr<Ref<IDBKeyRange>> IDBKeyRange::only(RefPtr<IDBKey>&& key)
 {
     if (!key || !key->isValid())
@@ -129,6 +141,12 @@ ExceptionOr<Ref<IDBKeyRange>> IDBKeyRange::bound(JSGlobalObject& state, JSValue 
         return Exception { ExceptionCode::DataError };
 
     return create(WTF::move(lower), WTF::move(upper), lowerOpen, upperOpen);
+}
+
+// https://w3c.github.io/IndexedDB/#unbounded-key-range.
+Ref<IDBKeyRange> IDBKeyRange::unbounded()
+{
+    return IDBKeyRange::create(nullptr, nullptr, false, false);
 }
 
 ExceptionOr<bool> IDBKeyRange::includes(JSC::JSGlobalObject& state, JSC::JSValue keyValue)

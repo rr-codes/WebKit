@@ -55,11 +55,9 @@ typedef (DOMString or sequence<DOMString>) IDBKeyPath;
     [NewObject] IDBRequest getKey(IDBKeyRange? key);
     [NewObject, CallWith=CurrentGlobalObject] IDBRequest getKey(any key);
 
-    [NewObject] IDBRequest getAll(optional IDBKeyRange? range = null, optional [EnforceRange] unsigned long count);
-    [NewObject, CallWith=CurrentGlobalObject] IDBRequest getAll(any keyOrOptions, optional [EnforceRange] unsigned long count);
+    [NewObject, CallWith=CurrentGlobalObject] IDBRequest getAll(optional any queryOrOptions, optional [EnforceRange] unsigned long count);
 
-    [NewObject] IDBRequest getAllKeys(optional IDBKeyRange? range = null, optional [EnforceRange] unsigned long count);
-    [NewObject, CallWith=CurrentGlobalObject] IDBRequest getAllKeys(any keyOrOptions, optional [EnforceRange] unsigned long count);
+    [NewObject, CallWith=CurrentGlobalObject] IDBRequest getAllKeys(optional any queryOrOptions, optional [EnforceRange] unsigned long count);
 
     [NewObject, CallWith=CurrentGlobalObject, EnabledBySetting=IndexedDBGetAllRecordsAndGetAllOptionsEnabled] IDBRequest getAllRecords(optional IDBGetAllOptions options = {});
 

@@ -37,6 +37,7 @@ class JSGlobalObject;
 namespace WebCore {
 
 class IDBKeyRange;
+class ScriptExecutionContext;
 
 struct IDBGetAllOptions {
     JSC::JSValue query;
@@ -50,6 +51,8 @@ struct ParsedGetAllQueryOrOptions {
     IDBCursorDirection cursorDirection { IDBCursorDirection::Next };
 };
 
-ExceptionOr<ParsedGetAllQueryOrOptions> parseGetAllOptions(JSC::JSGlobalObject& execState, JSC::JSValue keyOrOptions);
+ExceptionOr<ParsedGetAllQueryOrOptions> parseQueryOrOptions(JSC::JSGlobalObject&, ScriptExecutionContext*, JSC::JSValue queryOrOptions, std::optional<uint32_t> count);
+
+ExceptionOr<ParsedGetAllQueryOrOptions> parseGetAllOptions(JSC::JSGlobalObject&, IDBGetAllOptions);
 
 } // namespace WebCore
