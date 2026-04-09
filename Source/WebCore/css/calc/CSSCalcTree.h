@@ -263,9 +263,7 @@ struct Children {
 
     Vector<Child> value;
 
-    Children(Children&&);
     Children(Vector<Child>&&);
-    Children& operator=(Children&&);
     Children& operator=(Vector<Child>&&);
 
     iterator begin() LIFETIME_BOUND;
@@ -1204,20 +1202,9 @@ inline ChildOrNone::ChildOrNone(CSS::Keyword::None none)
 
 // MARK: Children Definition
 
-inline Children::Children(Children&& other)
-    : value(WTF::move(other.value))
-{
-}
-
 inline Children::Children(Vector<Child>&& other)
     : value(WTF::move(other))
 {
-}
-
-inline Children& Children::operator=(Children&& other)
-{
-    value = WTF::move(other.value);
-    return *this;
 }
 
 inline Children& Children::operator=(Vector<Child>&& other)

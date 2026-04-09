@@ -61,10 +61,7 @@ public:
         ResetStubAndFireWatchpoints // We found out some data that makes us want to start over fresh with this stub. Currently, this happens when we detect poly proto.
     };
 
-
     AccessGenerationResult() = default;
-    AccessGenerationResult(AccessGenerationResult&&) = default;
-    AccessGenerationResult& operator=(AccessGenerationResult&&) = default;
 
     AccessGenerationResult(Kind kind)
         : m_kind(kind)

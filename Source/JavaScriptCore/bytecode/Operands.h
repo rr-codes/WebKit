@@ -49,7 +49,6 @@ public:
     static_assert(maxBits == 34);
 
     Operand() = default;
-    Operand(const Operand&) = default;
 
     Operand(VirtualRegister operand)
         : Operand(operand.isLocal() ? OperandKind::Local : OperandKind::Argument, operand.offset())
@@ -67,8 +66,6 @@ public:
         ASSERT(kind == OperandKind::Tmp || VirtualRegister(operand).isLocal() == (kind == OperandKind::Local));
     }
     static Operand tmp(uint32_t index) { return Operand(OperandKind::Tmp, index); }
-
-    Operand& operator=(const Operand&) = default;
 
     OperandKind kind() const { return m_kind; }
     int value() const { return m_operand; }

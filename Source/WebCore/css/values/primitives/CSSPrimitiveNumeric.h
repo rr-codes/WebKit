@@ -88,30 +88,6 @@ template<NumericRaw RawType> struct PrimitiveNumeric {
     {
     }
 
-    // MARK: Copy/Move Construction/Assignment
-
-    PrimitiveNumeric(const PrimitiveNumeric& other)
-        : m_data { other.m_data }
-    {
-    }
-
-    PrimitiveNumeric(PrimitiveNumeric&& other)
-        : m_data { WTF::move(other.m_data) }
-    {
-    }
-
-    PrimitiveNumeric& operator=(const PrimitiveNumeric& other)
-    {
-        m_data = other.m_data;
-        return *this;
-    }
-
-    PrimitiveNumeric& operator=(PrimitiveNumeric&& other)
-    {
-        m_data = WTF::move(other.m_data);
-        return *this;
-    }
-
     // MARK: Equality
 
     bool operator==(const PrimitiveNumeric& other) const

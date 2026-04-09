@@ -95,18 +95,11 @@ RegularExpression::RegularExpression(StringView pattern, OptionSet<Flags> flags,
 {
 }
 
-RegularExpression::RegularExpression(const RegularExpression& re)
-    : d(re.d)
-{
-}
-
+RegularExpression::RegularExpression(const RegularExpression&) = default;
 RegularExpression::~RegularExpression() = default;
-
-RegularExpression& RegularExpression::operator=(const RegularExpression& re)
-{
-    d = re.d;
-    return *this;
-}
+RegularExpression& RegularExpression::operator=(const RegularExpression&) = default;
+RegularExpression::RegularExpression(RegularExpression&&) = default;
+RegularExpression& RegularExpression::operator=(RegularExpression&&) = default;
 
 int RegularExpression::match(StringView str, unsigned startFrom, int* matchLength) const
 {

@@ -45,6 +45,8 @@ public:
 
     RegularExpression(const RegularExpression&);
     RegularExpression& operator=(const RegularExpression&);
+    RegularExpression(RegularExpression&&);
+    RegularExpression& operator=(RegularExpression&&);
 
     int match(StringView, unsigned startFrom = 0, int* matchLength = nullptr) const;
     int searchRev(StringView) const;

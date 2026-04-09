@@ -208,7 +208,7 @@ public:
     {
         m_element = nullptr;
         m_pseudoElementIdentifier = Style::PseudoElementIdentifier();
-        m_pseudoElementIdentifier->nameOrPart = name;
+        m_pseudoElementIdentifier->nameOrPart = WTF::move(name);
     }
 
     explicit operator bool() const { return !!m_element; }

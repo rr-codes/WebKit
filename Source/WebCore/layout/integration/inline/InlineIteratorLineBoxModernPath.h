@@ -42,10 +42,6 @@ public:
     {
         ASSERT(lineIndex <= lines().size());
     }
-    LineBoxIteratorModernPath(LineBoxIteratorModernPath&&) = default;
-    LineBoxIteratorModernPath(const LineBoxIteratorModernPath&) = default;
-    LineBoxIteratorModernPath& operator=(const LineBoxIteratorModernPath&) = default;
-    LineBoxIteratorModernPath& operator=(LineBoxIteratorModernPath&&) = default;
 
     float contentLogicalTop() const { return line().enclosingContentLogicalTop(); }
     float contentLogicalBottom() const { return line().enclosingContentLogicalBottom(); }
