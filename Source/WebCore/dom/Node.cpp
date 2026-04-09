@@ -2473,36 +2473,38 @@ bool Node::addEventListener(const AtomString& eventType, Ref<EventListener>&& li
     return tryAddEventListener(this, eventType, WTF::move(listener), options);
 }
 
-static inline bool didRemoveEventListenerOfType(Node& targetNode, const AtomString& eventType, Document::IsCapture isCapture)
+static void didRemoveEventListenersOfType(Node& targetNode, const AtomString& eventType, uint16_t capturingCount, uint16_t bubblingCount, EventHandlerRemoval removal)
 {
     Ref document = targetNode.document();
-    document->didRemoveEventListenersOfType(eventType, isCapture);
+    if (capturingCount)
+        document->didRemoveEventListenersOfType(eventType, Document::IsCapture::Yes, capturingCount);
+    if (bubblingCount)
+        document->didRemoveEventListenersOfType(eventType, Document::IsCapture::No, bubblingCount);
 
     // FIXME: Notify Document that the listener has vanished. We need to keep track of a number of
     // listeners for each type, not just a bool - see https://bugs.webkit.org/show_bug.cgi?id=33861
     auto& eventNames = WebCore::eventNames();
     auto typeInfo = eventNames.typeInfoForEvent(eventType);
     if (typeInfo.isInCategory(EventCategory::Wheel)) {
-        document->didRemoveWheelEventHandler(targetNode);
+        document->didRemoveWheelEventHandler(targetNode, removal);
         document->invalidateEventListenerRegions();
     } else if (isTouchRelatedEventType(typeInfo, targetNode)) {
-        document->didRemoveTouchEventHandler(targetNode);
+        document->didRemoveTouchEventHandler(targetNode, removal);
 #if ENABLE(TOUCH_EVENT_REGIONS)
         document->invalidateEventListenerRegions();
 #endif
     } else if (typeInfo.isInCategory(EventCategory::Gesture)) {
 #if ENABLE(TOUCH_EVENT_REGIONS)
-        document->didRemoveTouchEventHandler(targetNode);
+        document->didRemoveTouchEventHandler(targetNode, removal);
         document->invalidateEventListenerRegions();
 #endif
-    }
-    else if (typeInfo.isInCategory(EventCategory::MouseClickRelated))
+    } else if (typeInfo.isInCategory(EventCategory::MouseClickRelated))
         document->didAddOrRemoveMouseEventHandler(targetNode);
 
 #if PLATFORM(IOS_FAMILY)
     if (&targetNode == document.ptr() && typeInfo.type() == EventType::scroll) {
         if (RefPtr window = document->window())
-            window->decrementScrollEventListenersCount();
+            window->decrementScrollEventListenersCount(capturingCount + bubblingCount);
     }
 
 #if ENABLE(TOUCH_EVENTS)
@@ -2518,27 +2520,24 @@ static inline bool didRemoveEventListenerOfType(Node& targetNode, const AtomStri
 
     if (CheckedPtr cache = document->existingAXObjectCache())
         cache->onEventListenerRemoved(targetNode, eventType);
-
-    return true;
 }
 
 bool Node::removeEventListener(const AtomString& eventType, EventListener& listener, const EventListenerOptions& options)
 {
     if (!EventTarget::removeEventListener(eventType, listener, options))
         return false;
-    didRemoveEventListenerOfType(*this, eventType, options.capture ? Document::IsCapture::Yes : Document::IsCapture::No);
+    uint16_t capturingCount = options.capture ? 1 : 0;
+    uint16_t bubblingCount = options.capture ? 0 : 1;
+    didRemoveEventListenersOfType(*this, eventType, capturingCount, bubblingCount, EventHandlerRemoval::One);
     return true;
 }
 
 void Node::removeAllEventListeners()
 {
-    EventTarget::removeAllEventListeners();
     enumerateEventListenerTypes([&](const AtomString& type, uint16_t capturingCount, uint16_t bubblingCount) {
-        for (uint16_t i = 0; i < capturingCount; ++i)
-            didRemoveEventListenerOfType(*this, type, Document::IsCapture::Yes);
-        for (uint16_t i = 0; i < bubblingCount; ++i)
-            didRemoveEventListenerOfType(*this, type, Document::IsCapture::No);
+        didRemoveEventListenersOfType(*this, type, capturingCount, bubblingCount, EventHandlerRemoval::All);
     });
+    EventTarget::removeAllEventListeners();
 }
 
 Vector<Ref<MutationObserverRegistration>>* Node::mutationObserverRegistry()

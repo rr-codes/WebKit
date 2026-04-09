@@ -320,7 +320,7 @@ public:
 
 #if PLATFORM(IOS_FAMILY)
     void incrementScrollEventListenersCount();
-    void decrementScrollEventListenersCount();
+    void decrementScrollEventListenersCount(unsigned count = 1);
     unsigned scrollEventListenerCount() const { return m_scrollEventListenerCount; }
 #endif
 
