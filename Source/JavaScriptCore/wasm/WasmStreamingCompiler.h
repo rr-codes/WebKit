@@ -53,7 +53,15 @@ public:
 
     JS_EXPORT_PRIVATE ~StreamingCompiler();
 
-    void addBytes(std::span<const uint8_t> bytes) { m_parser.addBytes(bytes); }
+    void addBytes(std::span<const uint8_t> bytes)
+    {
+#if ENABLE(WEBASSEMBLY_DEBUGGER)
+        // Accumulate source bytes for the debugger — the streaming path has no single source vector and discards bytes as it's done with them.
+        if (Options::enableWasmDebugger()) [[unlikely]]
+            m_info->debugInfo->source.append(bytes);
+#endif
+        m_parser.addBytes(bytes);
+    }
     JS_EXPORT_PRIVATE void finalize(JSGlobalObject*);
     JS_EXPORT_PRIVATE void fail(JSGlobalObject*, JSValue);
     JS_EXPORT_PRIVATE void cancel();

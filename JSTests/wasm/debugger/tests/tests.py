@@ -2081,3 +2081,28 @@ class SwiftWasmDynamicModuleLoadTestCase(BaseTestCase):
 
         # Resume: stops at the func_b breakpoint (module B) on the first call, confirming that the pending breakpoint was resolved via debug info.
         self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "func_b"])
+
+
+class StreamingModuleLoadTestCase(BaseTestCase):
+
+    def __init__(self, build_config: str = None, port: int = None):
+        super().__init__(build_config, port)
+
+    def execute(self):
+        self.setup_debugging_session_or_raise("resources/wasm/streaming-module-load.js", extra_jsc_options=["--useDollarVM=1"])
+
+        try:
+            self.test()
+
+        except Exception as e:
+            raise Exception(f"Test failed: {e}")
+
+    def test(self):
+        # The streaming module is already loaded, so the breakpoint resolves immediately.
+        self.send_lldb_command_or_raise("b 0x4000000000000023", patterns=["Breakpoint 1"])
+
+        # Resume: stops at the func_a breakpoint in the streaming-compiled module.
+        # Disassembly confirms the stopped instruction is 'end' at the expected address.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "->  0x4000000000000023: end"])
+
+        self.send_lldb_command_or_raise("br del -f", patterns=["All breakpoints removed. (1 breakpoint)"])

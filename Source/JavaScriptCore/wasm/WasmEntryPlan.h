@@ -63,8 +63,11 @@ public:
     {
         RELEASE_ASSERT(!failed() && !hasWork());
 #if ENABLE(WEBASSEMBLY_DEBUGGER)
-        if (Options::enableWasmDebugger()) [[unlikely]]
-            m_moduleInformation->debugInfo->takeSource(WTF::move(m_source));
+        if (Options::enableWasmDebugger()) [[unlikely]] {
+            // Skip if already populated by the streaming path (StreamingCompiler::addBytes).
+            if (m_moduleInformation->debugInfo->source.isEmpty())
+                m_moduleInformation->debugInfo->takeSource(WTF::move(m_source));
+        }
 #endif
         return WTF::move(m_moduleInformation);
     }
