@@ -1731,7 +1731,10 @@ public:
         else {
             if (term.matchDirection() == Forward) {
                 term.quantify(min, min, QuantifierType::FixedCount);
-                m_alternative->m_terms.append(*copyTerm(term, /* filterStartsWithBOL */ false));
+                auto copied = copyTerm(term, /* filterStartsWithBOL */ false);
+                if (!copied) [[unlikely]]
+                    return;
+                m_alternative->m_terms.append(WTF::move(*copied));
                 // NOTE: this term is interesting from an analysis perspective, in that it can be ignored.....
                 m_alternative->lastTerm().quantify((max == quantifyInfinite) ? max : max - min, greedy ? QuantifierType::Greedy : QuantifierType::NonGreedy);
                 if (m_alternative->lastTerm().type == PatternTerm::Type::ParenthesesSubpattern)
@@ -1740,7 +1743,10 @@ public:
                 term.quantify((max == quantifyInfinite) ? max : max - min, greedy ? QuantifierType::Greedy : QuantifierType::NonGreedy);
                 if (term.type == PatternTerm::Type::ParenthesesSubpattern)
                     term.parentheses.isCopy = true;
-                m_alternative->m_terms.append(*copyTerm(term, /* filterStartsWithBOL */ false));
+                auto copied = copyTerm(term, /* filterStartsWithBOL */ false);
+                if (!copied) [[unlikely]]
+                    return;
+                m_alternative->m_terms.append(WTF::move(*copied));
                 m_alternative->lastTerm().quantify(min, min, QuantifierType::FixedCount);
                 if (m_alternative->lastTerm().type == PatternTerm::Type::ParenthesesSubpattern)
                     m_alternative->lastTerm().parentheses.isCopy = false;
