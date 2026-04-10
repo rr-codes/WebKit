@@ -74,7 +74,7 @@ public:
 private:
     VM* m_vm;
     JITPlan& m_plan;
-    Vector<Scannable*> m_scannables;
+    Vector<Scannable*, 1> m_scannables;
     bool m_didCallBegin;
     bool m_keepDependenciesLive;
     Result& m_result;
