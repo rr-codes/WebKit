@@ -35,12 +35,7 @@
 #define FALSE #f
 
 (define webcontent_gpu_sandbox_extensions_blocking?
-#if PLATFORM(MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 140400 && defined(RC_XBS) && RC_XBS == 1
-    (equal? (param "CPU") "arm64")
-#else
-    FALSE
-#endif
-)
+    FALSE)
 
 #if USE(SANDBOX_VERSION_3)
 (allow dynamic-code-generation)
@@ -573,55 +568,6 @@
 (with-filter (iokit-registry-entry-class "AppleMobileADBE0")
     (deny iokit-get-properties (with no-report)
         (iokit-property "APTDevice")))
-
-(if (equal? (param "CPU") "arm64")
-    (with-filter (iokit-registry-entry-class "AppleARMIODevice")
-        (deny iokit-get-properties (with no-report)
-            (iokit-property "supports-apt"))))
-
-(if (equal? (param "CPU") "arm64")
-    (with-filter (iokit-registry-entry-class "AppleJPEGDriver")
-        (deny iokit-get-properties (with no-report)
-            (iokit-property "AppleJPEGNumCores"))))
-
-;; <rdar://problem/60088861>
-(if (equal? (param "CPU") "arm64")
-    (allow iokit-get-properties
-        (iokit-property "ADSSupported")
-        (iokit-property "IOAVDHEVCDecodeCapabilities")
-        (iokit-property "IOGLESBundleName") ;; <rdar://problem/67473780>
-        (iokit-property "MetalPluginClassName") ;; <rdar://problem/67473780>
-        (iokit-property "MetalPluginName") ;; <rdar://problem/67473780>
-        (iokit-property "IOSurfaceAcceleratorCapabilitiesDict") ;; <rdar://problem/63696732>
-        (iokit-property "acoustic-id") ;; <rdar://problem/65290967>
-    ))
-
-(if (equal? (param "CPU") "arm64")
-    (with-filter (iokit-registry-entry-class "IOService")
-        (allow iokit-get-properties
-            (iokit-property "IORegistryEntryPropertyKeys"))))
-
-(if (equal? (param "CPU") "arm64")
-    (with-filter (iokit-registry-entry-class "IOMobileFramebuffer")
-        (allow iokit-get-properties
-            (iokit-property "AppleTV"
-                            "DisplayPipePlaneBaseAlignment"
-                            "DisplayPipeStrideRequirements"
-                            "dfr"
-                            "external"
-                            "hdcp-hoover-protocol"))))
-
-(if (equal? (param "CPU") "arm64")
-    (with-filter (iokit-registry-entry-class "IOPlatformDevice")
-        (allow iokit-get-properties
-            (iokit-property "soc-generation"))))
-
-(if (equal? (param "CPU") "arm64")
-    (with-filter (iokit-registry-entry-class "IOService")
-        (allow iokit-get-properties
-            (iokit-property "chip-id"
-                            "display-rotation"
-                            "display-scale"))))
 
 (deny mach-lookup (xpc-service-name-prefix ""))
 
@@ -1347,8 +1293,6 @@
 
 (with-filter (require-not (lockdown-mode))
     (allow syscall-unix (syscall-unix-blocked-in-lockdown-mode))
-    (when (equal? (param "CPU") "arm64")
-        (allow syscall-unix (syscall-unix-apple-silicon)))
     (allow syscall-unix (with report) (with telemetry) (syscalls-rarely-used-blocked-in-lockdown-mode)))
 
 (when (defined? 'SYS_objc_bp_assist_cfg_np)
@@ -1366,9 +1310,7 @@
 
 (with-filter (lockdown-mode)
     (deny syscall-unix (with telemetry) (syscall-unix-blocked-in-lockdown-mode))
-    (deny syscall-unix (with telemetry) (syscalls-rarely-used-blocked-in-lockdown-mode))
-    (when (equal? (param "CPU") "arm64")
-        (deny syscall-unix (with telemetry) (syscall-unix-apple-silicon))))
+    (deny syscall-unix (with telemetry) (syscalls-rarely-used-blocked-in-lockdown-mode)))
 
 #if HAVE(SANDBOX_MESSAGE_FILTERING)
 (define (mach-bootstrap-message-numbers)
@@ -1478,16 +1420,7 @@
     io_service_close))
 
 (define (allow-mach-exceptions operation)
-#if HAVE(HARDENED_MACH_EXCEPTIONS)
-    (when (equal? (param "CPU") "arm64")
-        (with-filter (require-not (webcontent-process-launched))
-            (allow operation (kernel-mig-routine task_register_hardened_exception_handler)))
-        (allow operation (kernel-mig-routine thread_adopt_exception_handler)))
-    (when (not (equal? (param "CPU") "arm64"))
-        (allow operation (kernel-mig-routine thread_set_exception_ports))))
-#else
     (allow operation (kernel-mig-routine thread_set_exception_ports)))
-#endif
 
 (when (defined? 'syscall-mig)
     (deny syscall-mig)
