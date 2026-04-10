@@ -920,10 +920,14 @@ if ASSERT_ENABLED
     clobberVolatileRegisters()
 end
 
-    # Don't restore SP to original position — stack results live above calleeSP.
-    # After a tail call the callee's frame may differ, so derive from actual SP.
-    # Just allocate register spill space below the callee's actual SP.
-    subp constexpr Wasm::JSToWasmCallee::RegisterStackSpaceAligned, sp
+    # Restore SP
+    loadp Callee[cfr], ws0 # CalleeBits(JSToWasmCallee*)
+    unboxWasmCallee(ws0, ws1)
+
+    loadi Wasm::JSToWasmCallee::m_frameSize[ws0], ws1
+    subp cfr, ws1, ws1
+    move ws1, sp
+    subp constexpr Wasm::JSToWasmCallee::SpillStackSpaceAligned, sp
 
 if ASSERT_ENABLED
     repeat(ws0, macro (i)

@@ -45,7 +45,7 @@
 namespace JSC {
 namespace Wasm {
 
-static void marshallJSResult(CCallHelpers& jit, const FunctionSignature& signature, const CallInformation& wasmFrameConvention, const RegisterAtOffsetList& savedResultRegisters, CCallHelpers::JumpList& exceptionChecks, int32_t stackResultReadOffset = 0)
+static void marshallJSResult(CCallHelpers& jit, const FunctionSignature& signature, const CallInformation& wasmFrameConvention, const RegisterAtOffsetList& savedResultRegisters, CCallHelpers::JumpList& exceptionChecks)
 {
     auto boxNativeCalleeResult = [](CCallHelpers& jit, Type type, ValueLocation src, JSValueRegs dst) {
         JIT_COMMENT(jit, "boxNativeCalleeResult ", type);
@@ -143,29 +143,28 @@ static void marshallJSResult(CCallHelpers& jit, const FunctionSignature& signatu
                 }
             } else {
                 if (!type.isI64()) {
-                    auto readLocation = CCallHelpers::Address(CCallHelpers::stackPointerRegister, loc.offsetFromSP() + stackResultReadOffset);
-                    auto writeLocation = CCallHelpers::Address(CCallHelpers::stackPointerRegister, loc.offsetFromSP());
+                    auto location = CCallHelpers::Address(CCallHelpers::stackPointerRegister, loc.offsetFromSP());
                     ValueLocation tmp;
                     switch (type.kind) {
                     case TypeKind::F32:
                         tmp = ValueLocation { fprScratch };
-                        jit.loadFloat(readLocation, fprScratch);
+                        jit.loadFloat(location, fprScratch);
                         break;
                     case TypeKind::F64:
                         tmp = ValueLocation { fprScratch };
-                        jit.loadDouble(readLocation, fprScratch);
+                        jit.loadDouble(location, fprScratch);
                         break;
                     case TypeKind::I32:
                         tmp = ValueLocation { scratchJSR };
-                        jit.load32(readLocation, scratchJSR.payloadGPR());
+                        jit.load32(location, scratchJSR.payloadGPR());
                         break;
                     default:
                         tmp = ValueLocation { scratchJSR };
-                        jit.loadValue(readLocation, scratchJSR);
+                        jit.loadValue(location, scratchJSR);
                         break;
                     }
                     boxNativeCalleeResult(jit, type, tmp, scratchJSR);
-                    jit.storeValue(scratchJSR, writeLocation);
+                    jit.storeValue(scratchJSR, location);
                 }
             }
 
@@ -194,21 +193,16 @@ static void marshallJSResult(CCallHelpers& jit, const FunctionSignature& signatu
 
                 constexpr JSValueRegs valueJSR = preferredArgumentJSR<decltype(operationConvertToBigInt), 1>();
 
-                CCallHelpers::Address readAddress { CCallHelpers::stackPointerRegister };
-                CCallHelpers::Address writeAddress { CCallHelpers::stackPointerRegister };
+                CCallHelpers::Address address { CCallHelpers::stackPointerRegister };
                 if (loc.isGPR() || loc.isFPR()) {
 #if USE(JSVALUE32_64)
                     ASSERT(savedResultRegisters.find(loc.jsr().payloadGPR())->offset() + 4 == savedResultRegisters.find(loc.jsr().tagGPR())->offset());
 #endif
-                    auto offset = savedResultRegisters.find(loc.jsr().payloadGPR())->offset() + wasmFrameConvention.headerAndArgumentStackSizeInBytes;
-                    readAddress = readAddress.withOffset(offset);
-                    writeAddress = writeAddress.withOffset(offset);
-                } else {
-                    readAddress = readAddress.withOffset(loc.offsetFromSP() + stackResultReadOffset);
-                    writeAddress = writeAddress.withOffset(loc.offsetFromSP());
-                }
+                    address = address.withOffset(savedResultRegisters.find(loc.jsr().payloadGPR())->offset() + wasmFrameConvention.headerAndArgumentStackSizeInBytes);
+                } else
+                    address = address.withOffset(loc.offsetFromSP());
 
-                jit.loadValue(readAddress, valueJSR);
+                jit.loadValue(address, valueJSR);
                 jit.prepareWasmCallOperation(GPRInfo::wasmContextInstancePointer);
                 jit.setupArguments<decltype(operationConvertToBigInt)>(GPRInfo::wasmContextInstancePointer, valueJSR);
                 jit.callOperation<OperationPtrTag>(operationConvertToBigInt);
@@ -219,7 +213,7 @@ static void marshallJSResult(CCallHelpers& jit, const FunctionSignature& signatu
                 jit.loadPtr(CCallHelpers::Address(GPRInfo::wasmContextInstancePointer, JSWebAssemblyInstance::offsetOfVM()), GPRInfo::nonPreservedNonReturnGPR);
                 exceptionChecks.append(jit.branchTestPtr(CCallHelpers::NonZero, CCallHelpers::Address(GPRInfo::nonPreservedNonReturnGPR, VM::exceptionOffset())));
 #endif
-                jit.storeValue(JSRInfo::returnValueJSR, writeAddress);
+                jit.storeValue(JSRInfo::returnValueJSR, address);
             }
         }
 
@@ -396,11 +390,20 @@ MacroAssemblerCodeRef<JITThunkPtrTag> createJSToWasmJITShared()
 
         jit.call(GPRInfo::regWS0, WasmEntryPtrTag);
 
-        // Don't restore SP to original position — stack results are above calleeSP.
-        // After a tail call the callee's frame may differ, so derive from actual SP.
-        // Just allocate register spill space below the callee's actual SP.
-        jit.subPtr(CCallHelpers::TrustedImmPtr(JSToWasmCallee::RegisterStackSpaceAligned),
-            CCallHelpers::stackPointerRegister);
+        // Restore SP
+
+        // Callee[cfr]
+        jit.loadPtr(CCallHelpers::addressFor(CallFrameSlot::callee), GPRInfo::regWS0);
+        jit.unboxNativeCallee(GPRInfo::regWS0, GPRInfo::regWS0);
+
+        jit.load32(CCallHelpers::Address(GPRInfo::regWS0, JSToWasmCallee::offsetOfFrameSize()), GPRInfo::regWS1);
+        jit.addPtr(CCallHelpers::TrustedImmPtr(JSToWasmCallee::SpillStackSpaceAligned), GPRInfo::regWS1);
+#if CPU(ARM64)
+        jit.subPtr(GPRInfo::callFrameRegister, GPRInfo::regWS1, CCallHelpers::stackPointerRegister);
+#else
+        jit.subPtr(GPRInfo::callFrameRegister, GPRInfo::regWS1, GPRInfo::regWS1);
+        jit.move(GPRInfo::regWS1, CCallHelpers::stackPointerRegister);
+#endif
 
         // Save return registers
 #if CPU(ARM64)
@@ -569,12 +572,10 @@ CodePtr<JSEntryPtrTag> FunctionSignature::jsToWasmICEntrypoint() const
     Wasm::CallInformation jsCallInfo = Wasm::jsCallingConvention().callInformationFor(*this, Wasm::CallRole::Callee);
     RegisterAtOffsetList savedResultRegisters = wasmCallInfo.computeResultsOffsetList();
 
-    unsigned resultAreaSize = wasmCallInfo.headerAndArgumentStackSizeInBytes + savedResultRegisters.sizeOfAreaInBytes();
-    unsigned resultAreaSizeAligned = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(resultAreaSize);
-
     unsigned totalFrameSize = registersToSpill.sizeOfAreaInBytes();
     totalFrameSize += sizeof(CPURegister); // Slot for the VM's previous wasm instance.
     totalFrameSize += wasmCallInfo.headerAndArgumentStackSizeInBytes;
+    totalFrameSize += savedResultRegisters.sizeOfAreaInBytes();
     totalFrameSize = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(totalFrameSize);
 
 #if USE(JSVALUE32_64)
@@ -802,18 +803,13 @@ CodePtr<JSEntryPtrTag> FunctionSignature::jsToWasmICEntrypoint() const
     JIT_COMMENT(jit, "Make the call");
     jit.call(stackLimitGPR, WasmEntryPtrTag);
 
-    jit.subPtr(CCallHelpers::TrustedImm32(resultAreaSizeAligned),
-        CCallHelpers::stackPointerRegister);
+    // Restore stack pointer after call. We want to do this before marshalling results since stack results are stored at the top of the frame we created.
+    jit.addPtr(MacroAssembler::TrustedImm32(-static_cast<int32_t>(totalFrameSize)), MacroAssembler::framePointerRegister, MacroAssembler::stackPointerRegister);
 
     CCallHelpers::JumpList exceptionChecks;
 
-    // Read results before restoring SP. Results are at the bottom of the arg/result
-    // area (at callee's SP + headerSize), so we must read them before restoring SP.
     // FIXME: This assumes we don't have tag registers but we could just rematerialize them here since we already saved them.
-    marshallJSResult(jit, *this, wasmCallInfo, savedResultRegisters, exceptionChecks, resultAreaSizeAligned);
-
-    // Restore stack pointer after call.
-    jit.addPtr(MacroAssembler::TrustedImm32(-static_cast<int32_t>(totalFrameSize)), MacroAssembler::framePointerRegister, MacroAssembler::stackPointerRegister);
+    marshallJSResult(jit, *this, wasmCallInfo, savedResultRegisters, exceptionChecks);
 
     ASSERT(!RegisterSet::runtimeTagRegisters().contains(GPRInfo::nonPreservedNonReturnGPR, IgnoreVectors));
 

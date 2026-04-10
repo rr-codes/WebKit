@@ -144,7 +144,7 @@ JSC_DEFINE_JIT_OPERATION(operationJSToWasmEntryWrapperBuildFrame, JSToWasmCallee
     OPERATION_RETURN(scope, callee);
 }
 
-// Marshalls wasm return values into JS: a single JSValue for one result, or a JSArray for multi-value.
+// We don't actually return anything, but we can't compile with a ExceptionOperationResult<void> as the return type.
 JSC_DEFINE_JIT_OPERATION(operationJSToWasmEntryWrapperBuildReturnFrame, EncodedJSValue, (void* sp, CallFrame* callFrame))
 {
     dataLogLnIf(WasmOperationsInternal::verbose, "operationJSToWasmEntryWrapperBuildReturnFrame sp: ", RawPointer(sp), " fp: ", RawPointer(callFrame));
@@ -222,11 +222,7 @@ JSC_DEFINE_JIT_OPERATION(operationJSToWasmEntryWrapperBuildReturnFrame, EncodedJ
         OPERATION_RETURN(scope, encodedJSValue());
     }
 
-    // calleeSP = sp + RegisterStackSpaceAligned (we only subtracted RegisterStackSpace from callee's actual SP)
-    // This is correct even after tail calls, where the callee's frame size may differ from the original.
-    auto calleeSPOffsetFromFP = reinterpret_cast<intptr_t>(sp)
-        + static_cast<intptr_t>(JSToWasmCallee::RegisterStackSpaceAligned)
-        - reinterpret_cast<intptr_t>(callFrame);
+    auto calleeSPOffsetFromFP = -(static_cast<intptr_t>(callee->frameSize()) + JSToWasmCallee::SpillStackSpaceAligned - JSToWasmCallee::RegisterStackSpaceAligned);
 
     for (unsigned i = 0; i < functionSignature.returnCount(); ++i) {
         ValueLocation loc = wasmFrameConvention.results[i].location;
