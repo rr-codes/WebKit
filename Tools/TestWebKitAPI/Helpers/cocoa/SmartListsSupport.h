@@ -60,7 +60,6 @@ NS_SWIFT_UI_ACTOR
 
 + (void)processConfiguration:(SmartListsTestConfiguration *)configuration completionHandler:(NS_SWIFT_UI_ACTOR void(^)(SmartListsTestResult * NS_NULLABLE_RESULT, NSError * _Nullable))completionHandler;
 
-+ (void)testBackspaceWithInvalidWebKitSmartListMarkerAttributeDoesNotApplyWithCompletionHandler:(NS_SWIFT_UI_ACTOR void(^)(SmartListsTestResult * NS_NULLABLE_RESULT, NSError * _Nullable))completionHandler;
 
 @end
 

@@ -216,11 +216,8 @@ protected:
     void cloneParagraphUnderNewElement(const Position& start, const Position& end, Node* outerNode, Element* blockElement);
     void cleanupAfterDeletion(VisiblePosition destination = VisiblePosition());
 
-    enum class ReconstitutePlainTextListIfNeeded : bool { No, Yes };
-
     VisibleSelection shouldBreakOutOfEmptyListItem() const;
-    bool hasSmartListMarkerAttribute() const;
-    bool breakOutOfEmptyListItem(ReconstitutePlainTextListIfNeeded = ReconstitutePlainTextListIfNeeded::No);
+    bool breakOutOfEmptyListItem();
     bool breakOutOfEmptyMailBlockquotedParagraph();
     
     Position positionAvoidingSpecialElementBoundary(const Position&);

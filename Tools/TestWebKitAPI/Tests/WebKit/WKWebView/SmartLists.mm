@@ -228,17 +228,18 @@ TEST(SmartLists, ContextMenuItemStateIsConsistentWithAvailability)
 TEST(SmartLists, InsertingSpaceAndTextAfterBulletPointGeneratesListWithText)
 {
     static constexpr auto expectedHTML = R"""(
-    <body>
+    <body contenteditable="">
         <ul>
             <li>Hello</li>
+            <li>World</li>
         </ul>
     </body>
     )"""_s;
 
-    runTest(@"* Hello", expectedHTML.createNSString().get(), @"//body/ul/li/text()", @"Hello".length);
+    runTest(@"* Hello\n* World", expectedHTML.createNSString().get(), @"//body/ul/li[2]/text()", @"World".length);
 
-    RetainPtr inputWithBullet = makeString(WTF::Unicode::bullet, " Hello"_s).createNSString();
-    runTest(inputWithBullet.get(), expectedHTML.createNSString().get(), @"//body/ul/li/text()", @"Hello".length);
+    RetainPtr inputWithBullet = makeString(WTF::Unicode::bullet, " Hello\n"_s, WTF::Unicode::bullet, " World"_s).createNSString();
+    runTest(inputWithBullet.get(), expectedHTML.createNSString().get(), @"//body/ul/li[2]/text()", @"World".length);
 }
 
 TEST(SmartLists, InsertingSpaceAndTextAfterHyphenGeneratesDashedList)
@@ -246,16 +247,17 @@ TEST(SmartLists, InsertingSpaceAndTextAfterHyphenGeneratesDashedList)
     auto marker = WTF::makeString(WTF::Unicode::emDash, WTF::Unicode::noBreakSpace, WTF::Unicode::noBreakSpace);
 
     static constexpr auto expectedHTMLTemplate = R"""(
-    <body>
+    <body contenteditable="">
         <ul style="list-style-type: '<MARKER>';">
             <li>Hello</li>
+            <li>World</li>
         </ul>
     </body>
     )"""_s;
 
     RetainPtr expectedHTML = WTF::makeStringByReplacingAll(expectedHTMLTemplate, "<MARKER>"_s, marker).createNSString();
 
-    runTest(@"- Hello", expectedHTML.get(), @"//body/ul/li/text()", @"Hello".length);
+    runTest(@"- Hello\n- World", expectedHTML.get(), @"//body/ul/li[2]/text()", @"World".length);
 }
 
 TEST(SmartLists, InsertingSpaceAfterBulletPointGeneratesEmptyList)
@@ -263,12 +265,13 @@ TEST(SmartLists, InsertingSpaceAfterBulletPointGeneratesEmptyList)
     static constexpr auto expectedHTML = R"""(
     <body>
         <ul style="list-style-type: disc;">
+            <li>A</li>
             <li><br></li>
         </ul>
     </body>
     )"""_s;
 
-    runTest(@"* ", expectedHTML.createNSString().get(), @"//body/ul/li/br", 0);
+    runTest(@"* A\n* ", expectedHTML.createNSString().get(), @"//body/ul/li[2]/br", 0);
 }
 
 TEST(SmartLists, InsertingSpaceAfterBulletPointInMiddleOfSentenceDoesNotGenerateList)
@@ -296,29 +299,31 @@ TEST(SmartLists, InsertingSpaceAfterPeriodAtStartOfSentenceDoesNotGenerateList)
 TEST(SmartLists, InsertingSpaceAfterNumberGeneratesOrderedList)
 {
     static constexpr auto expectedHTML = R"""(
-    <body>
+    <body contenteditable="">
         <ol>
             <li>Hello</li>
+            <li>World</li>
         </ol>
     </body>
     )"""_s;
 
-    runTest(@"1. Hello", expectedHTML.createNSString().get(), @"//body/ol/li/text()", @"Hello".length);
+    runTest(@"1. Hello\n2. World", expectedHTML.createNSString().get(), @"//body/ol/li[2]/text()", @"World".length);
 
-    runTest(@"1) Hello", expectedHTML.createNSString().get(), @"//body/ol/li/text()", @"Hello".length);
+    runTest(@"1) Hello\n2) World", expectedHTML.createNSString().get(), @"//body/ol/li[2]/text()", @"World".length);
 }
 
 TEST(SmartLists, InsertingSpaceAfterMultipleDigitNumberGeneratesOrderedList)
 {
     static constexpr auto expectedHTML = R"""(
-    <body>
+    <body contenteditable="">
         <ol start="1234" style="list-style-type: decimal;">
             <li>Hello</li>
+            <li>World</li>
         </ol>
     </body>
     )"""_s;
 
-    runTest(@"1234. Hello", expectedHTML.createNSString().get(), @"//body/ol/li/text()", @"Hello".length);
+    runTest(@"1234. Hello\n1235. World", expectedHTML.createNSString().get(), @"//body/ol/li[2]/text()", @"World".length);
 }
 
 TEST(SmartLists, InsertingSpaceAfterInvalidNumberDoesNotGenerateOrderedList)
@@ -359,22 +364,24 @@ TEST(SmartLists, InsertingDifferentListStylesDoesNotMergeLists)
 
     static constexpr auto expectedHTMLTemplate = R"""(
     <body contenteditable="">
-        <ul style="list-style-type: disc;" class="Apple-disc-list" webkitsmartlistmarker="*">
+        <ul style="list-style-type: disc;" class="Apple-disc-list">
             <li>A</li>
             <li>B</li>
             <li>C</li>
             <li>D</li>
+            <li>E</li>
         </ul>
         <div>
-            <ul class="Apple-dash-list" style="list-style-type: '<DASH_MARKER>';" webkitsmartlistmarker="-">
+            <ul class="Apple-dash-list" style="list-style-type: '<DASH_MARKER>';">
                 <li>A</li>
+                <li>B</li>
             </ul>
         </div>
     </body>)"""_s;
 
     RetainPtr expectedHTML = WTF::makeStringByReplacingAll(expectedHTMLTemplate, "<DASH_MARKER>"_s, dashMarker).createNSString();
 
-    runTest(@"* A\nB\nC\n\n* D\n\n- A", expectedHTML.get(), @"//body/div/ul/li[1]/text()", @"A".length);
+    runTest(@"* A\n* B\nC\n\n* D\n* E\n\n- A\n- B", expectedHTML.get(), @"//body/div/ul/li[2]/text()", @"B".length);
 }
 
 TEST(SmartLists, InsertingListMergesWithPreviousListIfPossible)
@@ -385,17 +392,21 @@ TEST(SmartLists, InsertingListMergesWithPreviousListIfPossible)
             <li>A</li>
             <li>B</li>
             <li>C</li>
+            <li>D</li>
+            <li>E</li>
         </ol>
     </body>)"""_s;
 
     RetainPtr input = @""
     "1. A\n"
-    "B\n"
+    "2. B\n"
+    "C\n"
     "\n"
-    "5. C"
+    "5. D\n"
+    "6. E"
     "";
 
-    runTest(input.get(), expectedHTML.createNSString().get(), @"//body/ol/li[3]/text()", 1);
+    runTest(input.get(), expectedHTML.createNSString().get(), @"//body/ol/li[5]/text()", 1);
 }
 
 TEST(SmartLists, InsertingSpaceInsideListElementDoesNotActivateSmartLists)
@@ -404,140 +415,140 @@ TEST(SmartLists, InsertingSpaceInsideListElementDoesNotActivateSmartLists)
     <body contenteditable="">
         <ul style="list-style-type: disc;" class="Apple-disc-list">
             <li>A</li>
+            <li>B</li>
             <li>1. Hi</li>
         </ul>
     </body>)"""_s;
 
-    runTest(@"* A\n1. Hi", expectedHTML.createNSString().get(), @"//body/ul/li[2]/text()", @"1. Hi".length);
-}
-
-TEST(SmartLists, BackspaceOnEmptyListElementShouldKeepPlainTextMarkers)
-{
-    static constexpr auto expectedBulletHTML = R"""(
-    <body contenteditable="" webkitsmartlistmarker="*">
-        <div>* ABC</div>
-    </body>)"""_s;
-
-    runTest(@"* ⌫ABC", expectedBulletHTML.createNSString().get(), @"//body/div/text()", @"* ABC".length);
-
-    static constexpr auto expectedDashHTML = R"""(
-    <body contenteditable="" webkitsmartlistmarker="-">
-        <div>- ABC</div>
-    </body>)"""_s;
-
-    runTest(@"- ⌫ABC", expectedDashHTML.createNSString().get(), @"//body/div/text()", @"- ABC".length);
-
-    static constexpr auto expectedNumberHTML = R"""(
-    <body contenteditable="" webkitsmartlistmarker="1.">
-        <div>1. ABC</div>
-    </body>)"""_s;
-
-    runTest(@"1. ⌫ABC", expectedNumberHTML.createNSString().get(), @"//body/div/text()", @"1. ABC".length);
-}
-
-TEST(SmartLists, BackspaceOnNonEmptyListElementShouldPreserveList)
-{
-    static constexpr auto expectedHTML = R"""(
-    <body contenteditable="">
-        <ul style="list-style-type: disc;" class="Apple-disc-list">
-            <li>Worl</li>
-        </ul>
-    </body>)"""_s;
-
-    runTest(@"* World⌫", expectedHTML.createNSString().get(), @"//body/ul/li/text()", @"Worl".length);
-}
-
-TEST(SmartLists, BackspaceOnEmptyNonFirstListElementShouldKeepPlainTextMarkers)
-{
-    static constexpr auto expectedBulletHTML = R"""(
-    <body contenteditable="" webkitsmartlistmarker="*">
-        <ul class="Apple-disc-list" style="list-style-type: disc;">
-            <li>A</li>
-        </ul>
-        <div>* B</div>
-    </body>)"""_s;
-
-    runTest(@"* A\n⌫B", expectedBulletHTML.createNSString().get(), @"//body/div/text()", @"* B".length);
-}
-
-TEST(SmartLists, BackspaceWithInvalidWebKitSmartListMarkerAttributeDoesNotApply)
-{
-    __block bool finished = false;
-    __block RetainPtr<SmartListsTestResult> result;
-    [SmartListsSupport testBackspaceWithInvalidWebKitSmartListMarkerAttributeDoesNotApplyWithCompletionHandler:^(SmartListsTestResult *testResult, NSError *error) {
-        if (error) {
-            TextStream errorMessage;
-            errorMessage << error;
-            EXPECT_NULL(error) << errorMessage.release().utf8().data();
-        }
-        result = testResult;
-        finished = true;
-    }];
-
-    TestWebKitAPI::Util::run(&finished);
-
-    TextStream stream;
-    stream << "expected " << [result actualHTML] << " to equal " << [result expectedHTML];
-    EXPECT_WK_STREQ([result expectedRenderTree], [result actualRenderTree]) << stream.release().utf8().data();
+    runTest(@"* A\n* B\n1. Hi", expectedHTML.createNSString().get(), @"//body/ul/li[3]/text()", @"1. Hi".length);
 }
 
 TEST(SmartLists, NewlineOnEmptyListElementShouldRemovePlainTextMarkers)
 {
     static constexpr auto expectedHTML = R"""(
-    <body contenteditable="" webkitsmartlistmarker="*">
+    <body contenteditable="">
         <ul class="Apple-disc-list" style="list-style-type: disc;">
             <li>A</li>
+            <li>B</li>
         </ul>
-        <div>B</div>
+        <div>C</div>
     </body>)"""_s;
 
-    runTest(@"* A\n\nB", expectedHTML.createNSString().get(), @"//body/div/text()", 1);
-}
-
-TEST(SmartLists, GeneratedSmartListsHaveAssociatedClassNames)
-{
-    auto dashMarker = WTF::makeString(WTF::Unicode::emDash, WTF::Unicode::noBreakSpace, WTF::Unicode::noBreakSpace);
-
-    static constexpr auto expectedHTMLTemplate = R"""(
-    <body contenteditable>
-        <ul class="Apple-disc-list" style="list-style-type: disc;">
-            <li>A</li>
-        </ul>
-        <div>
-            <ol class="Apple-decimal-list" start="1" style="list-style-type: decimal;">
-                <li>B</li>
-            </ol>
-            <div>
-                <ul class="Apple-dash-list" style="list-style-type: '<DASH_MARKER>';">
-                    <li>C</li>
-                </ul>
-            </div>
-        </div>
-    </body>
-    )"""_s;
-
-    static constexpr auto css = R"""(
-    <style>
-        .Apple-disc-list { color: red }
-        .Apple-dash-list { color: green }
-        .Apple-decimal-list { color: blue }
-    </style>
-    )"""_s;
-
-    RetainPtr expectedHTML = WTF::makeStringByReplacingAll(expectedHTMLTemplate, "<DASH_MARKER>"_s, dashMarker).createNSString();
-
-    runTest(@"* A\n\n1. B\n\n- C", expectedHTML.get(), @"//body/div/div/ul/li/text()", 1, css.createNSString().get());
+    runTest(@"* A\n* B\n\nC", expectedHTML.createNSString().get(), @"//body/div/text()", 1);
 }
 
 TEST(SmartLists, OrderedSmartListWithRTL)
 {
     RetainPtr expectedHTML = @"<body dir=\"rtl\" contenteditable=\"\">"
-    "<ol start=\"1\" style=\"list-style-type: decimal;\" class=\"Apple-decimal-list\" webkitsmartlistmarker=\"1.\">"
+    "<ol start=\"1\" style=\"list-style-type: decimal;\" class=\"Apple-decimal-list\">"
         "<li>تفاحة</li>"
+        "<li>برتقال</li>"
     "</ol>"
     "</body>";
 
-    runTest(@"1. تفاحة", expectedHTML.get(), @"//body/ol/li[1]/text()", @"تفاحة".length, nullptr, true);
+    runTest(@"1. تفاحة\n2. برتقال", expectedHTML.get(), @"//body/ol/li[2]/text()", @"برتقال".length, nullptr, true);
+}
+
+TEST(SmartLists, SingleLineMarkerDoesNotTriggerConversion)
+{
+    static constexpr auto expectedHTML = R"""(
+    <body contenteditable="">
+        * Hello
+    </body>
+    )"""_s;
+
+    runTest(@"* Hello", expectedHTML.createNSString().get(), @"//body/text()", @"* Hello".length);
+}
+
+TEST(SmartLists, MismatchedMarkersDoNotTriggerConversion)
+{
+    static constexpr auto expectedHTML = R"""(
+    <body contenteditable="">
+        * Hello
+        <div>- World</div>
+    </body>
+    )"""_s;
+
+    runTest(@"* Hello\n- World", expectedHTML.createNSString().get(), @"//body/div/text()", @"- World".length);
+}
+
+TEST(SmartLists, MarkersSeparatedByBlankLineDoNotTriggerConversion)
+{
+    static constexpr auto expectedHTML = R"""(
+    <body contenteditable="">
+        * A
+        <div><br></div>
+        <div>* B</div>
+    </body>
+    )"""_s;
+
+    runTest(@"* A\n\n* B", expectedHTML.createNSString().get(), @"//body/div[2]/text()", @"* B".length);
+}
+
+TEST(SmartLists, OrderedAndUnorderedMismatchDoesNotTriggerConversion)
+{
+    {
+        static constexpr auto expectedHTML = R"""(
+        <body contenteditable="">
+            1. Hello
+            <div>* World</div>
+        </body>
+        )"""_s;
+
+        runTest(@"1. Hello\n* World", expectedHTML.createNSString().get(), @"//body/div/text()", @"* World".length);
+    }
+
+    {
+        static constexpr auto expectedHTML = R"""(
+        <body contenteditable="">
+            * Hello
+            <div>1. World</div>
+        </body>
+        )"""_s;
+
+        runTest(@"* Hello\n1. World", expectedHTML.createNSString().get(), @"//body/div/text()", @"1. World".length);
+    }
+}
+
+TEST(SmartLists, MatchingOrderedMarkersWithDifferentDelimitersGenerateList)
+{
+    static constexpr auto expectedHTML = R"""(
+    <body contenteditable="">
+        <ol>
+            <li>A</li>
+            <li>B</li>
+        </ol>
+    </body>
+    )"""_s;
+
+    runTest(@"1. A\n2) B", expectedHTML.createNSString().get(), @"//body/ol/li[2]/text()", @"B".length);
+}
+
+TEST(SmartLists, OrderedListStartingFromNonOneGeneratesCorrectStartAttribute)
+{
+    static constexpr auto expectedHTML = R"""(
+    <body contenteditable="">
+        <ol start="5" style="list-style-type: decimal;">
+            <li>A</li>
+            <li>B</li>
+        </ol>
+    </body>
+    )"""_s;
+
+    runTest(@"5. A\n6. B", expectedHTML.createNSString().get(), @"//body/ol/li[2]/text()", @"B".length);
+}
+
+TEST(SmartLists, OrderedMarkersSeparatedByBlankLineDoNotTriggerConversion)
+{
+    static constexpr auto expectedHTML = R"""(
+    <body contenteditable="">
+        1. A
+        <div><br></div>
+        <div>2. B</div>
+    </body>
+    )"""_s;
+
+    runTest(@"1. A\n\n2. B", expectedHTML.createNSString().get(), @"//body/div[2]/text()", @"2. B".length);
 }
 
 #endif // ENABLE_SWIFTUI
