@@ -282,7 +282,7 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
         }
 
         if (this._selectedLayerGroup && !this._layerGroupsById.get(this._selectedLayerGroup.userData.layer.layerId))
-            this.selectedLayerGroup = null;
+            this._selectedLayerGroup = null;
 
         for (let layer of additions) {
             let layerGroup = this._createLayerGroup(layer);
@@ -319,6 +319,9 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
         let outlineMesh = this._createLayerMesh(layer.compositedBounds, {isOutline: true});
         layerGroup.add(fillMesh, outlineMesh);
 
+        if (layerGroup === this._selectedLayerGroup)
+            this._applyLayerGroupStyle(layerGroup, WI.Layers3DContentView._selectedLayerColor);
+
         if (WI.settings.experimentalLayers3DShowLayerContents.value) {
             this._loadLayerTexture(layer, (texture) => {
                 if (!texture)
@@ -336,9 +339,12 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
                 fillMesh.material?.map?.dispose();
                 fillMesh.material?.dispose();
 
-                let texturedMesh = this._createLayerMesh(layer.bounds, {texture});
+                let texturedMesh = this._createLayerMesh(layer.compositedBounds, {texture});
                 layerGroup.add(texturedMesh);
                 layerGroup.add(outlineMesh);
+
+                if (layerGroup === this._selectedLayerGroup)
+                    this._applyLayerGroupStyle(layerGroup, WI.Layers3DContentView._selectedLayerColor);
             });
         }
     }
@@ -480,19 +486,30 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
 
     _updateLayerGroupSelection(layerGroup)
     {
-        let setColor = ({fill, stroke}) => {
-            let [plane, outline] = this._selectedLayerGroup.children;
-            plane.material.color.set(fill);
-            outline.material.color.set(stroke);
-        };
-
         if (this._selectedLayerGroup)
-            setColor(WI.Layers3DContentView._layerColor);
+            this._applyLayerGroupStyle(this._selectedLayerGroup, WI.Layers3DContentView._layerColor);
 
         this._selectedLayerGroup = layerGroup;
 
         if (this._selectedLayerGroup)
-            setColor(WI.Layers3DContentView._selectedLayerColor);
+            this._applyLayerGroupStyle(this._selectedLayerGroup, WI.Layers3DContentView._selectedLayerColor);
+    }
+
+    _applyLayerGroupStyle(layerGroup, color)
+    {
+        let [plane, outline] = layerGroup.children;
+        if (!plane)
+            return;
+
+        let isTextured = !!plane.material.map;
+
+        if (isTextured) {
+            let isSelected = color === WI.Layers3DContentView._selectedLayerColor;
+            plane.material.opacity = isSelected ? 0.85 : 1.0;
+        } else
+            plane.material.color.set(color.fill);
+
+        outline.material.color.set(color.stroke);
     }
 
     _centerOnSelection()
