@@ -294,6 +294,10 @@ void RemoteMediaPlayerProxy::setVolumeLocked(bool volumeLocked)
 void RemoteMediaPlayerProxy::setVolume(double volume)
 {
     protect(m_player)->setVolume(volume);
+#if ENABLE(WEB_AUDIO) && PLATFORM(COCOA)
+    if (RefPtr provider = m_remoteAudioSourceProvider)
+        provider->setVolume(volume);
+#endif
 }
 
 void RemoteMediaPlayerProxy::setMuted(bool muted)

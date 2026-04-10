@@ -69,6 +69,9 @@ public:
     WEBCORE_EXPORT void setPreservesPitch(bool);
     bool preservesPitch() const { return m_preservesPitch; }
 
+    WEBCORE_EXPORT void setVolume(double);
+    double volume() const { return m_volume; }
+
     WEBCORE_EXPORT void audioStorageChanged(std::unique_ptr<CARingBuffer>&&, const AudioStreamDescription&);
     WEBCORE_EXPORT void receivedNewAudioSamples(const PlatformAudioData&, const AudioStreamDescription&, size_t);
     WEBCORE_EXPORT void setNeedsFlush();
@@ -100,8 +103,9 @@ private:
     AudioConverterRef m_converter;
     std::unique_ptr<CARingBuffer> m_ringBuffer;
 
-    double m_playbackRate { 1 };
-    bool m_preservesPitch { true };
+    std::atomic<double> m_playbackRate { 1 };
+    std::atomic<bool> m_preservesPitch { true };
+    std::atomic<double> m_volume { 1 };
     size_t m_pollSamplesCount { 3 };
     uint64_t m_readCount { 0 };
     bool m_underflowed { true };

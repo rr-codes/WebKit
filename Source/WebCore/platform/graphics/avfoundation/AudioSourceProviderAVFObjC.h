@@ -67,6 +67,7 @@ public:
     void setAudioTrack(AVAssetTrack *);
     void setPlaybackRate(double);
     void setPreservesPitch(bool);
+    void setVolume(double);
 
     using AudioCallback = Function<void(uint64_t startFrame, uint64_t numberOfFrames, bool needFlush)>;
     WEBCORE_EXPORT void setAudioCallback(AudioCallback&&);
@@ -117,6 +118,7 @@ private:
     bool m_paused { true };
     bool m_preservesPitch { true };
     double m_playbackRate { 1. };
+    double m_volume { 1. };
     WeakPtr<AudioSourceProviderClient> m_client;
     WeakPtrFactory<AudioSourceProviderAVFObjC> m_weakFactory;
 

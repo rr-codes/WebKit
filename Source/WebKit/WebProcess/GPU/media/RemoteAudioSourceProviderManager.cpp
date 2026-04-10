@@ -144,6 +144,18 @@ void RemoteAudioSourceProviderManager::setPreservesPitch(WebCore::MediaPlayerIde
     RELEASE_LOG_ERROR(Media, "Unable to find provider %llu for setPreservesPitch", identifier.toUInt64());
 }
 
+void RemoteAudioSourceProviderManager::setVolume(WebCore::MediaPlayerIdentifier identifier, double volume)
+{
+    assertIsCurrent(m_queue);
+
+    if (RefPtr provider = providerFor(identifier)) {
+        provider->setVolume(volume);
+        return;
+    }
+
+    RELEASE_LOG_ERROR(Media, "Unable to find provider %llu for setVolume", identifier.toUInt64());
+}
+
 }
 
 #endif // PLATFORM(COCOA) && ENABLE(GPU_PROCESS)

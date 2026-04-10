@@ -34,6 +34,7 @@ messages -> RemoteAudioSourceProviderManager {
     SetNeedsFlush(WebCore::MediaPlayerIdentifier id)
     SetPlaybackRate(WebCore::MediaPlayerIdentifier id, double playbackRate)
     SetPreservesPitch(WebCore::MediaPlayerIdentifier id, bool preservesPitch)
+    SetVolume(WebCore::MediaPlayerIdentifier id, double volume)
 }
 
 #endif

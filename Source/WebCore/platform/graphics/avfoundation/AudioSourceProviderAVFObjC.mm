@@ -101,18 +101,20 @@ AudioSourceProviderAVFObjC::~AudioSourceProviderAVFObjC()
 
 void AudioSourceProviderAVFObjC::provideInput(AudioBus& bus, size_t framesToProcess)
 {
-    if (m_pitchShifter && m_preservesPitch && m_playbackRate != 1.0) {
-        if (!m_pitchShifter->render(bus, framesToProcess))
-            bus.zero();
+    if (!m_playbackRate) {
+        bus.zero();
         return;
     }
 
-    if (m_multiChannelResampler && !m_preservesPitch && m_playbackRate != 1.0) {
+    if (m_pitchShifter && m_preservesPitch && m_playbackRate != 1.0)
+        m_pitchShifter->render(bus, framesToProcess);
+    else if (m_multiChannelResampler && !m_preservesPitch && m_playbackRate != 1.0)
         m_multiChannelResampler->process(bus, framesToProcess);
-        return;
-    }
+    else
+        provideInputInternal(bus, framesToProcess);
 
-    provideInputInternal(bus, framesToProcess);
+    if (m_volume < 1.0)
+        bus.copyWithGainFrom(bus, m_volume);
 }
 
 bool AudioSourceProviderAVFObjC::provideInputInternal(AudioBus& bus, size_t framesToProcess)
@@ -223,6 +225,14 @@ void AudioSourceProviderAVFObjC::setPreservesPitch(bool preservesPitch)
         return;
 
     m_preservesPitch = preservesPitch;
+}
+
+void AudioSourceProviderAVFObjC::setVolume(double volume)
+{
+    if (m_volume == volume)
+        return;
+
+    m_volume = volume;
 }
 
 void AudioSourceProviderAVFObjC::recreateAudioMixIfNeeded()

@@ -82,6 +82,11 @@ void RemoteAudioSourceProviderProxy::setPreservesPitch(bool preservesPitch)
     m_connection->send(Messages::RemoteAudioSourceProviderManager::SetPreservesPitch { m_identifier, preservesPitch }, 0);
 }
 
+void RemoteAudioSourceProviderProxy::setVolume(double volume)
+{
+    m_connection->send(Messages::RemoteAudioSourceProviderManager::SetVolume { m_identifier, volume }, 0);
+}
+
 } // namespace WebKit
 
 #endif // ENABLE(GPU_PROCESS) && ENABLE(WEB_AUDIO) && PLATFORM(COCOA)

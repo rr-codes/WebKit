@@ -99,6 +99,15 @@ void WebAudioSourceProviderCocoa::setPreservesPitch(bool preservesPitch)
     m_preservesPitch = preservesPitch;
 }
 
+void WebAudioSourceProviderCocoa::setVolume(double volume)
+{
+    if (m_volume == volume)
+        return;
+
+    Locker locker { m_lock };
+    m_volume = volume;
+}
+
 void WebAudioSourceProviderCocoa::audioStorageChanged(std::unique_ptr<CARingBuffer>&& ringBuffer, const AudioStreamDescription& description)
 {
     Locker locker { m_lock };
@@ -123,17 +132,15 @@ void WebAudioSourceProviderCocoa::provideInput(AudioBus& bus, size_t framesToPro
         return;
     }
 
-    if (m_pitchShifter && m_preservesPitch && m_playbackRate != 1.0) {
+    if (m_pitchShifter && m_preservesPitch && m_playbackRate != 1.0)
         m_pitchShifter->render(bus, framesToProcess);
-        return;
-    }
-
-    if (m_multiChannelResampler && !m_preservesPitch && m_playbackRate != 1.0) {
+    else if (m_multiChannelResampler && !m_preservesPitch && m_playbackRate != 1.0)
         m_multiChannelResampler->process(bus, framesToProcess);
-        return;
-    }
+    else
+        provideInputInternal(bus, framesToProcess);
 
-    provideInputInternal(bus, framesToProcess);
+    if (m_volume < 1.0)
+        bus.copyWithGainFrom(bus, m_volume);
 }
 
 bool WebAudioSourceProviderCocoa::provideInputInternal(AudioBus& bus, size_t framesToProcess)
@@ -144,6 +151,13 @@ bool WebAudioSourceProviderCocoa::provideInputInternal(AudioBus& bus, size_t fra
     }
 
     auto [startFrame, endFrame, writeAhead] = m_ringBuffer->getFetchTimeBounds();
+
+    if (m_readCount < startFrame) {
+        if (endFrame > writeAhead)
+            m_readCount = endFrame - writeAhead;
+        else
+            m_readCount = startFrame;
+    }
 
     if (m_readCount >= endFrame) {
         bus.zero();

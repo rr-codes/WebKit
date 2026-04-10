@@ -65,6 +65,7 @@ private:
     void setNeedsFlush(WebCore::MediaPlayerIdentifier);
     void setPlaybackRate(WebCore::MediaPlayerIdentifier, double);
     void setPreservesPitch(WebCore::MediaPlayerIdentifier, bool);
+    void setVolume(WebCore::MediaPlayerIdentifier, double);
 
     RefPtr<RemoteAudioSourceProvider> providerFor(WebCore::MediaPlayerIdentifier);
 

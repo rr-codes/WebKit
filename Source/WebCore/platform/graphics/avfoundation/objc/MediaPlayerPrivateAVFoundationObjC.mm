@@ -1218,8 +1218,10 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
     if (RefPtr provider = m_provider) {
         provider->setPlayerItem(m_avPlayerItem.get());
         provider->setAudioTrack(firstEnabledAudibleTrack());
-        if (auto player = this->player())
+        if (auto player = this->player()) {
             provider->setPreservesPitch(player->preservesPitch());
+            provider->setVolume(player->volume());
+        }
     }
 #endif
 
@@ -1645,14 +1647,17 @@ void MediaPlayerPrivateAVFoundationObjC::setVolume(float volume)
         return;
     m_volume = volume;
 
-    updateIsAudible();
-
-    if (!m_avPlayer)
-        return;
-
     ALWAYS_LOG(LOGIDENTIFIER, volume);
 
-    [m_avPlayer setVolume:volume];
+    updateIsAudible();
+
+    if (m_avPlayer)
+        [m_avPlayer setVolume:volume];
+
+#if ENABLE(WEB_AUDIO) && USE(MEDIATOOLBOX)
+    if (RefPtr provider = m_provider)
+        provider->setVolume(volume);
+#endif
 }
 
 void MediaPlayerPrivateAVFoundationObjC::setMuted(bool muted)
