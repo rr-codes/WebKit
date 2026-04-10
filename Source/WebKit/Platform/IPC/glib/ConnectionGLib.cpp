@@ -34,6 +34,7 @@
 #include <gio/gunixconnection.h>
 #include <gio/gunixfdmessage.h>
 #include <sys/socket.h>
+#include <wtf/CheckedArithmetic.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/UniStdExtras.h>
 #include <wtf/glib/GRefPtr.h>
@@ -141,6 +142,28 @@ std::unique_ptr<Decoder> Connection::createMessageDecoder()
     }
 
     auto attachmentCount = messageInfo.attachmentCount();
+    if (messageInfo.isBodyOutOfLine() && !attachmentCount) {
+        RELEASE_LOG_FAULT(IPC, "createMessageDecoder: out-of-line message body is missing its attachment");
+        ASSERT_NOT_REACHED();
+        return nullptr;
+    }
+
+    auto attachmentInfoBytes = checkedProduct<size_t>(attachmentCount, sizeof(AttachmentInfo));
+    if (attachmentInfoBytes.hasOverflowed() || attachmentInfoBytes.value() > messageData.size()) {
+        RELEASE_LOG_FAULT(IPC, "createMessageDecoder: attachment metadata exceeds read buffer (attachments: %zu, buffer size: %zu)", attachmentCount, messageData.size());
+        ASSERT_NOT_REACHED();
+        return nullptr;
+    }
+
+    if (!messageInfo.isBodyOutOfLine()) {
+        auto inlineBodySize = checkedSum<size_t>(attachmentInfoBytes.value(), messageInfo.bodySize());
+        if (inlineBodySize.hasOverflowed() || inlineBodySize.value() > messageData.size()) {
+            RELEASE_LOG_FAULT(IPC, "createMessageDecoder: inline body exceeds read buffer (body size: %zu, buffer size: %zu)", messageInfo.bodySize(), messageData.size());
+            ASSERT_NOT_REACHED();
+            return nullptr;
+        }
+    }
+
     if (!attachmentCount)
         return Decoder::create(messageData.first(messageInfo.bodySize()), { });
 
@@ -157,14 +180,24 @@ std::unique_ptr<Decoder> Connection::createMessageDecoder()
         case AttachmentInfo::Type::FileDescriptor:
             if (attachmentInfo.isNull())
                 attachments[attachmentIndex] = UnixFileDescriptor();
-            else
+            else {
+                if (fdIndex >= m_fileDescriptors.size()) {
+                    RELEASE_LOG_FAULT(IPC, "createMessageDecoder: missing file descriptor for attachment %zu", i);
+                    ASSERT_NOT_REACHED();
+                    return nullptr;
+                }
                 attachments[attachmentIndex] = WTF::move(m_fileDescriptors[fdIndex++]);
+            }
             break;
         case AttachmentInfo::Type::HardwareBuffer:
             if (attachmentInfo.isNull())
                 attachments[attachmentIndex] = nullptr;
             else {
-                RELEASE_ASSERT(!m_incomingHardwareBuffers.isEmpty());
+                if (m_incomingHardwareBuffers.isEmpty()) {
+                    RELEASE_LOG_FAULT(IPC, "createMessageDecoder: missing incoming hardware buffer for attachment %zu", i);
+                    ASSERT_NOT_REACHED();
+                    return nullptr;
+                }
                 attachments[attachmentIndex] = WTF::move(m_incomingHardwareBuffers.first());
                 m_incomingHardwareBuffers.removeAt(0);
             }
@@ -173,8 +206,14 @@ std::unique_ptr<Decoder> Connection::createMessageDecoder()
             RELEASE_ASSERT_NOT_REACHED();
         }
 #else
-        if (!attachmentInfo.isNull())
+        if (!attachmentInfo.isNull()) {
+            if (fdIndex >= m_fileDescriptors.size()) {
+                RELEASE_LOG_FAULT(IPC, "createMessageDecoder: missing file descriptor for attachment %zu", i);
+                ASSERT_NOT_REACHED();
+                return nullptr;
+            }
             attachments[attachmentIndex] = WTF::move(m_fileDescriptors[fdIndex++]);
+        }
 #endif
     }
 
@@ -188,6 +227,11 @@ std::unique_ptr<Decoder> Connection::createMessageDecoder()
         return nullptr;
     }
 
+    if (fdIndex >= m_fileDescriptors.size()) {
+        RELEASE_LOG_FAULT(IPC, "createMessageDecoder: missing shared-memory file descriptor for out-of-line body");
+        ASSERT_NOT_REACHED();
+        return nullptr;
+    }
     auto handle = WebCore::SharedMemory::Handle { WTF::move(m_fileDescriptors[fdIndex]), messageInfo.bodySize() };
     auto messageBody = WebCore::SharedMemory::map(WTF::move(handle), WebCore::SharedMemory::Protection::ReadOnly);
     if (!messageBody) {
@@ -246,6 +290,8 @@ void Connection::readyReadHandler()
 
         if (auto decoder = createMessageDecoder())
             processIncomingMessage(makeUniqueRefFromNonNullUniquePtr(WTF::move(decoder)));
+        else
+            connectionDidClose();
     }
 #endif
 
@@ -290,6 +336,8 @@ void Connection::readyReadHandler()
 
         if (auto decoder = createMessageDecoder())
             processIncomingMessage(makeUniqueRefFromNonNullUniquePtr(WTF::move(decoder)));
+        else
+            connectionDidClose();
     }
 }
 
