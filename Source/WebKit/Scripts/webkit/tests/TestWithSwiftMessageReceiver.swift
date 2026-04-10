@@ -24,7 +24,6 @@
 
 import WebKit_Internal
 
-
 final class TestWithSwiftWeakRef {
     private weak var target: TestWithSwift?
     init(target: TestWithSwift) {
@@ -49,4 +48,3 @@ extension WebKit.TestWithSwiftMessageForwarder {
         )
     }
 }
-

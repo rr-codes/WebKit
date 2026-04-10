@@ -2040,8 +2040,22 @@ def convert_enable_macros_to_swift_syntax(condition):
     return re.sub(r'ENABLE\(([^)]+)\)', r'ENABLE_\1', condition)
 
 
-def generate_swift_message_handler_internals(receiver, unsafe_keyword):
+def generate_swift_message_handler(receiver):
+    assert (receiver.swift_receiver or receiver.swift_receiver_build_enabled_by)
     result = []
+    result.append(block_to_line_comments(_license_header))
+    result.append('\n')
+    result.append('\n')
+    if receiver.condition:
+        result.append('#if %s\n' % convert_enable_macros_to_swift_syntax(receiver.condition))
+    if receiver.swift_receiver_build_enabled_by:
+        result.append('#if ENABLE_%s\n' % (receiver.swift_receiver_build_enabled_by))
+    result.append('import WebKit_Internal\n')
+    if receiver.condition:
+        result.append('#endif\n')
+    if receiver.swift_receiver_build_enabled_by:
+        result.append('#endif\n')
+    result.append('\n')
 
     class_name = receiver.name
     message_forwarder_class = class_name + 'MessageForwarder'
@@ -2070,7 +2084,7 @@ def generate_swift_message_handler_internals(receiver, unsafe_keyword):
     result.append('        // Safety: we\'re creating a pointer which will immediately be stored in a\n')
     result.append('        // proper ref-counted reference on the C++ side before this call returns.\n')
     result.append('        // Workaround for rdar://163107752.\n')
-    result.append('        return %sWebKit.%s.createFromWeak(\n' % (unsafe_keyword, message_forwarder_class))
+    result.append('        return unsafe WebKit.%s.createFromWeak(\n' % (message_forwarder_class))
     result.append('            OpaquePointer(\n')
     result.append('                Unmanaged.passRetained(weakRefContainer).toOpaque()\n')
     result.append('            )\n')
@@ -2083,29 +2097,6 @@ def generate_swift_message_handler_internals(receiver, unsafe_keyword):
     if receiver.swift_receiver_build_enabled_by:
         result.append('#endif\n')
 
-    return result
-
-
-def generate_swift_message_handler(receiver):
-    assert (receiver.swift_receiver or receiver.swift_receiver_build_enabled_by)
-    result = []
-    result.append(block_to_line_comments(_license_header))
-    result.append('\n')
-    result.append('\n')
-    if receiver.condition:
-        result.append('#if %s\n' % convert_enable_macros_to_swift_syntax(receiver.condition))
-    if receiver.swift_receiver_build_enabled_by:
-        result.append('#if ENABLE_%s\n' % (receiver.swift_receiver_build_enabled_by))
-    result.append('import WebKit_Internal\n')
-    if receiver.condition:
-        result.append('#endif\n')
-    if receiver.swift_receiver_build_enabled_by:
-        result.append('#endif\n')
-    result.append('\n')
-
-    result.append('\n')
-    result.extend(generate_swift_message_handler_internals(receiver, 'unsafe '))
-    result.append('\n')
 
     return ''.join(result)
 
