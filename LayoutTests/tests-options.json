@@ -740,7 +740,16 @@
     "imported/w3c/web-animations/timing-model/timelines/update-and-send-events.html": [
         "slow"
     ],
-    "imported/w3c/web-platform-tests/FileAPI/BlobURL/cross-partition.tentative.https.html": [
+    "imported/w3c/web-platform-tests/FileAPI/BlobURL/cross-partition-navigation.https.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/FileAPI/BlobURL/cross-partition-self-fetch.https.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/FileAPI/BlobURL/cross-partition-worker-creation.https.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/FileAPI/BlobURL/cross-partition.https.html": [
         "slow"
     ],
     "imported/w3c/web-platform-tests/FileAPI/file/send-file-form-iso-2022-jp.html": [
