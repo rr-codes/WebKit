@@ -155,7 +155,12 @@ TEST(WKWebExtensionAPIAlarms, DelayRepeating)
     Util::loadAndRunExtension(alarmsManifest, @{ @"background.js": backgroundScript });
 }
 
+// FIXME when webkit.org/b/311933 is resolved.
+#if PLATFORM(MAC) && !defined(NDEBUG)
+TEST(WKWebExtensionAPIAlarms, DISABLED_WhenSingleShot)
+#else
 TEST(WKWebExtensionAPIAlarms, WhenSingleShot)
+#endif
 {
     auto *backgroundScript = Util::constructScript(@[
         // Setup
