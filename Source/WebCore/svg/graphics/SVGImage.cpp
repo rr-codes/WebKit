@@ -28,7 +28,6 @@
 #include "config.h"
 #include "SVGImage.h"
 
-#include "CacheStorageProvider.h"
 #include "Chrome.h"
 #include "CommonVM.h"
 #include "ContainerNodeInlines.h"
