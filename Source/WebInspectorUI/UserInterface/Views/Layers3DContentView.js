@@ -252,7 +252,13 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
         if (documentNode === this._documentNode)
             return false;
 
-        this._scene.children.length = 0;
+        this._pendingTextureLoads.clear();
+
+        for (let layerGroup of this._layerGroupsById.values()) {
+            this._disposeLayerGroupChildren(layerGroup);
+            this._scene.remove(layerGroup);
+        }
+
         this._layerGroupsById.clear();
         this._layers.length = 0;
 
@@ -269,8 +275,10 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
 
         for (let layer of removals) {
             let layerGroup = this._layerGroupsById.get(layer.layerId);
+            this._disposeLayerGroupChildren(layerGroup);
             this._scene.remove(layerGroup);
             this._layerGroupsById.delete(layer.layerId);
+            this._pendingTextureLoads.delete(layer.layerId);
         }
 
         if (this._selectedLayerGroup && !this._layerGroupsById.get(this._selectedLayerGroup.userData.layer.layerId))
@@ -375,6 +383,15 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
             };
             textureLoader.load(content, onLoad, onProgress, onError);
         });
+    }
+
+    _disposeLayerGroupChildren(layerGroup)
+    {
+        for (let child of layerGroup.children) {
+            child.geometry?.dispose();
+            child.material?.map?.dispose();
+            child.material?.dispose();
+        }
     }
 
     _createLayerMesh({x, y, width, height}, {isOutline, texture} = {})
