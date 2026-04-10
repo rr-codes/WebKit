@@ -30,16 +30,6 @@
 
 #import <wtf/TZoneMallocInlines.h>
 
-@interface UIContextMenuInteraction (SPI)
-- (void)_presentMenuAtLocation:(CGPoint)location;
-@end
-
-#if HAVE(UI_BUTTON_PERFORM_PRIMARY_ACTION)
-@interface UIButton (Staging_112292156)
-- (void)performPrimaryAction;
-@end
-#endif
-
 @interface WKCompactContextMenuPresenterControl : UIControl <WKCompactContextMenuPresenter>
 @end
 
@@ -176,15 +166,7 @@ void CompactContextMenuPresenter::present(CGRect rectInRootView)
     if (![m_control superview])
         [rootView addSubview:m_control.get()];
 
-#if HAVE(UI_BUTTON_PERFORM_PRIMARY_ACTION)
-    static BOOL canPerformPrimaryAction = [UIControl instancesRespondToSelector:@selector(performPrimaryAction)];
-    if (canPerformPrimaryAction) {
-        [m_control performPrimaryAction];
-        return;
-    }
-#endif
-
-    [protect(interaction()) _presentMenuAtLocation:CGPointMake(CGRectGetMidX(rectInRootView), CGRectGetMidY(rectInRootView))];
+    [m_control performPrimaryAction];
 }
 
 void CompactContextMenuPresenter::dismiss()

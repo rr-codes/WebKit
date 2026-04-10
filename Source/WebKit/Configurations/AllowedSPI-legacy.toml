@@ -231,7 +231,6 @@ selectors = [
     { name = "_nsTextAlternative", class = "?" },
     { name = "_pageContentRect:", class = "?" },
     { name = "_preconnect", class = "?" },
-    { name = "_presentMenuAtLocation:", class = "?" },
     { name = "_privateLocalContext", class = "?" },
     { name = "_purgeDevice", class = "?" },
     { name = "_resolvedCNAMEChain", class = "?" },
