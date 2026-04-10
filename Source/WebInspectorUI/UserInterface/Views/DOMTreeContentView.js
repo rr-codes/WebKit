@@ -518,6 +518,22 @@ WI.DOMTreeContentView = class DOMTreeContentView extends WI.ContentView
             }, WI.settings.enabledDOMTreeBadgeTypes.value.includes(WI.DOMTreeElement.BadgeType.Grid));
         }
 
+        // COMPATIBILITY (macOS X.Y, iOS X.Y): `Subgrid` value for `CSS.LayoutFlag` did not exist yet.
+        if (InspectorBackend.Enum.CSS?.LayoutFlag?.Subgrid) {
+            contextMenu.appendCheckboxItem(WI.unlocalizedString("subgrid"), () => {
+                WI.settings.enabledDOMTreeBadgeTypes.value.toggleIncludes(WI.DOMTreeElement.BadgeType.Subgrid);
+                WI.settings.enabledDOMTreeBadgeTypes.save();
+            }, WI.settings.enabledDOMTreeBadgeTypes.value.includes(WI.DOMTreeElement.BadgeType.Subgrid));
+        }
+
+        // COMPATIBILITY (macOS X.Y, iOS X.Y): `GridLanes` value for `CSS.LayoutFlag` did not exist yet.
+        if (InspectorBackend.Enum.CSS?.LayoutFlag?.GridLanes) {
+            contextMenu.appendCheckboxItem(WI.unlocalizedString("grid-lanes"), () => {
+                WI.settings.enabledDOMTreeBadgeTypes.value.toggleIncludes(WI.DOMTreeElement.BadgeType.GridLanes);
+                WI.settings.enabledDOMTreeBadgeTypes.save();
+            }, WI.settings.enabledDOMTreeBadgeTypes.value.includes(WI.DOMTreeElement.BadgeType.GridLanes));
+        }
+
         // COMPATIBILITY (macOS 13.0, iOS 16.0): `DOM.showFlexOverlay` did not exist yet.
         if (InspectorBackend.hasCommand("DOM.showFlexOverlay")) {
             contextMenu.appendCheckboxItem(WI.unlocalizedString("flex"), () => {

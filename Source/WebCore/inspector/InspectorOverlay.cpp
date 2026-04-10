@@ -1212,14 +1212,20 @@ Path InspectorOverlay::drawElementTitle(GraphicsContext& context, Node& node, co
     Vector<String> layoutContextBubbleStrings;
     
     if (rendererIsFlexboxItem(*renderer))
-        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("Flex Item", "Flex Item (Inspector Element Selection)", "Inspector element selection tooltip text for items inside a Flexbox Container."));
+        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("flex item", "flex item (Inspector Element Selection)", "Inspector element selection tooltip text for items inside a Flexbox Container."));
     else if (rendererIsGridItem(*renderer))
-        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("Grid Item", "Grid Item (Inspector Element Selection)", "Inspector element selection tooltip text for items inside a Grid Container."));
+        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("grid item", "grid item (Inspector Element Selection)", "Inspector element selection tooltip text for items inside a Grid Container."));
 
     if (is<RenderFlexibleBox>(renderer))
-        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("Flex", "Flex (Inspector Element Selection)", "Inspector element selection tooltip text for Flexbox containers."));
-    else if (is<RenderGrid>(renderer))
-        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("Grid", "Grid (Inspector Element Selection)", "Inspector element selection tooltip text for Grid containers."));
+        layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("flex", "flex (Inspector Element Selection)", "Inspector element selection tooltip text for Flexbox containers."));
+    else if (CheckedPtr renderGrid = dynamicDowncast<RenderGrid>(renderer)) {
+        if (renderGrid->isSubgrid())
+            layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("subgrid", "subgrid (Inspector Element Selection)", "Inspector element selection tooltip text for Subgrid containers."));
+        else if (renderGrid->isMasonry())
+            layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("grid lanes", "grid lanes (Inspector Element Selection)", "Inspector element selection tooltip text for Grid Lanes containers."));
+        else
+            layoutContextBubbleStrings.append(WEB_UI_STRING_KEY("grid", "grid (Inspector Element Selection)", "Inspector element selection tooltip text for Grid containers."));
+    }
 
     // Need to enable AX to get the computed role.
     WebCore::AXObjectCache::enableAccessibility();

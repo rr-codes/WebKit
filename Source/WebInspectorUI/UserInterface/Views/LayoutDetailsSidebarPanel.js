@@ -197,6 +197,8 @@ WI.LayoutDetailsSidebarPanel = class LayoutDetailsSidebarPanel extends WI.DOMDet
         for (let node of WI.domManager.attachedNodes({filter: (node) => node.layoutContextType})) {
             switch (node.layoutContextType) {
             case WI.DOMNode.LayoutFlag.Grid:
+            case WI.DOMNode.LayoutFlag.Subgrid:
+            case WI.DOMNode.LayoutFlag.GridLanes:
                 this._gridNodeSet.add(node);
                 break;
 
