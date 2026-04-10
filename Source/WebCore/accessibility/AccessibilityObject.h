@@ -555,6 +555,7 @@ public:
 
     void performDismissActionIgnoringResult() final { performDismissAction(); }
     bool press() override;
+    bool performShowMenuAction();
 
     std::optional<AccessibilityOrientation> explicitOrientation() const override { return std::nullopt; }
     void increment() override { }

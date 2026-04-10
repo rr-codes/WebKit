@@ -3458,6 +3458,11 @@ void TestController::didReceiveSynchronousMessageFromInjectedBundle(WKStringRef 
 
     if (WKStringIsEqualToUTF8CString(messageName, "AXSearchPredicate"))
         return completionHandler(handleAXSearchPredicate(dictionaryValue(messageBody)).get());
+
+    if (WKStringIsEqualToUTF8CString(messageName, "AXPerformAction")) {
+        handleAXPerformAction(dictionaryValue(messageBody));
+        return completionHandler(nullptr);
+    }
 #endif
 
     completionHandler(protectedCurrentInvocation()->didReceiveSynchronousMessageFromInjectedBundle(messageName, messageBody).get());
@@ -5725,6 +5730,19 @@ WKRetainPtr<WKTypeRef> TestController::handleAXSearchPredicate(WKDictionaryRef m
     }
 
     return tokenArray;
+}
+
+void TestController::handleAXPerformAction(WKDictionaryRef messageBody)
+{
+    uint64_t elementToken = uint64Value(messageBody, "elementToken");
+    WKStringRef actionName = stringValue(messageBody, "actionName");
+
+    AXUIElementRef element = static_cast<AXUIElementRef>(getAXElement(elementToken));
+    if (!element)
+        return;
+
+    RetainPtr actionNameCF = adoptCF(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(actionName).c_str(), kCFStringEncodingUTF8));
+    AXUIElementPerformAction(element, actionNameCF.get());
 }
 
 #endif // PLATFORM(MAC)

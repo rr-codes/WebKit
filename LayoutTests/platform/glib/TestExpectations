@@ -924,6 +924,9 @@ accessibility/dynamic-speak-as.html [ Failure ]
 # Missing AccessibilityUIElement::{ariaActionsElementAtIndex, invokeCustomActionAtIndex} implementations.
 accessibility/aria-actions.html [ Skip ]
 
+# Missing AccessibilityUIElement::showMenu implementation.
+accessibility/show-menu-fires-contextmenu-event.html [ Skip ]
+
 # Failing since introduced, Atspi::State::Visited may not be set / updated properly?
 accessibility/link-becomes-visited.html [ Failure ]
 

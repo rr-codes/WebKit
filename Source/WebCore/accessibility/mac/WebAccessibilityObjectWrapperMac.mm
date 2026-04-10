@@ -3046,45 +3046,16 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     Accessibility::performFunctionOnMainThread([protectedSelf = retainPtr(self)] {
         // This needs to be performed in an iteration of the run loop that did not start from an AX call.
         // If it's the same run loop iteration, the menu open notification won't be sent.
-        [protectedSelf performSelector:@selector(_accessibilityShowContextMenu) withObject:nil afterDelay:0.0];
+        [protectedSelf performSelector:@selector(_accessibilityPerformShowMenuAction) withObject:nil afterDelay:0.0];
     });
 }
 
-- (void)_accessibilityShowContextMenu
+- (void)_accessibilityPerformShowMenuAction
 {
-    AXTRACE("WebAccessibilityObjectWrapper _accessibilityShowContextMenu"_s);
     AX_ASSERT(isMainThread());
 
-    RefPtr<AccessibilityObject> backingObject = dynamicDowncast<AccessibilityObject>(self.axBackingObject);
-    if (!backingObject) {
-        AXLOG(makeString("No backingObject for wrapper "_s, hex(reinterpret_cast<uintptr_t>(self))));
-        return;
-    }
-
-    RefPtr page = backingObject->page();
-    if (!page)
-        return;
-
-    IntRect rect = snappedIntRect(backingObject->elementRect());
-    // On WK2, we need to account for the scroll position with regards to root view.
-    // On WK1, we need to convert rect to window space to match mouse clicking.
-    RefPtr frameView = backingObject->documentFrameView();
-    if (frameView) {
-        // Find the appropriate scroll view to convert the coordinates to window space.
-        RefPtr axScrollView = Accessibility::findAncestor(*backingObject, false, [] (const auto& ancestor) {
-            return ancestor.isScrollArea() && ancestor.scrollView();
-        });
-
-        if (RefPtr scrollView = axScrollView ? axScrollView->scrollView() : nullptr) {
-            if (!frameView->platformWidget())
-                rect = scrollView->contentsToRootView(rect);
-            else
-                rect = scrollView->contentsToWindow(rect);
-        }
-    }
-
-    if (RefPtr localMainFrame = page->localMainFrame())
-        page->contextMenuController().showContextMenuAt(*localMainFrame, rect.center());
+    if (RefPtr backingObject = dynamicDowncast<AccessibilityObject>(self.updateObjectBackingStore))
+        backingObject->performShowMenuAction();
 }
 
 - (void)accessibilityScrollToVisible

@@ -48,6 +48,7 @@
 #include "Chrome.h"
 #include "ChromeClient.h"
 #include "ContainerNodeInlines.h"
+#include "ContextMenuController.h"
 #include "CustomElementDefaultARIA.h"
 #include "DOMTokenList.h"
 #include "DocumentPage.h"
@@ -1555,6 +1556,34 @@ bool AccessibilityObject::press()
     }
 
     return pressElement->accessKeyAction(true) || pressElement->dispatchSimulatedClick(nullptr, SendMouseUpDownEvents);
+}
+
+bool AccessibilityObject::performShowMenuAction()
+{
+#if ENABLE(CONTEXT_MENUS) && USE(ACCESSIBILITY_CONTEXT_MENUS)
+    RefPtr page = this->page();
+    if (!page)
+        return false;
+
+    RefPtr frameView = documentFrameView();
+    if (!frameView)
+        return false;
+
+    RefPtr document = this->document();
+    RefPtr frame = document ? document->frame() : nullptr;
+    if (!frame)
+        return false;
+
+    UserGestureIndicator gestureIndicator(IsProcessingUserGesture::Yes, document.get());
+    // Use the element's own frame rather than the main frame so that
+    // sendContextMenuEvent (which does not dispatch to subframes) hit-tests
+    // in the correct frame. This is necessary for elements inside iframes.
+    auto point = frameView->contentsToWindow(roundedIntPoint(elementRect().center()));
+    page->contextMenuController().showContextMenuAt(*frame, point);
+    return true;
+#else
+    return false;
+#endif // ENABLE(CONTEXT_MENUS) && USE(ACCESSIBILITY_CONTEXT_MENUS)
 }
 
 bool AccessibilityObject::dispatchTouchEvent()
