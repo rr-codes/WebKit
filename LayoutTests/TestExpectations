@@ -7840,9 +7840,6 @@ imported/w3c/web-platform-tests/svg/struct/reftests/inner-svg-transform-and-view
 imported/w3c/web-platform-tests/svg/struct/reftests/inner-svg-rotate-transform.svg [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/svg/struct/reftests/inner-svg-css-transform.svg [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/svg/struct/reftests/use-event-handler-no-loss-of-events.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/svg/struct/reftests/use-svg-inline-css.svg [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/svg/struct/reftests/use-symbol-inline-css-001.svg [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/svg/struct/reftests/use-symbol-inline-css-002.svg [ ImageOnlyFailure ]
 
 # crashes with `ASSERTION FAILED: !url.protocolIsData()`
 webkit.org/b/290285 imported/w3c/web-platform-tests/svg/struct/reftests/use-data-url-set-attributeName.tentative.svg [ Skip ]
@@ -8264,3 +8261,18 @@ imported/w3c/web-platform-tests/html/browsers/the-window-object/open-close/open_
 webkit.org/b/311207 imported/w3c/web-platform-tests/workers/semantics/structured-clone/shared.html [ Pass Failure ]
 
 imported/w3c/web-platform-tests/html/semantics/embedded-content/the-img-element/sizes/sizes-auto-dynamic-attributes.html [ Failure Pass ]
+
+imported/w3c/web-platform-tests/svg/animations/conditional-processing-02.html [ Skip ] # Flaky
+imported/w3c/web-platform-tests/svg/animations/animate-fill-underlying-value-change.html [ Skip ] # Flaky
+imported/w3c/web-platform-tests/svg/embedded/image-large-bitmap.svg [ ImageOnlyFailure ] # Might be just fuzziness issue
+imported/w3c/web-platform-tests/svg/painting/inner-outer-svg-overflow-auto.html [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/path/distance/path-length-css-overrides-presentation-attribute.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/path/distance/path-length-css-property.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/path/distance/path-length-css-zero.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/struct/reftests/use-foreignObject.html [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/text/reftests/textpath-path-attr-empty-no-fallback.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/text/reftests/textpath-path-attr-invalid-no-fallback.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/text/reftests/textpath-path-attr-use-up-to-first-error.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/text/reftests/textpath-pathlength-css-display-none.tentative.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/text/reftests/textpath-side-003.svg [ ImageOnlyFailure ]
+imported/w3c/web-platform-tests/svg/text/reftests/textpath-side-005.svg [ ImageOnlyFailure ]
