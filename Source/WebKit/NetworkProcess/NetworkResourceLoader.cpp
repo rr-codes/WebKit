@@ -80,6 +80,7 @@
 #include <WebCore/ShareableResource.h>
 #include <WebCore/SharedBuffer.h>
 #include <WebCore/ViolationReportType.h>
+#include <wtf/Borrow.h>
 #include <wtf/CallbackAggregator.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/Expected.h>
@@ -1834,7 +1835,7 @@ void NetworkResourceLoader::consumeSandboxExtensions()
         }
     }
 
-    for (auto& fileReference : m_fileReferences)
+    for (Ref fileReference : borrow(m_fileReferences).get())
         fileReference->prepareForFileAccess();
 
     m_didConsumeSandboxExtensions = true;
@@ -1846,7 +1847,7 @@ void NetworkResourceLoader::invalidateSandboxExtensions()
         for (auto extension : std::exchange(m_extensionsToRevoke, { }))
             extension->revoke();
 
-        for (auto& fileReference : m_fileReferences)
+        for (Ref fileReference : borrow(m_fileReferences).get())
             fileReference->revokeFileAccess();
 
         m_didConsumeSandboxExtensions = false;

@@ -49,6 +49,7 @@
 #import "WebUserContentControllerProxy.h"
 #import "_WKFrameHandle.h"
 #import "_WKFrameTreeNode.h"
+#import <wtf/Borrow.h>
 #import <wtf/CallbackAggregator.h>
 #import <wtf/TZoneMallocInlines.h>
 #import <wtf/URL.h>
@@ -195,7 +196,7 @@ void removeStyleSheets(const SourcePairs& styleSheetPairs, WKWebView *webView,  
     auto& dynamicallyInjectedUserStyleSheets = context.dynamicallyInjectedUserStyleSheets();
 
     for (auto& styleSheetContent : styleSheetPairs) {
-        for (auto& userStyleSheet : dynamicallyInjectedUserStyleSheets) {
+        for (Ref userStyleSheet : borrow(dynamicallyInjectedUserStyleSheets).get()) {
             if (userStyleSheetMatchesContent(userStyleSheet, styleSheetContent, injectedFrames)) {
                 styleSheetsToRemove.append(userStyleSheet);
                 Ref controller = webView._page.get()->userContentController();

@@ -161,6 +161,7 @@
 #include <cmath>
 #include <memory>
 #include <wtf/Assertions.h>
+#include <wtf/Borrow.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/Language.h>
 #include <wtf/MainThread.h>
@@ -2777,7 +2778,7 @@ void LocalDOMWindow::finalizeAndQueueEventTimingEntries()
         return;
 
     LOG_WITH_STREAM(PerformanceTimeline, stream << "Dispatching " << m_performanceEventTimingCandidates.size() << " event timing entries at t=" << renderingTime);
-    for (auto& candidateEntry : m_performanceEventTimingCandidates) {
+    for (auto& candidateEntry : borrow(m_performanceEventTimingCandidates).get()) {
         performance().countEvent(candidateEntry.type);
         if (!candidateEntry.duration)
             candidateEntry.duration = renderingTime - candidateEntry.startTime;

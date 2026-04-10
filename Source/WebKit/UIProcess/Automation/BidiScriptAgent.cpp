@@ -45,6 +45,7 @@
 #include <WebCore/SecurityOrigin.h>
 #include <WebCore/SecurityOriginData.h>
 #include <algorithm>
+#include <wtf/Borrow.h>
 #include <wtf/CallbackAggregator.h>
 #include <wtf/ProcessID.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -566,7 +567,7 @@ void BidiScriptAgent::getRealms(const BrowsingContext& optionalBrowsingContext, 
     else {
         // Enumerate all controlled pages; filtering by context happens during collection.
         RefPtr processPool = session->processPool();
-        for (Ref process : processPool->processes()) {
+        for (Ref process : borrow(processPool->processes()).get()) {
             for (Ref page : process->pages()) {
                 if (page->isControlledByAutomation())
                     pagesToProcess.append(page);
@@ -864,7 +865,7 @@ std::optional<String> BidiScriptAgent::contextHandleForFrame(const FrameInfoData
 
     if (frameInfo.webPageProxyID) {
         RefPtr processPool = session->processPool();
-        for (Ref process : processPool->processes()) {
+        for (Ref process : borrow(processPool->processes()).get()) {
             for (Ref page : process->pages()) {
                 if (page->identifier() == *frameInfo.webPageProxyID)
                     return session->handleForWebPageProxy(page);

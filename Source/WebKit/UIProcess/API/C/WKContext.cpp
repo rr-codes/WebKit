@@ -48,6 +48,7 @@
 #include "WebPageProxy.h"
 #include "WebProcessPool.h"
 #include <WebCore/GamepadProvider.h>
+#include <wtf/Borrow.h>
 #include <wtf/RefPtr.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/text/WTFString.h>
@@ -165,7 +166,7 @@ void WKContextSetHistoryClient(WKContextRef contextRef, const WKContextHistoryCl
 
     bool addsVisitedLinks = processPool->historyClient().addsVisitedLinks();
 
-    for (Ref process : processPool->processes()) {
+    for (Ref process : borrow(processPool->processes()).get()) {
         for (Ref page : process->pages())
             page->setAddsVisitedLinks(addsVisitedLinks);
     }

@@ -56,6 +56,7 @@
 #include <WebCore/NotImplemented.h>
 #include <WebCore/ResourceError.h>
 #include <WebCore/SecurityOrigin.h>
+#include <wtf/Borrow.h>
 #include <wtf/MemoryFootprint.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/UniqueRef.h>
@@ -666,7 +667,7 @@ void RemoteMediaPlayerProxy::addRemoteAudioTrackProxy(WebCore::AudioTrackPrivate
     track.setLogger(protect(m_logger), mediaPlayerLogIdentifier());
 #endif
 
-    for (auto& audioTrack : m_audioTracks) {
+    for (auto& audioTrack : borrow(m_audioTracks).get()) {
         if (audioTrack.get() == track)
             return;
         if (audioTrack->id() == track.id()) {
@@ -680,7 +681,7 @@ void RemoteMediaPlayerProxy::addRemoteAudioTrackProxy(WebCore::AudioTrackPrivate
 
 void RemoteMediaPlayerProxy::audioTrackSetEnabled(TrackID trackId, bool enabled)
 {
-    for (auto& track : m_audioTracks) {
+    for (Ref track : borrow(m_audioTracks).get()) {
         if (track->id() == trackId) {
             track->setEnabled(enabled);
             return;
@@ -699,7 +700,7 @@ void RemoteMediaPlayerProxy::addRemoteVideoTrackProxy(WebCore::VideoTrackPrivate
     track.setLogger(protect(m_logger), mediaPlayerLogIdentifier());
 #endif
 
-    for (auto& videoTrack : m_videoTracks) {
+    for (auto& videoTrack : borrow(m_videoTracks).get()) {
         if (videoTrack.get() == track)
             return;
         if (videoTrack->id() == track.id()) {
@@ -713,7 +714,7 @@ void RemoteMediaPlayerProxy::addRemoteVideoTrackProxy(WebCore::VideoTrackPrivate
 
 void RemoteMediaPlayerProxy::videoTrackSetSelected(TrackID trackId, bool selected)
 {
-    for (auto& track : m_videoTracks) {
+    for (Ref track : borrow(m_videoTracks).get()) {
         if (track->id() == trackId) {
             track->setSelected(selected);
             return;
@@ -732,7 +733,7 @@ void RemoteMediaPlayerProxy::addRemoteTextTrackProxy(WebCore::InbandTextTrackPri
     track.setLogger(protect(m_logger), mediaPlayerLogIdentifier());
 #endif
 
-    for (auto& textTrack : m_textTracks) {
+    for (auto& textTrack : borrow(m_textTracks).get()) {
         if (textTrack.get() == track)
             return;
         if (textTrack->id() == track.id()) {
@@ -746,7 +747,7 @@ void RemoteMediaPlayerProxy::addRemoteTextTrackProxy(WebCore::InbandTextTrackPri
 
 void RemoteMediaPlayerProxy::textTrackSetMode(TrackID trackId, WebCore::InbandTextTrackPrivate::Mode mode)
 {
-    for (auto& track : m_textTracks) {
+    for (Ref track : borrow(m_textTracks).get()) {
         if (track->id() == trackId) {
             track->setMode(mode);
             return;

@@ -41,6 +41,7 @@
 #include "WebProcessPool.h"
 #include <JavaScriptCore/MathCommon.h>
 #include <limits>
+#include <wtf/Borrow.h>
 #include <wtf/Ref.h>
 #include <wtf/URL.h>
 #include <wtf/Vector.h>
@@ -233,7 +234,7 @@ void BidiBrowsingContextAgent::getTree(const BrowsingContext& optionalRoot, std:
     Vector<Ref<WebPageProxy>> pagesToProcess;
 
     RefPtr processPool = session->processPool();
-    for (Ref process : processPool->processes()) {
+    for (Ref process : borrow(processPool->processes()).get()) {
         for (Ref page : process->pages()) {
             if (!page->isControlledByAutomation())
                 continue;

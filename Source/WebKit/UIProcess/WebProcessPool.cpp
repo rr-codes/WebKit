@@ -113,6 +113,7 @@
 #include <WebCore/Site.h>
 #include <algorithm>
 #include <pal/SessionID.h>
+#include <wtf/Borrow.h>
 #include <wtf/CallbackAggregator.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/MainThread.h>
@@ -2505,7 +2506,7 @@ void WebProcessPool::setDomainsWithCrossPageStorageAccess(HashMap<TopFrameDomain
 {    
     Ref callbackAggregator = CallbackAggregator::create(WTF::move(completionHandler));
 
-    for (Ref process : processes())
+    for (Ref process : borrow(this->processes()).get())
         process->sendWithAsyncReply(Messages::WebProcess::SetDomainsWithCrossPageStorageAccess(domains), [callbackAggregator] { });
 
     for (auto& topDomain : domains.keys())
@@ -2516,7 +2517,7 @@ void WebProcessPool::seedResourceLoadStatisticsForTesting(const RegistrableDomai
 {
     Ref callbackAggregator = CallbackAggregator::create(WTF::move(completionHandler));
 
-    for (Ref process : processes())
+    for (Ref process : borrow(this->processes()).get())
         process->sendWithAsyncReply(Messages::WebProcess::SeedResourceLoadStatisticsForTesting(firstPartyDomain, thirdPartyDomain, shouldScheduleNotification), [callbackAggregator] { });
 }
 
@@ -2524,7 +2525,7 @@ void WebProcessPool::sendResourceLoadStatisticsDataImmediately(CompletionHandler
 {
     auto callbackAggregator = CallbackAggregator::create(WTF::move(completionHandler));
 
-    for (Ref process : processes()) {
+    for (Ref process : borrow(this->processes()).get()) {
         // WebProcess already flushes outstanding stats to NetworkProcess on suspend, so there's no
         // need to resume a suspended process to force another flush.
         if (!process->pageCount() || process->throttler().isSuspended())
@@ -2880,7 +2881,7 @@ void WebProcessPool::memoryPressureStatusChangedForProcess(WebProcessProxy& proc
 void WebProcessPool::updateWebProcessSuspensionDelay()
 {
     WeakHashSet<WebProcessProxy> remainingProcesses;
-    for (Ref process : processes()) {
+    for (Ref process : borrow(processes()).get()) {
         if (process->throttler().isSuspended()) {
             process->updateWebProcessSuspensionDelay();
             continue;

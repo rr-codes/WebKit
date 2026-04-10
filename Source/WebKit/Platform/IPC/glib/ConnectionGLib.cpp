@@ -34,6 +34,7 @@
 #include <gio/gunixconnection.h>
 #include <gio/gunixfdmessage.h>
 #include <sys/socket.h>
+#include <wtf/Borrow.h>
 #include <wtf/CheckedArithmetic.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/UniStdExtras.h>
@@ -134,7 +135,8 @@ std::unique_ptr<Decoder> Connection::createMessageDecoder()
         return nullptr;
     }
 
-    auto messageData = m_readBuffer.mutableSpan();
+    Borrow readBuffer = m_readBuffer;
+    auto messageData = readBuffer->mutableSpan();
     auto& messageInfo = consumeAndReinterpretCastTo<MessageInfo>(messageData);
     if (messageInfo.attachmentCount() > s_attachmentMaxAmount || (!messageInfo.isBodyOutOfLine() && messageInfo.bodySize() > s_messageMaxSize)) {
         ASSERT_NOT_REACHED();

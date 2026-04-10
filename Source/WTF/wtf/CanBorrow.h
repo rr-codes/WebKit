@@ -58,23 +58,25 @@ class CanBorrow {
 public:
     ~CanBorrow()
     {
-        RELEASE_ASSERT(!m_isBorrowed);
+        // FIXME: Make this a RELEASE_ASSERT once we've proven it's stable.
+        ASSERT(!m_isBorrowed);
     }
 
     void crashIfBorrowed()
     {
-        RELEASE_ASSERT(!m_isBorrowed);
+        // FIXME: Make this a RELEASE_ASSERT once we've proven it's stable.
+        ASSERT(!m_isBorrowed);
     }
 
 private:
     template<typename T> friend class Borrow;
 
-    bool setIsBorrowed(bool isBorrowed)
+    bool setIsBorrowed(bool isBorrowed) const
     {
         return std::exchange(m_isBorrowed, isBorrowed);
     }
 
-    bool m_isBorrowed { false };
+    mutable bool m_isBorrowed { false };
 };
 
 } // namespace WTF

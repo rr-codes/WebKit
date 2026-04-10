@@ -312,7 +312,7 @@ protected:
 
     T* m_buffer;
     unsigned m_capacity : 31;
-    unsigned m_isBorrowed : 1;
+    mutable unsigned m_isBorrowed : 1;
     unsigned m_size;
 
     unsigned exchangeCapacity(unsigned newCapacity)
@@ -331,7 +331,7 @@ protected:
 
     bool isBorrowed() const { return m_isBorrowed; }
 
-    bool setIsBorrowed(bool isBorrowed)
+    bool setIsBorrowed(bool isBorrowed) const
     {
         bool old = m_isBorrowed;
         m_isBorrowed = isBorrowed;
@@ -392,6 +392,8 @@ public:
     using Base::buffer;
     using Base::capacity;
     using Base::bufferMemoryOffset;
+    using Base::setIsBorrowed;
+    using Base::crashIfBorrowed;
 
     using Base::releaseBuffer;
     using Base::capacitySpan;
@@ -621,6 +623,7 @@ private:
     typedef VectorBuffer<T, inlineCapacity, Malloc> Base;
     typedef VectorTypeOperations<T> TypeOperations;
     friend class JSC::LLIntOffsetsExtractor;
+    template<typename> friend class Borrow;
 
 public:
     // FIXME: Remove uses of ValueType and standardize on value_type, which is required for std::span.

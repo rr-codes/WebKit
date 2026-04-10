@@ -40,6 +40,7 @@
 #include "WebPageProxy.h"
 #include <WebCore/DiagnosticLoggingClient.h>
 #include <WebCore/DiagnosticLoggingKeys.h>
+#include <wtf/Borrow.h>
 #include <wtf/DebugUtilities.h>
 #include <wtf/HexNumber.h>
 #include <wtf/text/StringBuilder.h>
@@ -438,8 +439,9 @@ BackForwardListState WebBackForwardList::backForwardListState(WTF::Function<bool
     if (m_currentIndex)
         backForwardListState.currentIndex = *m_currentIndex;
 
-    for (size_t i = 0; i < m_entries.size(); ++i) {
-        auto& entry = m_entries[i];
+    Borrow entries = m_entries;
+    for (size_t i = 0; i < entries->size(); ++i) {
+        auto& entry = entries.get()[i];
 
         if (filter && !filter(entry)) {
             auto& currentIndex = backForwardListState.currentIndex;

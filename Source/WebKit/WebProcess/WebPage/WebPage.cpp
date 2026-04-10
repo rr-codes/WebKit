@@ -352,6 +352,7 @@
 #include <algorithm>
 #include <pal/SessionID.h>
 #include <ranges>
+#include <wtf/Borrow.h>
 #include <wtf/CoroutineUtilities.h>
 #include <wtf/ProcessID.h>
 #include <wtf/RunLoop.h>
@@ -7776,7 +7777,7 @@ void WebPage::didCommitLoad(WebFrame* frame)
     unfreezeLayerTree(LayerTreeFreezeReason::ProcessSwap);
 
 #if ENABLE(IMAGE_ANALYSIS)
-    for (auto& [element, completionHandlers] : m_elementsPendingTextRecognition) {
+    for (auto& [element, completionHandlers] : borrow(m_elementsPendingTextRecognition).get()) {
         for (auto& completionHandler : completionHandlers)
             completionHandler({ });
     }

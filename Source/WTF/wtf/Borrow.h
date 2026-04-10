@@ -69,15 +69,8 @@ class Borrow {
     WTF_MAKE_NONCOPYABLE(Borrow);
     WTF_FORBID_HEAP_ALLOCATION;
 public:
-    explicit Borrow(T& ref)
+    Borrow(T& ref)
         : m_ref(ref)
-        , m_previous(m_ref.setIsBorrowed(true))
-    {
-        assertIsOnStack();
-    }
-
-    explicit Borrow(T* ptr)
-        : m_ref(*ptr)
         , m_previous(m_ref.setIsBorrowed(true))
     {
         assertIsOnStack();
@@ -86,6 +79,11 @@ public:
     ~Borrow()
     {
         m_ref.setIsBorrowed(m_previous);
+    }
+
+    operator T&() const LIFETIME_BOUND
+    {
+        return m_ref;
     }
 
     T& get() const LIFETIME_BOUND
@@ -116,15 +114,21 @@ private:
 };
 
 template<typename T>
+Borrow(T&) -> Borrow<T>;
+
+// -Wdangling reports false positives on temporaries in range-based for loops.
+// Suppress -Wdangling entirely when we're using borrow(x) so that we don't
+// have to suppress at every usage site.
+// FIXME: Remove this once all supported compilers have this fix.
+// Fixed in upstream Clang commit c86c815fc57c (July 2025).
+#if defined(__clang__) && defined(__clang_major__) && __clang_major__ < 21
+IGNORE_WARNINGS_BEGIN("dangling")
+#endif
+
+template<typename T>
 inline Borrow<T> borrow(T& ref)
 {
     return Borrow<T>(ref);
-}
-
-template<typename T>
-inline Borrow<T> borrow(T* ptr)
-{
-    return Borrow<T>(ptr);
 }
 
 } // namespace WTF

@@ -373,6 +373,7 @@
 #include <ranges>
 #include <wtf/ASCIICType.h>
 #include <wtf/Assertions.h>
+#include <wtf/Borrow.h>
 #include <wtf/CryptographicallyRandomNumber.h>
 #include <wtf/HexNumber.h>
 #include <wtf/Language.h>
@@ -10332,7 +10333,7 @@ size_t Document::gatherResizeObservations(size_t deeperThan)
 {
     LOG_WITH_STREAM(ResizeObserver, stream << *this << " gatherResizeObservations");
     size_t minDepth = ResizeObserver::maxElementDepth();
-    for (auto& weakObserver : m_resizeObservers) {
+    for (auto& weakObserver : borrow(m_resizeObservers).get()) {
         RefPtr observer = weakObserver.get();
         if (!observer || !observer->hasObservations())
             continue;

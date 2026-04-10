@@ -217,6 +217,7 @@
 #include "WorkerOrWorkletScriptController.h"
 #include <JavaScriptCore/VM.h>
 #include <ranges>
+#include <wtf/Borrow.h>
 #include <wtf/FileSystem.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/SystemTracing.h>
@@ -4974,7 +4975,7 @@ void Page::mainFrameDidChangeToNonInitialEmptyDocument()
 {
     RefPtr localMainFrame = dynamicDowncast<LocalFrame>(m_mainFrame.get());
     ASSERT_UNUSED(localMainFrame, !localMainFrame || !localMainFrame->loader().stateMachine().isDisplayingInitialEmptyDocument());
-    for (auto& userStyleSheet : m_userStyleSheetsPendingInjection)
+    for (auto& userStyleSheet : borrow(m_userStyleSheetsPendingInjection).get())
         injectUserStyleSheet(userStyleSheet);
     m_userStyleSheetsPendingInjection.clear();
 }
@@ -6042,7 +6043,7 @@ void Page::addHardwareKeyboardAttachmentObserver(HardwareKeyboardAttachmentObser
 void Page::flushHardwareKeyboardAttachmentObservers()
 {
     bool attached = m_hardwareKeyboardAttached;
-    std::ranges::for_each(m_hardwareKeyboardAttachmentObservers, [attached](auto& observer) {
+    std::ranges::for_each(borrow(m_hardwareKeyboardAttachmentObservers).get(), [attached](auto& observer) {
         observer(attached);
     });
     m_hardwareKeyboardAttachmentObservers.clear();
