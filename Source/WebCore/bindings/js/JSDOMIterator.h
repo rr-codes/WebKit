@@ -26,7 +26,6 @@
 
 #pragma once
 
-#include "ScriptExecutionContext.h"
 #include <JavaScriptCore/JSIteratorPrototype.h>
 #include <JavaScriptCore/PropertySlot.h>
 #include <WebCore/JSDOMConvert.h>
