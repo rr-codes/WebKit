@@ -1825,6 +1825,52 @@ void OMGIRGenerator::fillCallResults(Value* callResult, const TypeDefinition& si
     }
 }
 
+
+// After a wasm call returns, move stack results from the callee's SP-relative
+// convention offsets to wherever B3 placed them (register or FP-relative slot),
+// then restore SP to cfr - frameSize.
+static void emitWasmCallStackResultsAndSPRestore(CCallHelpers& jit,
+    const B3::StackmapGenerationParams& params,
+    const TypeDefinition& signature,
+    const CallInformation& wasmCalleeInfo)
+{
+    auto frameSize = params.code().frameSize();
+
+    for (unsigned i = 0; i < wasmCalleeInfo.results.size(); ++i) {
+        auto& loc = wasmCalleeInfo.results[i];
+        if (!loc.location.isStackArgument())
+            continue;
+
+        auto src = CCallHelpers::Address(MacroAssembler::stackPointerRegister, loc.location.offsetFromSP());
+        auto& rep = params[i];
+
+        auto wasmType = signature.as<FunctionSignature>()->returnType(i);
+        if (rep.isGPR()) {
+            if (wasmType.isI32())
+                jit.load32(src, rep.gpr());
+            else
+                jit.load64(src, rep.gpr());
+        } else if (rep.isFPR()) {
+            if (wasmType.isF32())
+                jit.loadFloat(src, rep.fpr());
+            else if (wasmType.isF64())
+                jit.loadDouble(src, rep.fpr());
+            else {
+                ASSERT(wasmType.isV128());
+                jit.loadVector(src, rep.fpr());
+            }
+        } else {
+            ASSERT(rep.isStack());
+            if (wasmType.isV128())
+                jit.transferVector(src, CCallHelpers::Address(GPRInfo::callFrameRegister, rep.offsetFromFP()));
+            else
+                jit.transfer64(src, CCallHelpers::Address(GPRInfo::callFrameRegister, rep.offsetFromFP()));
+        }
+    }
+
+    jit.addPtr(CCallHelpers::TrustedImm32(-frameSize), GPRInfo::callFrameRegister, MacroAssembler::stackPointerRegister);
+}
+
 auto OMGIRGenerator::emitIndirectCall(Value* calleeInstance, Value* calleeCode, Value* boxedCalleeCallee, const TypeDefinition& signature, const ArgumentList& args, ValueResults& results, CallType callType) -> PartialResult
 {
     const bool isTailCallRootCaller = callType == CallType::TailCall && !m_inlineParent;
@@ -1911,7 +1957,7 @@ auto OMGIRGenerator::emitIndirectCall(Value* calleeInstance, Value* calleeCode, 
     patchpoint->append(calleeCode, ValueRep::SomeRegister);
     patchpoint->append(boxedCalleeCallee, ValueRep::SomeRegister);
     patchArgsIndex += m_proc.resultCount(patchpoint->type());
-    patchpoint->setGenerator([this, handle = handle, prepareForCall = prepareForCall, patchArgsIndex](CCallHelpers& jit, const B3::StackmapGenerationParams& params) {
+    patchpoint->setGenerator([this, handle = handle, prepareForCall = prepareForCall, patchArgsIndex, signature = Ref<const TypeDefinition>(signature), wasmCalleeInfo = WTF::move(wasmCalleeInfo)](CCallHelpers& jit, const B3::StackmapGenerationParams& params) {
         AllowMacroScratchRegisterUsage allowScratch(jit);
         if (prepareForCall)
             prepareForCall->run(jit, params);
@@ -1920,8 +1966,7 @@ auto OMGIRGenerator::emitIndirectCall(Value* calleeInstance, Value* calleeCode, 
 
         jit.storeWasmCalleeToCalleeCallFrame(params[patchArgsIndex + 1].gpr());
         jit.call(params[patchArgsIndex].gpr(), WasmEntryPtrTag);
-        // Restore the stack pointer since it may have been lowered if our callee did a tail call.
-        jit.addPtr(CCallHelpers::TrustedImm32(-params.code().frameSize()), GPRInfo::callFrameRegister, MacroAssembler::stackPointerRegister);
+        emitWasmCallStackResultsAndSPRestore(jit, params, signature, wasmCalleeInfo);
     });
     fillCallResults(patchpoint, signature, results);
 
@@ -5324,8 +5369,15 @@ auto OMGIRGenerator::createCallPatchpoint(BasicBlock* block, const TypeDefinitio
     const Vector<ArgumentLocation, 1>& constrainedResultLocations = wasmCalleeInfo.results;
     if (returnType != B3::Void) {
         Vector<B3::ValueRep, 1> resultConstraints;
-        for (auto valueLocation : constrainedResultLocations)
-            resultConstraints.append(B3::ValueRep(valueLocation.location));
+        for (auto valueLocation : constrainedResultLocations) {
+            // FIXME: Graph Coloring has an issue where it runs out of "colors" (aka registers) when passing as an Any so instead place results where they would canonically go.
+            // Even though the expected location is SP relative it still works with emitWasmCallStackResultsAndSPRestore because "SP" means FP - frameSize not the semi-random SP we got back from our callee.
+            if (valueLocation.location.isStackArgument() && Options::airUseGreedyRegAlloc()) {
+                // FIXME: Should these results be ColdAny? The argument in favor of Warm is that we have to move the values anyway so we might as well put in a register if that's what B3 wants
+                resultConstraints.append(B3::ValueRep::WarmAny);
+            } else
+                resultConstraints.append(B3::ValueRep(valueLocation.location));
+        }
         patchpoint->resultConstraints = WTF::move(resultConstraints);
     }
     block->append(patchpoint);
@@ -6005,7 +6057,7 @@ auto OMGIRGenerator::emitDirectCall(unsigned callProfileIndex, FunctionSpaceInde
             // FIXME: We shouldn't have to do this: https://bugs.webkit.org/show_bug.cgi?id=172181
             patchpoint->clobberLate(RegisterSet::wasmPinnedRegisters());
             patchArgsIndex += m_proc.resultCount(patchpoint->type());
-            patchpoint->setGenerator([this, patchArgsIndex, handle, isTailCallRootCaller, tailCallStackOffsetFromFP, prepareForCall](CCallHelpers& jit, const B3::StackmapGenerationParams& params) {
+            patchpoint->setGenerator([this, patchArgsIndex, handle, isTailCallRootCaller, tailCallStackOffsetFromFP, prepareForCall, signature = Ref<const TypeDefinition>(signature), wasmCalleeInfo](CCallHelpers& jit, const B3::StackmapGenerationParams& params) {
                 AllowMacroScratchRegisterUsage allowScratch(jit);
                 if (prepareForCall)
                     prepareForCall->run(jit, params);
@@ -6016,8 +6068,7 @@ auto OMGIRGenerator::emitDirectCall(unsigned callProfileIndex, FunctionSpaceInde
                     jit.farJump(params[patchArgsIndex].gpr(), WasmEntryPtrTag);
                 else {
                     jit.call(params[patchArgsIndex].gpr(), WasmEntryPtrTag);
-                    // Restore the stack pointer since it may have been lowered if our callee did a tail call.
-                    jit.addPtr(CCallHelpers::TrustedImm32(-params.code().frameSize()), GPRInfo::callFrameRegister, MacroAssembler::stackPointerRegister);
+                    emitWasmCallStackResultsAndSPRestore(jit, params, signature, wasmCalleeInfo);
                 }
             });
         };
@@ -6051,7 +6102,7 @@ auto OMGIRGenerator::emitDirectCall(unsigned callProfileIndex, FunctionSpaceInde
     Vector<UnlinkedWasmToWasmCall>* unlinkedWasmToWasmCalls = &m_unlinkedWasmToWasmCalls;
 
     auto emitUnlinkedWasmToWasmCall = [&, this](PatchpointValue* patchpoint, RefPtr<PatchpointExceptionHandle> handle, RefPtr<B3::StackmapGenerator> prepareForCall) -> void {
-        patchpoint->setGenerator([this, handle, unlinkedWasmToWasmCalls, functionIndexSpace, isTailCallRootCaller, tailCallStackOffsetFromFP, prepareForCall](CCallHelpers& jit, const B3::StackmapGenerationParams& params) {
+        patchpoint->setGenerator([this, handle, unlinkedWasmToWasmCalls, functionIndexSpace, isTailCallRootCaller, tailCallStackOffsetFromFP, prepareForCall, signature = Ref<const TypeDefinition>(signature), wasmCalleeInfo](CCallHelpers& jit, const B3::StackmapGenerationParams& params) {
             AllowMacroScratchRegisterUsage allowScratch(jit);
             if (prepareForCall)
                 prepareForCall->run(jit, params);
@@ -6072,7 +6123,8 @@ auto OMGIRGenerator::emitDirectCall(unsigned callProfileIndex, FunctionSpaceInde
             jit.addLinkTask([unlinkedWasmToWasmCalls, call, functionIndexSpace](LinkBuffer& linkBuffer) {
                 unlinkedWasmToWasmCalls->append({ linkBuffer.locationOfNearCall<WasmEntryPtrTag>(call), functionIndexSpace });
             });
-            jit.addPtr(CCallHelpers::TrustedImm32(-params.code().frameSize()), GPRInfo::callFrameRegister, MacroAssembler::stackPointerRegister);
+            if (!isTailCallRootCaller)
+                emitWasmCallStackResultsAndSPRestore(jit, params, signature, wasmCalleeInfo);
         });
     };
 

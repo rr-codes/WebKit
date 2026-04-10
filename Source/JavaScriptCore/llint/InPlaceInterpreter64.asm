@@ -11009,33 +11009,18 @@ _wasm_trampoline_wasm_ipint_call_wide32:
 _wasm_ipint_call_return_location:
 _wasm_ipint_call_return_location_wide16:
 _wasm_ipint_call_return_location_wide32:
-    # Restore the stack pointer
+    # Compute sc3 (pointing to saved caller info) using the saved SP value,
+    # without restoring SP yet. We need callee's SP to read stack results
+    # which are at the bottom of the arg/result area (SP + headerSize).
+    loadi IPInt::CallReturnMetadata::stackFrameSize[MC], sc3
     loadp ThisArgumentOffset[cfr], sc0
     addp cfr, sc0
-    move sc0, sp
-
-    # <first non-arg>   <- first_non_arg_addr
-    # arg
-    # ...
-    # arg
-    # arg
-    # reserved
-    # reserved
-    # (first_non_arg_addr - cfr), PC
-    # (PL - cfr), wasmInstance  <- sc3
-    # call frame return
-    # call frame return
-    # call frame
-    # call frame
-    # call frame
-    # call frame        <- sp
-
-    loadi IPInt::CallReturnMetadata::stackFrameSize[MC], sc3
-    leap [sp, sc3], sc3
+    addp sc0, sc3
 
     const mintRetSrc = sc1
     const mintRetDst = sc2
 
+    # mintRetSrc: read stack results from the callee's SP (current SP)
     loadi IPInt::CallReturnMetadata::firstStackResultSPOffset[MC], mintRetSrc
     advanceMC(IPInt::CallReturnMetadata::resultBytecode)
     leap [sp, mintRetSrc], mintRetSrc
@@ -11186,12 +11171,10 @@ mintAlign(_end)
     # return result     <- mintRetDst => new SP
     # (first_non_arg_addr - cfr), PC
     # (PL - cfr), wasmInstance  <- sc3
-    # call frame return <- mintRetSrc
-    # call frame return
     # call frame
     # call frame
     # call frame
-    # call frame        <- sp
+    # call frame        <- callee's SP (not yet restored)
 
     # note: we don't care about t3 anymore
 if ARM64 or ARM64E
