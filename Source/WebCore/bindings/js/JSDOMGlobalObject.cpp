@@ -596,7 +596,7 @@ static JSC::JSPromise* handleResponseOnStreamingAction(JSC::JSGlobalObject* glob
         }
     }
 
-    auto compiler = JSC::Wasm::StreamingCompiler::create(vm, compilerMode, globalObject, jsCast<JSC::JSPromise*>(deferred->promise()), importObject, WTF::move(compileOptions), JSC::makeSource("handleResponseOnStreamingAction"_s, JSC::SourceOrigin(), JSC::SourceTaintedOrigin::Untainted));
+    auto compiler = JSC::Wasm::StreamingCompiler::create(vm, compilerMode, globalObject, jsCast<JSC::JSPromise*>(deferred->promise()), importObject, WTF::move(compileOptions), JSC::makeSource("handleResponseOnStreamingAction"_s, JSC::SourceOrigin(), JSC::SourceTaintedOrigin::Untainted), inputResponse->url());
 
     if (inputResponse->isBodyReceivedByChunk()) {
         inputResponse->consumeBodyReceivedByChunk([globalObject, compiler = WTF::move(compiler)](auto&& result) mutable {

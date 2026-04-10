@@ -2083,6 +2083,58 @@ class SwiftWasmDynamicModuleLoadTestCase(BaseTestCase):
         self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "func_b"])
 
 
+class ModuleNamingFromNameSectionTestCase(BaseTestCase):
+
+    def __init__(self, build_config: str = None, port: int = None):
+        super().__init__(build_config, port)
+
+    def execute(self):
+        self.setup_debugging_session_or_raise("resources/wasm/named-streaming-module.js", extra_jsc_options=["--useDollarVM=1"])
+
+        try:
+            self.test()
+
+        except Exception as e:
+            raise Exception(f"Test failed: {e}")
+
+    def test(self):
+        self.send_lldb_command_or_raise("image list", patterns=["mymodule"])
+
+        # Set a breakpoint at func_a's 'end' instruction by virtual address.
+        self.send_lldb_command_or_raise("b 0x4000000000000023", patterns=["Breakpoint 1"])
+
+        # Resume: stops at the breakpoint; disassembly confirms the module name in the frame.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "->  0x4000000000000023: end"])
+
+        self.send_lldb_command_or_raise("br del -f", patterns=["All breakpoints removed. (1 breakpoint)"])
+
+
+class StreamingModuleSourceURLTestCase(BaseTestCase):
+
+    def __init__(self, build_config: str = None, port: int = None):
+        super().__init__(build_config, port)
+
+    def execute(self):
+        self.setup_debugging_session_or_raise("resources/wasm/url-named-streaming-module.js", extra_jsc_options=["--useDollarVM=1"])
+
+        try:
+            self.test()
+
+        except Exception as e:
+            raise Exception(f"Test failed: {e}")
+
+    def test(self):
+        self.send_lldb_command_or_raise("image list", patterns=["cdn.example.com/path/canvaskit.wasm"])
+
+        # Set a breakpoint at func_b's 'end' instruction by virtual address.
+        self.send_lldb_command_or_raise("b 0x4000000000000023", patterns=["Breakpoint 1"])
+
+        # Resume: stops at the breakpoint in the URL-named streaming-compiled module.
+        self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "->  0x4000000000000023: end"])
+
+        self.send_lldb_command_or_raise("br del -f", patterns=["All breakpoints removed. (1 breakpoint)"])
+
+
 class StreamingModuleLoadTestCase(BaseTestCase):
 
     def __init__(self, build_config: str = None, port: int = None):

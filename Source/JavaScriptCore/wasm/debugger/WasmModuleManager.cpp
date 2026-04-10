@@ -43,6 +43,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include <wtf/HexNumber.h>
 #include <wtf/IterationStatus.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/URL.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/WTFString.h>
@@ -149,12 +150,44 @@ JSWebAssemblyInstance* ModuleManager::jsInstance(uint32_t instanceId)
     return instance;
 }
 
-static String generateModuleName(VirtualAddress address, const RefPtr<Module>&)
+static String generateModuleName(VirtualAddress address, const RefPtr<Module>& module)
 {
-    // FIXME: Maybe we should generate a more meaningful name?
-    String moduleName = WTF::makeString("wasm_module_0x"_s, address.hex(), ".wasm"_s);
-    dataLogLnIf(Options::verboseWasmDebugger(), "[ModuleManager][generateModuleName] Using fallback address-based name: ", moduleName);
-    return moduleName;
+    // LLDB's `image list` already appends the load address in parentheses, so module
+    // names do not need an address suffix for uniqueness.
+    if (module) {
+        const auto& moduleInfo = module->moduleInformation();
+
+        StringBuilder result;
+
+        const String& sourceURL = moduleInfo.debugInfo->sourceURL;
+        if (!sourceURL.isEmpty()) {
+            // LLDB normalizes "//" -> "/" in library names (FileSpec treats them as paths),
+            // so we strip the URL scheme and store only "host/path" to avoid mangling.
+            URL url { sourceURL };
+            if (url.isValid() && !url.host().isEmpty())
+                result.append(makeString(url.host(), url.path()));
+            else
+                result.append(sourceURL);
+        }
+
+        const auto& rawName = moduleInfo.nameSection->moduleName;
+        if (!rawName.isEmpty()) {
+            if (!result.isEmpty())
+                result.append(':');
+            result.append(rawName.span());
+        }
+
+        if (!result.isEmpty()) {
+            String name = result.toString();
+            dataLogLnIf(Options::verboseWasmDebugger(), "[ModuleManager][generateModuleName] ", name);
+            return name;
+        }
+    }
+
+    // Fallback for modules with neither a name section nor a response URL.
+    String fallback = WTF::makeString("0x"_s, address.hex(), ".wasm"_s);
+    dataLogLnIf(Options::verboseWasmDebugger(), "[ModuleManager][generateModuleName] fallback: ", fallback);
+    return fallback;
 }
 
 String ModuleManager::generateLibrariesXML() const
