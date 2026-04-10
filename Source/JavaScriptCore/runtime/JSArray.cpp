@@ -259,7 +259,7 @@ bool JSArray::put(JSCell* cell, JSGlobalObject* globalObject, PropertyName prope
         RETURN_IF_EXCEPTION(scope, false);
         double valueAsNumber = value.toNumber(globalObject);
         RETURN_IF_EXCEPTION(scope, false);
-        if (valueAsNumber != static_cast<double>(newLength)) {
+        if (valueAsNumber != static_cast<double>(newLength)) [[unlikely]] {
             throwException(globalObject, scope, createRangeError(globalObject, "Invalid array length"_s));
             return false;
         }

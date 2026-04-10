@@ -313,6 +313,7 @@ PutByStatus PutByStatus::computeForPropertyInlineCache
             case AccessCase::CustomValueSetter:
                 return PutByStatus(MakesCalls);
 
+            // FIXME: Handle ArrayLengthStore and RegExpLastIndexStore explicitly instead of falling through to default.
             default:
                 return PutByStatus(JSC::slowVersion(summary), *propertyCache);
             }

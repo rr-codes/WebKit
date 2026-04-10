@@ -1053,8 +1053,18 @@ static InlineCacheAction tryCachePutBy(JSGlobalObject* globalObject, CodeBlock* 
 
         JSCell* baseCell = baseValue.asCell();
 
+        RefPtr<AccessCase> newCase;
+
+        if (propertyName == vm.propertyNames->length) {
+            if (baseCell->type() == ArrayType)
+                newCase = AccessCase::create(vm, codeBlock, AccessCase::ArrayLengthStore, propertyName);
+        } else if (propertyName == vm.propertyNames->lastIndex) {
+            if (jsDynamicCast<RegExpObject*>(baseCell))
+                newCase = AccessCase::create(vm, codeBlock, AccessCase::RegExpLastIndexStore, propertyName);
+        }
+
         bool isProxyObject = baseCell->type() == ProxyObjectType;
-        if (!isProxyObject) {
+        if (!newCase && !isProxyObject) {
             if (!slot.isCacheablePut() && !slot.isCacheableCustom() && !slot.isCacheableSetter())
                 return GiveUpOnCache;
 
@@ -1101,13 +1111,6 @@ static InlineCacheAction tryCachePutBy(JSGlobalObject* globalObject, CodeBlock* 
             case PutByKind::ByValDirectSloppy:
                 break;
             }
-        }
-
-        RefPtr<AccessCase> newCase;
-
-        if (propertyName == vm.propertyNames->lastIndex) {
-            if (jsDynamicCast<RegExpObject*>(baseCell))
-                newCase = AccessCase::create(vm, codeBlock, AccessCase::RegExpLastIndexStore, propertyName);
         }
 
         if (!newCase && slot.base() == baseValue && slot.isCacheablePut()) {
@@ -1209,7 +1212,7 @@ static InlineCacheAction tryCachePutBy(JSGlobalObject* globalObject, CodeBlock* 
 
                 newCase = AccessCase::createTransition(vm, codeBlock, propertyName, offset, oldStructure, newStructure, conditionSet, WTF::move(prototypeAccessChain), propertyCache);
             }
-        } else if (slot.isCacheableCustom() || slot.isCacheableSetter()) {
+        } else if (!newCase && (slot.isCacheableCustom() || slot.isCacheableSetter())) {
             if (slot.isCacheableCustom()) {
                 ObjectPropertyConditionSet conditionSet;
                 RefPtr<PolyProtoAccessChain> prototypeAccessChain;

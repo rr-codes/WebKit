@@ -260,6 +260,7 @@ static bool NODELETE needsScratchFPR(AccessCase::AccessType type)
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::ModuleNamespaceLoad:
     case AccessCase::ProxyObjectIn:
     case AccessCase::ProxyObjectLoad:
@@ -397,6 +398,7 @@ static bool NODELETE forInBy(AccessCase::AccessType type)
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::CheckPrivateBrand:
     case AccessCase::SetPrivateBrand:
     case AccessCase::IndexedMegamorphicLoad:
@@ -582,6 +584,7 @@ static bool NODELETE isStateless(AccessCase::AccessType type)
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::IndexedProxyObjectLoad:
     case AccessCase::IndexedMegamorphicLoad:
     case AccessCase::IndexedMegamorphicStore:
@@ -734,6 +737,7 @@ bool NODELETE doesJSCalls(AccessCase::AccessType type)
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::IndexedMegamorphicLoad:
     case AccessCase::IndexedMegamorphicStore:
     case AccessCase::IndexedInt32Load:
@@ -887,6 +891,7 @@ static bool NODELETE isMegamorphic(AccessCase::AccessType type)
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::IndexedInt32Load:
     case AccessCase::IndexedDoubleLoad:
     case AccessCase::IndexedContiguousLoad:
@@ -1030,6 +1035,7 @@ bool canBeViaGlobalProxy(AccessCase::AccessType type)
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::IndexedMegamorphicLoad:
     case AccessCase::IndexedMegamorphicStore:
     case AccessCase::IndexedInt32Load:
@@ -2020,6 +2026,49 @@ void InlineCacheCompiler::generateWithGuard(unsigned index, AccessCase& accessCa
         fallThrough.append(jit.branchIfNotType(baseGPR, RegExpObjectType));
         jit.loadValue(CCallHelpers::Address(baseGPR, RegExpObject::offsetOfLastIndex()), valueRegs);
         succeed();
+        return;
+    }
+
+    case AccessCase::ArrayLengthStore: {
+        ASSERT(!accessCase.viaGlobalProxy());
+
+        // FIXME: Support DoubleShape by clearing with PNaN instead of empty JSValue.
+        jit.load8(CCallHelpers::Address(baseGPR, JSCell::indexingTypeAndMiscOffset()), scratchGPR);
+        jit.and32(CCallHelpers::TrustedImm32(IndexingModeMask), scratchGPR);
+        auto isInt32 = jit.branch32(CCallHelpers::Equal, scratchGPR, CCallHelpers::TrustedImm32(IsArray | Int32Shape));
+        fallThrough.append(jit.branch32(CCallHelpers::NotEqual, scratchGPR, CCallHelpers::TrustedImm32(IsArray | ContiguousShape)));
+        isInt32.link(&jit);
+
+        m_failAndIgnore.append(jit.branchIfNotInt32(valueRegs));
+
+        auto allocator = makeDefaultScratchAllocator(scratchGPR);
+        GPRReg scratch2GPR = allocator.allocateScratchGPR();
+        ScratchRegisterAllocator::PreservedState preservedState = allocator.preserveReusedRegistersByPushing(jit, ScratchRegisterAllocator::ExtraStackSpace::NoExtraSpace);
+
+        CCallHelpers::JumpList failAndIgnore;
+
+        jit.loadPtr(CCallHelpers::Address(baseGPR, JSObject::butterflyOffset()), scratchGPR);
+        jit.load32(CCallHelpers::Address(scratchGPR, Butterfly::offsetOfPublicLength()), scratch2GPR);
+        failAndIgnore.append(jit.branch32(CCallHelpers::Above, valueRegs.payloadGPR(), scratch2GPR));
+
+        auto loopStart = jit.label();
+        auto loopDone = jit.branch32(CCallHelpers::BelowOrEqual, scratch2GPR, valueRegs.payloadGPR());
+        jit.sub32(CCallHelpers::TrustedImm32(1), scratch2GPR);
+        jit.storeTrustedValue(JSValue(), CCallHelpers::BaseIndex(scratchGPR, scratch2GPR, CCallHelpers::TimesEight));
+        jit.jump().linkTo(loopStart, &jit);
+        loopDone.link(&jit);
+
+        jit.store32(valueRegs.payloadGPR(), CCallHelpers::Address(scratchGPR, Butterfly::offsetOfPublicLength()));
+
+        allocator.restoreReusedRegistersByPopping(jit, preservedState);
+        succeed();
+
+        if (allocator.didReuseRegisters()) {
+            failAndIgnore.link(&jit);
+            allocator.restoreReusedRegistersByPopping(jit, preservedState);
+            m_failAndIgnore.append(jit.jump());
+        } else
+            m_failAndIgnore.append(failAndIgnore);
         return;
     }
 
@@ -3944,6 +3993,7 @@ void InlineCacheCompiler::generateAccessCase(unsigned index, AccessCase& accessC
     case AccessCase::ScopedArgumentsLength:
     case AccessCase::RegExpLastIndexLoad:
     case AccessCase::RegExpLastIndexStore:
+    case AccessCase::ArrayLengthStore:
     case AccessCase::ModuleNamespaceLoad:
     case AccessCase::ProxyObjectIn:
     case AccessCase::ProxyObjectLoad:
