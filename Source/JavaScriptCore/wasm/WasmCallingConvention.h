@@ -187,57 +187,6 @@ private:
         RELEASE_ASSERT_NOT_REACHED();
     }
 
-    uint32_t numberOfStackResults(const FunctionSignature& signature) const
-    {
-        const uint32_t gprCount = jsrArgs.size();
-        const uint32_t fprCount = fprArgs.size();
-        uint32_t gprIndex = 0;
-        uint32_t fprIndex = 0;
-        uint32_t stackCount = 0;
-        for (uint32_t i = 0; i < signature.returnCount(); i++) {
-            switch (signature.returnType(i).kind) {
-            case TypeKind::I32:
-            case TypeKind::I64:
-            case TypeKind::Exnref:
-            case TypeKind::Externref:
-            case TypeKind::Funcref:
-            case TypeKind::RefNull:
-            case TypeKind::Ref:
-                if (gprIndex < gprCount)
-                    ++gprIndex;
-                else
-                    ++stackCount;
-                break;
-            case TypeKind::F32:
-            case TypeKind::F64:
-            case TypeKind::V128:
-                if (fprIndex < fprCount)
-                    ++fprIndex;
-                else
-                    ++stackCount;
-                break;
-            case TypeKind::Void:
-            case TypeKind::Func:
-            case TypeKind::Struct:
-            case TypeKind::Structref:
-            case TypeKind::Array:
-            case TypeKind::Arrayref:
-            case TypeKind::Eqref:
-            case TypeKind::Anyref:
-            case TypeKind::Noexnref:
-            case TypeKind::Noneref:
-            case TypeKind::Nofuncref:
-            case TypeKind::Noexternref:
-            case TypeKind::I31ref:
-            case TypeKind::Sub:
-            case TypeKind::Subfinal:
-            case TypeKind::Rec:
-                RELEASE_ASSERT_NOT_REACHED();
-            }
-        }
-        return stackCount;
-    }
-
 public:
 
     CallInformation callInformationFor(const TypeDefinition& type, CallRole role = CallRole::Caller) const
@@ -262,22 +211,17 @@ public:
             [&](unsigned index) {
                 return marshallLocation(role, signature.argumentType(index), gpArgumentCount, fpArgumentCount, argStackOffset);
             });
-        uint32_t stackArgsInBytes = argStackOffset - headerSize;
 
         gpArgumentCount = 0;
         fpArgumentCount = 0;
-        size_t stackResults = numberOfStackResults(signature);
-        // N.B. this is inaccurate for vector results. In that case and when the actual result space is larger than the argument space, there is a quirk in
-        // the calling convention where the argument and result space is not minimal, i.e. arguments and results don't overlap as much as they could.
-        uint32_t estimatedStackResultsInBytes = stackResults * sizeof(Register);
-        uint32_t estimatedTotalArgAndResultsInBytes = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(std::max(stackArgsInBytes, estimatedStackResultsInBytes));
-        size_t resultStackOffset = headerSize + estimatedTotalArgAndResultsInBytes - estimatedStackResultsInBytes;
+        size_t resultStackOffset = headerSize;
         Vector<ArgumentLocation, 1> results(signature.returnCount(),
             [&](unsigned index) {
                 return marshallLocation(role, signature.returnType(index), gpArgumentCount, fpArgumentCount, resultStackOffset);
             });
-        size_t totalFrameSize = resultStackOffset;
-        ASSERT(totalFrameSize >= argStackOffset);
+
+        ASSERT(!(headerSize % stackAlignmentBytes()));
+        size_t totalFrameSize = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(std::max(argStackOffset, resultStackOffset));
 
         return { thisArgument, WTF::move(params), WTF::move(results), totalFrameSize, headerSize };
     }
@@ -550,21 +494,17 @@ public:
                 ASSERT(!argumentType.isV128());
                 return marshallLocation(role, argumentType, gpArgumentCount, fpArgumentCount, argStackOffset);
             });
-        uint32_t stackArgs = argStackOffset - headerSize;
-        size_t stackArgsCount = numberOfStackArguments(signature);
 
         gpArgumentCount = 0;
         fpArgumentCount = 0;
-        size_t stackResultsCount = numberOfStackResults(signature);
-        uint32_t stackResults = stackResultsCount * sizeof(Register);
-        uint32_t stackCountAligned = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(std::max(stackArgs, stackResults));
-        size_t resultStackOffset = headerSize + stackCountAligned - stackResults;
+        size_t resultStackOffset = headerSize;
         Vector<ArgumentLocation, 1> results(signature.returnCount(),
             [&](unsigned index) {
                 ASSERT(!signature.returnType(index).isV128());
                 return marshallLocation(role, signature.returnType(index), gpArgumentCount, fpArgumentCount, resultStackOffset);
             });
-        return { thisArgument, WTF::move(params), WTF::move(results), std::max(argStackOffset, resultStackOffset), std::max(stackArgsCount, stackResultsCount) };
+        size_t totalFrameSize = headerSize + WTF::roundUpToMultipleOf<stackAlignmentBytes()>(std::max(argStackOffset - headerSize, resultStackOffset - headerSize));
+        return { thisArgument, WTF::move(params), WTF::move(results), totalFrameSize, headerSize };
     }
 
     const Vector<GPRReg> gprArgs;

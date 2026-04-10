@@ -4344,20 +4344,6 @@ void BBQJIT::returnValuesFromCall(Vector<Value, N>& results, const FunctionSigna
             ASSERT(!currentBinding.isScratch());
         } else {
             ASSERT(returnLocation.isStackArgument());
-            // FIXME: Ideally, we would leave these values where they are but a subsequent call could clobber them before they are used.
-            // That said, stack results are very rare so this isn't too painful.
-            // Even if we did leave them where they are, we'd need to flush them to their canonical location at the next branch otherwise
-            // we could have something like (assume no result regs for simplicity):
-            // call (result i32 i32) $foo
-            // if (result i32) // Stack: i32(StackArgument:8) i32(StackArgument:0)
-            //   // Stack: i32(StackArgument:8)
-            // else
-            //   call (result i32 i32) $bar // Stack: i32(StackArgument:8) we have to flush the stack argument to make room for the result of bar
-            //   drop // Stack: i32(Stack:X) i32(StackArgument:8) i32(StackArgument:0)
-            //   drop // Stack: i32(Stack:X) i32(StackArgument:8)
-            // end
-            // return // Stack i32(*Conflicting locations*)
-
             Location canonicalLocation = canonicalSlot(result);
             emitMoveMemory(result.type(), returnLocation, canonicalLocation);
             returnLocation = canonicalLocation;
@@ -4521,7 +4507,11 @@ void BBQJIT::emitTailCall(FunctionSpaceIndex functionIndexSpace, const TypeDefin
         });
     }
 
-    // Our callee could have tail called someone else and changed SP so we need to restore it. Do this before restoring our results since results are stored at the top of the reserved stack space.
+    // Push return value(s) onto the expression stack. Read results before restoring SP
+    // since results are at the bottom of the arg/result area, addressable from the callee's SP.
+    returnValuesFromCall(results, functionType, callInfo);
+
+    // Our callee could have tail called someone else and changed SP so we need to restore it.
     m_frameSizeLabels.append(m_jit.moveWithPatch(TrustedImmPtr(nullptr), wasmScratchGPR));
 #if CPU(ARM64)
     m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, MacroAssembler::stackPointerRegister);
@@ -4529,9 +4519,6 @@ void BBQJIT::emitTailCall(FunctionSpaceIndex functionIndexSpace, const TypeDefin
     m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, wasmScratchGPR);
     m_jit.move(wasmScratchGPR, MacroAssembler::stackPointerRegister);
 #endif
-
-    // Push return value(s) onto the expression stack
-    returnValuesFromCall(results, functionType, callInfo);
 
     if (m_info.callCanClobberInstance(functionIndexSpace) || m_info.isImportedFunctionFromFunctionIndexSpace(functionIndexSpace))
         restoreWebAssemblyGlobalStateAfterWasmCall();
@@ -4604,8 +4591,12 @@ void BBQJIT::emitIndirectCall(const char* opcode, unsigned callProfileIndex, con
     m_jit.loadPtr(CCallHelpers::Address(importableFunction, WasmToWasmImportableFunction::offsetOfEntrypointLoadLocation()), wasmScratchGPR);
     m_jit.call(CCallHelpers::Address(wasmScratchGPR), WasmEntryPtrTag);
 
-    // Our callee could have tail called someone else and changed SP so we need to restore it. Do this before restoring our results since results are stored at the top of the reserved stack space.
+    // Read results before restoring SP since results are at the bottom of the
+    // arg/result area, addressable from the callee's SP.
     afterCall.link(m_jit);
+    returnValuesFromCall(results, *signature.as<FunctionSignature>(), wasmCalleeInfo);
+
+    // Our callee could have tail called someone else and changed SP so we need to restore it.
     m_frameSizeLabels.append(m_jit.moveWithPatch(TrustedImmPtr(nullptr), wasmScratchGPR));
 #if CPU(ARM64)
     m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, MacroAssembler::stackPointerRegister);
@@ -4613,8 +4604,6 @@ void BBQJIT::emitIndirectCall(const char* opcode, unsigned callProfileIndex, con
     m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, wasmScratchGPR);
     m_jit.move(wasmScratchGPR, MacroAssembler::stackPointerRegister);
 #endif
-
-    returnValuesFromCall(results, *signature.as<FunctionSignature>(), wasmCalleeInfo);
 
     restoreWebAssemblyGlobalStateAfterWasmCall();
 
