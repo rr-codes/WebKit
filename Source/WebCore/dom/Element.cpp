@@ -4773,7 +4773,7 @@ const RenderStyle* Element::resolveComputedStyle(ResolveComputedStyleMode mode)
     return computedStyle;
 }
 
-const RenderStyle* Element::resolvePseudoElementStyle(const Style::PseudoElementIdentifier& pseudoElementIdentifier)
+const RenderStyle& Element::resolvePseudoElementStyle(const Style::PseudoElementIdentifier& pseudoElementIdentifier)
 {
     ASSERT(!isPseudoElement());
 
@@ -4786,8 +4786,6 @@ const RenderStyle* Element::resolvePseudoElementStyle(const Style::PseudoElement
 
     auto style = document->styleForElementIgnoringPendingStylesheets(*this, parentStyle.get(), pseudoElementIdentifier);
     if (!style) {
-        if (pseudoElementIdentifier.type == PseudoElementType::UserAgentPartFallback)
-            return nullptr;
         style = RenderStyle::createPtr();
         style->inheritFrom(*parentStyle);
         style->setPseudoElementIdentifier(pseudoElementIdentifier);
@@ -4796,7 +4794,7 @@ const RenderStyle* Element::resolvePseudoElementStyle(const Style::PseudoElement
     CheckedPtr computedStyle = style.get();
     const_cast<RenderStyle*>(parentStyle.get())->addCachedPseudoStyle(WTF::move(style));
     ASSERT(parentStyle->getCachedPseudoStyle(pseudoElementIdentifier));
-    return computedStyle.unsafeGet();
+    return *computedStyle.unsafeGet();
 }
 
 const RenderStyle* Element::computedStyle(const std::optional<Style::PseudoElementIdentifier>& pseudoElementIdentifier)
@@ -4817,7 +4815,7 @@ const RenderStyle* Element::computedStyle(const std::optional<Style::PseudoEleme
     if (pseudoElementIdentifier) {
         if (auto* cachedPseudoStyle = style->getCachedPseudoStyle(*pseudoElementIdentifier))
             return cachedPseudoStyle;
-        return resolvePseudoElementStyle(*pseudoElementIdentifier);
+        return &resolvePseudoElementStyle(*pseudoElementIdentifier);
     }
 
     return style.unsafeGet();
