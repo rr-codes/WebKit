@@ -864,7 +864,7 @@ static IterationStatus forEachCALayer(CALayer *layer, IterationStatus(^visitor)(
 #ifdef __cplusplus
 
 @implementation TestMessageHandler {
-    NSMutableDictionary<NSString *, dispatch_block_t> *_messageHandlers;
+    RetainPtr<NSMutableDictionary<NSString *, dispatch_block_t>> _messageHandlers;
     RetainPtr<NSMutableArray<NSString *>> _receivedMessages;
 }
 
@@ -873,7 +873,7 @@ static IterationStatus forEachCALayer(CALayer *layer, IterationStatus(^visitor)(
     if (!_messageHandlers)
         _messageHandlers = [NSMutableDictionary dictionary];
 
-    _messageHandlers[message] = adoptNS([handler copy]).autorelease();
+    _messageHandlers.get()[message] = adoptNS([handler copy]).autorelease();
 }
 
 - (void)removeMessage:(NSString *)message
@@ -887,7 +887,7 @@ static IterationStatus forEachCALayer(CALayer *layer, IterationStatus(^visitor)(
         _receivedMessages = adoptNS([[NSMutableArray alloc] init]);
     [_receivedMessages addObject:message.body];
 
-    if (dispatch_block_t handler = _messageHandlers[message.body])
+    if (dispatch_block_t handler = _messageHandlers.get()[message.body])
         handler();
     if (_didReceiveScriptMessage)
         _didReceiveScriptMessage(message.body);
