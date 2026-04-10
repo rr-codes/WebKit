@@ -1819,6 +1819,7 @@ std::pair<LayoutUnit, LayoutUnit> RenderFlexibleBox::computeFlexItemMinMaxSizes(
 
         if (flexItemHasAspectRatio(flexItem))
             contentSize = adjustFlexItemSizeForAspectRatioCrossAxisMinAndMax(flexItem, contentSize);
+        contentSize = std::max(0_lu, contentSize);
         ASSERT(contentSize >= 0);
         contentSize = std::min(contentSize, maxExtent.value_or(contentSize));
         
