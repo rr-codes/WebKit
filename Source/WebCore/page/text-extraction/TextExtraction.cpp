@@ -1645,15 +1645,15 @@ static void dispatchSimulatedClick(LocalFrame& frame, IntPoint location, Complet
 {
     frame.eventHandler().handleMouseMoveEvent({
         location, location, MouseButton::Left, PlatformEvent::Type::MouseMoved, 0, { }, MonotonicTime::now(), ForceAtClick, SyntheticClickType::NoTap, MouseEventInputSource::UserDriven
-    });
+    }, nullptr, false, HitTestRequest::Type::IgnoreClipping);
 
     frame.eventHandler().handleMousePressEvent({
         location, location, MouseButton::Left, PlatformEvent::Type::MousePressed, 1, { }, MonotonicTime::now(), ForceAtClick, SyntheticClickType::NoTap, MouseEventInputSource::UserDriven
-    });
+    }, HitTestRequest::Type::IgnoreClipping);
 
     frame.eventHandler().handleMouseReleaseEvent({
         location, location, MouseButton::Left, PlatformEvent::Type::MouseReleased, 1, { }, MonotonicTime::now(), ForceAtClick, SyntheticClickType::NoTap, MouseEventInputSource::UserDriven
-    });
+    }, HitTestRequest::Type::IgnoreClipping);
 
     completion(true, { });
 }
@@ -1672,6 +1672,7 @@ static Node* findNodeAtRootViewLocation(const LocalFrameView& view, Document& do
     static constexpr OptionSet defaultHitTestOptions {
         HitTestRequest::Type::ReadOnly,
         HitTestRequest::Type::DisallowUserAgentShadowContent,
+        HitTestRequest::Type::IgnoreClipping,
     };
 
     HitTestResult result { view.rootViewToContents(roundedIntPoint(locationInRootView)) };
