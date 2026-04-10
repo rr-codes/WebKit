@@ -164,7 +164,7 @@ struct StopData {
 struct DebugState {
     WTF_MAKE_STRUCT_TZONE_ALLOCATED(DebugState);
 
-    // Why the VM stopped. Always set when isStopped(). Drives GDB wire protocol signal and reason.
+    // Why the VM stopped. Always set when isStopped. Drives GDB wire protocol signal and reason.
     enum class Reason : uint8_t {
         // Debugger-imposed stop: passive VM (no WASM context) or WASM function prologue.
         // Also used for new module load stops (isNewModuleLoad flag is set in that case).
@@ -234,18 +234,18 @@ struct DebugState {
     {
         stopReason = std::nullopt;
         isNewModuleLoad = false;
+        isStopped = false;
         stopData = nullptr;
     }
 
-    // No-op for the debuggee VM (stopReason already set); sets Interrupted on VMs with no stop reason.
     void setStopped()
     {
+        // Sets Interrupted on VMs with no stop reason.
         if (!stopReason.has_value())
             stopReason = Reason::Interrupted;
+        isStopped = true;
     }
 
-    bool isStopped() const { return stopReason.has_value(); }
-    bool isRunning() const { return !stopReason.has_value(); }
 
     bool hasStepIntoEvent() { return stepIntoEvent.hasAny(); }
     void setStepIntoCall() { stepIntoEvent.set(StepIntoEvent::StepIntoCall); }
@@ -255,6 +255,7 @@ struct DebugState {
 
     std::optional<Reason> stopReason;
     bool isNewModuleLoad { false };
+    bool isStopped { false }; // FIXME: There is better design (rdar://174508321) for code efficiency.
     std::unique_ptr<StopData> stopData { nullptr };
 
     // Step-into tracking (for step debugging behavior)

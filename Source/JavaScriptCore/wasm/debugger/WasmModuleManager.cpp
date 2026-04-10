@@ -145,7 +145,7 @@ JSWebAssemblyInstance* ModuleManager::jsInstance(uint32_t instanceId)
         return nullptr;
     }
 
-    RELEASE_ASSERT(instance->vm().debugState()->isStopped(), "Instance exists but VM is not stopped");
+    RELEASE_ASSERT(instance->vm().debugState()->isStopped, "Instance exists but VM is not stopped");
     return instance;
 }
 

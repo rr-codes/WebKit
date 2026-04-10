@@ -245,8 +245,8 @@ StopTheWorldStatus ExecutionHandler::handleStopTheWorld(VM& debuggee, StopTheWor
         return STW_RESUME_ALL();
     case ExecutionHandler::ResumeMode::Switch:
         RELEASE_ASSERT(m_debuggee != &debuggee);
-        RELEASE_ASSERT(debuggee.debugState()->isStopped());
-        RELEASE_ASSERT(m_debuggee->debugState()->isStopped());
+        RELEASE_ASSERT(debuggee.debugState()->isStopped);
+        RELEASE_ASSERT(m_debuggee->debugState()->isStopped);
         return STW_CONTEXT_SWITCH(m_debuggee);
     }
     RELEASE_ASSERT_NOT_REACHED();
@@ -264,7 +264,7 @@ void ExecutionHandler::selectDebuggeeIfNeeded(VM& fallbackVM) WTF_REQUIRES_LOCK(
     VM* selectedVM = nullptr;
     VMManager::forEachVM([&](VM& vm) {
         auto* debugState = vm.debugState();
-        if (vm.debugState()->isStopped() && debugState->isStoppedAtPrologue()) {
+        if (vm.debugState()->isStopped && debugState->isStoppedAtPrologue()) {
             selectedVM = &vm;
             return IterationStatus::Done;
         }
@@ -324,7 +324,7 @@ void ExecutionHandler::resumeImpl(Locker<Lock>& locker)
     RELEASE_ASSERT(Thread::currentSingleton().uid() == debugServerThreadId());
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger][Continue] Start");
 
-    RELEASE_ASSERT(debuggeeState()->isStopped());
+    RELEASE_ASSERT(debuggeeState()->isStopped);
     m_debuggerState = DebuggerState::ContinueRequested;
     m_debuggeeContinue.notifyOne(); // Notify debuggee VM with resume all command.
 
@@ -344,7 +344,7 @@ static inline VM* findVM(uint64_t threadId)
 {
     VM* result = nullptr;
     VMManager::forEachVM([&](VM& vm) {
-        if (vm.debugState()->isStopped() && threadId == ExecutionHandler::threadId(vm)) {
+        if (vm.debugState()->isStopped && threadId == ExecutionHandler::threadId(vm)) {
             result = &vm;
             return IterationStatus::Done;
         }
@@ -365,14 +365,14 @@ void ExecutionHandler::switchTarget(uint64_t threadId)
     if (m_debuggee == newDebuggee)
         return;
 
-    RELEASE_ASSERT(debuggeeState()->isStopped());
+    RELEASE_ASSERT(debuggeeState()->isStopped);
     m_debuggee = newDebuggee;
     m_debuggerState = DebuggerState::SwitchRequested;
     m_debuggeeContinue.notifyOne(); // Notify to switch VM context.
 
     dataLogLnIf(Options::verboseWasmDebugger(), "[Code][SwitchVM] Notified code to continue and switch VM, waiting...");
     m_debuggerContinue.wait(locker); // Wait for new debuggee VM to stop.
-    RELEASE_ASSERT(debuggeeState()->isStopped());
+    RELEASE_ASSERT(debuggeeState()->isStopped);
     dataLogLnIf(Options::verboseWasmDebugger(), "[Code][SwitchVM] Code is stopped");
 }
 
@@ -389,7 +389,7 @@ void ExecutionHandler::interrupt()
     // Our WebKit implementation handles each interrupt request by activating StopWorld via VM traps.
 
     {
-        RELEASE_ASSERT(!m_debuggee || debuggeeState()->isRunning());
+        RELEASE_ASSERT(!m_debuggee || !debuggeeState()->isStopped);
         m_debuggerState = DebuggerState::InterruptRequested;
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger][Interrupt] Calling VMManager::requestStopAll()...");
         VMManager::singleton().requestStopAll(VMManager::StopReason::WasmDebugger);
@@ -409,7 +409,7 @@ void ExecutionHandler::step()
 
     Locker locker { m_lock };
     auto* state = debuggeeState();
-    RELEASE_ASSERT(m_debuggerState == DebuggerState::Replied && state->isStopped());
+    RELEASE_ASSERT(m_debuggerState == DebuggerState::Replied && state->isStopped);
 
     bool resumeAll = false;
     if (state->isStoppedAtSystemCall() || state->isStoppedDueToWasmTrap()) {
@@ -773,13 +773,13 @@ void ExecutionHandler::sendStopReplyForThread(AbstractLocker& locker, uint64_t t
         return;
     }
 
-    RELEASE_ASSERT(state->isStopped());
+    RELEASE_ASSERT(state->isStopped);
 
     // Collect all stopped threads; swap event thread to index 0 so thread-pcs[i] aligns with threads[i].
     Vector<ThreadInfo> allThreads;
     VMManager::forEachVM([&](VM& vm) {
         auto* state = vm.debugState();
-        if (!state->isStopped())
+        if (!state->isStopped)
             return IterationStatus::Continue;
         uint64_t tid = ExecutionHandler::threadId(vm);
         allThreads.append({ tid, getStopPC(*state), getThreadName(*state, tid), stopReasonToInfo(*state).reasonSuffix });
@@ -891,7 +891,7 @@ void ExecutionHandler::reset()
     Locker locker { m_lock };
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Handling client disconnection in ExecutionHandler");
 
-    if (m_debuggee && debuggeeState()->isStopped())
+    if (m_debuggee && debuggeeState()->isStopped)
         resumeImpl(locker);
 
     m_breakpointManager->clearAllBreakpoints();
@@ -938,7 +938,7 @@ String ExecutionHandler::callStackStringFor(uint64_t threadId)
     }
 
     auto* state = targetVM->debugState();
-    RELEASE_ASSERT(state->isStopped());
+    RELEASE_ASSERT(state->isStopped);
 
     if (state->stopData) {
         auto& stopData = *state->stopData;

@@ -105,7 +105,7 @@ static void validateStop()
     CHECK(info.targetVM == executionHandler->debuggeeVM(), "VMManager's targetVM should match ExecutionHandler's debuggee VM");
     uint32_t stoppedCount = 0;
     VMManager::forEachVM([&](VM& vm) {
-        CHECK(vm.debugState()->isStopped(), "VM should be stopped");
+        CHECK(vm.debugState()->isStopped, "VM should be stopped");
         stoppedCount++;
         return IterationStatus::Continue;
     });
@@ -125,7 +125,7 @@ static void resume()
     CHECK(info.worldMode == VMManager::Mode::RunAll, "All VMs should be running");
     uint32_t runningCount = 0;
     VMManager::forEachVM([&](VM& vm) {
-        CHECK(vm.debugState()->isRunning(), "VM should be running");
+        CHECK(!vm.debugState()->isStopped, "VM should be running");
         runningCount++;
         return IterationStatus::Continue;
     });
