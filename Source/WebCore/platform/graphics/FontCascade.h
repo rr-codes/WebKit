@@ -165,7 +165,6 @@ public:
 
     int emphasisMarkAscent(const AtomString&) const;
     int emphasisMarkDescent(const AtomString&) const;
-    int emphasisMarkHeight(const AtomString&) const;
     float floatEmphasisMarkHeight(const AtomString&) const;
 
     inline const Font& primaryFont() const; // Defined in FontCascadeInlines.h

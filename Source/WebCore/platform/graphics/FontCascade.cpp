@@ -1469,13 +1469,6 @@ const Font* FontCascade::fontForEmphasisMark(const AtomString& mark) const
     return markGlyphData->font.get();
 }
 
-int FontCascade::emphasisMarkHeight(const AtomString& mark) const
-{
-    if (RefPtr font = fontForEmphasisMark(mark))
-        return font->fontMetrics().intHeight();
-    return { };
-}
-
 float FontCascade::floatEmphasisMarkHeight(const AtomString& mark) const
 {
     if (RefPtr font = fontForEmphasisMark(mark))
