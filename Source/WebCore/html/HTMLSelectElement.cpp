@@ -700,6 +700,37 @@ void HTMLSelectElement::childrenChanged(const ChildChange& change)
     HTMLFormControlElement::childrenChanged(change);
 }
 
+// Select the given option as the default if no option is explicitly selected.
+// This maintains m_isSelected incrementally during option insertion so that
+// HTMLOptionElement::finishParsingChildren() can use selectedWithoutUpdate()
+// (O(1)) instead of selected() which triggers O(n) recalcListItems().
+void HTMLSelectElement::selectDefaultOptionIfNeeded(HTMLOptionElement& candidate)
+{
+    // The HTML spec only requires a default selection for single-select elements
+    // with size <= 1 (dropdowns). Listboxes (size > 1) and multiple-select
+    // elements may have no selection.
+    // https://html.spec.whatwg.org/C/#selectedness-setting-algorithm
+    if (multiple() || m_size > 1)
+        return;
+
+    // Walk existing options to check if any is already selected, and whether
+    // the candidate is the first non-disabled option. Once any option is
+    // default-selected, subsequent calls find it and return immediately (O(1)).
+    // Use traverseNextSkippingChildren() since <option> elements cannot nest.
+    for (auto it = descendantsOfType<HTMLOptionElement>(*this).begin(); it; it.traverseNextSkippingChildren()) {
+        if (it->selectedWithoutUpdate())
+            return;
+        if (&*it == &candidate) {
+            candidate.setSelectedState(true);
+            return;
+        }
+        // A non-disabled option before the candidate exists — the candidate
+        // is not the first non-disabled option.
+        if (!protect(*it)->isDisabledFormControl())
+            return;
+    }
+}
+
 void HTMLSelectElement::optionElementChildrenChanged()
 {
     setOptionsChangedOnRenderer();

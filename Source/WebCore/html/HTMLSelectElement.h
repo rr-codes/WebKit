@@ -158,6 +158,7 @@ public:
     bool isSupportedPropertyIndex(unsigned index);
 
     void scrollToSelection();
+    void selectDefaultOptionIfNeeded(HTMLOptionElement&);
 
     bool canSelectAll() const { return m_multiple; }
     void selectAll();

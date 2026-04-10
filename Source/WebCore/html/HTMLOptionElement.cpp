@@ -169,6 +169,15 @@ auto HTMLOptionElement::insertionSteps(InsertionType insertionType, ContainerNod
     if (RefPtr select = HTMLSelectElement::findOwnerSelect(parentNode(), HTMLSelectElement::ExcludeOptGroup::No)) {
         m_ownerSelect = select.get();
         select->setRecalcListItems();
+        // If this non-selected option is the first non-disabled option in a
+        // single-select that has no explicitly selected option, select it by
+        // default. This maintains m_isSelected incrementally so that
+        // finishParsingChildren() can use selectedWithoutUpdate() (O(1))
+        // instead of selected() which triggers O(n) recalcListItems().
+        // Only do this during parsing — for API insertions, the existing
+        // childrenChanged → optionToSelectFromChildChangeScope path handles it.
+        if (!select->isFinishedParsingChildren() && !selectedWithoutUpdate() && !m_disabled)
+            select->selectDefaultOptionIfNeeded(*this);
     }
 
     if (insertionType.connectedToDocument && m_shadowTreeNeedsUpdate)
@@ -208,14 +217,25 @@ void HTMLOptionElement::finishParsingChildren()
 
     ASSERT(document().settings().htmlEnhancedSelectParsingEnabled());
 
-    if (m_disabled || !selected())
+    if (m_disabled)
         return;
 
-    RefPtr select = m_ownerSelect.get();
+    RefPtr select = m_ownerSelect;
     if (!select)
         return;
 
-    select->updateSelectedContent();
+    // When the owning <select> is still being parsed, use selectedWithoutUpdate()
+    // instead of selected() to avoid triggering recalcListItems() for each
+    // option, which would be O(n²). The selection state (m_isSelected) is
+    // maintained incrementally at insertion time — see insertionSteps() and
+    // optionToSelectFromChildChangeScope().
+    bool isSelected = select->isFinishedParsingChildren() ? selected() : selectedWithoutUpdate();
+    if (!isSelected)
+        return;
+
+    // Pass `this` to avoid updateSelectedContent() calling listItems() to find
+    // the selected option, which would also trigger recalcListItems().
+    select->updateSelectedContent(this);
 }
 
 bool HTMLOptionElement::supportsFocus() const
