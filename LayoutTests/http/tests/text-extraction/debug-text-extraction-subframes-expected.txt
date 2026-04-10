@@ -6,9 +6,9 @@ root
 				label=Heading 'Hello world'
 				form autocomplete=on
 					label='Sign in with email'
-						input 'email' placeholder='Enter your email'
+						input placeholder='Enter your email'
 						link url=javascript: 'Forgot your email?'
-					input 'password' placeholder='Enter your password' secure
+					input placeholder='Enter your password' secure
 				iframe origin=http://127.0.0.1:8000
 					contentEditable role=textbox focused
 						label=Heading 'Nested subframe'

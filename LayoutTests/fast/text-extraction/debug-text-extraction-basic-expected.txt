@@ -9,18 +9,18 @@ root
         section label='Interactive Elements'
             button uid=… describedby='This button does nothing' label='Test button' 'Click Me' […]
             'This button does nothing' […]
-            input 'text' uid=… […] placeholder='Enter text here'
+            input uid=… […] placeholder='Enter text here'
             uid=… role=button 'Clickable Div' […]
         section label='ARIA Labeling Examples'
             'Name Field' […]
             'Description' […]
-            input 'text' uid=… […] labelledby='Name Field' placeholder='Your name'
+            input uid=… […] labelledby='Name Field' placeholder='Your name'
             role=region labelledby=Description 'This region is labeled by another element.' […]
-            input 'text' uid=… […] labelledby='Name Field' placeholder='Full name'
+            input uid=… […] labelledby='Name Field' placeholder='Full name'
             'User Profile' […]
             role=group labelledby='User Profile'
                 'Username:' […]
-                input 'text' uid=… […] label=Username:
+                input uid=… […] label=Username:
         section label='Content with Roles'
             article role=article
                 'Article Title' […]

@@ -1415,8 +1415,30 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
                 parts.append(WTF::move(tagName));
                 parts.appendVector(partsForItem(item, aggregator, includeRectForParentItem));
 
-                if (!controlData.controlType.isEmpty() && !equalIgnoringASCIICase(controlData.controlType, item.nodeName))
-                    parts.insert(1, makeString('\'', controlData.controlType, '\''));
+                bool shouldIncludeType = [&] {
+                    if (controlData.controlType.isEmpty())
+                        return false;
+
+                    if (equalIgnoringASCIICase(controlData.controlType, item.nodeName))
+                        return false;
+
+                    if (controlData.controlType == "text"_s)
+                        return false;
+
+                    if (controlData.editable.label.containsIgnoringASCIICase(controlData.controlType))
+                        return false;
+
+                    if (controlData.editable.placeholder.containsIgnoringASCIICase(controlData.controlType))
+                        return false;
+
+                    if (controlData.name.containsIgnoringASCIICase(controlData.controlType))
+                        return false;
+
+                    return true;
+                }();
+
+                if (shouldIncludeType)
+                    parts.insert(1, controlData.controlType);
 
                 if (!controlData.autocomplete.isEmpty())
                     parts.append(makeString("autocomplete="_s, quoteValue(controlData.autocomplete, streamlined)));

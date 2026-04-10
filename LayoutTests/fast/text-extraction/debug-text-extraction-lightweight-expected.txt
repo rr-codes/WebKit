@@ -8,7 +8,7 @@ root
     section
         button 'Click Me'
         'This button does nothing'
-        input 'text' placeholder='Enter text here'
+        input placeholder='Enter text here'
         'Clickable Div'
     section
         article

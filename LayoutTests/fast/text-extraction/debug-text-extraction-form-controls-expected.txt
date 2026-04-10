@@ -11,7 +11,7 @@ root
         section label='Interactive Elements'
             button describedby='This button does nothing' label='Test button' 'Click Me'
             'This button does nothing'
-            input 'text' uid=… placeholder='Enter text here'
+            input uid=… placeholder='Enter text here'
             role=button title='Test action' 'Clickable Div'
         section label='Content with Roles'
             article role=article
@@ -33,9 +33,9 @@ root
                     link 'webkit.org'
             form autocomplete=on name=signup
                 'Sign up for our newsletter'
-                input 'text' uid=… placeholder=Username name=username minlength=3 maxlength=20 required
-                input 'text' uid=… placeholder=Email pattern=[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$ name=email required
-                input 'text' uid=… placeholder='Zip Code' pattern=[0-9]{5} name=zipcode minlength=5 maxlength=5
+                input uid=… placeholder=Username name=username minlength=3 maxlength=20 required
+                input uid=… placeholder=Email pattern=[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$ name=email required
+                input uid=… placeholder='Zip Code' pattern=[0-9]{5} name=zipcode minlength=5 maxlength=5
             select uid=…
                 option value=one 'Number 1'
                 option value=two 'Number 2'
