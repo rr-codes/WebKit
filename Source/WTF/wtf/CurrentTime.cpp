@@ -37,14 +37,10 @@
 #include <wtf/ContinuousTime.h>
 #include <wtf/MathExtras.h>
 #include <wtf/MonotonicTime.h>
-#include <wtf/StdLibExtras.h>
 #include <wtf/WallTime.h>
 
 #if OS(DARWIN)
-#include <mach/mach.h>
 #include <mach/mach_time.h>
-#include <mutex>
-#include <sys/time.h>
 #elif OS(WINDOWS)
 #include <windows.h>
 #include <math.h>

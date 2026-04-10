@@ -31,7 +31,6 @@
 #include <sys/mman.h>
 #include <wtf/Assertions.h>
 #include <wtf/DataLog.h>
-#include <wtf/MallocSpan.h>
 #include <wtf/MathExtras.h>
 #include <wtf/MmapSpan.h>
 #include <wtf/PageBlock.h>

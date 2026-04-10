@@ -29,8 +29,6 @@
 #include "config.h"
 
 #include <climits>
-#include <locale>
-#include <cmath>
 
 #include <wtf/dtoa/double-conversion.h>
 

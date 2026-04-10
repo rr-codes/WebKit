@@ -23,7 +23,6 @@
 
 #if USE(CF)
 
-#include <CoreFoundation/CoreFoundation.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/cf/VectorCF.h>
 #include <wtf/text/StringBuffer.h>

@@ -28,7 +28,6 @@
 #include "config.h"
 #include <wtf/Assertions.h>
 
-#include <mutex>
 #include <stdio.h>
 #include <string.h>
 #include <wtf/Compiler.h>

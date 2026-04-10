@@ -27,7 +27,6 @@
 #include <wtf/Threading.h>
 #include <wtf/text/ASCIIFastPath.h>
 #include <wtf/text/AtomStringTable.h>
-#include <wtf/text/StringHash.h>
 #include <wtf/text/WTFString.h>
 
 #if USE(WEB_THREAD)

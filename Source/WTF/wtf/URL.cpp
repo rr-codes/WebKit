@@ -27,10 +27,8 @@
 #include "config.h"
 #include <wtf/URL.h>
 
-#include <ranges>
 #include <stdio.h>
 #include <unicode/uidna.h>
-#include <wtf/FileSystem.h>
 #include <wtf/HashMap.h>
 #include <wtf/HashSet.h>
 #include <wtf/Lock.h>
@@ -39,7 +37,6 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/URLParser.h>
 #include <wtf/UUID.h>
-#include <wtf/text/CString.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuilder.h>
 #include <wtf/text/StringHash.h>

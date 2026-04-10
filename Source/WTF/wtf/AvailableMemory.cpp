@@ -26,10 +26,8 @@
 #include "config.h"
 #include <wtf/AvailableMemory.h>
 
-#include <algorithm>
-#include <array>
 #include <mutex>
-#include <wtf/PageBlock.h>
+#include <wtf/CheckedArithmetic.h>
 #include <wtf/text/ParsingUtilities.h>
 #include <wtf/text/StringToIntegerConversion.h>
 
@@ -38,10 +36,8 @@
 #endif
 
 #if OS(DARWIN)
-#import <dispatch/dispatch.h>
 #import <mach/host_info.h>
 #import <mach/mach.h>
-#import <mach/mach_error.h>
 #import <math.h>
 #elif OS(UNIX)
 #if OS(FREEBSD) || OS(LINUX)

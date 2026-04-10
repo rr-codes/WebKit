@@ -36,7 +36,6 @@
 #include <unicode/uscript.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/URLParser.h>
-#include <wtf/text/ParsingUtilities.h>
 #include <wtf/text/WTFString.h>
 
 namespace WTF {
