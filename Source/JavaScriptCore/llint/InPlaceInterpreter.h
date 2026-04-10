@@ -37,6 +37,9 @@ extern "C" void SYSV_ABI ipint_entry();
 #define IPINT_VALIDATE_DEFINE_FUNCTION(opcode, name) \
     extern "C" void SYSV_ABI ipint_ ## name ## _validate() REFERENCED_FROM_ASM WTF_INTERNAL NO_REORDER;
 
+#define IPINT_ATOMIC_VALIDATE_DEFINE_FUNCTION(opcode, name) \
+    extern "C" void SYSV_ABI ipint_ ## name ## _atomic_validate() REFERENCED_FROM_ASM WTF_INTERNAL NO_REORDER;
+
 #define FOR_EACH_IPINT_OPCODE(m) \
     m(0x00, unreachable) \
     m(0x01, nop) \
@@ -790,7 +793,7 @@ FOR_EACH_IPINT_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
 FOR_EACH_IPINT_GC_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
 FOR_EACH_IPINT_CONVERSION_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
 FOR_EACH_IPINT_SIMD_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
-FOR_EACH_IPINT_ATOMIC_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
+FOR_EACH_IPINT_ATOMIC_OPCODE(IPINT_ATOMIC_VALIDATE_DEFINE_FUNCTION);
 FOR_EACH_IPINT_ARGUMINT_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
 FOR_EACH_IPINT_SLOW_PATH(IPINT_VALIDATE_DEFINE_FUNCTION);
 FOR_EACH_IPINT_MINT_CALL_OPCODE(IPINT_VALIDATE_DEFINE_FUNCTION);
@@ -808,6 +811,8 @@ constexpr uint64_t alignIPInt = 512;
 #else
 constexpr uint64_t alignIPInt = 256;
 #endif
+// FIXME: adding an adds instruction to offlineasm could shrink atomic handlers back to 256 bytes
+constexpr uint64_t alignAtomicIPInt = 2 * alignIPInt;
 constexpr uint64_t alignArgumInt = 64;
 constexpr uint64_t alignUInt = 64;
 constexpr uint64_t alignMInt = 64;

@@ -1,6 +1,4 @@
-//@ requireOptions("--useWasmMultiMemory=1", "--useWasmIPInt=0")
-//@ $skipModes << "wasm-no-jit".to_sym
-//@ $skipModes << "wasm-no-wasm-jit".to_sym
+//@ requireOptions("--useWasmMultiMemory=1")
 
 import * as assert from "../assert.js";
 import { instantiate } from "../wabt-wrapper.js";
@@ -17,6 +15,7 @@ let wat = `
   (func (export "i32_store") (param i32 i32) (local.get 0) (local.get 1) (i32.store 1))
   (func (export "i64_load") (param i32) (result i64) (local.get 0) (i64.load 1))
   (func (export "i64_store") (param i32 i64) (local.get 0) (local.get 1) (i64.store 1))
+
 
   ;; memory.atomic.notify / wait
   (func (export "test_memory_atomic_notify") (param i32 i32) (result i32)

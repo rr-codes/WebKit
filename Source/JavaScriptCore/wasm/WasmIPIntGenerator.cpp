@@ -703,16 +703,18 @@ Value IPIntGenerator::addConstant(Type type, uint64_t value)
 
 // SIMD
 
-[[nodiscard]] PartialResult IPIntGenerator::addSIMDLoad(ExpressionType, uint32_t offset, ExpressionType&, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::addSIMDLoad(ExpressionType, uint32_t offset, ExpressionType&, uint8_t memoryIndex)
 {
     changeStackSize(0); // Pop address, push v128 value (net change = 0)
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::addSIMDStore(ExpressionType, ExpressionType, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::addSIMDStore(ExpressionType, ExpressionType, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2); // Pop address and v128 value
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
@@ -749,16 +751,18 @@ Value IPIntGenerator::addConstant(Type type, uint64_t value)
     return addSIMDLoad(pointer, offset, result, memoryIndex);
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::addSIMDLoadLane(SIMDLaneOperation, ExpressionType, ExpressionType, uint32_t offset, uint8_t, ExpressionType&, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::addSIMDLoadLane(SIMDLaneOperation, ExpressionType, ExpressionType, uint32_t offset, uint8_t, ExpressionType&, uint8_t memoryIndex)
 {
     changeStackSize(-1);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::addSIMDStoreLane(SIMDLaneOperation, ExpressionType, ExpressionType, uint32_t offset, uint8_t, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::addSIMDStoreLane(SIMDLaneOperation, ExpressionType, ExpressionType, uint32_t offset, uint8_t, uint8_t memoryIndex)
 {
     changeStackSize(-2);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
@@ -1152,43 +1156,49 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 
 // Atomics
 
-[[nodiscard]] PartialResult IPIntGenerator::atomicLoad(ExtAtomicOpType, Type, ExpressionType, ExpressionType&, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::atomicLoad(ExtAtomicOpType, Type, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::atomicStore(ExtAtomicOpType, Type, ExpressionType, ExpressionType, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::atomicStore(ExtAtomicOpType, Type, ExpressionType, ExpressionType, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::atomicBinaryRMW(ExtAtomicOpType, Type, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::atomicBinaryRMW(ExtAtomicOpType, Type, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-1);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::atomicCompareExchange(ExtAtomicOpType, Type, ExpressionType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::atomicCompareExchange(ExtAtomicOpType, Type, ExpressionType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::atomicWait(ExtAtomicOpType, ExpressionType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::atomicWait(ExtAtomicOpType, ExpressionType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::atomicNotify(ExtAtomicOpType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t /*memoryIndex*/)
+[[nodiscard]] PartialResult IPIntGenerator::atomicNotify(ExtAtomicOpType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-1);
+    m_metadata->addMemoryIndex(memoryIndex);
     m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
     return { };
 }

@@ -1,6 +1,4 @@
-//@ requireOptions("--useWasmMultiMemory=1", "--useWasmIPInt=0")
-//@ $skipModes << "wasm-no-jit".to_sym
-//@ $skipModes << "wasm-no-wasm-jit".to_sym
+//@ requireOptions("--useWasmMultiMemory=1")
 
 import * as assert from "../assert.js";
 import { instantiate } from "../wabt-wrapper.js";
@@ -12,10 +10,8 @@ let wat = `
   (import "js" "memory0" (memory 1))
   (import "js" "memory1" (memory 1))
 
-
   (func (export "i64_load") (param i32) (result i64) (local.get 0) (i64.load 1))
   (func (export "i64_store") (param i32 i64) (local.get 0) (local.get 1) (i64.store 1))
-
 
 ;; (load address, store address)
   (func (export "test_v128_load") (param i32 i32) (local.get 1) (local.get 0) (v128.load 1) (v128.store 1))
