@@ -1485,7 +1485,7 @@ static Style::GridOrderedNamedLinesMap gridLineNames(const RenderStyle* renderSt
         return { };
     
     Style::GridOrderedNamedLinesMap combinedGridLineNames;
-    auto appendLineNames = [&](unsigned index, const Vector<String>& newNames) {
+    auto appendLineNames = [&](unsigned index, const Vector<Style::CustomIdent>& newNames) {
         if (auto result = combinedGridLineNames.map.add(index, newNames); !result.isNewEntry)
             result.iterator->value.appendVector(newNames);
     };
@@ -1728,7 +1728,7 @@ std::optional<InspectorOverlay::Highlight::GridHighlightOverlay> InspectorOverla
             for (auto lineName : columnLineNames.map.get(i)) {
                 if (!lineLabel.isEmpty())
                     lineLabel.append(thinSpace, bullet, thinSpace);
-                lineLabel.append(lineName);
+                lineLabel.append(lineName.value);
             }
         }
 
@@ -1816,7 +1816,7 @@ std::optional<InspectorOverlay::Highlight::GridHighlightOverlay> InspectorOverla
             for (auto lineName : rowLineNames.map.get(i)) {
                 if (!lineLabel.isEmpty())
                     lineLabel.append(thinSpace, bullet, thinSpace);
-                lineLabel.append(lineName);
+                lineLabel.append(lineName.value);
             }
         }
 

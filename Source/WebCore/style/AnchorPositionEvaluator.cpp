@@ -1104,7 +1104,7 @@ static CheckedPtr<const Element> anchorScopeForAnchorName(const RenderBoxModelOb
             continue;
 
         if (Style::NameScope::Type::All == currentAncestorAnchorScope.type
-            || currentAncestorAnchorScope.names.contains(CustomIdentifier { anchorName.name() }))
+            || currentAncestorAnchorScope.names.contains(CustomIdent { anchorName.name() }))
             return currentAncestor;
     }
 

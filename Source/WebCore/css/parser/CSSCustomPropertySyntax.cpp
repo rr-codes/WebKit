@@ -96,7 +96,7 @@ auto CSSCustomPropertySyntax::parseComponent(std::span<const CharacterType> span
 
     auto multiplier = consumeMultiplier();
 
-    return Component { Type::CustomIdent, multiplier, ident };
+    return Component { Type::Ident, multiplier, ident };
 }
 
 std::optional<CSSCustomPropertySyntax> CSSCustomPropertySyntax::parse(StringView syntax)

@@ -24,7 +24,7 @@
  */
 
 #include "config.h"
-#include "CSSCounterStyle.h"
+#include "CSSRegisteredCounterStyle.h"
 
 #include "CSSCounterStyleDescriptors.h"
 #include "CSSCounterStyleRegistry.h"
@@ -39,7 +39,7 @@
 namespace WebCore {
 
 // https://www.w3.org/TR/css-counter-styles-3/#cyclic-system
-String CSSCounterStyle::counterForSystemCyclic(int value) const
+String CSSRegisteredCounterStyle::counterForSystemCyclic(int value) const
 {
     auto amountOfSymbols = symbols().size();
     ASSERT(amountOfSymbols > 0);
@@ -54,7 +54,7 @@ String CSSCounterStyle::counterForSystemCyclic(int value) const
 }
 
 // https://www.w3.org/TR/css-counter-styles-3/#fixed-system
-String CSSCounterStyle::counterForSystemFixed(int value) const
+String CSSRegisteredCounterStyle::counterForSystemFixed(int value) const
 {
     if (value < firstSymbolValueForFixedSystem())
         return { };
@@ -65,7 +65,7 @@ String CSSCounterStyle::counterForSystemFixed(int value) const
 }
 
 // https://www.w3.org/TR/css-counter-styles-3/#symbolic-system
-String CSSCounterStyle::counterForSystemSymbolic(unsigned value) const
+String CSSRegisteredCounterStyle::counterForSystemSymbolic(unsigned value) const
 {
     auto amountOfSymbols = symbols().size();
     ASSERT(amountOfSymbols > 0);
@@ -83,7 +83,7 @@ String CSSCounterStyle::counterForSystemSymbolic(unsigned value) const
 }
 
 // https://www.w3.org/TR/css-counter-styles-3/#alphabetic-system
-String CSSCounterStyle::counterForSystemAlphabetic(unsigned value) const
+String CSSRegisteredCounterStyle::counterForSystemAlphabetic(unsigned value) const
 {
     auto amountOfSymbols = symbols().size();
     ASSERT(amountOfSymbols >= 2);
@@ -104,7 +104,7 @@ String CSSCounterStyle::counterForSystemAlphabetic(unsigned value) const
 }
 
 // https://www.w3.org/TR/css-counter-styles-3/#numeric-system
-String CSSCounterStyle::counterForSystemNumeric(unsigned value) const
+String CSSRegisteredCounterStyle::counterForSystemNumeric(unsigned value) const
 {
     auto amountOfSymbols = symbols().size();
     ASSERT(amountOfSymbols >= 2);
@@ -124,7 +124,7 @@ String CSSCounterStyle::counterForSystemNumeric(unsigned value) const
 }
 
 // https://www.w3.org/TR/css-counter-styles-3/#additive-system
-String CSSCounterStyle::counterForSystemAdditive(unsigned value) const
+String CSSRegisteredCounterStyle::counterForSystemAdditive(unsigned value) const
 {
     auto& additiveSymbols = this->additiveSymbols();
     if (!value) {
@@ -241,14 +241,14 @@ static String counterForSystemCJK(int number, const std::array<char16_t, 17>& ta
     return std::span<const char16_t> { characters }.first(length);
 }
 
-String CSSCounterStyle::counterForSystemDisclosureClosed(WritingMode writingMode)
+String CSSRegisteredCounterStyle::counterForSystemDisclosureClosed(WritingMode writingMode)
 {
     if (writingMode.isVerticalTypographic())
         return span(writingMode.isInlineTopToBottom() ? blackDownPointingTriangle : blackUpPointingTriangle);
     return span(writingMode.isBidiLTR() ? blackRightPointingTriangle : blackLeftPointingTriangle);
 }
 
-String CSSCounterStyle::counterForSystemDisclosureOpen(WritingMode writingMode)
+String CSSRegisteredCounterStyle::counterForSystemDisclosureOpen(WritingMode writingMode)
 {
     switch (writingMode.blockDirection()) {
     case FlowDirection::TopToBottom:
@@ -264,7 +264,7 @@ String CSSCounterStyle::counterForSystemDisclosureOpen(WritingMode writingMode)
     return { };
 }
 
-String CSSCounterStyle::counterForSystemSimplifiedChineseInformal(int value)
+String CSSRegisteredCounterStyle::counterForSystemSimplifiedChineseInformal(int value)
 {
     static constexpr std::array<char16_t, 17> simplifiedChineseInformalTable {
         0x842C, 0x5104, 0x5146, // These three group markers are probably wrong; OK because we don't use this on big enough numbers.
@@ -276,7 +276,7 @@ String CSSCounterStyle::counterForSystemSimplifiedChineseInformal(int value)
     return counterForSystemCJK(value, simplifiedChineseInformalTable, Formality::Informal);
 }
 
-String CSSCounterStyle::counterForSystemSimplifiedChineseFormal(int value)
+String CSSRegisteredCounterStyle::counterForSystemSimplifiedChineseFormal(int value)
 {
     static constexpr std::array<char16_t, 17> simplifiedChineseFormalTable {
         0x842C, 0x5104, 0x5146, // These three group markers are probably wrong; OK because we don't use this on big enough numbers.
@@ -288,7 +288,7 @@ String CSSCounterStyle::counterForSystemSimplifiedChineseFormal(int value)
     return counterForSystemCJK(value, simplifiedChineseFormalTable, Formality::Formal);
 }
 
-String CSSCounterStyle::counterForSystemTraditionalChineseInformal(int value)
+String CSSRegisteredCounterStyle::counterForSystemTraditionalChineseInformal(int value)
 {
     static constexpr std::array<char16_t, 17> traditionalChineseInformalTable {
         0x842C, 0x5104, 0x5146,
@@ -300,7 +300,7 @@ String CSSCounterStyle::counterForSystemTraditionalChineseInformal(int value)
     return counterForSystemCJK(value, traditionalChineseInformalTable, Formality::Informal);
 }
 
-String CSSCounterStyle::counterForSystemTraditionalChineseFormal(int value)
+String CSSRegisteredCounterStyle::counterForSystemTraditionalChineseFormal(int value)
 {
     static constexpr std::array<char16_t, 17> traditionalChineseFormalTable {
         0x842C, 0x5104, 0x5146, // These three group markers are probably wrong; OK because we don't use this on big enough numbers.
@@ -312,7 +312,7 @@ String CSSCounterStyle::counterForSystemTraditionalChineseFormal(int value)
     return counterForSystemCJK(value, traditionalChineseFormalTable, Formality::Formal);
 }
 
-String CSSCounterStyle::counterForSystemEthiopicNumeric(unsigned value)
+String CSSRegisteredCounterStyle::counterForSystemEthiopicNumeric(unsigned value)
 {
     ASSERT(value >= 1);
 
@@ -354,7 +354,7 @@ String CSSCounterStyle::counterForSystemEthiopicNumeric(unsigned value)
     return std::span<const char16_t> { buffer }.first(length);
 }
 
-String CSSCounterStyle::initialRepresentation(int value, WritingMode writingMode) const
+String CSSRegisteredCounterStyle::initialRepresentation(int value, WritingMode writingMode) const
 {
     unsigned absoluteValue = std::abs(value);
     switch (system()) {
@@ -392,7 +392,7 @@ String CSSCounterStyle::initialRepresentation(int value, WritingMode writingMode
     return { };
 }
 
-String CSSCounterStyle::fallbackText(int value, WritingMode writingMode)
+String CSSRegisteredCounterStyle::fallbackText(int value, WritingMode writingMode)
 {
     if (m_isFallingBack || !fallback().get()) {
         m_isFallingBack = false;
@@ -404,7 +404,7 @@ String CSSCounterStyle::fallbackText(int value, WritingMode writingMode)
     return fallbackText;
 }
 
-String CSSCounterStyle::text(int value, WritingMode writingMode)
+String CSSRegisteredCounterStyle::text(int value, WritingMode writingMode)
 {
     if (!isInRange(value))
         return fallbackText(value, writingMode);
@@ -420,18 +420,18 @@ String CSSCounterStyle::text(int value, WritingMode writingMode)
     return result;
 }
 
-bool CSSCounterStyle::shouldApplyNegativeSymbols(int value) const
+bool CSSRegisteredCounterStyle::shouldApplyNegativeSymbols(int value) const
 {
     auto system = this->system();
     return value < 0 && (system == CSSCounterStyleDescriptors::System::Symbolic || system == CSSCounterStyleDescriptors::System::Numeric || system == CSSCounterStyleDescriptors::System::Alphabetic || system == CSSCounterStyleDescriptors::System::Additive);
 }
 
-void CSSCounterStyle::applyNegativeSymbols(String& text) const
+void CSSRegisteredCounterStyle::applyNegativeSymbols(String& text) const
 {
     text = negative().m_suffix.text.isEmpty() ? makeString(negative().m_prefix.text, text) : makeString(negative().m_prefix.text, text, negative().m_suffix.text);
 }
 
-bool CSSCounterStyle::applyPadSymbols(String& text, int value) const
+bool CSSRegisteredCounterStyle::applyPadSymbols(String& text, int value) const
 {
     // We limit the max UTF-16 padding length to 150 to match Firefox. This complies with CSS
     // Counter Styles Level 3, which requires us to support counter representations of at least 60
@@ -461,7 +461,7 @@ bool CSSCounterStyle::applyPadSymbols(String& text, int value) const
     return true;
 }
 
-bool CSSCounterStyle::isInRange(int value) const
+bool CSSRegisteredCounterStyle::isInRange(int value) const
 {
     if (isAutoRange()) {
         switch (system()) {
@@ -495,24 +495,24 @@ bool CSSCounterStyle::isInRange(int value) const
     return false;
 }
 
-CSSCounterStyle::CSSCounterStyle(const CSSCounterStyleDescriptors& descriptors, bool isPredefinedCounterStyle)
+CSSRegisteredCounterStyle::CSSRegisteredCounterStyle(const CSSCounterStyleDescriptors& descriptors, bool isPredefinedCounterStyle)
     : m_descriptors { descriptors }
     , m_predefinedCounterStyle { isPredefinedCounterStyle }
 {
 }
 
-Ref<CSSCounterStyle> CSSCounterStyle::create(const CSSCounterStyleDescriptors& descriptors, bool isPredefinedCounterStyle)
+Ref<CSSRegisteredCounterStyle> CSSRegisteredCounterStyle::create(const CSSCounterStyleDescriptors& descriptors, bool isPredefinedCounterStyle)
 {
-    return adoptRef(*new CSSCounterStyle(descriptors, isPredefinedCounterStyle));
+    return adoptRef(*new CSSRegisteredCounterStyle(descriptors, isPredefinedCounterStyle));
 }
 
-void CSSCounterStyle::setFallbackReference(Ref<CSSCounterStyle>&& fallback)
+void CSSRegisteredCounterStyle::setFallbackReference(Ref<CSSRegisteredCounterStyle>&& fallback)
 {
     m_fallbackReference = WeakPtr { fallback };
 }
 
 // The counter's system value is promoted to the value of the counter we are extending.
-void CSSCounterStyle::extendAndResolve(const CSSCounterStyle& extendedCounterStyle)
+void CSSRegisteredCounterStyle::extendAndResolve(const CSSRegisteredCounterStyle& extendedCounterStyle)
 {
     m_descriptors.m_isExtendedResolved = true;
 

@@ -42,6 +42,7 @@
 #include "CSSCounterValue.h"
 #include "CSSCrossfadeValue.h"
 #include "CSSCursorImageValue.h"
+#include "CSSCustomIdentValue.h"
 #include "CSSCustomPropertyValue.h"
 #include "CSSDynamicRangeLimitValue.h"
 #include "CSSEasingFunctionValue.h"
@@ -137,6 +138,8 @@ template<typename Visitor> constexpr decltype(auto) CSSValue::visitDerived(Visit
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSCrossfadeValue>(*this));
     case CursorImage:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSCursorImageValue>(*this));
+    case CustomIdent:
+        return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSCustomIdentValue>(*this));
     case CustomProperty:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSCustomPropertyValue>(*this));
     case DynamicRangeLimit:
@@ -370,6 +373,7 @@ Ref<DeprecatedCSSOMValue> CSSValue::createDeprecatedCSSOMWrapper(CSSStyleDeclara
     case Primitive:
     case Color:
     case Counter:
+    case CustomIdent:
     case Quad:
     case Rect:
     case URL:

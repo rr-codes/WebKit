@@ -84,6 +84,7 @@ public:
     bool isCounter() const { return m_classType == ClassType::Counter; }
     bool isCrossfadeValue() const { return m_classType == ClassType::Crossfade; }
     bool isCursorImageValue() const { return m_classType == ClassType::CursorImage; }
+    bool isCustomIdentValue() const { return m_classType == ClassType::CustomIdent; }
     bool isCustomPropertyValue() const { return m_classType == ClassType::CustomProperty; }
     bool isDynamicRangeLimitValue() const { return m_classType == ClassType::DynamicRangeLimit; }
     bool isEasingFunctionValue() const { return m_classType == ClassType::EasingFunction; }
@@ -171,9 +172,6 @@ public:
     static constexpr size_t ValueSeparatorBits = 2;
     enum ValueSeparator : uint8_t { SpaceSeparator, CommaSeparator, SlashSeparator };
 
-    inline bool isCustomIdent() const;
-    inline String customIdent() const;
-
     inline bool isString() const;
     inline String string() const;
 
@@ -226,6 +224,7 @@ protected:
         ColorScheme,
 #endif
         Counter,
+        CustomIdent,
         CustomProperty,
         DynamicRangeLimit,
         EasingFunction,

@@ -73,7 +73,7 @@ static const WeakStyleable originatingElementExcludingTimelineScope(const Ref<Sc
     return timeline->timelineScopeDeclaredElement() ? WeakStyleable() : originatingElement(timeline);
 }
 
-Vector<WeakStyleable> StyleOriginatedTimelinesController::relatedTimelineScopeElements(const CustomIdentifier& name)
+Vector<WeakStyleable> StyleOriginatedTimelinesController::relatedTimelineScopeElements(const Style::CustomIdent& name)
 {
     Vector<WeakStyleable> timelineScopeElements;
     for (auto& scope : m_timelineScopeEntries) {
@@ -174,7 +174,7 @@ void StyleOriginatedTimelinesController::updateTimelineForTimelineScope(const Re
     for (auto& entry : m_timelineScopeEntries) {
         if (auto entryElement = entry.second.styleable()) {
             Ref protectedEntryElement { entryElement->element };
-            if (Ref { timelineElement->element }->isComposedTreeDescendantOf(protectedEntryElement.get()) && (entry.first.type == Style::NameScope::Type::All || entry.first.names.contains(CustomIdentifier { name })))
+            if (Ref { timelineElement->element }->isComposedTreeDescendantOf(protectedEntryElement.get()) && (entry.first.type == Style::NameScope::Type::All || entry.first.names.contains(Style::CustomIdent { name })))
                 matchedTimelineScopeElements.appendIfNotContains(*entryElement);
         }
     }
@@ -225,7 +225,7 @@ void StyleOriginatedTimelinesController::updateCSSAnimationsAssociatedWithNamedT
             if (RefPtr cssAnimation = dynamicDowncast<CSSAnimation>(animation.get())) {
                 if (!cssAnimation->owningElement())
                     continue;
-                if (auto timelineName = cssAnimation->backingStyleAnimation().timeline().tryCustomIdentifier()) {
+                if (auto timelineName = cssAnimation->backingStyleAnimation().timeline().tryCustomIdent()) {
                     if (timelineName->value == name)
                         cssAnimationsWithMatchingTimelineName.add(*cssAnimation);
                 }
@@ -345,7 +345,7 @@ void StyleOriginatedTimelinesController::attachAnimation(CSSAnimation& animation
     if (!target)
         return;
 
-    auto timelineName = protectedAnimation->backingStyleAnimation().timeline().tryCustomIdentifier();
+    auto timelineName = protectedAnimation->backingStyleAnimation().timeline().tryCustomIdent();
     if (!timelineName)
         return;
 

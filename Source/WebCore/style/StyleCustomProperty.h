@@ -28,6 +28,7 @@
 #include <WebCore/CSSValueAggregates.h>
 #include <WebCore/CSSVariableData.h>
 #include <WebCore/StyleColor.h>
+#include <WebCore/StyleCustomIdent.h>
 #include <WebCore/StyleImageWrapper.h>
 #include <WebCore/StylePrimitiveNumeric.h>
 #include <WebCore/StyleTransformFunction.h>
@@ -63,7 +64,7 @@ public:
         ImageWrapper,
         Color,
         URL,
-        CustomIdentifier,
+        CustomIdent,
         String,
         TransformFunction
     >;

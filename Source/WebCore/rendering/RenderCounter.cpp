@@ -473,7 +473,7 @@ void RenderCounter::updateCounter()
                 break;
             container = container->parent();
         }
-        makeCounterNode(*container, m_counter.identifier, true)->addRenderer(const_cast<RenderCounter&>(*this));
+        makeCounterNode(*container, m_counter.identifier.value, true)->addRenderer(const_cast<RenderCounter&>(*this));
     }
 
     setText(originalText(), true);
@@ -563,7 +563,7 @@ void RenderCounter::rendererStyleChangedSlowCase(RenderElement& renderer, const 
     }
 }
 
-Ref<CSSCounterStyle> RenderCounter::counterStyle() const
+Ref<CSSRegisteredCounterStyle> RenderCounter::counterStyle() const
 {
     return document().counterStyleRegistry().resolvedCounterStyle(m_counter.style);
 }

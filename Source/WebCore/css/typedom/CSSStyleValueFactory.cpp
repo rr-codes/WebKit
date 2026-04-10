@@ -289,6 +289,8 @@ ExceptionOr<Ref<CSSStyleValue>> CSSStyleValueFactory::reifyValue(Document& docum
         default:
             break;
         }
+    } else if (auto* customIdentValue = dynamicDowncast<CSSCustomIdentValue>(cssValue)) {
+        return upcast<CSSStyleValue>(CSSKeywordValue::rectifyKeywordish(customIdentValue->cssText(CSS::defaultSerializationContext())));
     } else if (auto* imageValue = dynamicDowncast<CSSImageValue>(cssValue))
         return Ref<CSSStyleValue> { CSSStyleImageValue::create(const_cast<CSSImageValue&>(*imageValue), document) };
     else if (auto* referenceValue = dynamicDowncast<CSSSubstitutionValue>(cssValue)) {

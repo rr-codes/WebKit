@@ -36,11 +36,11 @@ namespace WebCore {
 
 class StyleRuleCounterStyle;
 
-class CSSCounterStyle : public RefCountedAndCanMakeWeakPtr<CSSCounterStyle> {
+class CSSRegisteredCounterStyle : public RefCountedAndCanMakeWeakPtr<CSSRegisteredCounterStyle> {
 public:
-    static Ref<CSSCounterStyle> create(const CSSCounterStyleDescriptors&, bool isPredefinedCounterStyle);
+    static Ref<CSSRegisteredCounterStyle> create(const CSSCounterStyleDescriptors&, bool isPredefinedCounterStyle);
 
-    bool operator==(const CSSCounterStyle& other) const
+    bool operator==(const CSSRegisteredCounterStyle& other) const
     {
         return m_descriptors == other.m_descriptors
             && m_predefinedCounterStyle == other.m_predefinedCounterStyle;
@@ -74,11 +74,11 @@ public:
     void setSpeakAs(CSSCounterStyleDescriptors::SpeakAs speakAs) { m_descriptors.m_speakAs = speakAs; }
     void setFirstSymbolValueForFixedSystem(int firstSymbolValue) { m_descriptors.m_fixedSystemFirstSymbolValue = firstSymbolValue; }
 
-    void NODELETE setFallbackReference(Ref<CSSCounterStyle>&&);
+    void NODELETE setFallbackReference(Ref<CSSRegisteredCounterStyle>&&);
     bool isFallbackUnresolved() { return !m_fallbackReference; }
     bool isExtendsUnresolved() { return !m_descriptors.m_isExtendedResolved; };
     bool isExtendsSystem() const { return system() == CSSCounterStyleDescriptors::System::Extends; }
-    void extendAndResolve(const CSSCounterStyle&);
+    void extendAndResolve(const CSSRegisteredCounterStyle&);
 
     static String counterForSystemSimplifiedChineseInformal(int);
     static String counterForSystemSimplifiedChineseFormal(int);
@@ -89,7 +89,7 @@ public:
     static String counterForSystemDisclosureOpen(WritingMode);
 
 private:
-    CSSCounterStyle(const CSSCounterStyleDescriptors&, bool isPredefinedCounterStyle);
+    CSSRegisteredCounterStyle(const CSSCounterStyleDescriptors&, bool isPredefinedCounterStyle);
 
     // https://www.w3.org/TR/css-counter-styles-3/#counter-style-range
     bool NODELETE isInRange(int) const;
@@ -97,9 +97,9 @@ private:
     bool usesNegativeSign();
     bool NODELETE shouldApplyNegativeSymbols(int) const;
     // https://www.w3.org/TR/css-counter-styles-3/#counter-style-fallback
-    WeakPtr<CSSCounterStyle> fallback() const { return m_fallbackReference; };
+    WeakPtr<CSSRegisteredCounterStyle> fallback() const { return m_fallbackReference; };
     String fallbackText(int, WritingMode);
-    // Generates a CSSCounterStyle object as it was defined by a 'decimal' descriptor. It is used as a last-resource in case we can't resolve fallback references.
+    // Generates a CSSRegisteredCounterStyle object as it was defined by a 'decimal' descriptor. It is used as a last-resource in case we can't resolve fallback references.
     bool applyPadSymbols(String&, int) const;
     void applyNegativeSymbols(String&) const;
     // Initial text representation for the counter, before applying pad and/or negative symbols. Suffix and Prefix are also not considered as described by https://www.w3.org/TR/css-counter-styles-3/#counter-styles.
@@ -121,8 +121,8 @@ private:
     CSSCounterStyleDescriptors m_descriptors;
     bool m_predefinedCounterStyle { false };
     CSSCounterStyleDescriptors::Name m_fallbackName;
-    WeakPtr<const CSSCounterStyle> m_fallbackReference { nullptr };
-    WeakPtr<const CSSCounterStyle> m_extendsReference { nullptr };
+    WeakPtr<const CSSRegisteredCounterStyle> m_fallbackReference { nullptr };
+    WeakPtr<const CSSRegisteredCounterStyle> m_extendsReference { nullptr };
     bool m_isFallingBack { false };
     bool m_isExtendedUnresolved { true };
 };

@@ -101,10 +101,6 @@ public:
     bool isString() const { return primitiveUnitType() == CSSUnitType::CSS_STRING; }
     static Ref<CSSPrimitiveValue> create(String);
 
-    static Ref<CSSPrimitiveValue> createCustomIdent(String);
-    bool isCustomIdent() const { return primitiveUnitType() == CSSUnitType::CustomIdent; }
-    String customIdent() const { ASSERT(isCustomIdent()); return stringValue(); }
-
     static Ref<CSSPrimitiveValue> createFontFamily(String);
     bool isFontFamily() const { return primitiveUnitType() == CSSUnitType::CSS_FONT_FAMILY; }
 
@@ -220,7 +216,11 @@ private:
 
     // MARK: Non-converting
     double doubleValue(const CSSToLengthConversionData&) const;
-    double doubleValueNoConversionDataRequired() const { ASSERT(!isCalculated()); return m_value.number; }
+    double doubleValueNoConversionDataRequired() const
+    {
+        ASSERT(!isCalculated());
+        return m_value.number;
+    }
     double doubleValueDeprecated() const;
     double doubleValueDividingBy100IfPercentage(const CSSToLengthConversionData&) const;
     double NODELETE doubleValueDividingBy100IfPercentageNoConversionDataRequired() const;
@@ -723,12 +723,6 @@ inline bool isValueID(const Ref<CSSValue>& value, CSSValueID id)
     return isValueID(value.get(), id);
 }
 
-inline bool isCustomIdentValue(const CSSValue& value)
-{
-    auto* primitiveValue = dynamicDowncast<CSSPrimitiveValue>(value);
-    return primitiveValue && primitiveValue->isCustomIdent();
-}
-
 inline bool CSSValue::isValueID() const
 {
     auto* value = dynamicDowncast<CSSPrimitiveValue>(*this);
@@ -739,18 +733,6 @@ inline CSSValueID CSSValue::valueID() const
 {
     auto* value = dynamicDowncast<CSSPrimitiveValue>(*this);
     return value ? value->valueID() : CSSValueInvalid;
-}
-
-inline bool CSSValue::isCustomIdent() const
-{
-    auto* value = dynamicDowncast<CSSPrimitiveValue>(*this);
-    return value && value->isCustomIdent();
-}
-
-inline String CSSValue::customIdent() const
-{
-    ASSERT(isCustomIdent());
-    return downcast<CSSPrimitiveValue>(*this).stringValue();
 }
 
 inline bool CSSValue::isString() const

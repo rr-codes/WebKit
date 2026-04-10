@@ -122,7 +122,7 @@ static bool hasValidColumnEnd(const Style::GridPositionExplicit& explicitColumnS
         [&](const Style::GridPositionSpan&) {
             return false;
         },
-        [&](const CustomIdentifier&) {
+        [&](const Style::CustomIdent&) {
             return false;
         }
     );
@@ -142,7 +142,7 @@ static bool hasValidColumnEnd(const CSS::Keyword::Auto& autoColumnStart, const S
         [](const Style::GridPositionSpan&) {
             return false;
         },
-        [](const CustomIdentifier&) {
+        [](const Style::CustomIdent&) {
             return false;
         }
     );
@@ -172,7 +172,7 @@ static bool hasValidRowEnd(const Style::GridPositionExplicit& explicitRowStart, 
         [&](const Style::GridPositionSpan&) {
             return false;
         },
-        [&](const CustomIdentifier&) {
+        [&](const Style::CustomIdent&) {
             return false;
         }
     );
@@ -286,7 +286,7 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
                     return GridAvoidanceReason::GridHasUnsupportedGridTemplateColumns;
                 return { };
             },
-            [&](const Vector<String>& names) -> std::optional<GridAvoidanceReason> {
+            [&](const Vector<Style::CustomIdent>& names) -> std::optional<GridAvoidanceReason> {
                 if (!names.isEmpty())
                     return GridAvoidanceReason::GridHasUnsupportedGridTemplateColumns;
                 return std::nullopt;
@@ -321,7 +321,7 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
                     return GridAvoidanceReason::GridHasUnsupportedGridTemplateRows;
                 return { };
             },
-            [&](const Vector<String>& names) -> std::optional<GridAvoidanceReason> {
+            [&](const Vector<Style::CustomIdent>& names) -> std::optional<GridAvoidanceReason> {
                 if (!names.isEmpty())
                     return GridAvoidanceReason::GridHasUnsupportedGridTemplateRows;
                 return std::nullopt;
@@ -442,7 +442,7 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
             [&](const Style::GridPositionSpan&) -> std::optional<GridAvoidanceReason> {
                 return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
             },
-            [&](const CustomIdentifier&) -> std::optional<GridAvoidanceReason> {
+            [&](const Style::CustomIdent&) -> std::optional<GridAvoidanceReason> {
                 return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
             }
         );
@@ -477,7 +477,7 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
             [&](const Style::GridPositionSpan&) -> std::optional<GridAvoidanceReason> {
                 return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
             },
-            [&](const CustomIdentifier&) -> std::optional<GridAvoidanceReason> {
+            [&](const Style::CustomIdent&) -> std::optional<GridAvoidanceReason> {
                 return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
             }
         );

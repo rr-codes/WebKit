@@ -106,9 +106,6 @@ template<typename> struct ToStyle;
 // Specialize `TreatAsNonConverting` for `Constant<C>`, to indicate that its type does not change from the CSS representation.
 template<CSSValueID C> inline constexpr bool TreatAsNonConverting<Constant<C>> = true;
 
-// Specialize `TreatAsNonConverting` for `CustomIdentifier`, to indicate that its type does not change from the CSS representation.
-template<> inline constexpr bool TreatAsNonConverting<CustomIdentifier> = true;
-
 // Specialize `TreatAsNonConverting` for `PropertyIdentifier`, to indicate that its type does not change from the CSS representation.
 template<> inline constexpr bool TreatAsNonConverting<PropertyIdentifier> = true;
 

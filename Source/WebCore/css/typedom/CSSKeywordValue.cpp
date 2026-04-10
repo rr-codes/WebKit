@@ -30,6 +30,7 @@
 #include "config.h"
 #include "CSSKeywordValue.h"
 
+#include "CSSCustomIdentValue.h"
 #include "CSSMarkup.h"
 #include "CSSPrimitiveValue.h"
 #include "CSSPropertyParser.h"
@@ -81,7 +82,7 @@ RefPtr<CSSValue> CSSKeywordValue::toCSSValue() const
 {
     auto keyword = cssValueKeywordID(m_value);
     if (keyword == CSSValueInvalid)
-        return CSSPrimitiveValue::createCustomIdent(m_value);
+        return CSSCustomIdentValue::create(CSS::CustomIdent { AtomString { m_value } });
     return CSSPrimitiveValue::create(keyword);
 }
 

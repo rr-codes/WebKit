@@ -323,11 +323,11 @@ static std::optional<FixedVector<AtomString>> consumeCommaSeparatedCustomIdentLi
     Vector<AtomString> customIdents { };
 
     do {
-        auto ident = CSSPropertyParserHelpers::consumeCustomIdentRaw(range);
-        if (ident.isEmpty())
+        auto ident = CSSPropertyParserHelpers::consumeEagerlyResolvableCustomIdentRaw(range);
+        if (!ident)
             return std::nullopt;
 
-        customIdents.append(WTF::move(ident));
+        customIdents.append(ident.toAtomString());
     } while (CSSPropertyParserHelpers::consumeCommaIncludingWhitespace(range));
 
     if (!range.atEnd())

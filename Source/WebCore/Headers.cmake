@@ -1064,7 +1064,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     css/CSSColorValue.h
     css/CSSComputedStyleDeclaration.h
     css/CSSConditionRule.h
-    css/CSSCounterStyle.h
     css/CSSCounterStyleDescriptors.h
     css/CSSCounterValue.h
     css/CSSCustomPropertyValue.h
@@ -1188,6 +1187,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
 
     css/values/motion/CSSRayFunction.h
 
+    css/values/primitives/CSSCustomIdent.h
     css/values/primitives/CSSPosition.h
     css/values/primitives/CSSPrimitiveData.h
     css/values/primitives/CSSPrimitiveKeywordList.h
@@ -3346,6 +3346,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
 
     style/values/position/StyleInset.h
 
+    style/values/primitives/StyleCustomIdent.h
     style/values/primitives/StyleCoordinatedValueList.h
     style/values/primitives/StyleCoordinatedValueListValue.h
     style/values/primitives/StyleLengthWrapper.h

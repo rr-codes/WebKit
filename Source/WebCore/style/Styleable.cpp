@@ -883,7 +883,7 @@ void Styleable::updateCSSScrollTimelines(const RenderStyle* currentStyle, const 
             [](CSS::Keyword::None) {
                 // Nothing to register.
             },
-            [&](const CustomIdentifier& identifier) {
+            [&](const Style::CustomIdent& identifier) {
                 styleOriginatedTimelinesController->registerNamedScrollTimeline(identifier.value, *this, scrollTimeline.axis());
                 registeredScrollTimelineNames.add(identifier.value);
             }
@@ -898,7 +898,7 @@ void Styleable::updateCSSScrollTimelines(const RenderStyle* currentStyle, const 
             [](CSS::Keyword::None) {
                 // Nothing to unregister.
             },
-            [&](const CustomIdentifier& identifier) {
+            [&](const Style::CustomIdent& identifier) {
                 if (!registeredScrollTimelineNames.contains(identifier.value))
                     styleOriginatedTimelinesController->unregisterNamedTimeline(identifier.value, *this);
             }
@@ -920,7 +920,7 @@ void Styleable::updateCSSViewTimelines(const RenderStyle* currentStyle, const Re
             [](CSS::Keyword::None) {
                 // Nothing to register.
             },
-            [&](const CustomIdentifier& identifier) {
+            [&](const Style::CustomIdent& identifier) {
                 styleOriginatedTimelinesController->registerNamedViewTimeline(identifier.value, *this, viewTimeline.axis(), viewTimeline.inset());
                 registeredViewTimelineNames.add(identifier.value);
             }
@@ -935,7 +935,7 @@ void Styleable::updateCSSViewTimelines(const RenderStyle* currentStyle, const Re
             [](CSS::Keyword::None) {
                 // Nothing to unregister.
             },
-            [&](const CustomIdentifier& identifier) {
+            [&](const Style::CustomIdent& identifier) {
                 if (!registeredViewTimelineNames.contains(identifier.value))
                     styleOriginatedTimelinesController->unregisterNamedTimeline(identifier.value, *this);
             }

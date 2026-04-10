@@ -579,7 +579,7 @@ LayoutRect RenderListMarker::selectionRectForRepaint(const RenderLayerModelObjec
     return { };
 }
 
-RefPtr<CSSCounterStyle> RenderListMarker::counterStyle() const
+RefPtr<CSSRegisteredCounterStyle> RenderListMarker::counterStyle() const
 {
     auto counterStyle = style().listStyleType().tryCounterStyle();
     if (!counterStyle)

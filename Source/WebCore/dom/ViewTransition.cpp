@@ -26,6 +26,7 @@
 #include "config.h"
 #include "ViewTransition.h"
 
+#include "CSSCustomIdentValue.h"
 #include "CSSFunctionValue.h"
 #include "CSSKeyframeRule.h"
 #include "CSSKeyframesRule.h"
@@ -383,12 +384,12 @@ static AtomString effectiveViewTransitionName(RenderLayerModelObject& renderer, 
             Ref element = *renderer.element();
             return makeAtomString("-ua-auto-"_s, String::number(element->nodeIdentifier().toRawValue()));
         },
-        [&](const CustomIdentifier& customIdentifier) {
+        [&](const Style::CustomIdent& customIdent) {
             SUPPRESS_UNCHECKED_LOCAL auto scope = computeScope();
             if (!scope)
                 return nullAtom();
 
-            return customIdentifier.value;
+            return customIdent.value;
         }
     );
 }
@@ -669,9 +670,9 @@ void ViewTransition::setupDynamicStyleSheet(const AtomString& name, const Captur
     // image animation name rule
     if (capturedElement.oldImage) {
         CSSValueListBuilder list;
-        list.append(CSSPrimitiveValue::createCustomIdent("-ua-view-transition-fade-out"_s));
+        list.append(CSSCustomIdentValue::create(CSS::CustomIdent { "-ua-view-transition-fade-out"_s }));
         if (capturedElement.newElement)
-            list.append(CSSPrimitiveValue::createCustomIdent("-ua-mix-blend-mode-plus-lighter"_s));
+            list.append(CSSCustomIdentValue::create(CSS::CustomIdent { "-ua-mix-blend-mode-plus-lighter"_s }));
         Ref valueList = CSSValueList::createCommaSeparated(WTF::move(list));
         Ref props = MutableStyleProperties::create();
         props->setProperty(CSSPropertyAnimationName, WTF::move(valueList));
@@ -681,9 +682,9 @@ void ViewTransition::setupDynamicStyleSheet(const AtomString& name, const Captur
 
     if (capturedElement.newElement) {
         CSSValueListBuilder list;
-        list.append(CSSPrimitiveValue::createCustomIdent("-ua-view-transition-fade-in"_s));
+        list.append(CSSCustomIdentValue::create(CSS::CustomIdent { "-ua-view-transition-fade-in"_s }));
         if (capturedElement.oldImage)
-            list.append(CSSPrimitiveValue::createCustomIdent("-ua-mix-blend-mode-plus-lighter"_s));
+            list.append(CSSCustomIdentValue::create(CSS::CustomIdent { "-ua-mix-blend-mode-plus-lighter"_s }));
         Ref valueList = CSSValueList::createCommaSeparated(WTF::move(list));
         Ref props = MutableStyleProperties::create();
         props->setProperty(CSSPropertyAnimationName, WTF::move(valueList));
@@ -696,7 +697,7 @@ void ViewTransition::setupDynamicStyleSheet(const AtomString& name, const Captur
 
     // group animation name rule
     {
-        Ref list = CSSValueList::createCommaSeparated(CSSPrimitiveValue::createCustomIdent(makeString("-ua-view-transition-group-anim-"_s, name)));
+        Ref list = CSSValueList::createCommaSeparated(CSSCustomIdentValue::create(CSS::CustomIdent { makeAtomString("-ua-view-transition-group-anim-"_s, name) }));
         Ref props = MutableStyleProperties::create();
         props->setProperty(CSSPropertyAnimationName, WTF::move(list));
 

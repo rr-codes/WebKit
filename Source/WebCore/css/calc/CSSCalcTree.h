@@ -26,6 +26,7 @@
 #pragma once
 
 #include <WebCore/CSSCalcType.h>
+#include <WebCore/CSSCustomIdent.h>
 #include <WebCore/CSSPrimitiveNumeric.h>
 #include <WebCore/CSSPrimitiveNumericRange.h>
 #include <WebCore/CSSUnits.h>
@@ -33,7 +34,6 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/Vector.h>
-#include <wtf/text/AtomString.h>
 
 namespace WebCore {
 
@@ -753,7 +753,7 @@ struct Random {
 
             bool operator==(const Auto&) const = default;
         };
-        Variant<Auto, AtomString> identifier;
+        Variant<Auto, CSS::CustomIdent> identifier;
         std::optional<CSS::Keyword::ElementScoped> elementScoped;
 
         bool operator==(const SharingOptions&) const = default;
@@ -821,7 +821,7 @@ struct Anchor {
 
     // Can't use Style::ScopedName here, since the scope ordinal is not available at
     // parsing time.
-    AtomString elementName;
+    std::optional<CSS::CustomIdent> elementName;
     AnchorSide side;
     std::optional<Child> fallback;
 
@@ -836,9 +836,7 @@ struct AnchorSize {
     // <anchor-element> = <dashed-ident>
     // <anchor-size> = width | height | block | inline | self-block | self-inline
 
-    // Can't use Style::ScopedName here, since the scope ordinal is not available at
-    // parsing time.
-    AtomString elementName; // <anchor-element>
+    std::optional<CSS::CustomIdent> elementName; // <anchor-element>
     std::optional<Style::AnchorSizeDimension> dimension; // <anchor-size>
     std::optional<Child> fallback;
 

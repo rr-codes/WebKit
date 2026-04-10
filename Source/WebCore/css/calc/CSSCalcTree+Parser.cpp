@@ -671,7 +671,7 @@ static std::optional<Random::SharingOptions> consumeOptionalRandomSharingOptions
 {
     // <random-value-sharing> = [ auto | <dashed-ident> ] || element-scoped | fixed <number [0,1]>
 
-    std::optional<Variant<Random::SharingOptions::Auto, AtomString>> identifier;
+    std::optional<Variant<Random::SharingOptions::Auto, CSS::CustomIdent>> identifier;
     std::optional<CSS::Keyword::ElementScoped> elementScoped;
 
     CSSParserTokenRangeGuard guard { tokens };
@@ -684,8 +684,8 @@ static std::optional<Random::SharingOptions> consumeOptionalRandomSharingOptions
             identifier = makeRandomSharingAuto(state);
             return true;
         }
-        if (tokens.peek().type() == IdentToken && isValidCustomIdentifier(tokens.peek().id()) && tokens.peek().value().startsWith("--"_s)) {
-            identifier = tokens.consumeIncludingWhitespace().value().toAtomString();
+        if (auto dashedIdent = CSSPropertyParserHelpers::consumeUnresolvedDashedIdent(tokens, state.propertyParserState)) {
+            identifier = WTF::move(*dashedIdent);
             return true;
         }
         return false;
@@ -713,7 +713,7 @@ static std::optional<Random::SharingOptions> consumeOptionalRandomSharingOptions
     guard.commit();
 
     return Random::SharingOptions {
-        .identifier = identifier.value_or(AtomString { }),
+        .identifier = identifier.value_or(CSS::CustomIdent { nullAtom() }),
         .elementScoped = elementScoped
     };
 }
@@ -1037,7 +1037,7 @@ static std::optional<TypedChild> consumeAnchor(CSSParserTokenRange& tokens, int 
     if (!state.propertyParserState.context.propertySettings.cssAnchorPositioningEnabled)
         return { };
 
-    auto anchorElement = CSSPropertyParserHelpers::consumeDashedIdentRaw(tokens);
+    auto anchorElement = CSSPropertyParserHelpers::consumeUnresolvedDashedIdent(tokens, state.propertyParserState);
 
     // <anchor-side> = inside | outside | top | left | right | bottom | start | end | self-start | self-end | <percentage> | center
     auto anchorSide = [&]() -> std::optional<AnchorSide> {
@@ -1071,8 +1071,8 @@ static std::optional<TypedChild> consumeAnchor(CSSParserTokenRange& tokens, int 
     if (!anchorSide)
         return { };
 
-    if (anchorElement.isNull())
-        anchorElement = CSSPropertyParserHelpers::consumeDashedIdentRaw(tokens);
+    if (!anchorElement)
+        anchorElement = CSSPropertyParserHelpers::consumeUnresolvedDashedIdent(tokens, state.propertyParserState);
 
     auto type = Type::makeLength();
     std::optional<Child> fallback;
@@ -1093,7 +1093,7 @@ static std::optional<TypedChild> consumeAnchor(CSSParserTokenRange& tokens, int 
     state.requiresConversionData = true;
 
     auto anchor = Anchor {
-        .elementName = AtomString { WTF::move(anchorElement) },
+        .elementName = WTF::move(anchorElement),
         .side = WTF::move(*anchorSide),
         .fallback = WTF::move(fallback)
     };
@@ -1134,20 +1134,20 @@ static std::optional<TypedChild> consumeAnchorSize(CSSParserTokenRange& tokens, 
         return { };
 
     // parse <anchor-element>
-    auto maybeAnchorElement = CSSPropertyParserHelpers::consumeDashedIdentRaw(tokens);
+    auto maybeAnchorElement = CSSPropertyParserHelpers::consumeUnresolvedDashedIdent(tokens, state.propertyParserState);
 
     // then parse <anchor-size>
     auto maybeAnchorSize = CSSPropertyParserHelpers::consumeIdentRaw<CSSValueWidth, CSSValueHeight, CSSValueBlock, CSSValueInline, CSSValueSelfBlock, CSSValueSelfInline>(tokens);
 
     // if we could parse <anchor-size> but not <anchor-element>, it's possible <anchor-element> is specified
     // after <anchor-size>, so re-parse <anchor-element>
-    if (maybeAnchorSize && maybeAnchorElement.isNull())
-        maybeAnchorElement = CSSPropertyParserHelpers::consumeDashedIdentRaw(tokens);
+    if (maybeAnchorSize && !maybeAnchorElement)
+        maybeAnchorElement = CSSPropertyParserHelpers::consumeUnresolvedDashedIdent(tokens, state.propertyParserState);
 
     std::optional<TypedChild> fallback;
 
     // if either <anchor-element> or <anchor-size> is present
-    if (maybeAnchorSize || !maybeAnchorElement.isNull()) {
+    if (maybeAnchorSize || maybeAnchorElement) {
         // if a comma follows...
         if (CSSPropertyParserHelpers::consumeCommaIncludingWhitespace(tokens)) {
             // it must be followed by the fallback value.
@@ -1175,7 +1175,7 @@ static std::optional<TypedChild> consumeAnchorSize(CSSParserTokenRange& tokens, 
     state.requiresConversionData = true;
 
     auto anchorSize = AnchorSize {
-        .elementName = AtomString { WTF::move(maybeAnchorElement) },
+        .elementName = WTF::move(maybeAnchorElement),
         .dimension = maybeAnchorSize ? cssValueIDToAnchorSizeDimension(*maybeAnchorSize) : std::nullopt,
         .fallback = fallback ? std::make_optional(WTF::move(fallback->child)) : std::nullopt
     };

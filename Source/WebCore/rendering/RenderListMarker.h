@@ -26,7 +26,7 @@
 
 namespace WebCore {
 
-class CSSCounterStyle;
+class CSSRegisteredCounterStyle;
 class RenderListItem;
 class StyleRuleCounterStyle;
 
@@ -101,7 +101,7 @@ private:
     LayoutRect NODELETE localSelectionRect();
     void paintDisclosureMarker(GraphicsContext&, const FloatRect& markerRect);
 
-    RefPtr<CSSCounterStyle> counterStyle() const;
+    RefPtr<CSSRegisteredCounterStyle> counterStyle() const;
     bool widthUsesMetricsOfPrimaryFont() const;
 
 private:

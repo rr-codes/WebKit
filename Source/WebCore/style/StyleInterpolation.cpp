@@ -227,7 +227,7 @@ static bool typeOfSyntaxValueCanBeInterpolated(const CustomProperty::Value& synt
         [](const URL&) {
             return false;
         },
-        [](const CustomIdentifier&) {
+        [](const CustomIdent&) {
             return false;
         },
         [](const String&) {

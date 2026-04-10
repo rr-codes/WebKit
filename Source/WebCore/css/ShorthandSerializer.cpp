@@ -26,6 +26,7 @@
 #include "ShorthandSerializer.h"
 
 #include "CSSBorderImageWidthValue.h"
+#include "CSSCustomIdentValue.h"
 #include "CSSGridLineNamesValue.h"
 #include "CSSGridTemplateAreasValue.h"
 #include "CSSParserIdioms.h"
@@ -546,9 +547,8 @@ public:
 
     CSSValueID valueIDIncludingCustomIdent(unsigned index) const
     {
-        RefPtr value = dynamicDowncast<CSSPrimitiveValue>(m_values[index].get());
-        if (value && value->isCustomIdent())
-            return cssValueKeywordID(value->stringValue());
+        if (RefPtr customIdentValue = dynamicDowncast<CSSCustomIdentValue>(m_values[index].get()))
+            return cssValueKeywordID(customIdentValue->customIdent().value);
         return valueID(index).value_or(CSSValueInvalid);
     }
 
@@ -1141,10 +1141,13 @@ String ShorthandSerializer::serializeGrid() const
     return makeString("auto-flow"_s, dense, ' ', serializeLonghandValue(autoRowsIndex), " / "_s, serializeLonghandValue(columnsIndex));
 }
 
-static bool canOmitTrailingGridAreaValue(CSSValue& value, CSSValue& trailing, const CSS::SerializationContext& context)
+static bool canOmitTrailingGridAreaValue(CSSValue& value, CSSValue& trailing)
 {
-    if (isCustomIdentValue(value))
-        return isCustomIdentValue(trailing) && value.cssText(context) == trailing.cssText(context);
+    if (RefPtr customIdentValue = dynamicDowncast<CSSCustomIdentValue>(value)) {
+        if (RefPtr customIdentTrailing = dynamicDowncast<CSSCustomIdentValue>(trailing))
+            return customIdentValue->customIdent() == customIdentTrailing->customIdent();
+        return false;
+    }
     return isValueID(trailing, CSSValueAuto);
 }
 
@@ -1152,11 +1155,11 @@ String ShorthandSerializer::serializeGridArea() const
 {
     ASSERT(length() == 4);
     unsigned longhandsToSerialize = 4;
-    if (canOmitTrailingGridAreaValue(longhandValue(1), longhandValue(3), m_serializationContext)) {
+    if (canOmitTrailingGridAreaValue(longhandValue(1), longhandValue(3))) {
         --longhandsToSerialize;
-        if (canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(2), m_serializationContext)) {
+        if (canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(2))) {
             --longhandsToSerialize;
-            if (canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(1), m_serializationContext))
+            if (canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(1)))
                 --longhandsToSerialize;
         }
     }
@@ -1166,7 +1169,7 @@ String ShorthandSerializer::serializeGridArea() const
 String ShorthandSerializer::serializeGridRowColumn() const
 {
     ASSERT(length() == 2);
-    return serializeLonghands(canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(1), m_serializationContext) ? 1 : 2, " / "_s);
+    return serializeLonghands(canOmitTrailingGridAreaValue(longhandValue(0), longhandValue(1)) ? 1 : 2, " / "_s);
 }
 
 String ShorthandSerializer::serializeGridTemplate() const

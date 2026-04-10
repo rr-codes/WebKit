@@ -528,20 +528,22 @@ RefPtr<StyleRuleBase> CSSParser::consumeQualifiedRule(CSSParserTokenRange& range
     // https://github.com/w3c/csswg-drafts/issues/9336#issuecomment-1719806755
     if (range.peek().type() == LeftBraceToken) {
         auto rangeCopyForDashedIdent = initialRange;
-        auto customProperty = CSSPropertyParserHelpers::consumeDashedIdent(rangeCopyForDashedIdent);
-        // This rule is ambigous with a custom property because it looks like "--ident: ...."
-        if (customProperty && rangeCopyForDashedIdent.peek().type() == ColonToken) {
-            if (isStyleNestedContext()) {
-                // Error, consume until semicolon or end of block.
-                while (!range.atEnd() && range.peek().type() != SemicolonToken)
-                    range.consumeComponentValue();
-                if (range.peek().type() == SemicolonToken)
-                    range.consume();
+        // This rule is ambiguous with a custom property because it looks like "--ident: ...."
+        if (rangeCopyForDashedIdent.peek().type() == IdentToken && rangeCopyForDashedIdent.peek().value().startsWith("--"_s)) {
+            rangeCopyForDashedIdent.consumeIncludingWhitespace();
+            if (rangeCopyForDashedIdent.peek().type() == ColonToken) {
+                if (isStyleNestedContext()) {
+                    // Error, consume until semicolon or end of block.
+                    while (!range.atEnd() && range.peek().type() != SemicolonToken)
+                        range.consumeComponentValue();
+                    if (range.peek().type() == SemicolonToken)
+                        range.consume();
+                    return { };
+                }
+                // Error, consume until end of block.
+                range.consumeBlock();
                 return { };
             }
-            // Error, consume until end of block.
-            range.consumeBlock();
-            return { };
         }
     }
 
@@ -917,7 +919,7 @@ RefPtr<StyleRuleFontFeatureValues> CSSParser::consumeFontFeatureValuesRule(CSSPa
 
 RefPtr<StyleRuleFontPaletteValues> CSSParser::consumeFontPaletteValuesRule(CSSParserTokenRange prelude, CSSParserTokenRange block)
 {
-    RefPtr name = CSSPropertyParserHelpers::consumeDashedIdent(prelude);
+    auto name = CSSPropertyParserHelpers::consumeEagerlyResolvableDashedIdentRaw(prelude);
     if (!name || !prelude.atEnd())
         return nullptr; // Parse error; expected custom ident in @font-palette-values header
 
@@ -978,7 +980,7 @@ RefPtr<StyleRuleFontPaletteValues> CSSParser::consumeFontPaletteValuesRule(CSSPa
         });
     }
 
-    return StyleRuleFontPaletteValues::create(AtomString { name->stringValue() }, WTF::move(fontFamilies), WTF::move(basePalette), WTF::move(overrideColors));
+    return StyleRuleFontPaletteValues::create(name.toAtomString(), WTF::move(fontFamilies), WTF::move(basePalette), WTF::move(overrideColors));
 }
 
 RefPtr<StyleRuleKeyframes> CSSParser::consumeKeyframesRule(CSSParserTokenRange prelude, CSSParserTokenRange block)
@@ -1079,7 +1081,7 @@ RefPtr<StyleRulePositionTry> CSSParser::consumePositionTryRule(CSSParserTokenRan
         return nullptr;
 
     // Prelude should ONLY be a <dashed-ident>.
-    AtomString ruleName { CSSPropertyParserHelpers::consumeDashedIdentRaw(prelude) };
+    auto ruleName = CSSPropertyParserHelpers::consumeEagerlyResolvableDashedIdentRaw(prelude);
     if (!ruleName)
         return nullptr;
     if (!prelude.atEnd())
@@ -1094,7 +1096,7 @@ RefPtr<StyleRulePositionTry> CSSParser::consumePositionTryRule(CSSParserTokenRan
     }
 
     auto declarations = consumeDeclarationListInNewNestingContext(block, StyleRuleType::PositionTry);
-    return StyleRulePositionTry::create(WTF::move(ruleName), createStyleProperties(declarations, m_context.mode));
+    return StyleRulePositionTry::create(ruleName.toAtomString(), createStyleProperties(declarations, m_context.mode));
 }
 
 RefPtr<StyleRuleFunction> CSSParser::consumeFunctionRule(CSSParserTokenRange prelude, CSSParserTokenRange block)
