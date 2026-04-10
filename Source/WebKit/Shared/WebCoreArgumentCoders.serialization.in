@@ -6841,6 +6841,7 @@ header: <WebCore/TextExtractionTypes.h>
     bool isReadonly;
     bool isDisabled;
     bool isChecked;
+    bool isAutofilled;
 };
 
 header: <WebCore/TextExtractionTypes.h>

@@ -645,6 +645,7 @@ static inline Variant<SkipExtraction, ItemData, URL, Editable> extractItemData(N
                 .isReadonly = input && input->isReadOnly(),
                 .isDisabled = control->isDisabled(),
                 .isChecked = input && input->checked(),
+                .isAutofilled = input && (input->autofilled() || input->autofilledAndViewable() || input->autofilledAndObscured()),
             } };
         }
     }

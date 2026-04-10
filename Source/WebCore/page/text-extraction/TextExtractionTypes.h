@@ -171,6 +171,7 @@ struct TextFormControlData {
     bool isReadonly { false };
     bool isDisabled { false };
     bool isChecked { false };
+    bool isAutofilled { false };
 };
 
 struct SelectOptionData {

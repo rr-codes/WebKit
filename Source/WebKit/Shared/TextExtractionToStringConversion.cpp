@@ -1091,6 +1091,8 @@ static void populateJSONForItem(JSON::Object& jsonObject, const TextExtraction::
                 jsonObject.setBoolean("secure"_s, true);
             if (controlData.editable.isFocused)
                 jsonObject.setBoolean("focused"_s, true);
+            if (controlData.isAutofilled)
+                jsonObject.setBoolean("autofilled"_s, true);
         },
         [&](const TextExtraction::FormData& formData) {
             if (!formData.autocomplete.isEmpty())
@@ -1488,6 +1490,9 @@ static void addPartsForItem(const TextExtraction::Item& item, std::optional<Node
 
                 if (controlData.editable.isFocused)
                     parts.append("focused"_s);
+
+                if (controlData.isAutofilled)
+                    parts.append("autofilled"_s);
             }
 
             aggregator.addResult(line, WTF::move(parts));
