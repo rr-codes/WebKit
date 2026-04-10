@@ -1192,7 +1192,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 
 void VM::gatherEvacuatedStackRoots(ConservativeRoots& roots)
 {
-    Locker locker { m_evacuatedStacksLock };
+    ASSERT(heap.worldIsStopped());
     for (auto* slice : m_evacuatedStackSlices) {
         std::span<Register> slots = slice->slots();
         roots.add(slots.data(), slots.data() + slots.size());
@@ -1554,25 +1554,25 @@ bool VM::isScratchBuffer(void* ptr)
 
 void VM::addEvacuatedStackSlice(EvacuatedStackSlice* slice)
 {
-    Locker lock { m_evacuatedStacksLock };
+    ASSERT(currentThreadIsHoldingAPILock());
     m_evacuatedStackSlices.append(slice);
 }
 
 void VM::removeEvacuatedStackSlice(EvacuatedStackSlice* slice)
 {
-    Locker lock { m_evacuatedStacksLock };
+    ASSERT(currentThreadIsHoldingAPILock());
     m_evacuatedStackSlices.removeAll(slice);
 }
 
 void VM::addEvacuatedCalleeSaves(std::span<CPURegister> span)
 {
-    Locker lock { m_evacuatedStacksLock };
+    ASSERT(currentThreadIsHoldingAPILock());
     m_evacuatedCalleeSaves.constructAndAppend(span);
 }
 
 void VM::removeEvacuatedCalleeSaves(std::span<CPURegister> span)
 {
-    Locker lock { m_evacuatedStacksLock };
+    ASSERT(currentThreadIsHoldingAPILock());
     m_evacuatedCalleeSaves.removeAllMatching([&](const std::span<CPURegister>& existing) {
         return existing.data() == span.data() && existing.size() == span.size();
     });

@@ -1298,7 +1298,6 @@ private:
     Lock m_scratchBufferLock;
     Vector<ScratchBuffer*> m_scratchBuffers;
     size_t m_sizeOfLastScratchBuffer { 0 };
-    Lock m_evacuatedStacksLock;
     Vector<EvacuatedStackSlice*> m_evacuatedStackSlices;
     Vector<std::span<CPURegister>> m_evacuatedCalleeSaves;
     Vector<std::unique_ptr<CheckpointOSRExitSideState>, expectedMaxActiveSideStateCount> m_checkpointSideState;
