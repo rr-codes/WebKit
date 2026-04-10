@@ -271,7 +271,7 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
     {
         // FIXME: This should be made into the basic usage of the manager, if not the agent itself.
         //        At that point, we can remove this duplication from the visualization and sidebar.
-        let {removals, additions} = WI.layerTreeManager.layerTreeMutations(this._layers, newLayers);
+        let {preserved, removals, additions} = WI.layerTreeManager.layerTreeMutations(this._layers, newLayers);
 
         for (let layer of removals) {
             let layerGroup = this._layerGroupsById.get(layer.layerId);
@@ -288,6 +288,20 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
             let layerGroup = this._createLayerGroup(layer);
             this._layerGroupsById.set(layer.layerId, layerGroup);
             this._scene.add(layerGroup);
+        }
+
+        for (let layer of preserved) {
+            let layerGroup = this._layerGroupsById.get(layer.layerId);
+            let previousLayer = layerGroup.userData.layer;
+            layerGroup.userData.layer = layer;
+
+            if (WI.settings.experimentalLayers3DShowLayerContents.value && layer.paintCount !== previousLayer.paintCount) {
+                this._disposeLayerGroupChildren(layerGroup);
+                while (layerGroup.children.length > 0)
+                    layerGroup.remove(layerGroup.children[0]);
+
+                this._populateLayerGroup(layerGroup, layer);
+            }
         }
 
         // FIXME: Update the backend to provide a literal "layer tree" so we can decide z-indices less naively.
@@ -564,6 +578,17 @@ WI.Layers3DContentView = class Layers3DContentView extends WI.ContentView
         this._pendingTextureLoads.clear();
 
         this._refreshAllLayers();
+
+        // z-interval changes between textured (10) and non-textured (25) modes,
+        // so reposition layers and update camera constraints to match.
+        let zInterval = this._zInterval();
+        this._layers.forEach((layer, index) => {
+            let layerGroup = this._layerGroupsById.get(layer.layerId);
+            layerGroup?.position.set(0, 0, index * zInterval);
+        });
+
+        this._boundingBox.setFromObject(this._scene);
+        this._controls.maxDistance = this._boundingBox.max.z + WI.Layers3DContentView._zPadding;
     }
 
     _handleRefreshLayersButtonClicked(event)
