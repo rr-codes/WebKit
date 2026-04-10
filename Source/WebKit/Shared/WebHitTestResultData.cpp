@@ -52,7 +52,7 @@ static WebHitTestResultData::ElementType elementTypeFromHitTestResult(const HitT
 
 static RefPtr<WebFrame> webFrameFromHitTestResult(const HitTestResult& hitTestResult)
 {
-    RefPtr coreFrame = hitTestResult.frame();
+    auto* coreFrame = hitTestResult.frame();
     if (!coreFrame)
         return nullptr;
 

@@ -1537,8 +1537,8 @@ WebPage::~WebPage()
     m_sandboxExtensionTracker.invalidate();
 
 #if ENABLE(PDF_PLUGIN)
-    for (Ref pluginView : m_pluginViews)
-        pluginView->webPageDestroyed();
+    for (auto& pluginView : m_pluginViews)
+        pluginView.webPageDestroyed();
 #endif
 
 #if !PLATFORM(IOS_FAMILY)
@@ -2060,7 +2060,7 @@ void WebPage::close()
     if (RefPtr activeOpenPanelResultListener = std::exchange(m_activeOpenPanelResultListener, nullptr))
         activeOpenPanelResultListener->disconnectFromPage();
 
-    if (RefPtr activeColorChooser = m_activeColorChooser.get()) {
+    if (auto* activeColorChooser = m_activeColorChooser.get()) {
         activeColorChooser->disconnectFromPage();
         m_activeColorChooser = nullptr;
     }
@@ -2449,7 +2449,7 @@ void WebPage::goToBackForwardItem(GoToBackForwardItemParameters&& parameters)
     m_sandboxExtensionTracker.beginLoad(WTF::move(parameters.sandboxExtensionHandle));
 
     m_lastNavigationWasAppInitiated = parameters.lastNavigationWasAppInitiated;
-    if (RefPtr localMainFrame = corePage()->localMainFrame()) {
+    if (auto* localMainFrame = corePage()->localMainFrame()) {
         if (auto* documentLoader = localMainFrame->loader().documentLoader())
             documentLoader->setLastNavigationWasAppInitiated(parameters.lastNavigationWasAppInitiated);
     }

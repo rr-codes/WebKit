@@ -219,7 +219,7 @@ bool BackForwardListState::isEqualForTesting(const BackForwardListState& other) 
 
 bool BackForwardListItemState::isEqualForTesting(const BackForwardListItemState& other) const
 {
-    if (!protect(frameState)->isEqualForTesting(protect(other.frameState).get()))
+    if (!frameState->isEqualForTesting(other.frameState.get()))
         return false;
 
     if (navigatedFrameID != other.navigatedFrameID)

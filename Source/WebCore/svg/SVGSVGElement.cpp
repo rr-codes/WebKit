@@ -645,7 +645,7 @@ FloatSize SVGSVGElement::currentViewportSizeExcludingZoom() const
             viewportSize = svgRoot->contentBoxRect().size() / svgRoot->style().usedZoom();
         else if (auto* svgViewportContainer = dynamicDowncast<LegacyRenderSVGViewportContainer>(renderer()))
             viewportSize = svgViewportContainer->viewport().size();
-        else if (CheckedPtr svgRoot = dynamicDowncast<RenderSVGRoot>(renderer()))
+        else if (auto* svgRoot = dynamicDowncast<RenderSVGRoot>(renderer()))
             viewportSize = svgRoot->contentBoxRect().size() / svgRoot->style().usedZoom();
         else if (auto* svgViewportContainer = dynamicDowncast<RenderSVGViewportContainer>(renderer()))
             viewportSize = svgViewportContainer->viewport().size();
@@ -880,9 +880,9 @@ RefPtr<Element> SVGSVGElement::getElementById(const AtomString& id)
         return nullptr;
 
     if (!isInTreeScope()) [[unlikely]] {
-        for (Ref element : descendantsOfType<Element>(*this)) {
-            if (element->getIdAttribute() == id)
-                return element.ptr();
+        for (auto& element : descendantsOfType<Element>(*this)) {
+            if (element.getIdAttribute() == id)
+                return &element;
         }
         return nullptr;
     }

@@ -271,7 +271,7 @@ Position Position::parentAnchoredEquivalent() const
 
 RefPtr<Node> Position::firstNode() const
 {
-    RefPtr container { containerNode() };
+    auto* container = containerNode();
     if (!container)
         return nullptr;
     if (is<CharacterData>(*container))
@@ -948,19 +948,19 @@ RefPtr<Node> Position::rootUserSelectAllForNode(Node* node)
 {
     if (!node || !nodeIsUserSelectAll(node))
         return nullptr;
-    RefPtr parent = node->parentNode();
+    auto* parent = node->parentNode();
     if (!parent)
         return node;
 
-    RefPtr candidateRoot = node;
+    Node* candidateRoot = node;
     while (parent) {
         if (!parent->renderer()) {
             parent = parent->parentNode();
             continue;
         }
-        if (!nodeIsUserSelectAll(parent.get()))
+        if (!nodeIsUserSelectAll(parent))
             break;
-        candidateRoot = WTF::move(parent);
+        candidateRoot = parent;
         parent = candidateRoot->parentNode();
     }
     return candidateRoot;

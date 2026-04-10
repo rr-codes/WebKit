@@ -477,7 +477,7 @@ bool SWServerWorker::isClientActiveServiceWorker(ScriptExecutionContextIdentifie
 {
     if (!m_server)
         return false;
-    auto registrationIdentifier = protect(server())->clientIdentifierToControllingRegistration(clientIdentifier);
+    auto registrationIdentifier = server()->clientIdentifierToControllingRegistration(clientIdentifier);
     return registrationIdentifier == m_data.registrationIdentifier;
 }
 

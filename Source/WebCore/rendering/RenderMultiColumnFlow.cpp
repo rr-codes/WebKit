@@ -430,7 +430,7 @@ bool RenderMultiColumnFlow::shouldCheckColumnBreaks() const
 {
     if (!parent()->isRenderView())
         return true;
-    return protect(view().frameView())->pagination().behavesLikeColumns;
+    return view().frameView().pagination().behavesLikeColumns;
 }
 
 }

@@ -536,11 +536,11 @@ static inline bool NODELETE isChildTypeAllowed(ContainerNode& newParent, Node& c
 
 static bool containsIncludingHostElements(const Node& possibleAncestor, const Node& node)
 {
-    RefPtr<const Node> currentNode = node;
+    const Node* currentNode = &node;
     do {
         if (currentNode == &possibleAncestor)
             return true;
-        RefPtr<const ContainerNode> parent = currentNode->parentNode();
+        const ContainerNode* parent = currentNode->parentNode();
         if (!parent) {
             if (auto* shadowRoot = dynamicDowncast<ShadowRoot>(*currentNode))
                 parent = shadowRoot->host();

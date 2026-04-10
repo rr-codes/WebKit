@@ -262,14 +262,14 @@ void WKPageLoadData(WKPageRef pageRef, WKDataRef dataRef, WKStringRef MIMETypeRe
 {
     CRASH_IF_SUSPENDED;
     // FIXME: Use WebCore::DataSegment::Provider to remove this unnecessary copy.
-    protect(toImpl(pageRef))->loadData(WebCore::SharedBuffer::create(protect(toImpl(dataRef))->span()), toWTFString(MIMETypeRef), toWTFString(encodingRef), toWTFString(baseURLRef));
+    protect(toImpl(pageRef))->loadData(WebCore::SharedBuffer::create(toImpl(dataRef)->span()), toWTFString(MIMETypeRef), toWTFString(encodingRef), toWTFString(baseURLRef));
 }
 
 void WKPageLoadDataWithUserData(WKPageRef pageRef, WKDataRef dataRef, WKStringRef MIMETypeRef, WKStringRef encodingRef, WKURLRef baseURLRef, WKTypeRef userDataRef)
 {
     CRASH_IF_SUSPENDED;
     // FIXME: Use WebCore::DataSegment::Provider to remove this unnecessary copy.
-    protect(toImpl(pageRef))->loadData(WebCore::SharedBuffer::create(protect(toImpl(dataRef))->span()), toWTFString(MIMETypeRef), toWTFString(encodingRef), toWTFString(baseURLRef), protect(toImpl(userDataRef)).get());
+    protect(toImpl(pageRef))->loadData(WebCore::SharedBuffer::create(toImpl(dataRef)->span()), toWTFString(MIMETypeRef), toWTFString(encodingRef), toWTFString(baseURLRef), protect(toImpl(userDataRef)).get());
 }
 
 static String encodingOf(const String& string)
@@ -452,7 +452,7 @@ void WKPageUpdateWebsitePolicies(WKPageRef pageRef, WKWebsitePoliciesRef website
 
 WKStringRef WKPageCopyTitle(WKPageRef pageRef)
 {
-    return toCopiedAPI(protect(protect(toImpl(pageRef))->pageLoadState())->title());
+    return toCopiedAPI(toImpl(pageRef)->pageLoadState().title());
 }
 
 WKFrameRef WKPageGetMainFrame(WKPageRef pageRef)
@@ -2855,17 +2855,17 @@ WK_EXPORT WKURLRef WKPageCopyPendingAPIRequestURL(WKPageRef pageRef)
 
 WKURLRef WKPageCopyActiveURL(WKPageRef pageRef)
 {
-    return toCopiedURLAPI(protect(protect(toImpl(pageRef))->pageLoadState())->activeURL());
+    return toCopiedURLAPI(toImpl(pageRef)->pageLoadState().activeURL());
 }
 
 WKURLRef WKPageCopyProvisionalURL(WKPageRef pageRef)
 {
-    return toCopiedURLAPI(protect(toImpl(pageRef))->pageLoadState().provisionalURL());
+    return toCopiedURLAPI(toImpl(pageRef)->pageLoadState().provisionalURL());
 }
 
 WKURLRef WKPageCopyCommittedURL(WKPageRef pageRef)
 {
-    return toCopiedURLAPI(protect(toImpl(pageRef))->pageLoadState().url());
+    return toCopiedURLAPI(toImpl(pageRef)->pageLoadState().url());
 }
 
 WKStringRef WKPageCopyStandardUserAgentWithApplicationName(WKStringRef applicationName)
@@ -2900,7 +2900,7 @@ static PrintInfo printInfoFromWKPrintInfo(const WKPrintInfo& printInfo)
 void WKPageComputePagesForPrinting(WKPageRef pageRef, WKFrameRef frame, WKPrintInfo printInfo, WKPageComputePagesForPrintingFunction callback, void* context)
 {
     CRASH_IF_SUSPENDED;
-    protect(toImpl(pageRef))->computePagesForPrinting(protect(toImpl(frame))->frameID(), printInfoFromWKPrintInfo(printInfo), [context, callback](const Vector<WebCore::IntRect>& rects, double scaleFactor, const WebCore::FloatBoxExtent& computedPageMargin) {
+    protect(toImpl(pageRef))->computePagesForPrinting(toImpl(frame)->frameID(), printInfoFromWKPrintInfo(printInfo), [context, callback](const Vector<WebCore::IntRect>& rects, double scaleFactor, const WebCore::FloatBoxExtent& computedPageMargin) {
         auto wkRects = rects.map([](auto& rect) { return toAPI(rect); });
         callback(wkRects.mutableSpan().data(), wkRects.size(), scaleFactor, nullptr, context);
     });

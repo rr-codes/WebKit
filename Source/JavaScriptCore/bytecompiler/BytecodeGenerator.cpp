@@ -3250,7 +3250,7 @@ void BytecodeGenerator::emitTDZCheckIfNecessary(const Variable& variable, Regist
 
 void BytecodeGenerator::liftTDZCheckIfPossible(const Variable& variable)
 {
-    RefPtr<UniquedStringImpl> identifier(variable.ident().impl());
+    UniquedStringImpl* identifier = variable.ident().impl();
     for (unsigned i = m_TDZStack.size(); i--;) {
         auto iter = m_TDZStack[i].first.find(identifier);
         if (iter != m_TDZStack[i].first.end()) {

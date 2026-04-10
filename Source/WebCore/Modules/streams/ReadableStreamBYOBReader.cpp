@@ -189,7 +189,7 @@ void ReadableStreamBYOBReader::genericRelease(JSDOMGlobalObject& globalObject)
         m_closedPromise = WTF::move(promise);
     }
 
-    if (RefPtr controller = stream->controller())
+    if (auto* controller = stream->controller())
         controller->runReleaseSteps();
 
     stream->setByobReader(nullptr);

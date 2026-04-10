@@ -464,7 +464,7 @@ std::optional<ElementUpdate> TreeResolver::resolvePseudoElement(Element& element
             auto* pickerElement = select->pickerPopoverElement();
             if (!pickerElement)
                 return { };
-            CheckedPtr pickerStyle = m_update->elementStyle(*pickerElement);
+            auto* pickerStyle = m_update->elementStyle(*pickerElement);
             if (!pickerStyle || pickerStyle->usedAppearance() != StyleAppearance::Base)
                 return { };
         } else {
@@ -1055,7 +1055,7 @@ std::unique_ptr<RenderStyle> TreeResolver::resolveAgainInDifferentContext(const 
 
 const RenderStyle& TreeResolver::parentAfterChangeStyle(const Styleable& styleable, const ResolutionContext& resolutionContext) const
 {
-    if (RefPtr parentElement = !styleable.pseudoElementIdentifier ? parent().element : &styleable.element) {
+    if (auto* parentElement = !styleable.pseudoElementIdentifier ? parent().element : &styleable.element) {
         if (auto* afterChangeStyle = parentElement->lastStyleChangeEventStyle({ }))
             return *afterChangeStyle;
     }
@@ -1669,7 +1669,7 @@ std::unique_ptr<RenderStyle> TreeResolver::generatePositionOption(const Position
         // https://drafts.csswg.org/css-scoping-1/#shadow-names
         return Style::Scope::resolveTreeScopedReference(styleable.element, *fallback.ruleAndTactics.rule, [](const Style::Scope& scope, const AtomString& name) -> RefPtr<const StyleProperties> {
             auto& ruleSet = scope.resolverIfExists()->ruleSets().authorStyle();
-            auto rule = ruleSet.positionTryRuleForName(name);
+            RefPtr rule = ruleSet.positionTryRuleForName(name);
             if (!rule)
                 return nullptr;
             return rule->properties();

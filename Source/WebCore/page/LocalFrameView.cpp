@@ -981,7 +981,7 @@ GraphicsLayer* LocalFrameView::graphicsLayerForPlatformWidget(PlatformWidget pla
 {
     // To find the Widget that corresponds with platformWidget we have to do a linear
     // search of our child widgets.
-    RefPtr<const Widget> foundWidget = nullptr;
+    const Widget* foundWidget = nullptr;
     for (auto& widget : children()) {
         if (widget->platformWidget() != platformWidget)
             continue;
@@ -7120,7 +7120,7 @@ Color LocalFrameView::scrollbarTrackColorStyle() const
 Style::ScrollbarGutter LocalFrameView::scrollbarGutterStyle()  const
 {
     auto* document = m_frame->document();
-    CheckedPtr scrollingObject = document && document->documentElement() ? document->documentElement()->renderer() : nullptr;
+    auto* scrollingObject = document && document->documentElement() ? document->documentElement()->renderer() : nullptr;
     if (scrollingObject)
         return scrollingObject->style().scrollbarGutter();
     return CSS::Keyword::Auto { };

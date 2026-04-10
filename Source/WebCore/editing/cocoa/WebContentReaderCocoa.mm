@@ -458,9 +458,9 @@ static void simplifyFragmentForSingleTextAttachment(NSAttributedString *string, 
         return;
 
     RefPtr pictureOrImage = [&] -> RefPtr<HTMLElement> {
-        for (Ref element : descendantsOfType<HTMLElement>(fragment)) {
+        for (auto& element : descendantsOfType<HTMLElement>(fragment)) {
             if (isAnyOf<HTMLPictureElement, HTMLImageElement>(element))
-                return WTF::move(element);
+                return &element;
         }
         return { };
     }();

@@ -388,7 +388,7 @@ void StreamPipeToState::doWrite(JSC::JSValue value)
     if (!m_pendingWritePromise)
         return;
 
-    RefPtr { m_pendingWritePromise }->markAsHandled();
+    m_pendingWritePromise->markAsHandled();
 
     loop();
 }

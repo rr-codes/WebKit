@@ -588,7 +588,7 @@ static bool removingNodeRemovesPosition(Node& node, const Position& position)
     if (position.anchorNode() == &node)
         return true;
 
-    RefPtr element = dynamicDowncast<Element>(node);
+    auto* element = dynamicDowncast<Element>(node);
     return element && element->isShadowIncludingInclusiveAncestorOf(position.anchorNode());
 }
 

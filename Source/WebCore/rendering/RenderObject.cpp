@@ -272,7 +272,7 @@ RenderObject::FragmentedFlowState RenderObject::computedFragmentedFlowState(cons
         inheritedFlowState = renderer.parent()->fragmentedFlowState();
     else if (isAnyOf<RenderSVGBlock, RenderSVGInline, LegacyRenderSVGModelObject>(renderer)) {
         // containingBlock() skips svg boundary (SVG root is a RenderReplaced).
-        if (CheckedPtr svgRoot = SVGRenderSupport::findTreeRootObject(downcast<RenderElement>(renderer)))
+        if (auto* svgRoot = SVGRenderSupport::findTreeRootObject(downcast<RenderElement>(renderer)))
             inheritedFlowState = svgRoot->fragmentedFlowState();
     } else if (CheckedPtr container = renderer.container())
         inheritedFlowState = container->fragmentedFlowState();
@@ -517,7 +517,7 @@ static inline bool isLayoutBoundary(const RenderElement& renderer)
         return true;
 
     auto& style = renderer.style();
-    if (CheckedPtr textControl = dynamicDowncast<RenderTextControl>(renderer)) {
+    if (auto* textControl = dynamicDowncast<RenderTextControl>(renderer)) {
         if (!textControl->isFlexItem() && !textControl->isGridItem() && style.fieldSizing() != FieldSizing::Content) {
             // Flexing type of layout systems may compute different size than what input's preferred width is which won't happen unless they run their layout as well.
             return true;
@@ -809,7 +809,7 @@ void RenderObject::collectSelectionGeometries(Vector<SelectionGeometry>& geometr
     }
 
     for (auto& quad : quads)
-        geometries.append(SelectionGeometry(quad, HTMLElement::selectionRenderingBehavior(protect(node()).get()), isHorizontalWritingMode(), protect(view())->pageNumberForBlockProgressionOffset(quad.enclosingBoundingBox().x())));
+        geometries.append(SelectionGeometry(quad, HTMLElement::selectionRenderingBehavior(node()), isHorizontalWritingMode(), view().pageNumberForBlockProgressionOffset(quad.enclosingBoundingBox().x())));
 }
 
 IntRect RenderObject::absoluteBoundingBoxRect(bool useTransforms, bool* wasFixed) const
@@ -931,8 +931,8 @@ void RenderObject::propagateRepaintToParentWithOutlineAutoIfNeeded(const RenderL
     for (CheckedPtr renderer = this; renderer; renderer = renderer->parent()) {
         CheckedPtr originalRenderer = renderer;
         if (CheckedPtr previousMultiColumnSet = dynamicDowncast<RenderMultiColumnSet>(renderer->previousSibling()); previousMultiColumnSet && !renderer->isRenderMultiColumnSet() && !renderer->isLegend()) {
-            CheckedPtr enclosingMultiColumnFlow = previousMultiColumnSet->multiColumnFlow();
-            CheckedPtr renderMultiColumnPlaceholder = enclosingMultiColumnFlow->findColumnSpannerPlaceholder(downcast<RenderBox>(*renderer));
+            auto* enclosingMultiColumnFlow = previousMultiColumnSet->multiColumnFlow();
+            auto* renderMultiColumnPlaceholder = enclosingMultiColumnFlow->findColumnSpannerPlaceholder(downcast<RenderBox>(*renderer));
             ASSERT(renderMultiColumnPlaceholder);
             renderer = WTF::move(renderMultiColumnPlaceholder);
         }
@@ -2229,7 +2229,7 @@ static Vector<FloatRect> borderAndTextRects(const SimpleRange& range, Coordinate
 {
     Vector<FloatRect> rects;
 
-    protect(range.start.document())->updateLayoutIgnorePendingStylesheets();
+    range.start.document().updateLayoutIgnorePendingStylesheets();
 
     bool useVisibleBounds = behavior.contains(RenderObject::BoundingRectBehavior::UseVisibleBounds);
 
@@ -2594,7 +2594,7 @@ static bool NODELETE shouldRenderSelectionOnSeparateLine(const RenderObject* cur
 
 static bool NODELETE hasAncestorWithSelectionOnSeparateLine(RenderObject* descendant, const RenderObject* stayWithin)
 {
-    for (CheckedPtr current = descendant; current; current = current->parent()) {
+    for (auto* current = descendant; current; current = current->parent()) {
         if (current->isOutOfFlowPositioned())
             return true;
         if (current->isRenderMultiColumnFlow())
@@ -2694,8 +2694,8 @@ auto RenderObject::collectSelectionGeometriesInternal(const SimpleRange& range) 
     // The range could span nodes with different writing modes.
     // If this is the case, we use the writing mode of the common ancestor.
     if (containsDifferentWritingModes) {
-        if (RefPtr ancestor = commonInclusiveAncestor<ComposedTree>(range)) {
-            if (CheckedPtr renderer = ancestor->renderer())
+        if (auto* ancestor = commonInclusiveAncestor<ComposedTree>(range)) {
+            if (auto* renderer = ancestor->renderer())
                 hasFlippedWritingMode = renderer->writingMode().isBlockFlipped();
         }
     }

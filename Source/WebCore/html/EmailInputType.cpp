@@ -68,7 +68,7 @@ bool EmailInputType::typeMismatchFor(StringView value) const
     ASSERT(element());
     if (value.isEmpty())
         return false;
-    if (!protect(element())->multiple())
+    if (!element()->multiple())
         return !isValidEmailAddress(value);
     for (auto address : value.splitAllowingEmptyEntries(',')) {
         if (!isValidEmailAddress(address.trim(isASCIIWhitespace<char16_t>)))
@@ -86,7 +86,7 @@ bool EmailInputType::typeMismatch() const
 String EmailInputType::typeMismatchText() const
 {
     ASSERT(element());
-    return protect(element())->multiple() ? validationMessageTypeMismatchForMultipleEmailText() : validationMessageTypeMismatchForEmailText();
+    return element()->multiple() ? validationMessageTypeMismatchForMultipleEmailText() : validationMessageTypeMismatchForEmailText();
 }
 
 bool EmailInputType::supportsSelectionAPI() const
@@ -115,7 +115,7 @@ ValueOrReference<String> EmailInputType::sanitizeValue(const String& proposedVal
     }
 
     ASSERT(element());
-    if (!protect(element())->multiple())
+    if (!element()->multiple())
         return noLineBreakValue.trim(isASCIIWhitespace);
     StringBuilder strippedValue;
     bool first = true;

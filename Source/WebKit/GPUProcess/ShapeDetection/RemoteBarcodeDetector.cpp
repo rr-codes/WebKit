@@ -55,7 +55,7 @@ RemoteBarcodeDetector::~RemoteBarcodeDetector() = default;
 
 std::optional<SharedPreferencesForWebProcess> RemoteBarcodeDetector::sharedPreferencesForWebProcess() const
 {
-    return Ref { m_renderingBackend.get() }->sharedPreferencesForWebProcess();
+    return m_renderingBackend.get().sharedPreferencesForWebProcess();
 }
 
 void RemoteBarcodeDetector::detect(WebCore::RenderingResourceIdentifier renderingResourceIdentifier, CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedBarcode>&&)>&& completionHandler)

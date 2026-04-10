@@ -672,7 +672,7 @@ Expected<void, String> SubresourceLoader::checkRedirectionCrossOriginAccessContr
     bool isNextRequestCrossOrigin = m_origin && !protect(m_origin)->canRequest(newRequest.url(), OriginAccessPatternsForWebProcess::singleton());
 
     if (isNextRequestCrossOrigin)
-        protect(cachedResource())->setCrossOrigin();
+        cachedResource()->setCrossOrigin();
     bool newCrossOriginFlag = m_resource->isCrossOrigin();
 
     ASSERT(options().mode != FetchOptions::Mode::SameOrigin || !newCrossOriginFlag);

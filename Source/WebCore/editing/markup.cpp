@@ -1435,7 +1435,7 @@ bool isPlainTextMarkup(Node* node)
     if (secondChild->nextSibling())
         return false;
 
-    return parentTabSpanNode(protect(firstChild->firstChild()).get()) && is<Text>(secondChild);
+    return parentTabSpanNode(firstChild->firstChild()) && is<Text>(secondChild);
 }
 
 static bool contextPreservesNewline(const SimpleRange& context)

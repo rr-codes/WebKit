@@ -218,7 +218,7 @@ static bool elementQualifiesForWritingToolsPreservation(Element* element, const 
 
     if (element->getIdAttribute() == "AppleMailSignature"_s) [[unlikely]] {
         // FIXME (310312): Remove this special case once Mail adopts `-_addWritingToolsPreservedNodes:`.
-        if (RefPtr page = element->document().page(); page && page->isEditable())
+        if (auto* page = element->document().page(); page && page->isEditable())
             return true;
     }
 

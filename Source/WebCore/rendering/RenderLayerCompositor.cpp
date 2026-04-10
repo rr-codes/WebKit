@@ -4464,7 +4464,7 @@ bool RenderLayerCompositor::isRunningTransformAnimation(RenderLayerModelObject& 
 // layer background, so we need an extra 'contents' layer for the foreground of the layer object.
 bool RenderLayerCompositor::needsContentsCompositingLayer(const RenderLayer& layer) const
 {
-    for (CheckedPtr negativeZOrderLayer : layer.negativeZOrderLayers()) {
+    for (auto* negativeZOrderLayer : layer.negativeZOrderLayers()) {
         if (negativeZOrderLayer->isComposited() || negativeZOrderLayer->hasCompositingDescendant())
             return true;
     }
@@ -4474,10 +4474,10 @@ bool RenderLayerCompositor::needsContentsCompositingLayer(const RenderLayer& lay
 
 bool RenderLayerCompositor::requiresScrollLayer(RootLayerAttachment attachment) const
 {
-    Ref frameView = m_renderView.frameView();
+    auto& frameView = m_renderView.frameView();
 
     // This applies when the application UI handles scrolling, in which case RenderLayerCompositor doesn't need to manage it.
-    if (frameView->delegatedScrollingMode() == DelegatedScrollingMode::DelegatedToNativeScrollView && isMainFrameCompositor())
+    if (frameView.delegatedScrollingMode() == DelegatedScrollingMode::DelegatedToNativeScrollView && isMainFrameCompositor())
         return false;
 
     // We need to handle our own scrolling if we're:
@@ -4548,7 +4548,7 @@ bool RenderLayerCompositor::needsFixedRootBackgroundLayer(const RenderLayer& lay
 GraphicsLayer* RenderLayerCompositor::fixedRootBackgroundLayer() const
 {
     // Get the fixed root background from the RenderView layer's backing.
-    CheckedPtr viewLayer = m_renderView.layer();
+    auto* viewLayer = m_renderView.layer();
     if (!viewLayer)
         return nullptr;
 
@@ -4676,8 +4676,8 @@ bool RenderLayerCompositor::requiresOverhangAreasLayer() const
         return false;
 
     // We do want a layer if we're using tiled drawing and can scroll.
-    Ref frameView = m_renderView.frameView();
-    if (documentUsesTiledBacking() && frameView->hasOpaqueBackground() && !frameView->prohibitsScrolling())
+    auto& frameView = m_renderView.frameView();
+    if (documentUsesTiledBacking() && frameView.hasOpaqueBackground() && !frameView.prohibitsScrolling())
         return true;
 
     return false;

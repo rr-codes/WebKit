@@ -460,7 +460,7 @@ static inline bool NODELETE childHeapPropertyHolds(const TimerBase* current, con
 bool TimerBase::hasValidHeapPosition() const
 {
     ASSERT(nextFireTime());
-    RefPtr item = m_heapItemWithBitfields.pointer();
+    auto* item = m_heapItemWithBitfields.pointer();
     ASSERT(item);
     if (!inHeap())
         return false;

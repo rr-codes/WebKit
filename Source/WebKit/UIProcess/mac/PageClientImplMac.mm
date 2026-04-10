@@ -903,7 +903,7 @@ void PageClientImpl::navigationGestureDidBegin()
     protect(m_impl)->dismissContentRelativeChildWindowsWithAnimation(true);
 
     if (auto webView = this->webView()) {
-        if (RefPtr navigationState = NavigationState::fromWebPage(Ref { *webView->_page }))
+        if (RefPtr navigationState = NavigationState::fromWebPage(*webView->_page))
             navigationState->navigationGestureDidBegin();
     }
 }
@@ -911,7 +911,7 @@ void PageClientImpl::navigationGestureDidBegin()
 void PageClientImpl::navigationGestureWillEnd(bool willNavigate, WebBackForwardListItem& item)
 {
     if (auto webView = this->webView()) {
-        if (RefPtr navigationState = NavigationState::fromWebPage(Ref { *webView->_page }))
+        if (RefPtr navigationState = NavigationState::fromWebPage(*webView->_page))
             navigationState->navigationGestureWillEnd(willNavigate, item);
     }
 }
@@ -919,7 +919,7 @@ void PageClientImpl::navigationGestureWillEnd(bool willNavigate, WebBackForwardL
 void PageClientImpl::navigationGestureDidEnd(bool willNavigate, WebBackForwardListItem& item)
 {
     if (auto webView = this->webView()) {
-        if (RefPtr navigationState = NavigationState::fromWebPage(Ref { *webView->_page }))
+        if (RefPtr navigationState = NavigationState::fromWebPage(*webView->_page))
             navigationState->navigationGestureDidEnd(willNavigate, item);
     }
 }
@@ -931,7 +931,7 @@ void PageClientImpl::navigationGestureDidEnd()
 void PageClientImpl::willRecordNavigationSnapshot(WebBackForwardListItem& item)
 {
     if (auto webView = this->webView()) {
-        if (RefPtr navigationState = NavigationState::fromWebPage(Ref { *webView->_page }))
+        if (RefPtr navigationState = NavigationState::fromWebPage(*webView->_page))
             navigationState->willRecordNavigationSnapshot(item);
     }
 }
@@ -939,7 +939,7 @@ void PageClientImpl::willRecordNavigationSnapshot(WebBackForwardListItem& item)
 void PageClientImpl::didRemoveNavigationGestureSnapshot()
 {
     if (auto webView = this->webView()) {
-        if (RefPtr navigationState = NavigationState::fromWebPage(Ref { *webView->_page }))
+        if (RefPtr navigationState = NavigationState::fromWebPage(*webView->_page))
             navigationState->navigationGestureSnapshotWasRemoved();
     }
 }

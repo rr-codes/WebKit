@@ -1113,7 +1113,7 @@ void WebLocalFrameLoaderClient::dispatchWillSendSubmitEvent(Ref<FormState>&& for
     Ref form = formState->form();
 
     ASSERT(formState->sourceDocument().frame());
-    RefPtr sourceFrame = WebFrame::fromCoreFrame(*protect(formState->sourceDocument().frame()));
+    RefPtr sourceFrame = WebFrame::fromCoreFrame(*formState->sourceDocument().frame());
     ASSERT(sourceFrame);
 
     webPage->injectedBundleFormClient().willSendSubmitEvent(webPage.get(), form.ptr(), m_frame.ptr(), sourceFrame.get(), formState->textFieldValues());
@@ -1588,7 +1588,7 @@ Ref<DocumentLoader> WebLocalFrameLoaderClient::createDocumentLoader(ResourceRequ
 
 void WebLocalFrameLoaderClient::updateCachedDocumentLoader(WebCore::DocumentLoader& loader)
 {
-    protect(m_frame->page())->updateCachedDocumentLoader(loader, protect(m_localFrame));
+    m_frame->page()->updateCachedDocumentLoader(loader, m_localFrame);
 }
 
 void WebLocalFrameLoaderClient::setTitle(const StringWithDirection& title, const URL& url)

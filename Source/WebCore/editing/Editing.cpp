@@ -1518,11 +1518,11 @@ EnclosingLayerInfomation computeEnclosingLayer(const SimpleRange& range)
         return { };
 
     auto findEnclosingLayer = [](const Position& position) -> RenderLayer* {
-        RefPtr container = position.containerNode();
+        auto* container = position.containerNode();
         if (!container)
             return nullptr;
 
-        CheckedPtr renderer = container->renderer();
+        auto* renderer = container->renderer();
         if (!renderer)
             return nullptr;
 

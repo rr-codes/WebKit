@@ -294,7 +294,7 @@ String ClipboardItemBindingsDataSource::ClipboardItemTypeLoader::dataAsString() 
 void ClipboardItemBindingsDataSource::ClipboardItemTypeLoader::sanitizeDataIfNeeded()
 {
     if (m_type == textPlainContentTypeAtom() || m_type == "text/uri-list"_s) {
-        RefPtr document = documentFromClipboard(RefPtr { m_writingDestination.get() }.get());
+        RefPtr document = documentFromClipboard(m_writingDestination.get());
         if (!document)
             return;
 
@@ -314,7 +314,7 @@ void ClipboardItemBindingsDataSource::ClipboardItemTypeLoader::sanitizeDataIfNee
         if (markupToSanitize.isEmpty())
             return;
 
-        RefPtr document = documentFromClipboard(RefPtr { m_writingDestination.get() }.get());
+        RefPtr document = documentFromClipboard(m_writingDestination.get());
         m_data = { sanitizeMarkup(markupToSanitize, document.get()) };
     }
 

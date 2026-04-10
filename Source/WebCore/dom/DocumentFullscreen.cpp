@@ -456,8 +456,8 @@ static Vector<Ref<Document>> documentsToUnfullscreen(Frame& firstFrame)
         if (!document)
             continue;
         documents.append(*document);
-        ASSERT(protect(document->fullscreen())->fullscreenElement());
-        if (!protect(document->fullscreen())->isSimpleFullscreenDocument())
+        ASSERT(document->fullscreen().fullscreenElement());
+        if (!document->fullscreen().isSimpleFullscreenDocument())
             break;
         if (auto* iframe = dynamicDowncast<HTMLIFrameElement>(document->ownerElement()); iframe && iframe->hasIFrameFullscreenFlag())
             break;
@@ -519,7 +519,7 @@ void DocumentFullscreen::exitFullscreen(CompletionHandler<void(ExceptionOr<void>
     bool exitsTopDocument = exitDocuments.containsIf([&](auto& document) {
         return document.ptr() == mainFrameDocument.get();
     });
-    if (!mainFrameDocument || (exitsTopDocument && protect(mainFrameDocument->fullscreen())->isSimpleFullscreenDocument())) {
+    if (!mainFrameDocument || (exitsTopDocument && mainFrameDocument->fullscreen().isSimpleFullscreenDocument())) {
         mode = ExitMode::Resize;
         if (mainFrameDocument)
             exitingDocument = *mainFrameDocument;

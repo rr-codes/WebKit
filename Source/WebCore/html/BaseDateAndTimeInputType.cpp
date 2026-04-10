@@ -683,7 +683,7 @@ bool BaseDateAndTimeInputType::setupDateTimeChooserParameters(DateTimeChooserPar
         parameters.anchorRectInRootView = protect(document->view())->contentsToRootView(renderer->absoluteBoundingBoxRect());
     else
         parameters.anchorRectInRootView = IntRect();
-    parameters.rootFrameID = protect(document->view())->rootFrameID();
+    parameters.rootFrameID = document->view()->rootFrameID();
     parameters.currentValue = element->value();
 
     CheckedRef computedStyle = *element->computedStyle();

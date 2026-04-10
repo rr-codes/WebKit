@@ -52,8 +52,8 @@ using namespace HTMLNames;
 
 RefPtr<ContainerNode> composedParentIgnoringDocumentFragments(const Node& node)
 {
-    RefPtr ancestor = node.parentInComposedTree();
-    while (is<DocumentFragment>(ancestor.get()))
+    auto* ancestor = node.parentInComposedTree();
+    while (is<DocumentFragment>(ancestor))
         ancestor = ancestor->parentInComposedTree();
     return ancestor;
 }

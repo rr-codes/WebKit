@@ -886,7 +886,7 @@ ExceptionOr<bool> Internals::areSVGAnimationsPaused() const
     if (!document->svgExtensionsIfExists())
         return Exception { ExceptionCode::NotFoundError, "No SVG animations"_s };
 
-    return protect(document->svgExtensions())->areAnimationsPaused();
+    return document->svgExtensions().areAnimationsPaused();
 }
 
 ExceptionOr<double> Internals::svgAnimationsInterval(SVGSVGElement& element) const
@@ -3418,7 +3418,7 @@ ExceptionOr<void> Internals::setInspectorIsUnderTest(bool isUnderTest)
     if (!document || !document->page())
         return Exception { ExceptionCode::InvalidAccessError };
 
-    protect(document->page())->inspectorController().setIsUnderTest(isUnderTest);
+    document->page()->inspectorController().setIsUnderTest(isUnderTest);
     return { };
 }
 

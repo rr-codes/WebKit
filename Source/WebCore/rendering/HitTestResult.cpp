@@ -804,7 +804,7 @@ bool HitTestResult::isContentEditable() const
     if (is<HTMLTextAreaElement>(*m_innerNonSharedNode))
         return true;
 
-    if (RefPtr input = dynamicDowncast<HTMLInputElement>(*m_innerNonSharedNode))
+    if (auto* input = dynamicDowncast<HTMLInputElement>(*m_innerNonSharedNode))
         return input->isTextField();
 
     return m_innerNonSharedNode->hasEditableStyle();

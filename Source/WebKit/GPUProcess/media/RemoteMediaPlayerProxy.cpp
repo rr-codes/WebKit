@@ -463,12 +463,12 @@ void RemoteMediaPlayerProxy::mediaPlayerReadyStateChanged()
 
 void RemoteMediaPlayerProxy::mediaPlayerVolumeChanged()
 {
-    protect(m_webProcessConnection)->send(Messages::MediaPlayerPrivateRemote::VolumeChanged(protect(m_player)->volume()), m_id);
+    m_webProcessConnection->send(Messages::MediaPlayerPrivateRemote::VolumeChanged(m_player->volume()), m_id);
 }
 
 void RemoteMediaPlayerProxy::mediaPlayerMuteChanged()
 {
-    protect(m_webProcessConnection)->send(Messages::MediaPlayerPrivateRemote::MuteChanged(protect(m_player)->muted()), m_id);
+    m_webProcessConnection->send(Messages::MediaPlayerPrivateRemote::MuteChanged(m_player->muted()), m_id);
 }
 
 static MediaTimeUpdateData timeUpdateData(const MediaPlayer& player, MediaTime time)

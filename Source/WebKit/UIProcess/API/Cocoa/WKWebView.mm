@@ -760,7 +760,7 @@ static void addBrowsingContextControllerMethodStubsIfNeeded()
         pageConfiguration->setWebExtensionController(&controller.get()._webExtensionController);
 
     if (RetainPtr<WKWebExtensionController> controller = _configuration.get()._weakWebExtensionController)
-        pageConfiguration->setWeakWebExtensionController(protect(controller.get()._webExtensionController).ptr());
+        pageConfiguration->setWeakWebExtensionController(&controller.get()._webExtensionController);
 #endif
 
     RetainPtr groupIdentifier = [_configuration _groupIdentifier];
@@ -2505,7 +2505,7 @@ static std::optional<WebCore::JSHandleIdentifier> jsHandleIdentifierInFrame(cons
         return std::nullopt;
 
     auto handleInfo = nodeHandle->_ref->info();
-    if (RefPtr handleFrame = WebKit::WebFrameProxy::webFrame(handleInfo.frameInfo.frameID)) {
+    if (auto* handleFrame = WebKit::WebFrameProxy::webFrame(handleInfo.frameInfo.frameID)) {
         if (handleFrame->process().coreProcessIdentifier() == frame.process().coreProcessIdentifier())
             return handleInfo.identifier;
     }

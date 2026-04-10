@@ -149,7 +149,7 @@ ScrollTimeline* StyleOriginatedTimelinesController::determineTimelineForElement(
         if (!styleableForTimeline)
             continue;
         Ref protectedElementForTimeline { styleableForTimeline->element };
-        if (&styleableForTimeline->element == &styleable.element || Ref { styleable.element }->isComposedTreeDescendantOf(protectedElementForTimeline.get()))
+        if (&styleableForTimeline->element == &styleable.element || styleable.element.isComposedTreeDescendantOf(protectedElementForTimeline.get()))
             matchedTimelines.append(timeline);
     }
     if (matchedTimelines.isEmpty())
@@ -174,7 +174,7 @@ void StyleOriginatedTimelinesController::updateTimelineForTimelineScope(const Re
     for (auto& entry : m_timelineScopeEntries) {
         if (auto entryElement = entry.second.styleable()) {
             Ref protectedEntryElement { entryElement->element };
-            if (Ref { timelineElement->element }->isComposedTreeDescendantOf(protectedEntryElement.get()) && (entry.first.type == Style::NameScope::Type::All || entry.first.names.contains(Style::CustomIdent { name })))
+            if (timelineElement->element.isComposedTreeDescendantOf(protectedEntryElement.get()) && (entry.first.type == Style::NameScope::Type::All || entry.first.names.contains(Style::CustomIdent { name })))
                 matchedTimelineScopeElements.appendIfNotContains(*entryElement);
         }
     }
@@ -373,7 +373,7 @@ void StyleOriginatedTimelinesController::attachAnimation(CSSAnimation& animation
             for (auto timelineScopeElement : timelineScopeElements) {
                 ASSERT(timelineScopeElement.element());
                 Ref protectedTimelineScopeElement { *timelineScopeElement.element() };
-                if (*target == timelineScopeElement.styleable() || Ref { target->element }->isComposedTreeDescendantOf(protectedTimelineScopeElement.get()))
+                if (*target == timelineScopeElement.styleable() || target->element.isComposedTreeDescendantOf(protectedTimelineScopeElement.get()))
                     return true;
             }
             return false;
@@ -414,7 +414,7 @@ static void updateTimelinesForTimelineScope(Vector<Ref<ScrollTimeline>> entries,
     for (auto& entry : entries) {
         if (auto entryElement = originatingElementExcludingTimelineScope(entry).styleable()) {
             Ref protectedElement { styleable.element };
-            if (Ref { entryElement->element }->isComposedTreeDescendantOf(protectedElement.get()))
+            if (entryElement->element.isComposedTreeDescendantOf(protectedElement.get()))
                 entry->setTimelineScopeElement(protectedElement.get());
         }
     }

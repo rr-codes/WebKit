@@ -2980,8 +2980,8 @@ void HTMLMediaElement::cancelPendingEventsAndCallbacks()
     INFO_LOG(LOGIDENTIFIER);
     m_asyncEventsCancellationGroup.cancel();
 
-    for (Ref source : childrenOfType<HTMLSourceElement>(*this))
-        source->cancelPendingErrorEvent();
+    for (auto& source : childrenOfType<HTMLSourceElement>(*this))
+        source.cancelPendingErrorEvent();
 
     rejectPendingPlayPromises(WTF::move(m_pendingPlayPromises), DOMException::create(ExceptionCode::AbortError));
 }

@@ -5341,7 +5341,7 @@ bool Document::isViewportDocument() const
         return false;
 
 #if ENABLE(FULLSCREEN_API)
-    if (RefPtr outermostFullscreenDocument = page->outermostFullscreenDocument())
+    if (auto* outermostFullscreenDocument = page->outermostFullscreenDocument())
         return outermostFullscreenDocument == this;
 #endif
 
@@ -6811,7 +6811,7 @@ void Document::nodeChildrenWillBeRemoved(ContainerNode& container)
     adjustFocusNavigationNodeOnNodeRemoval(container, NodeRemoval::ChildrenOfNode);
 
     for (auto& range : m_ranges)
-        Ref { range.get() }->nodeChildrenWillBeRemoved(container);
+        range.get().nodeChildrenWillBeRemoved(container);
 
     for (Ref it : m_nodeIterators) {
         for (RefPtr n = container.firstChild(); n; n = n->nextSibling())
@@ -7955,7 +7955,7 @@ bool Document::printing() const
 
 RefPtr<LocalFrame> Document::localMainFrame() const
 {
-    if (RefPtr page = this->page())
+    if (auto* page = this->page())
         return page->localMainFrame();
     return nullptr;
 }
@@ -9799,7 +9799,7 @@ EditingBehavior Document::editingBehavior() const
 float Document::deviceScaleFactor() const
 {
     float deviceScaleFactor = 1.0;
-    if (RefPtr documentPage = page())
+    if (auto* documentPage = page())
         deviceScaleFactor = documentPage->deviceScaleFactor();
     return deviceScaleFactor;
 }
@@ -9966,7 +9966,7 @@ Element* Document::activeElement()
 
 bool Document::hasFocus() const
 {
-    RefPtr page = this->page();
+    auto* page = this->page();
     if (!page || !page->focusController().isActive() || !page->focusController().isFocused())
         return false;
     if (auto* focusedFrame = page->focusController().focusedFrame()) {

@@ -151,7 +151,7 @@ RefPtr<Frame> FrameTree::scopedChild(unsigned index, TreeScope* scope) const
         return nullptr;
 
     unsigned scopedIndex = 0;
-    for (RefPtr frame = firstChild(); frame; frame = frame->tree().nextSibling()) {
+    for (auto* frame = firstChild(); frame; frame = frame->tree().nextSibling()) {
         if (inScope(*frame, *scope)) {
             if (scopedIndex == index)
                 return frame;
@@ -220,7 +220,7 @@ unsigned FrameTree::scopedChildCount() const
 {
     if (m_scopedChildCount == invalidCount) {
         if (RefPtr localFrame = dynamicDowncast<LocalFrame>(m_thisFrame.get()))
-            m_scopedChildCount = scopedChildCount(protect(localFrame->document()).get());
+            m_scopedChildCount = scopedChildCount(localFrame->document());
     }
     return m_scopedChildCount;
 }

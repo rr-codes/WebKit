@@ -98,7 +98,7 @@ void WebInspectorUIProxy::setInspectorClient(std::unique_ptr<API::InspectorClien
 
 unsigned WebInspectorUIProxy::inspectionLevel() const
 {
-    return inspectorLevelForPage(protect(inspectedPage()).get());
+    return inspectorLevelForPage(inspectedPage());
 }
 
 WebPreferences& WebInspectorUIProxy::inspectorPagePreferences() const

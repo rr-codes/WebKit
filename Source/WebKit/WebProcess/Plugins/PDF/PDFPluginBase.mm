@@ -134,7 +134,7 @@ PluginInfo PDFPluginBase::pluginInfo()
 }
 
 PDFPluginBase::PDFPluginBase(HTMLPlugInElement& element)
-    : m_frame(*WebFrame::fromCoreFrame(*protect(element.document().frame())))
+    : m_frame(*WebFrame::fromCoreFrame(*element.document().frame()))
     , m_element(element)
 #if HAVE(INCREMENTAL_PDF_APIS)
     , m_incrementalPDFLoadingEnabled(element.document().settings().incrementalPDFLoadingEnabled())
@@ -837,7 +837,7 @@ ScrollableArea* PDFPluginBase::enclosingScrollableArea() const
 #if ENABLE(FORM_CONTROL_REFRESH)
 bool PDFPluginBase::formControlRefreshEnabled() const
 {
-    if (RefPtr page = this->page())
+    if (auto* page = this->page())
         return page->settings().formControlRefreshEnabled();
 
     return false;

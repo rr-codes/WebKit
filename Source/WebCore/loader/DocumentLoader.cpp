@@ -2165,7 +2165,7 @@ void DocumentLoader::startLoadingMainResource()
 
 #if ENABLE(CONTENT_FILTERING)
     // Always filter in WK1
-    contentFilterInDocumentLoader() = frame && frame->view() && protect(frame->view())->platformWidget();
+    contentFilterInDocumentLoader() = frame && frame->view() && frame->view()->platformWidget();
     if (contentFilterInDocumentLoader())
         m_contentFilter = !m_substituteData.isValid() ? ContentFilter::create(*this) : nullptr;
 #endif

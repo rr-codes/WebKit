@@ -66,7 +66,7 @@ static PasteboardDataLifetime determineDataLifetime(std::optional<WebPageProxyId
     if (!pageID)
         return PasteboardDataLifetime::Persistent;
 
-    if (RefPtr page = WebProcessProxy::webPage(*pageID))
+    if (auto* page = WebProcessProxy::webPage(*pageID))
         return page->sessionID().isEphemeral() ? PasteboardDataLifetime::Ephemeral : PasteboardDataLifetime::Persistent;
 
     return PasteboardDataLifetime::Persistent;

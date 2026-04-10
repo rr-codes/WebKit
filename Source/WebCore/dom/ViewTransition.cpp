@@ -747,7 +747,7 @@ ExceptionOr<void> ViewTransition::checkForViewportSizeChange()
     if (!view)
         return Exception { ExceptionCode::InvalidStateError, "Skipping view transition because viewport size changed."_s };
 
-    Ref frame = protect(view->frameView())->frame();
+    Ref frame = view->frameView().frame();
     if (view->sizeForCSSLargeViewportUnits() != m_initialLargeViewportSize || m_initialPageZoom != (frame->pageZoomFactor() * frame->frameScaleFactor()))
         return Exception { ExceptionCode::InvalidStateError, "Skipping view transition because viewport size changed."_s };
     return { };

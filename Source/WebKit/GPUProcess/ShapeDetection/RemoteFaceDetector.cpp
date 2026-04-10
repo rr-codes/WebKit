@@ -54,7 +54,7 @@ RemoteFaceDetector::~RemoteFaceDetector() = default;
 
 std::optional<SharedPreferencesForWebProcess> RemoteFaceDetector::sharedPreferencesForWebProcess() const
 {
-    return Ref { m_renderingBackend.get() }->sharedPreferencesForWebProcess();
+    return m_renderingBackend.get().sharedPreferencesForWebProcess();
 }
 
 void RemoteFaceDetector::detect(WebCore::RenderingResourceIdentifier renderingResourceIdentifier, CompletionHandler<void(Vector<WebCore::ShapeDetection::DetectedFace>&&)>&& completionHandler)

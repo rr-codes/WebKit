@@ -2653,7 +2653,7 @@ bool WebPage::isAssistableElement(Element& element)
         return true;
     if (is<HTMLTextAreaElement>(element))
         return true;
-    if (RefPtr inputElement = dynamicDowncast<HTMLInputElement>(element)) {
+    if (auto* inputElement = dynamicDowncast<HTMLInputElement>(element)) {
         // FIXME: This laundry list of types is not a good way to factor this. Need a suitable function on HTMLInputElement itself.
 #if ENABLE(INPUT_TYPE_WEEK_PICKER)
         if (inputElement->isWeekField())

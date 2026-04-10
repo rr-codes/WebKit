@@ -347,7 +347,7 @@ bool MediaControlsHost::needsChromeMediaControlsPseudoElement() const
 bool MediaControlsHost::isMediaControlsMacInlineSizeSpecsEnabled() const
 {
 #if HAVE(MATERIAL_HOSTING)
-    return protect(m_mediaElement)->document().settings().mediaControlsMacInlineSizeSpecsEnabled();
+    return m_mediaElement->document().settings().mediaControlsMacInlineSizeSpecsEnabled();
 #else
     return false;
 #endif

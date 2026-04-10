@@ -679,7 +679,7 @@ void RenderLayerScrollableArea::availableContentSizeChanged(AvailableSizeChangeR
 bool RenderLayerScrollableArea::shouldSuspendScrollAnimations() const
 {
     auto& renderer = m_layer.renderer();
-    return protect(renderer.view().frameView())->shouldSuspendScrollAnimations();
+    return renderer.view().frameView().shouldSuspendScrollAnimations();
 }
 
 #if PLATFORM(IOS_FAMILY)
@@ -869,8 +869,8 @@ void RenderLayerScrollableArea::createScrollbarsController()
 
 static inline RenderElement* rendererForScrollbar(RenderLayerModelObject& renderer)
 {
-    if (RefPtr element = renderer.element()) {
-        if (RefPtr shadowRoot = element->containingShadowRoot()) {
+    if (auto* element = renderer.element()) {
+        if (auto* shadowRoot = element->containingShadowRoot()) {
             if (shadowRoot->mode() == ShadowRootMode::UserAgent)
                 return shadowRoot->host()->renderer();
         }

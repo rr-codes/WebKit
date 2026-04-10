@@ -918,7 +918,7 @@ void WebChromeClient::scrollContainingScrollViewsToRevealRect(const IntRect&) co
 CornerRadii WebChromeClient::scrollbarAvoidanceCornerRadii() const
 {
 #if HAVE(NSVIEW_CORNER_CONFIGURATION)
-    if (RefPtr page = m_page.get())
+    if (auto* page = m_page.get())
         return page->scrollbarAvoidanceCornerRadii();
 #endif
     return { };

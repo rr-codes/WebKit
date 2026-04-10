@@ -519,7 +519,7 @@ void TextIterator::advance()
         if (!m_handledNode) {
             if (!isRendererAccessible(renderer.get(), m_behaviors)) {
                 m_handledNode = true;
-                m_handledChildren = !hasDisplayContents(*protect(m_currentNode)) && !renderer;
+                m_handledChildren = !hasDisplayContents(*m_currentNode) && !renderer;
             } else {
                 if (isConsideredSkippedContent(dynamicDowncast<RenderBox>(renderer.get()), m_behaviors))
                     m_handledChildren = true;
@@ -1461,7 +1461,7 @@ void SimplifiedBackwardsTextIterator::exitNode()
     RefPtr node = m_node;
     if (shouldEmitTabBeforeNode(*node))
         emitCharacter('\t', WTF::move(node), 0, 0);
-    else if (shouldEmitNewlineForNode(node.get(), m_behaviors.contains(TextIteratorBehavior::EmitsOriginalText)) || shouldEmitNewlineBeforeNode(*protect(m_node))) {
+    else if (shouldEmitNewlineForNode(node.get(), m_behaviors.contains(TextIteratorBehavior::EmitsOriginalText)) || shouldEmitNewlineBeforeNode(*m_node)) {
         // The start of this emitted range is wrong. Ensuring correctness would require
         // VisiblePositions and so would be slow. previousBoundary expects this.
         emitCharacter('\n', WTF::move(node), 0, 0);

@@ -152,7 +152,7 @@ bool FileInputType::valueMissing(StringView value) const
 String FileInputType::valueMissingText() const
 {
     ASSERT(element());
-    return protect(element())->multiple() ? validationMessageValueMissingForMultipleFileText() : validationMessageValueMissingForFileText();
+    return element()->multiple() ? validationMessageValueMissingForMultipleFileText() : validationMessageValueMissingForFileText();
 }
 
 void FileInputType::handleDOMActivateEvent(Event& event)
@@ -319,10 +319,10 @@ void FileInputType::applyFileChooserSettings()
 bool FileInputType::allowsDirectories() const
 {
     ASSERT(element());
-    Ref element = *this->element();
-    if (!element->document().settings().directoryUploadEnabled())
+    auto& element = *this->element();
+    if (!element.document().settings().directoryUploadEnabled())
         return false;
-    return element->hasAttributeWithoutSynchronization(webkitdirectoryAttr);
+    return element.hasAttributeWithoutSynchronization(webkitdirectoryAttr);
 }
 
 bool FileInputType::dirAutoUsesValue() const
@@ -527,7 +527,7 @@ String FileInputType::defaultToolTip() const
     unsigned listSize = m_fileList->length();
     if (!listSize) {
         ASSERT(element());
-        if (protect(element())->multiple())
+        if (element()->multiple())
             return fileButtonNoFilesSelectedLabel();
         return fileButtonNoFileSelectedLabel();
     }

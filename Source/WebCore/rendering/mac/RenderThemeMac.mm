@@ -1909,7 +1909,7 @@ static void paintAttachmentTitleBackground(const RenderAttachment& attachment, G
         return line.backgroundRect;
     });
 
-    auto backgroundColor = colorFromCocoaColor(protect(attachment.frame().selection())->isFocusedAndActive() ? [NSColor selectedContentBackgroundColor] : [NSColor unemphasizedSelectedContentBackgroundColor]);
+    auto backgroundColor = colorFromCocoaColor(attachment.frame().selection().isFocusedAndActive() ? [NSColor selectedContentBackgroundColor] : [NSColor unemphasizedSelectedContentBackgroundColor]);
 
     Style::ColorResolver colorResolver { attachment.style() };
 

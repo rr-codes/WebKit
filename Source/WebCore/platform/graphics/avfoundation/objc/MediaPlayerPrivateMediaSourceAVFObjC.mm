@@ -393,13 +393,13 @@ FloatSize MediaPlayerPrivateMediaSourceAVFObjC::naturalSize() const
 
 bool MediaPlayerPrivateMediaSourceAVFObjC::hasVideo() const
 {
-    RefPtr mediaSourcePrivate = m_mediaSourcePrivate;
+    auto* mediaSourcePrivate = m_mediaSourcePrivate.get();
     return mediaSourcePrivate && mediaSourcePrivate->hasVideo();
 }
 
 bool MediaPlayerPrivateMediaSourceAVFObjC::hasAudio() const
 {
-    RefPtr mediaSourcePrivate = m_mediaSourcePrivate;
+    auto* mediaSourcePrivate = m_mediaSourcePrivate.get();
     return mediaSourcePrivate && mediaSourcePrivate->hasAudio();
 }
 

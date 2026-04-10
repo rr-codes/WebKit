@@ -325,7 +325,7 @@ PlatformPathPtr Path::platformPath() const
         return PlatformPathImpl::emptyPlatformPath();
 
 #if USE(CG)
-    return protect(const_cast<Path&>(*this).ensurePlatformPathImpl())->platformPath();
+    return const_cast<Path&>(*this).ensurePlatformPathImpl().platformPath();
 #else
     return const_cast<Path&>(*this).ensurePlatformPathImpl().platformPath();
 #endif

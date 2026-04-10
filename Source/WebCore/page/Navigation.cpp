@@ -684,7 +684,7 @@ void Navigation::updateNavigationEntry(Ref<HistoryItem>&& item, ShouldCopyStateO
 
 void Navigation::disposeOfForwardEntriesInParents(BackForwardItemIdentifier itemID)
 {
-    RefPtr localMainFrame = protect(frame())->localMainFrame();
+    RefPtr localMainFrame = frame()->localMainFrame();
     if (!localMainFrame)
         return;
 

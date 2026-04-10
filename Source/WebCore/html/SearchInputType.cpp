@@ -189,7 +189,7 @@ int SearchInputType::listSize() const
 
 void SearchInputType::popupDidHide()
 {
-    if (CheckedPtr renderer = dynamicDowncast<RenderSearchField>(protect(element())->renderer()))
+    if (CheckedPtr renderer = dynamicDowncast<RenderSearchField>(element()->renderer()))
         renderer->popupDidHide();
 }
 

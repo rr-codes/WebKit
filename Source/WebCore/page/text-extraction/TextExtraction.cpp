@@ -443,7 +443,7 @@ RefPtr<T> shadowHostOrSelfInclusiveParent(Node& node)
     if (node.isInUserAgentShadowTree())
         return dynamicDowncast<T>(node.shadowHost());
 
-    if (RefPtr element = dynamicDowncast<T>(node))
+    if (auto* element = dynamicDowncast<T>(node))
         return element;
 
     return dynamicDowncast<T>(node.parentElement());
@@ -494,7 +494,7 @@ static inline Variant<SkipExtraction, ItemData, URL, Editable> extractItemData(N
         return { SkipExtraction::Self };
 
     if (RefPtr textNode = dynamicDowncast<Text>(node)) {
-        if (shouldTreatAsPasswordField(protect(textNode->shadowHost())))
+        if (shouldTreatAsPasswordField(textNode->shadowHost()))
             return { SkipExtraction::Self };
 
         if (auto iterator = context.visibleText.find(*textNode); iterator != context.visibleText.end()) {
@@ -991,7 +991,7 @@ static inline void extractRecursive(Node& node, Item& parentItem, TraversalConte
         context.onlyCollectTextAndLinksCount++;
     }
 
-    if (CheckedPtr renderer = node.renderer(); renderer && item)
+    if (auto* renderer = node.renderer(); renderer && item)
         item->hasLineThrough = renderer->style().textDecorationLineInEffect().hasLineThrough();
 
     ASSERT_IMPLIES(isScrollable, item);

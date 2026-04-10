@@ -613,7 +613,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
 
 - (void)_setCookieStoragePartitioningEnabled:(BOOL)enabled
 {
-    protect(*_processPool)->setCookieStoragePartitioningEnabled(enabled);
+    _processPool->setCookieStoragePartitioningEnabled(enabled);
 }
 
 #if PLATFORM(IOS_FAMILY)

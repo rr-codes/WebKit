@@ -150,13 +150,13 @@ FloatSize MockMediaPlayerMediaSource::naturalSize() const
 
 bool MockMediaPlayerMediaSource::hasVideo() const
 {
-    RefPtr mediaSourcePrivate = m_mediaSourcePrivate;
+    auto* mediaSourcePrivate = m_mediaSourcePrivate.get();
     return mediaSourcePrivate ? mediaSourcePrivate->hasVideo() : false;
 }
 
 bool MockMediaPlayerMediaSource::hasAudio() const
 {
-    RefPtr mediaSourcePrivate = m_mediaSourcePrivate;
+    auto* mediaSourcePrivate = m_mediaSourcePrivate.get();
     return mediaSourcePrivate ? mediaSourcePrivate->hasAudio() : false;
 }
 
@@ -188,7 +188,7 @@ MediaPlayer::NetworkState MockMediaPlayerMediaSource::networkState() const
 
 MediaPlayer::ReadyState MockMediaPlayerMediaSource::readyState() const
 {
-    RefPtr mediaSourcePrivate = m_mediaSourcePrivate;
+    auto* mediaSourcePrivate = m_mediaSourcePrivate.get();
     return mediaSourcePrivate ? mediaSourcePrivate->mediaPlayerReadyState() : MediaPlayer::ReadyState::HaveNothing;
 }
 

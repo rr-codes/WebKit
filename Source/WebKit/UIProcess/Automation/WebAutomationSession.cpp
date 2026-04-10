@@ -330,7 +330,7 @@ String WebAutomationSession::handleForWebFrameID(std::optional<FrameIdentifier> 
     if (!frameID)
         return emptyString();
 
-    if (RefPtr frame = WebFrameProxy::webFrame(*frameID); frame && frame->isMainFrame())
+    if (auto* frame = WebFrameProxy::webFrame(*frameID); frame && frame->isMainFrame())
         return emptyString();
 
     auto iter = m_webFrameHandleMap.find(*frameID);

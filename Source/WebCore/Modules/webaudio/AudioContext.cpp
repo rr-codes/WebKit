@@ -710,7 +710,7 @@ bool AudioContext::shouldOverrideBackgroundPlaybackRestriction(PlatformMediaSess
     if (interruption != PlatformMediaSession::InterruptionType::EnteringBackground)
         return false;
 
-    if (m_canOverrideBackgroundPlaybackRestriction && !protect(destination())->isConnected())
+    if (m_canOverrideBackgroundPlaybackRestriction && !destination().isConnected())
         return true;
 
     RefPtr document = this->document();

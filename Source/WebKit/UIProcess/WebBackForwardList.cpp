@@ -526,7 +526,7 @@ std::pair<RefPtr<WebBackForwardListItem>, size_t> WebBackForwardList::itemStarti
     // Yahoo -> Yahoo#a (no userInteraction) -> Google -> Google#a (no user interaction) -> Google#b (no user interaction)
     // If we're on Google and navigate back, we don't want to skip anything and load Yahoo#a.
     // However, if we're on Yahoo and navigate forward, we do want to skip items and end up on Google#b.
-    if (direction == NavigationDirection::Backward && !protect(currentItem())->wasCreatedByJSWithoutUserInteraction())
+    if (direction == NavigationDirection::Backward && !currentItem()->wasCreatedByJSWithoutUserInteraction())
         return item;
 
     // For example:

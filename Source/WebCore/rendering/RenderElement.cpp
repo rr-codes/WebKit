@@ -528,7 +528,7 @@ bool RenderElement::repaintBeforeStyleChange(Style::Difference diff, const Rende
         }
 
         if (diff > Style::DifferenceResult::RepaintLayer && oldStyle.usedVisibility() != newStyle.usedVisibility()) {
-            if (CheckedPtr enclosingLayer = this->enclosingLayer()) {
+            if (auto* enclosingLayer = this->enclosingLayer()) {
                 bool rendererWillBeHidden = newStyle.usedVisibility() != Visibility::Visible;
                 if (rendererWillBeHidden && enclosingLayer->hasVisibleContent() && (this == &enclosingLayer->renderer() || enclosingLayer->renderer().style().usedVisibility() != Visibility::Visible))
                     return RequiredRepaint::RendererOnly;
@@ -953,12 +953,12 @@ void RenderElement::styleWillChange(Style::Difference diff, const RenderStyle& n
 
         // Keep layer hierarchy visibility bits up to date if visibility or skipped content state changes.
         if (m_style.usedVisibility() != newStyle.usedVisibility()) {
-            if (CheckedPtr layer = enclosingLayer())
+            if (auto* layer = enclosingLayer())
                 layer->dirtyVisibleContentStatus();
         }
 
         if (m_style.usedContentVisibility() != newStyle.usedContentVisibility()) {
-            if (CheckedPtr layer = enclosingLayer())
+            if (auto* layer = enclosingLayer())
                 layer->dirtyVisibleContentStatus();
         }
 
@@ -2340,7 +2340,7 @@ bool RenderElement::checkForRepaintDuringLayout() const
 
 ImageOrientation RenderElement::imageOrientation() const
 {
-    RefPtr imageElement = dynamicDowncast<HTMLImageElement>(element());
+    auto* imageElement = dynamicDowncast<HTMLImageElement>(element());
     return (imageElement && !imageElement->allowsOrientationOverride())
         ? ImageOrientation(ImageOrientation::Orientation::FromImage)
         : Style::toPlatform(style().imageOrientation());
@@ -2587,7 +2587,7 @@ void RenderElement::resetTextAutosizing()
             depthStack.append(newFixedDepth);
 
         int stackSize = depthStack.size();
-        if (CheckedPtr blockFlow = dynamicDowncast<RenderBlockFlow>(*descendant); blockFlow && !blockFlow->isRenderListItem() && (!stackSize || currentDepth - depthStack[stackSize - 1] > TextAutoSizingFixedHeightDepth))
+        if (auto* blockFlow = dynamicDowncast<RenderBlockFlow>(*descendant); blockFlow && !blockFlow->isRenderListItem() && (!stackSize || currentDepth - depthStack[stackSize - 1] > TextAutoSizingFixedHeightDepth))
             blockFlow->resetComputedFontSize();
         newFixedDepth = 0;
     }

@@ -283,15 +283,15 @@ HTMLElement* RangeInputType::sliderTrackElement() const
     if (!hasCreatedShadowSubtree())
         return nullptr;
 
-    RefPtr root = element()->userAgentShadowRoot();
+    auto* root = element()->userAgentShadowRoot();
     ASSERT(root);
     ASSERT(is<SliderContainerElement>(root->firstChild())); // container
     ASSERT(root->firstChild()->firstChild()); // track
 
     if (!root)
         return nullptr;
-    
-    RefPtr container = root->firstChild();
+
+    auto* container = root->firstChild();
     return container ? downcast<HTMLElement>(container->firstChild()) : nullptr;
 }
 

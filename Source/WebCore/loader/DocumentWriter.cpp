@@ -249,7 +249,7 @@ bool DocumentWriter::begin(const URL& urlReference, bool dispatch, Document* own
     }
 
     if (existingDocument && existingDocument->contentSecurityPolicy() && document->contentSecurityPolicy())
-        protect(document->contentSecurityPolicy())->setInsecureNavigationRequestsToUpgrade(protect(existingDocument->contentSecurityPolicy())->takeNavigationRequestsToUpgrade());
+        document->contentSecurityPolicy()->setInsecureNavigationRequestsToUpgrade(existingDocument->contentSecurityPolicy()->takeNavigationRequestsToUpgrade());
 
     frameLoader->didBeginDocument(dispatch, previousWindow.get());
 

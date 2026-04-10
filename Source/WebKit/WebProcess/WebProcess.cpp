@@ -1464,7 +1464,7 @@ void WebProcess::networkProcessConnectionClosed(NetworkProcessConnection* connec
     for (auto& page : m_pageMap.values()) {
         page->stopAllURLSchemeTasks();
 #if ENABLE(APPLE_PAY)
-        if (RefPtr paymentCoordinator = page->paymentCoordinator())
+        if (auto* paymentCoordinator = page->paymentCoordinator())
             paymentCoordinator->networkProcessConnectionClosed();
 #endif
     }

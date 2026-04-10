@@ -574,7 +574,7 @@ void WebProcessProxy::getLaunchOptions(ProcessLauncher::LaunchOptions& launchOpt
 
     AuxiliaryProcessProxy::getLaunchOptions(launchOptions);
 
-    if (WebKit::isInspectorProcessPool(protect(processPool())))
+    if (WebKit::isInspectorProcessPool(processPool()))
         launchOptions.extraInitializationData.add<HashTranslatorASCIILiteral>("inspector-process"_s, "1"_s);
 
     launchOptions.nonValidInjectedCodeAllowed = shouldAllowNonValidInjectedCode();
@@ -1637,7 +1637,7 @@ bool WebProcessProxy::canBeAddedToWebProcessCache() const
         return false;
     }
 
-    if (WebKit::isInspectorProcessPool(protect(processPool())))
+    if (WebKit::isInspectorProcessPool(processPool()))
         return false;
 
     return true;
@@ -3062,7 +3062,7 @@ void WebProcessProxy::registerServiceWorkerClients(CompletionHandler<void()>&& c
 {
     sendWithAsyncReply(Messages::WebProcess::RegisterServiceWorkerClients { }, [weakThis = WeakPtr { *this }, completionHandler = WTF::move(completionHandler)](bool result) mutable {
         {
-            RefPtr protectedThis = weakThis.get();
+            auto* protectedThis = weakThis.get();
             if (result && protectedThis)
                 protectedThis->m_hasRegisteredServiceWorkerClients = true;
         }
