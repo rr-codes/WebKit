@@ -2392,7 +2392,7 @@ inline Value* OMGIRGenerator::emitCheckAndPreparePointer(Value* pointer, uint32_
     lastLoadedOffset += static_cast<uint64_t>(sizeOfOperation - 1);
     auto boundsCheckOffset = constant(Int64, lastLoadedOffset);
     pointer = m_currentBlock->appendNew<Value>(m_proc, ZExt32, origin(), pointer);
-    Value* outOfBounds = m_currentBlock->appendNew<Value>(m_proc, Above, origin(), m_currentBlock->appendNew<Value>(m_proc, Add, origin(), pointer, boundsCheckOffset), memorySize);
+    Value* outOfBounds = m_currentBlock->appendNew<Value>(m_proc, AboveEqual, origin(), m_currentBlock->appendNew<Value>(m_proc, Add, origin(), pointer, boundsCheckOffset), memorySize);
     // FIXME: this should probably use a CheckAdd once memory64 is supported
     CheckValue* check = m_currentBlock->appendNew<CheckValue>(m_proc, Check, origin(), outOfBounds);
     check->setGenerator([=, this, origin = this->origin()](CCallHelpers& jit, const B3::StackmapGenerationParams&) {
