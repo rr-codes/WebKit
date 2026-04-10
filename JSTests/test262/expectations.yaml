@@ -882,12 +882,6 @@ test/staging/sm/PrivateName/modify-non-extensible.js:
 test/staging/sm/Proxy/revoked-get-function-realm-typeerror.js:
   default: 'Test262Error: Expected a TypeError to be thrown but no exception was thrown at all'
   strict mode: 'Test262Error: Expected a TypeError to be thrown but no exception was thrown at all'
-test/staging/sm/RegExp/match-local-tolength-recompilation.js:
-  default: 'Test262Error: Expected SameValue(«false», «true») to be true'
-  strict mode: 'Test262Error: Expected SameValue(«false», «true») to be true'
-test/staging/sm/RegExp/replace-local-tolength-recompilation.js:
-  default: 'Test262Error: Expected SameValue(«"b"», «"pass"») to be true'
-  strict mode: 'Test262Error: Expected SameValue(«"b"», «"pass"») to be true'
 test/staging/sm/RegExp/replace-sticky-lastIndex.js:
   default: 'Test262Error: Expected SameValue(«"b"», «"a"») to be true'
   strict mode: 'Test262Error: Expected SameValue(«"b"», «"a"») to be true'

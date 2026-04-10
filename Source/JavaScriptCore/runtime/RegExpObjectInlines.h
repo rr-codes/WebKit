@@ -92,13 +92,14 @@ ALWAYS_INLINE JSValue RegExpObject::execInline(JSGlobalObject* globalObject, JSS
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    RegExp* regExp = this->regExp();
     auto input = string->view(globalObject);
     RETURN_IF_EXCEPTION(scope, { });
 
-    bool globalOrSticky = regExp->globalOrSticky();
     unsigned lastIndex = getRegExpObjectLastIndexAsUnsigned(globalObject, this, input);
     RETURN_IF_EXCEPTION(scope, { });
+
+    RegExp* regExp = this->regExp();
+    bool globalOrSticky = regExp->globalOrSticky();
     if (lastIndex == UINT_MAX && globalOrSticky) {
         scope.release();
         setLastIndex(globalObject, 0);
@@ -131,12 +132,13 @@ ALWAYS_INLINE MatchResult RegExpObject::matchInline(JSGlobalObject* globalObject
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    RegExp* regExp = this->regExp();
     auto input = string->view(globalObject);
     RETURN_IF_EXCEPTION(scope, { });
 
     unsigned lastIndex = getRegExpObjectLastIndexAsUnsigned(globalObject, this, input);
     RETURN_IF_EXCEPTION(scope, { });
+
+    RegExp* regExp = this->regExp();
     if (!regExp->global() && !regExp->sticky()) {
         scope.release();
         return globalObject->regExpGlobalData().performMatch(globalObject, regExp, string, input, 0);
