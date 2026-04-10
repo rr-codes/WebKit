@@ -121,10 +121,7 @@ webrtc/peerconnection-page-cache.html [ Timeout ]
 ########################
 # Tests that Text fail #
 ########################
-accessibility/insert-children-assert.html [ Failure ]
-accessibility/mac/stale-textmarker-crash.html [ Failure ]
-accessibility/press-works-on-control-types.html [ Failure ]
-accessibility/youtube-embed-accessibility-hierarchy.html [ Failure ]
+accessibility/youtube-embed-accessibility-hierarchy.html [ Failure Timeout ]
 animations/animation-multiple-callbacks-timestamp.html [ Failure ]
 editing/execCommand/delete-no-scroll.html [ Failure ]
 editing/inserting/insert-list-then-edit-command-crash.html [ Failure ]
