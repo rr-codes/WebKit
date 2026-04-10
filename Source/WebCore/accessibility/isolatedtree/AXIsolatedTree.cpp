@@ -199,7 +199,7 @@ RefPtr<AXIsolatedTree> AXIsolatedTree::create(AXObjectCache& axObjectCache)
 
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
     if (std::optional geometry = axObjectCache.getAndUpdateFrameGeometry())
-        tree->setFrameGeometry(FrameGeometry { *geometry });
+        tree->setFrameGeometry(AXFrameGeometry { *geometry });
 #endif
 
     auto relations = axObjectCache.relations();
@@ -1269,7 +1269,7 @@ void AXIsolatedTree::setSelectedTextMarkerRange(AXTextMarkerRange&& range)
 }
 
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
-void AXIsolatedTree::setFrameGeometry(FrameGeometry&& geometry)
+void AXIsolatedTree::setFrameGeometry(AXFrameGeometry&& geometry)
 {
     Locker locker { m_changeLogLock };
     m_pendingFrameGeometry = WTF::move(geometry);
@@ -1313,7 +1313,7 @@ void AXIsolatedTree::updateRootScreenRelativePosition()
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
         // Sync current cache value to isolated tree and fire async request to keep it up-to-date.
         if (std::optional geometry = cache->getAndUpdateFrameGeometry())
-            setFrameGeometry(FrameGeometry { *geometry });
+            setFrameGeometry(AXFrameGeometry { *geometry });
 #endif
     }
 }

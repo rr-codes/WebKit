@@ -261,9 +261,21 @@ struct InheritedFrameState {
     bool isRenderHidden { false };
 };
 
+// Describes a frame's position and scale on screen for accessibility coordinate conversion.
+// Sent from the UIProcess to the WebProcess via IPC whenever the frame scrolls, moves, or resizes.
 // When this is updated, WebCoreArgumentCoders.serialization.in must be updated as well.
-struct FrameGeometry {
+struct AXFrameGeometry {
+    // The frame's content origin in screen coordinates.
+    //   - Coordinate space: bottom-left on macOS, top-left on other platforms.
+    //   - Points to: the top-left of the frame's document.
+    //   - Units: display pixels.
+    //   - Scroll: document-origin-based, so accounts for the frame's scroll position
+    //     (e.g. scrolling down moves the document origin up on screen).
+    // Element rects in content space compose with this directly to produce screen coordinates.
     IntPoint screenPosition;
+
+    // Scale accounts for page zoom and device scale factor, among other things.
+    // Applied to the element rect before adding screenPosition.
     AffineTransform screenTransform;
 };
 #endif
@@ -352,9 +364,9 @@ public:
     AccessibilityObject* rootWebArea();
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
     WEBCORE_EXPORT void setFrameInheritedState(LocalFrame&, const InheritedFrameState&);
-    WEBCORE_EXPORT void setFrameGeometry(LocalFrame&, const FrameGeometry&);
-    const std::optional<FrameGeometry>& frameGeometry() const LIFETIME_BOUND { return m_frameGeometry; }
-    const std::optional<FrameGeometry>& getAndUpdateFrameGeometry() LIFETIME_BOUND;
+    WEBCORE_EXPORT void setFrameGeometry(LocalFrame&, const AXFrameGeometry&);
+    const std::optional<AXFrameGeometry>& frameGeometry() const LIFETIME_BOUND { return m_frameGeometry; }
+    const std::optional<AXFrameGeometry>& getAndUpdateFrameGeometry() LIFETIME_BOUND;
 #endif
 
     // Creation/retrieval of AX objects associated with a DOM or RenderTree object.
@@ -984,7 +996,7 @@ private:
     const WeakPtr<Document, WeakPtrImplWithEventTargetData> m_document;
     const FrameIdentifier m_frameID; // constant for object's lifetime.
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
-    std::optional<FrameGeometry> m_frameGeometry;
+    std::optional<AXFrameGeometry> m_frameGeometry;
 #endif
     OptionSet<ActivityState> m_pageActivityState;
     HashMap<AXID, Ref<AccessibilityObject>> m_objects;

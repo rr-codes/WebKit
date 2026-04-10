@@ -37,24 +37,7 @@ function runTest() {
         return;
 
     setTimeout(async function() {
-        // Wait for the iframe's frame geometry to be initialized and the
-        // target element's position to stabilize.
-        var lastY;
-        await waitFor(() => {
-            var iframeContainer = accessibilityController.accessibleElementById("container");
-            if (!iframeContainer)
-                return false;
-            var iframeScrollView = iframeContainer.childAtIndex(0);
-            if (!iframeScrollView || !iframeScrollView.isFrameGeometryInitialized)
-                return false;
-            target = accessibilityController.accessibleElementById("target");
-            if (!target)
-                return false;
-            var stable = lastY === target.y;
-            lastY = target.y;
-            return stable;
-        });
-
+        target = await waitForIframeAccessibilityReady("container", "target");
         initialY = target.y;
 
         // Scroll the main page down by 300px.

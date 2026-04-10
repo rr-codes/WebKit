@@ -1186,18 +1186,18 @@ void AXObjectCache::setFrameInheritedState(LocalFrame& frame, const InheritedFra
     scrollView->setInheritedFrameState(state);
 }
 
-void AXObjectCache::setFrameGeometry(LocalFrame& frame, const FrameGeometry& geometry)
+void AXObjectCache::setFrameGeometry(LocalFrame& frame, const AXFrameGeometry& geometry)
 {
     UNUSED_PARAM(frame);
     m_frameGeometry = geometry;
 
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
     if (RefPtr tree = AXIsolatedTree::treeForFrameID(m_frameID))
-        tree->setFrameGeometry(FrameGeometry { geometry });
+        tree->setFrameGeometry(AXFrameGeometry { geometry });
 #endif
 }
 
-const std::optional<FrameGeometry>& AXObjectCache::getAndUpdateFrameGeometry()
+const std::optional<AXFrameGeometry>& AXObjectCache::getAndUpdateFrameGeometry()
 {
     if (RefPtr page = document()->page())
         page->chrome().client().requestFrameScreenPosition(frameID());

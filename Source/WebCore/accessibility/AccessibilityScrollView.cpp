@@ -594,7 +594,7 @@ bool AccessibilityScrollView::isFrameGeometryInitialized() const
     return true;
 }
 
-FrameGeometry AccessibilityScrollView::frameGeometry() const
+AXFrameGeometry AccessibilityScrollView::frameGeometry() const
 {
     if (CheckedPtr cache = axObjectCache()) {
         if (std::optional geometry = cache->frameGeometry())

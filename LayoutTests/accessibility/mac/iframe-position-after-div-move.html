@@ -34,23 +34,12 @@ function runTest() {
         return;
 
     setTimeout(async function() {
-        // Wait for the iframe's frame geometry to be initialized and the
-        // target element inside the iframe to be accessible.
-        await waitFor(() => {
-            var iframeContainer = accessibilityController.accessibleElementById("container");
-            if (!iframeContainer)
-                return false;
-            var iframeScrollView = iframeContainer.childAtIndex(0);
-            if (!iframeScrollView || !iframeScrollView.isFrameGeometryInitialized)
-                return false;
-            target = accessibilityController.accessibleElementById("target");
-            return target;
-        });
-
+        target = await waitForIframeAccessibilityReady("container", "target");
         initialY = target.y;
 
         // Move the container div down by 200px.
         document.getElementById("container").style.top = "300px";
+
         // Wait for the element's absolute screen y to change after the move.
         await waitFor(() => {
             target = accessibilityController.accessibleElementById("target");

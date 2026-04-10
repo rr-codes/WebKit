@@ -446,9 +446,9 @@ public:
     constexpr AXGeometryManager* geometryManager() const { return m_geometryManager.get(); }
 
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
-    FrameGeometry frameGeometry() const { return m_frameGeometry; }
+    AXFrameGeometry frameGeometry() const { return m_frameGeometry; }
     bool isFrameGeometryInitialized() const { return m_hasReceivedFrameGeometry; }
-    void setFrameGeometry(FrameGeometry&&);
+    void setFrameGeometry(AXFrameGeometry&&);
 #endif
 
     AXIsolatedObject* rootNode() { AX_ASSERT(!isMainThread()); return m_rootNode.get(); }
@@ -688,7 +688,7 @@ private:
     std::optional<HashMap<AXID, AXRelations>> m_pendingRelations WTF_GUARDED_BY_LOCK(m_changeLogLock);
     std::optional<AXTextMarkerRange> m_pendingSelectedTextMarkerRange WTF_GUARDED_BY_LOCK(m_changeLogLock);
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
-    std::optional<FrameGeometry> m_pendingFrameGeometry WTF_GUARDED_BY_LOCK(m_changeLogLock);
+    std::optional<AXFrameGeometry> m_pendingFrameGeometry WTF_GUARDED_BY_LOCK(m_changeLogLock);
 #endif
     Markable<AXID> m_focusedNodeID;
     std::atomic<double> m_loadingProgress { 0 };
@@ -700,7 +700,7 @@ private:
     HashMap<AXID, LineRange> m_mostRecentlyPaintedText;
     HashMap<AXID, AXRelations> m_relations;
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
-    FrameGeometry m_frameGeometry;
+    AXFrameGeometry m_frameGeometry;
     bool m_hasReceivedFrameGeometry { false };
 #endif
 

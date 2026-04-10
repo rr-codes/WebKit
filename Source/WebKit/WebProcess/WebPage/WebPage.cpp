@@ -1813,7 +1813,7 @@ void WebPage::updateRemotePageAccessibilityInheritedState(WebCore::FrameIdentifi
     cache->setFrameInheritedState(*coreFrame, state);
 }
 
-void WebPage::updateRemotePageAccessibilityScreenPosition(WebCore::FrameIdentifier frameID, const WebCore::FrameGeometry& geometry)
+void WebPage::updateRemotePageAccessibilityScreenPosition(WebCore::FrameIdentifier frameID, const WebCore::AXFrameGeometry& geometry)
 {
     RefPtr frame = WebProcess::singleton().webFrame(frameID);
     RefPtr coreFrame = frame ? frame->coreLocalFrame() : nullptr;
@@ -8287,12 +8287,18 @@ void WebPage::getSamplingProfilerOutput(CompletionHandler<void(const String&)>&&
 
 void WebPage::didChangeScrollOffsetForFrame(LocalFrame& frame)
 {
-    if (!frame.isMainFrame())
-        return;
-
     // If this is called when tearing down a FrameView, the WebCore::Frame's
     // current FrameView will be null.
     if (!frame.view())
+        return;
+
+#if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
+    // When any frame scrolls, the frame's screenPosition (content-origin-based)
+    // changes and needs to be recomputed for correct accessibility geometry.
+    scheduleAccessibilityFrameGeometryUpdate();
+#endif
+
+    if (!frame.isMainFrame())
         return;
 
     updateMainFrameScrollOffsetPinning();

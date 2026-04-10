@@ -571,10 +571,8 @@ FloatRect AccessibilityObject::convertFrameToSpace(const FloatRect& frameRect, A
 
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
     if (conversionSpace == AccessibilityConversionSpace::Screen) {
-        // For screen space, use contentsToView() to adjust for scroll *within* this frame,
-        // then apply the frame's screen transform and position (which account for iframe offsets and viewport scale).
-        if (parentScrollView)
-            snappedFrameRect = parentScrollView->contentsToView(snappedFrameRect);
+        // screenPosition is content-origin-based (shifts with scroll). Element rects are in content
+        // space (no scroll applied). These compose directly to give correct screen coordinates.
 
         RefPtr rootScrollView = dynamicDowncast<AccessibilityScrollView>(ancestorAccessibilityScrollView(true /* includeSelf */));
         if (!rootScrollView)
@@ -596,9 +594,8 @@ FloatRect AccessibilityObject::convertFrameToSpace(const FloatRect& frameRect, A
         return { position, scaledRect.size() };
     }
 
-    // FIXME: ENABLE(ACCESSIBILITY_LOCAL_FRAME) doesn't support page-relative frame, but this is used for old tests. Remove this once all tests are updated.
-    if (parentScrollView)
-        snappedFrameRect = parentScrollView->contentsToRootView(snappedFrameRect);
+    // For page space geometry (somewhat deprecated with ENABLE_ACCESSIBILITY_LOCAL_FRAME), return element rects in content space (no scroll applied).
+    return snappedFrameRect;
 #else
     // Legacy behavior: contentsToRootView walks up through all frames for local frames.
     // For remote frames, the caller (e.g., relativeFrame()) adds remoteFrameOffset().

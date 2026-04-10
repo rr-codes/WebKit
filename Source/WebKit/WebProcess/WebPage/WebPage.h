@@ -323,7 +323,7 @@ class HTMLAttachmentElement;
 class HandleUserInputEventResult;
 #endif
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
-struct FrameGeometry;
+struct AXFrameGeometry;
 struct InheritedFrameState;
 #endif
 struct InteractionRegion;
@@ -2721,7 +2721,7 @@ private:
     void updateRemotePageAccessibilityOffset(WebCore::FrameIdentifier, WebCore::IntPoint);
 #if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
     void updateRemotePageAccessibilityInheritedState(WebCore::FrameIdentifier, const WebCore::InheritedFrameState&);
-    void updateRemotePageAccessibilityScreenPosition(WebCore::FrameIdentifier, const WebCore::FrameGeometry&);
+    void updateRemotePageAccessibilityScreenPosition(WebCore::FrameIdentifier, const WebCore::AXFrameGeometry&);
 #endif
     void resolveAccessibilityHitTestForTesting(WebCore::FrameIdentifier, const WebCore::IntPoint&, CompletionHandler<void(String)>&&);
 #if PLATFORM(MAC)

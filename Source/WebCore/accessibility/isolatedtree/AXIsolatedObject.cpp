@@ -1400,6 +1400,9 @@ FloatRect AXIsolatedObject::convertFrameToSpace(const FloatRect& rect, Accessibi
         auto screenTransform = frameScreenTransform();
         auto scaledRect = screenTransform.mapRect(rect);
 
+        // scaledRect is in content space (no scroll applied at paint time).
+        // screenPosition is content-origin-based (shifts with scroll).
+        // Composing them directly gives the correct screen position.
         // Screen coordinates use bottom-left origin (on macOS).
         FloatPoint position = {
             screenPosition.x() + scaledRect.x(),
