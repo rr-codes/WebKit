@@ -1002,12 +1002,22 @@ template<typename Adaptor> RefPtr<typename Adaptor::ViewType> JSGenericTypedArra
     return result;
 }
 
+template<typename Adaptor> RefPtr<typename Adaptor::ViewType> JSGenericTypedArrayView<Adaptor>::toWrappedAllowResizable(VM& vm, JSValue value)
+{
+    return JSC::toUnsharedNativeTypedView<Adaptor>(vm, value);
+}
+
 template<typename Adaptor> RefPtr<typename Adaptor::ViewType> JSGenericTypedArrayView<Adaptor>::toWrappedAllowShared(VM& vm, JSValue value)
 {
     auto result = JSC::toPossiblySharedNativeTypedView<Adaptor>(vm, value);
     if (!result || result->isResizableOrGrowableShared())
         return nullptr;
     return result;
+}
+
+template<typename Adaptor> RefPtr<typename Adaptor::ViewType> JSGenericTypedArrayView<Adaptor>::toWrappedAllowSharedAndResizable(VM& vm, JSValue value)
+{
+    return JSC::toPossiblySharedNativeTypedView<Adaptor>(vm, value);
 }
 
 template<typename PassedAdaptor> inline const ClassInfo* JSGenericResizableOrGrowableSharedTypedArrayView<PassedAdaptor>::info()
