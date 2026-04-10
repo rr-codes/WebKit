@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2011 Google, Inc. All rights reserved.
- * Copyright (C) 2016-2022 Apple Inc. All rights reserved.
+ * Copyright (C) 2016-2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -217,6 +217,8 @@ public:
     void reportMissingReportToTokens(const String&) const;
     void reportMissingReportURI(const String&) const;
     void reportUnsupportedDirective(const String&) const;
+    void reportDeprecatedDirective(const String&) const;
+    void reportDeprecatedDirectiveToConsole(const String&) const;
     void enforceSandboxFlags(SandboxFlags sandboxFlags) { m_sandboxFlags.add(sandboxFlags); }
     void addHashAlgorithmsForInlineScripts(OptionSet<ContentSecurityPolicyHashAlgorithm> hashAlgorithmsForInlineScripts)
     {
