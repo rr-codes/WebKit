@@ -648,13 +648,13 @@ void RenderInline::mapLocalToContainer(const RenderLayerModelObject* ancestorCon
     if (!container)
         return;
 
-    if (mode.contains(ApplyContainerFlip)) {
+    if (mode.contains(MapCoordinatesMode::ApplyContainerFlip)) {
         if (CheckedPtr box = dynamicDowncast<RenderBox>(*container)) {
             if (container->writingMode().isBlockFlipped()) {
                 LayoutPoint centerPoint(transformState.mappedPoint());
                 transformState.move(box->flipForWritingMode(centerPoint) - centerPoint);
             }
-            mode.remove(ApplyContainerFlip);
+            mode.remove(MapCoordinatesMode::ApplyContainerFlip);
         }
     }
 

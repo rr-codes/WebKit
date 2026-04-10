@@ -246,7 +246,7 @@ void SVGSVGElement::svgAttributeChanged(const QualifiedName& attrName)
             // FIXME: try to get rid of this custom handling of embedded SVG invalidation, maybe through abstraction.
             if (CheckedPtr renderer = this->renderer()) {
                 if (isEmbeddedThroughFrameContainingSVGDocument(*renderer)) {
-                    protect(renderer->view())->setNeedsLayout(MarkOnlyThis);
+                    protect(renderer->view())->setNeedsLayout(MarkingBehavior::MarkOnlyThis);
                     if (RefPtr frame = document().frame()) {
                         if (CheckedPtr ownerRenderer = frame->ownerRenderer())
                             ownerRenderer->setNeedsLayoutAndPreferredWidthsUpdate();
@@ -441,7 +441,7 @@ AffineTransform SVGSVGElement::localCoordinateSpaceTransform(CTMScope mode) cons
                 float cssZoomScale = effectiveZoom / pageZoomFactor;
 
                 TransformState transformState(TransformState::ApplyTransformDirection, FloatPoint());
-                renderer->mapLocalToContainer(nullptr, transformState, { UseTransforms, ApplyContainerFlip });
+                renderer->mapLocalToContainer(nullptr, transformState, { MapCoordinatesMode::UseTransforms, MapCoordinatesMode::ApplyContainerFlip });
 
                 auto accumulatedMatrix = transformState.releaseTrackedTransform();
                 AffineTransform cssTransform = accumulatedMatrix->toAffineTransform();
@@ -471,7 +471,7 @@ AffineTransform SVGSVGElement::localCoordinateSpaceTransform(CTMScope mode) cons
                 transform = cssTransform;
             } else {
                 // Non-legacy SVG root (e.g., inner <svg>) — fallback to point mapping.
-                FloatPoint location = renderer->localToAbsolute(FloatPoint(), UseTransforms);
+                FloatPoint location = renderer->localToAbsolute(FloatPoint(), MapCoordinatesMode::UseTransforms);
                 transform.translate(location.x() - viewBoxTransform.e(), location.y() - viewBoxTransform.f());
             }
 

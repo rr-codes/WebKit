@@ -664,7 +664,7 @@ void RenderObject::setNeedsPreferredWidthsUpdate(MarkingBehavior markParents)
         return;
     }
 
-    if (markParents == MarkOnlyThis) {
+    if (markParents == MarkingBehavior::MarkOnlyThis) {
         ensureRareData().preferredLogicalWidthsNeedUpdateIsMarkOnlyThis = true;
         return;
     }
@@ -1453,8 +1453,8 @@ void RenderObject::outputRenderSubTreeAndMark(TextStream& stream, const RenderOb
 FloatPoint RenderObject::localToAbsolute(const FloatPoint& localPoint, OptionSet<MapCoordinatesMode> mode, bool* wasFixed) const
 {
     TransformState transformState(TransformState::ApplyTransformDirection, localPoint);
-    mapLocalToContainer(nullptr, transformState, mode | ApplyContainerFlip, wasFixed);
-    
+    mapLocalToContainer(nullptr, transformState, mode | MapCoordinatesMode::ApplyContainerFlip, wasFixed);
+
     return transformState.mappedPoint();
 }
 
@@ -1463,7 +1463,7 @@ FloatPoint RenderObject::localToAbsolute(const FloatPoint& localPoint, OptionSet
 TransformState RenderObject::viewTransitionTransform() const
 {
     TransformState transformState(TransformState::ApplyTransformDirection, FloatPoint { });
-    OptionSet<MapCoordinatesMode> mode { UseTransforms, ApplyContainerFlip };
+    OptionSet<MapCoordinatesMode> mode { MapCoordinatesMode::UseTransforms, MapCoordinatesMode::ApplyContainerFlip };
     mapLocalToContainer(nullptr, transformState, mode, nullptr);
     return transformState;
 }
@@ -1496,10 +1496,10 @@ void RenderObject::mapLocalToContainer(const RenderLayerModelObject* ancestorCon
     // FIXME: this should call offsetFromContainer to share code, but I'm not sure it's ever called.
     LayoutPoint centerPoint(transformState.mappedPoint());
     if (auto* parentAsBox = dynamicDowncast<RenderBox>(*parent)) {
-        if (mode.contains(ApplyContainerFlip)) {
+        if (mode.contains(MapCoordinatesMode::ApplyContainerFlip)) {
             if (parentAsBox->writingMode().isBlockFlipped())
                 transformState.move(parentAsBox->flipForWritingMode(LayoutPoint(transformState.mappedPoint())) - centerPoint);
-            mode.remove(ApplyContainerFlip);
+            mode.remove(MapCoordinatesMode::ApplyContainerFlip);
         }
         transformState.move(-toLayoutSize(parentAsBox->scrollPosition()));
     }
@@ -1554,8 +1554,8 @@ void RenderObject::getTransformFromContainer(const LayoutSize& offsetInContainer
 
 void RenderObject::pushOntoTransformState(TransformState& transformState, OptionSet<MapCoordinatesMode> mode, const RenderLayerModelObject* repaintContainer, const RenderElement* container, const LayoutSize& offsetInContainer, bool containerSkipped) const
 {
-    bool preserve3D = mode.contains(UseTransforms) && participatesInPreserve3D();
-    if (mode.contains(UseTransforms) && shouldUseTransformFromContainer(container)) {
+    bool preserve3D = mode.contains(MapCoordinatesMode::UseTransforms) && participatesInPreserve3D();
+    if (mode.contains(MapCoordinatesMode::UseTransforms) && shouldUseTransformFromContainer(container)) {
         TransformationMatrix matrix;
         getTransformFromContainer(offsetInContainer, matrix);
         transformState.applyTransform(matrix, preserve3D ? TransformState::AccumulateTransform : TransformState::FlattenTransform);
@@ -1575,15 +1575,15 @@ FloatQuad RenderObject::localToContainerQuad(const FloatQuad& localQuad, const R
     // Track the point at the center of the quad's bounding box. As mapLocalToContainer() calls offsetFromContainer(),
     // it will use that point as the reference point to decide which column's transform to apply in multiple-column blocks.
     TransformState transformState(TransformState::ApplyTransformDirection, localQuad.boundingBox().center(), localQuad);
-    mapLocalToContainer(container, transformState, mode | ApplyContainerFlip, wasFixed);
-    
+    mapLocalToContainer(container, transformState, mode | MapCoordinatesMode::ApplyContainerFlip, wasFixed);
+
     return transformState.mappedQuad();
 }
 
 FloatPoint RenderObject::localToContainerPoint(const FloatPoint& localPoint, const RenderLayerModelObject* container, OptionSet<MapCoordinatesMode> mode, bool* wasFixed) const
 {
     TransformState transformState(TransformState::ApplyTransformDirection, localPoint);
-    mapLocalToContainer(container, transformState, mode | ApplyContainerFlip, wasFixed);
+    mapLocalToContainer(container, transformState, mode | MapCoordinatesMode::ApplyContainerFlip, wasFixed);
 
     return transformState.mappedPoint();
 }
@@ -1828,22 +1828,22 @@ bool RenderObject::isComposited() const
 bool RenderObject::hitTest(const HitTestRequest& request, HitTestResult& result, const HitTestLocation& locationInContainer, const LayoutPoint& accumulatedOffset, HitTestFilter hitTestFilter)
 {
     bool inside = false;
-    if (hitTestFilter != HitTestSelf) {
+    if (hitTestFilter != HitTestFilter::Self) {
         // First test the foreground layer (lines and inlines).
-        inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestForeground);
+        inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestAction::Foreground);
 
         // Test floats next.
         if (!inside)
-            inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestFloat);
+            inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestAction::Float);
 
         // Finally test to see if the mouse is in the background (within a child block's background).
         if (!inside)
-            inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestChildBlockBackgrounds);
+            inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestAction::ChildBlockBackgrounds);
     }
 
     // See if the mouse is inside us but not any of our descendants
-    if (hitTestFilter != HitTestDescendants && !inside)
-        inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestBlockBackground);
+    if (hitTestFilter != HitTestFilter::Descendants && !inside)
+        inside = nodeAtPoint(request, result, locationInContainer, accumulatedOffset, HitTestAction::BlockBackground);
 
     return inside;
 }
@@ -1978,7 +1978,7 @@ const RenderStyle& RenderObject::outlineStyleForRepaint() const
 
 CursorDirective RenderObject::getCursor(const LayoutPoint&, Cursor&) const
 {
-    return SetCursorBasedOnStyle;
+    return CursorDirective::SetCursorBasedOnStyle;
 }
 
 bool RenderObject::useDarkAppearance() const

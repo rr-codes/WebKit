@@ -2685,7 +2685,7 @@ std::optional<FocusedElementInformation> WebPage::focusedElementInformation()
         information.nodeFontSize = protect(renderer->style())->fontDescription().computedSize();
 
         bool inFixed = false;
-        renderer->localToContainerPoint(FloatPoint(), nullptr, UseTransforms, &inFixed);
+        renderer->localToContainerPoint(FloatPoint(), nullptr, MapCoordinatesMode::UseTransforms, &inFixed);
         information.insideFixedPosition = inFixed;
         information.isRTL = renderer->writingMode().isBidiRTL();
 

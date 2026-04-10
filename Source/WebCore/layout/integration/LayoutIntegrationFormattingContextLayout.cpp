@@ -59,12 +59,12 @@ void layoutWithFormattingContextForBox(const Layout::ElementBox& box, std::optio
 
     if (widthConstraint) {
         renderer->setOverridingBorderBoxLogicalWidth(*widthConstraint);
-        renderer->setNeedsLayout(MarkOnlyThis);
+        renderer->setNeedsLayout(MarkingBehavior::MarkOnlyThis);
     }
 
     if (heightConstraint) {
         renderer->setOverridingBorderBoxLogicalHeight(*heightConstraint);
-        renderer->setNeedsLayout(MarkOnlyThis);
+        renderer->setNeedsLayout(MarkingBehavior::MarkOnlyThis);
     }
 
     renderer->layoutIfNeeded();

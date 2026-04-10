@@ -319,7 +319,7 @@ void ViewTimeline::cacheCurrentTime()
 
         // https://drafts.csswg.org/scroll-animations-1/#view-timelines-ranges
         // Transforms and sticky position offsets are ignored, but relative and absolute positioning are accounted for.
-        OptionSet<MapCoordinatesMode> options { IgnoreStickyOffsets };
+        OptionSet<MapCoordinatesMode> options { MapCoordinatesMode::IgnoreStickyOffsets };
         auto subjectOffsetFromSource = subjectRenderer->localToContainerPoint(pointForLocalToContainer(*sourceScrollableArea), sourceRenderer.get(), options);
         float subjectOffset = scrollDirection.isVertical ? subjectOffsetFromSource.y() : subjectOffsetFromSource.x();
 

@@ -54,7 +54,7 @@ RenderLayoutState::RenderLayoutState(RenderElement& renderer)
 #endif
 {
     if (RenderElement* container = renderer.container()) {
-        FloatPoint absContentPoint = container->localToAbsolute(FloatPoint(), UseTransforms);
+        FloatPoint absContentPoint = container->localToAbsolute(FloatPoint(), MapCoordinatesMode::UseTransforms);
         m_paintOffset = LayoutSize(absContentPoint.x(), absContentPoint.y());
 
         if (container->hasNonVisibleOverflow()) {
@@ -97,7 +97,7 @@ void RenderLayoutState::computeOffsets(const RenderLayoutState& ancestor, Render
 {
     bool fixed = renderer.isFixedPositioned();
     if (fixed) {
-        FloatPoint fixedOffset = renderer.view().localToAbsolute(FloatPoint(), IsFixed);
+        FloatPoint fixedOffset = renderer.view().localToAbsolute(FloatPoint(), MapCoordinatesMode::IsFixed);
         m_paintOffset = LayoutSize(fixedOffset.x(), fixedOffset.y()) + offset;
     } else
         m_paintOffset = ancestor.paintOffset() + offset;

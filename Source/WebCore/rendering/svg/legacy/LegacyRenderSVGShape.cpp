@@ -230,7 +230,7 @@ static AffineTransform legacyNonScalingStrokeCTM(const Ref<SVGGraphicsElement>& 
             if (CheckedPtr legacyRoot = dynamicDowncast<LegacyRenderSVGRoot>(*renderer)) {
                 FloatPoint location = legacyRoot->localToBorderBoxTransform().mapPoint(FloatPoint());
                 float zoomFactor = 1 / renderer->style().usedZoom();
-                location = renderer->localToAbsolute(location, UseTransforms);
+                location = renderer->localToAbsolute(location, MapCoordinatesMode::UseTransforms);
                 location.scale(zoomFactor);
                 ctm = AffineTransform::makeTranslation(toFloatSize(location)) * ctm;
             }
@@ -381,7 +381,7 @@ FloatPoint LegacyRenderSVGShape::getPointAtLength(float distance) const
 bool LegacyRenderSVGShape::nodeAtFloatPoint(const HitTestRequest& request, HitTestResult& result, const FloatPoint& pointInParent, HitTestAction hitTestAction)
 {
     // We only draw in the forground phase, so we only hit-test then.
-    if (hitTestAction != HitTestForeground)
+    if (hitTestAction != HitTestAction::Foreground)
         return false;
 
     static NeverDestroyed<SVGVisitedRendererTracking::VisitedSet> s_visitedSet;

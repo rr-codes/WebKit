@@ -140,7 +140,7 @@ void RenderImage::collectSelectionGeometries(Vector<SelectionGeometry>& geometri
     }
 
     bool isFixed = false;
-    auto absoluteQuad = localToAbsoluteQuad(FloatRect(imageRect), UseTransforms, &isFixed);
+    auto absoluteQuad = localToAbsoluteQuad(FloatRect(imageRect), MapCoordinatesMode::UseTransforms, &isFixed);
     auto lineExtentBounds = localToAbsoluteQuad(FloatRect(lineExtentRect)).enclosingBoundingBox();
     if (!containingBlock->isHorizontalWritingMode())
         lineExtentBounds = lineExtentBounds.transposedRect();

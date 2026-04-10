@@ -82,7 +82,7 @@ public:
     virtual void fragmentChangedWritingMode(RenderFragmentContainer*) { }
 
     void validateFragments();
-    void invalidateFragments(MarkingBehavior = MarkContainingBlockChain);
+    void invalidateFragments(MarkingBehavior = MarkingBehavior::MarkContainingBlockChain);
     bool hasValidFragmentInfo() const { return !m_fragmentsInvalidated && !m_fragmentList.isEmptyIgnoringNullReferences(); }
     
     // Called when a descendant box's layout is finished and it has been positioned within its container.

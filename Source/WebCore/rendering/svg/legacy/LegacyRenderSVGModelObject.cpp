@@ -125,7 +125,7 @@ void LegacyRenderSVGModelObject::boundingRects(Vector<LayoutRect>& rects, const 
 
 void LegacyRenderSVGModelObject::absoluteQuads(Vector<FloatQuad>& quads, bool* wasFixed) const
 {
-    quads.append(localToAbsoluteQuad(strokeBoundingBox(), UseTransforms, wasFixed));
+    quads.append(localToAbsoluteQuad(strokeBoundingBox(), MapCoordinatesMode::UseTransforms, wasFixed));
 }
 
 void LegacyRenderSVGModelObject::willBeDestroyed()

@@ -154,7 +154,7 @@ void RenderSliderContainer::layout()
     // Force a layout to reset the position of the thumb so the code below doesn't move the thumb to the wrong place.
     // FIXME: Make a custom Render class for the track and move the thumb positioning code there.
     if (track)
-        track->setChildNeedsLayout(MarkOnlyThis);
+        track->setChildNeedsLayout(MarkingBehavior::MarkOnlyThis);
 
     RenderFlexibleBox::layout();
 
@@ -256,7 +256,7 @@ void SliderThumbElement::setPositionFromPoint(const LayoutPoint& absolutePoint)
     bool isVertical = hasVerticalAppearance(*input);
     bool isInlineFlipped = thumbRenderer->writingMode().isInlineFlipped() || (isVertical && thumbRenderer->writingMode().isHorizontal());
 
-    auto offset = inputRenderer->absoluteToLocal(absolutePoint, UseTransforms);
+    auto offset = inputRenderer->absoluteToLocal(absolutePoint, MapCoordinatesMode::UseTransforms);
     auto trackBoundingBox = trackRenderer->localToContainerQuad(FloatRect { { }, trackRenderer->size() }, inputRenderer.get()).enclosingBoundingBox();
 
     LayoutUnit trackLength;

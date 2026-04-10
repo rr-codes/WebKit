@@ -121,7 +121,7 @@ void RenderSearchField::showPopup()
         popup->saveRecentSearches(name, recentSearches);
     }
 
-    FloatPoint absTopLeft = localToAbsolute(FloatPoint(), UseTransforms);
+    FloatPoint absTopLeft = localToAbsolute(FloatPoint(), MapCoordinatesMode::UseTransforms);
     IntRect absBounds = absoluteBoundingBoxRectIgnoringTransforms();
     absBounds.setLocation(roundedIntPoint(absTopLeft));
     protect(protect(m_searchPopup)->popupMenu())->show(absBounds, protect(view().frameView()), -1);
