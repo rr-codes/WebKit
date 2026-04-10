@@ -290,6 +290,8 @@ PASS Parsing: <http://[::.1]> against <http://other.com/>
 PASS Parsing: <http://[::%31]> against <http://other.com/>
 PASS Parsing: <http://%5B::1]> against <http://other.com/>
 PASS Parsing: <http://foo:💩@example.com/bar> against <http://other.com/>
+PASS Parsing: <https://localhost?q=🔥> against <about:blank>
+PASS Parsing: <https://localhost#🔥> against <about:blank>
 PASS Parsing: <#> against <test:test>
 PASS Parsing: <#x> against <about:blank>
 PASS Parsing: <#x:y> against <about:blank>
@@ -490,6 +492,7 @@ PASS Parsing: <http://256.256.256.256> against <http://other.com/>
 PASS Parsing: <https://0x.0x.0> against <about:blank>
 PASS Parsing: <https://0x.0x.0x.0x> against <about:blank>
 PASS Parsing: <https://00.00.00.00> against <about:blank>
+PASS Parsing: <https://0000000000000000000000000000000000000000177.0.0.1> against <about:blank>
 PASS Parsing: <https://0x100000000/test> against <about:blank>
 PASS Parsing: <https://256.0.0.1/test> against <about:blank>
 PASS Parsing: <https://%43%7C/> against <about:blank>
