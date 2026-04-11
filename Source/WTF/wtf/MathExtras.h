@@ -169,6 +169,10 @@ inline double roundTowardsPositiveInfinity(double value) { return std::floor(val
 inline float roundTowardsPositiveInfinity(float value) { return std::floor(value + 0.5f); }
 
 // C23 roundeven polyfill.
+#if defined(__clang__) || defined(__GNUC__)
+inline float roundevenf(float value) { return __builtin_roundevenf(value); }
+inline double roundeven(double value) { return __builtin_roundeven(value); }
+#else
 inline float roundevenf(float value)
 {
     float rounded = std::round(value);
@@ -188,6 +192,7 @@ inline double roundeven(double value)
     }
     return rounded;
 }
+#endif
 
 // std::numeric_limits<T>::min() returns the smallest positive value for floating point types
 template<typename T> consteval T defaultMinimumForClamp() { return std::numeric_limits<T>::min(); }
