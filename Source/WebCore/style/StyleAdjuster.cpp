@@ -483,11 +483,10 @@ void Adjuster::adjust(RenderStyle& style) const
         if (style.display() == DisplayType::InlineFlow && !style.pseudoElementType() && style.writingMode().computedWritingMode() != m_parentStyle.writingMode().computedWritingMode())
             style.setDisplayMaintainingOriginalDisplay(DisplayType::InlineFlowRoot);
 
-        // After performing the display mutation, check table rows. We do not honor position:relative or position:sticky on
-        // table rows or cells. This has been established for position:relative in CSS2.1 (and caused a crash in containingBlock()
-        // on some sites).
+        // We do not honor position:relative or position:sticky on table row groups. Table rows are
+        // allowed to be position:relative (they extend RenderBlock and can be proper containing blocks).
         if ((style.display() == DisplayType::TableHeaderGroup || style.display() == DisplayType::TableRowGroup
-            || style.display() == DisplayType::TableFooterGroup || style.display() == DisplayType::TableRow)
+            || style.display() == DisplayType::TableFooterGroup)
             && style.position() == PositionType::Relative)
             style.setPosition(PositionType::Static);
 
@@ -642,7 +641,11 @@ void Adjuster::adjust(RenderStyle& style) const
 
     bool overflowIsClipOrVisible = isOverflowClipOrVisible(style.overflowY()) && isOverflowClipOrVisible(style.overflowX());
 
-    if (!overflowIsClipOrVisible && style.display().isTableBox()) {
+    // The overflow property does not apply to table row elements (CSS2 section 11.1.1).
+    if (style.display() == DisplayType::TableRow) {
+        style.setOverflowX(ComputedStyle::initialOverflowX());
+        style.setOverflowY(ComputedStyle::initialOverflowY());
+    } else if (!overflowIsClipOrVisible && style.display().isTableBox()) {
         // Tables only support overflow:hidden and overflow:visible and ignore anything else,
         // see https://drafts.csswg.org/css2/#overflow. As a table is not a block
         // container box the rules for resolving conflicting x and y values in CSS Overflow Module

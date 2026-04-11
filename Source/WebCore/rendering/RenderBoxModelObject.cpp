@@ -59,7 +59,6 @@
 #include "RenderMultiColumnFlow.h"
 #include "RenderObjectInlines.h"
 #include "RenderTable.h"
-#include "RenderTableRow.h"
 #include "RenderText.h"
 #include "RenderTextFragment.h"
 #include "RenderTreeBuilder.h"
@@ -438,7 +437,7 @@ LayoutPoint RenderBoxModelObject::adjustedPositionRelativeToOffsetParent(const L
                     if (auto* fragment = renderMultiColumnFlow->physicalTranslationFromFlowToFragment(referencePoint))
                         referencePoint.moveBy(fragment->topLeftLocation());
                 } else if (!isOutOfFlowPositioned()) {
-                    if (auto* renderBox = dynamicDowncast<RenderBox>(*ancestor); renderBox && !is<RenderTableRow>(*ancestor))
+                    if (auto* renderBox = dynamicDowncast<RenderBox>(*ancestor))
                         referencePoint.moveBy(renderBox->topLeftLocation());
                 }
                 
@@ -468,8 +467,10 @@ void RenderBoxModelObject::computeStickyPositionConstraints(StickyPositionViewpo
     // Do not use anonymous containing blocks to determine sticky constraints. We want the size
     // of the first true containing block, because that is what imposes the limitation on the
     // movement of stickily positioned items.
+    // Table rows are also skipped because a sticky cell should be constrained by its section
+    // (thead/tbody/tfoot), not by the individual row whose content box is the same height as the cell.
     RenderBlock* containingBlock = this->containingBlock();
-    while (containingBlock && (!is<RenderBlock>(*containingBlock) || containingBlock->isAnonymousBlock()))
+    while (containingBlock && (!is<RenderBlock>(*containingBlock) || containingBlock->isAnonymousBlock() || containingBlock->isRenderTableRow()))
         containingBlock = containingBlock->containingBlock();
     ASSERT(containingBlock);
 

@@ -4430,9 +4430,6 @@ PositionWithAffinity RenderBox::positionForPoint(const LayoutPoint& point, HitTe
     // Pass off to the closest child.
     LayoutUnit minDist = LayoutUnit::max();
     RenderBox* closestRenderer = nullptr;
-    LayoutPoint adjustedPoint = point;
-    if (isRenderTableRow())
-        adjustedPoint.moveBy(location());
 
     for (auto& renderer : childrenOfType<RenderBox>(*this)) {
         if (CheckedPtr fragmentedFlow = dynamicDowncast<RenderFragmentedFlow>(*this)) {
@@ -4445,14 +4442,12 @@ PositionWithAffinity RenderBox::positionForPoint(const LayoutPoint& point, HitTe
             || (source == HitTestSource::Script ? renderer.style().visibility() : renderer.style().usedVisibility()) != Visibility::Visible)
             continue;
 
-        LayoutUnit top = renderer.borderTop() + renderer.paddingTop() + (is<RenderTableRow>(*this) ? 0_lu : renderer.y());
+        LayoutUnit top = renderer.borderTop() + renderer.paddingTop() + renderer.y();
         LayoutUnit bottom = top + renderer.contentBoxHeight();
-        LayoutUnit left = renderer.borderLeft() + renderer.paddingLeft() + (is<RenderTableRow>(*this) ? 0_lu : renderer.x());
+        LayoutUnit left = renderer.borderLeft() + renderer.paddingLeft() + renderer.x();
         LayoutUnit right = left + renderer.contentBoxWidth();
         
         if (point.x() <= right && point.x() >= left && point.y() >= top && point.y() <= bottom) {
-            if (is<RenderTableRow>(renderer))
-                return renderer.positionForPoint(point + adjustedPoint - renderer.locationOffset(), source, fragment);
             return renderer.positionForPoint(point - renderer.locationOffset(), source, fragment);
         }
 
@@ -4490,7 +4485,7 @@ PositionWithAffinity RenderBox::positionForPoint(const LayoutPoint& point, HitTe
     }
     
     if (closestRenderer)
-        return closestRenderer->positionForPoint(adjustedPoint - closestRenderer->locationOffset(), source, fragment);
+        return closestRenderer->positionForPoint(point - closestRenderer->locationOffset(), source, fragment);
     
     return createPositionWithAffinity(firstPositionInOrBeforeNode(nonPseudoElement()));
 }

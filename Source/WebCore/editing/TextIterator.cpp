@@ -940,6 +940,11 @@ bool shouldEmitNewlinesBeforeAndAfterNode(Node& node)
     if (shouldEmitReplacementInsteadOfNode(node))
         return false;
 
+    // Table rows are RenderBlocks but have their own newline logic above
+    // that accounts for inline tables.
+    if (is<RenderTableRow>(*renderer))
+        return false;
+
     return !renderer->isInline()
         && is<RenderBlock>(*renderer)
         && !renderer->isFloatingOrOutOfFlowPositioned()
