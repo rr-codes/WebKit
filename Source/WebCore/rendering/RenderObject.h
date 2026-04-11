@@ -1475,6 +1475,8 @@ inline CachedImageClient& RenderObject::cachedImageClient() const
     return *m_cachedImageClient.get();
 }
 
+std::partial_ordering renderTreeOrder(const RenderObject&, const RenderObject&);
+
 WTF::TextStream& operator<<(WTF::TextStream&, const RenderObject&);
 WTF::TextStream& operator<<(WTF::TextStream&, const RenderObject::RepaintRects&);
 

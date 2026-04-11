@@ -3024,6 +3024,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     rendering/RenderTextLineBoxes.h
     rendering/RenderTheme.h
     rendering/RenderTreeAsText.h
+    rendering/RenderTreeOrder.h
     rendering/RenderVideo.h
     rendering/RenderVideoInlines.h
     rendering/RenderView.h

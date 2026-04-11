@@ -1055,29 +1055,6 @@ static const RenderElement* penultimateContainingBlockChainElement(const RenderE
     return nullptr;
 }
 
-static bool firstChildPrecedesSecondChild(const RenderObject* firstChild, const RenderObject* secondChild, const RenderObject* containingBlock)
-{
-    HashSet<CheckedRef<const RenderObject>> firstAncestorChain;
-
-    for (auto* first = firstChild; first; first = first->parent()) {
-        firstAncestorChain.add(*first);
-        if (first == containingBlock)
-            break;
-    }
-
-    auto* second = secondChild;
-    for (; second != containingBlock; second = second->parent()) {
-        if (firstAncestorChain.contains(second->parent())) {
-            for (auto* sibling = second->previousSibling(); sibling; sibling = sibling->previousSibling()) {
-                if (firstAncestorChain.contains(sibling))
-                    return true;
-            }
-            return false;
-        }
-    }
-    return false;
-}
-
 // Given an element and its anchor name, locate the closest ancestor (*) element
 // that establishes an anchor scope affecting this anchor name, and return the pointer
 // to such element. If no ancestor establishes an anchor scope affecting this name,
@@ -1173,9 +1150,6 @@ static bool isAcceptableAnchorElement(const RenderBoxModelObject& anchorRenderer
             return false;
     }
 
-    CheckedPtr containingBlock = anchorPositionedRenderer->container();
-    ASSERT(containingBlock);
-
     // "possible anchor is laid out strictly before positioned el, aka one of the following is true:"
     auto topLayerStatus = computeTopLayerStatus(*anchorPositionedRenderer, anchorRenderer);
     switch (topLayerStatus) {
@@ -1184,6 +1158,9 @@ static bool isAcceptableAnchorElement(const RenderBoxModelObject& anchorRenderer
         return true;
     case TopLayerStatus::Same: {
         // "- Both elements are in the same top layer..."
+        CheckedPtr containingBlock = anchorPositionedRenderer->container();
+        ASSERT(containingBlock);
+
         auto* penultimateElement = penultimateContainingBlockChainElement(anchorRenderer, containingBlock.get());
         if (!penultimateElement)
             return false;
@@ -1191,7 +1168,7 @@ static bool isAcceptableAnchorElement(const RenderBoxModelObject& anchorRenderer
         if (!penultimateElement->isOutOfFlowPositioned())
             return true;
 
-        return firstChildPrecedesSecondChild(penultimateElement, anchorPositionedRenderer.get(), containingBlock.get());
+        return is_lt(renderTreeOrder(*penultimateElement, *anchorPositionedRenderer));
     }
     case TopLayerStatus::Lower:
         return false;
