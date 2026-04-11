@@ -121,26 +121,10 @@ RenderBlockFlow::MarginInfo::MarginInfo(const RenderBlockFlow& block, IgnoreScro
     // margins with our children's margins. To do otherwise would be to risk odd visual
     // effects when the children overflow out of the parent block and yet still collapse
     // with it. We also don't collapse if we have any bottom border/padding.
-    // Per CSS Sizing 3 §5.1, intrinsic sizing keywords (min-content, max-content, fit-content),
-    // cyclic percentages, and indefinite stretch "behave as auto" in the block axis and should
-    // allow margin collapse.
-    auto logicalHeightBehavesAsAuto = [&] {
-        auto& logicalHeight = blockStyle.logicalHeight();
-        if (logicalHeight.isAuto())
-            return true;
-        if (logicalHeight.isIntrinsic())
-            return true;
-        if (block.isUnresolveableStretchSize(logicalHeight))
-            return true;
-        if (logicalHeight.isPercentOrCalculated() && !block.percentageLogicalHeightIsResolvable())
-            return true;
-        return false;
-    };
-
     auto canCollapseMarginAfterWithChildren = [&]() -> bool {
         if (!m_canCollapseWithChildren)
             return false;
-        if (!logicalHeightBehavesAsAuto())
+        if (!blockStyle.logicalHeight().isAuto())
             return false;
         if (block.borderAndPaddingAfter())
             return false;
