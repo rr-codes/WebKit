@@ -429,8 +429,8 @@ static NSString *overrideBundleIdentifier(id, SEL)
     }
 
 #if USE(BROWSERENGINEKIT)
-    auto nsAlternatives = adoptNS([[NSTextAlternatives alloc] initWithPrimaryString:primaryString alternativeStrings:alternativeStrings]);
-    auto alternatives = adoptNS([[BETextAlternatives alloc] _initWithNSTextAlternatives:nsAlternatives.get()]);
+    RetainPtr nsAlternatives = adoptNS([[NSTextAlternatives alloc] initWithPrimaryString:primaryString alternativeStrings:alternativeStrings]);
+    RetainPtr alternatives = adoptNS([[BETextAlternatives alloc] _initWithNSTextAlternatives:nsAlternatives.get()]);
     [self.asyncTextInput insertTextAlternatives:alternatives.get()];
 #else
     [self.textInputContentView insertText:primaryString alternatives:alternativeStrings style:UITextAlternativeStyleNone];
@@ -441,7 +441,7 @@ static NSString *overrideBundleIdentifier(id, SEL)
 
 static RetainPtr<BEKeyEntry> wrap(WebEvent *webEvent)
 {
-    auto uiKeyEvent = adoptNS([allocUIKeyEventInstance() initWithWebEvent:webEvent]);
+    RetainPtr uiKeyEvent = adoptNS([allocUIKeyEventInstance() initWithWebEvent:webEvent]);
     return adoptNS([[BEKeyEntry alloc] _initWithUIKitKeyEvent:uiKeyEvent.get()]);
 }
 
@@ -583,7 +583,7 @@ static WebEvent *unwrap(BEKeyEntry *event)
 
 - (void)expectElementTagsInOrder:(NSArray<NSString *> *)tagNames
 {
-    auto remainingTags = adoptNS([tagNames mutableCopy]);
+    RetainPtr remainingTags = adoptNS([tagNames mutableCopy]);
     NSArray<NSString *> *tagsInBody = self.tagsInBody;
     for (NSString *tag in tagsInBody.reverseObjectEnumerator) {
         if ([tag isEqualToString:[remainingTags lastObject]])
@@ -1056,7 +1056,7 @@ static InputSessionChangeCount nextInputSessionChangeCount()
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    auto defaultConfiguration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    RetainPtr defaultConfiguration = adoptNS([[WKWebViewConfiguration alloc] init]);
     return [self initWithFrame:frame configuration:defaultConfiguration.get()];
 }
 
@@ -1423,7 +1423,7 @@ static UIWindowScene *windowScene()
     unichar c = character;
     RetainPtr characters = adoptNS([[NSString alloc] initWithCharacters:&c length:1]);
 
-    auto firstWebEvent = adoptNS([[WebEvent alloc] initWithKeyEventType:WebEventKeyDown timeStamp:CFAbsoluteTimeGetCurrent() characters:characters.get() charactersIgnoringModifiers:characters.get() modifiers:0 isRepeating:NO withFlags:0 withInputManagerHint:nil keyCode:0 isTabKey:NO]);
+    RetainPtr firstWebEvent = adoptNS([[WebEvent alloc] initWithKeyEventType:WebEventKeyDown timeStamp:CFAbsoluteTimeGetCurrent() characters:characters.get() charactersIgnoringModifiers:characters.get() modifiers:0 isRepeating:NO withFlags:0 withInputManagerHint:nil keyCode:0 isTabKey:NO]);
     [self handleKeyEvent:firstWebEvent.get() completion:[=](WebEvent *event, BOOL) {
         EXPECT_TRUE([event isEqual:firstWebEvent.get()]);
     }];
@@ -1757,7 +1757,7 @@ static WKContentView *recursiveFindWKContentView(UIView *view)
     RetainPtr pipe = [NSPipe pipe];
     // FIXME: This is currently reliant on `NSTask`, which is absent on iOS. We should find a way to
     // make this helper work on both platforms.
-    auto task = adoptNS([NSTask new]);
+    RetainPtr task = adoptNS([NSTask new]);
     [task setLaunchPath:@"/usr/bin/log"];
     [task setArguments:@[ @"show", @"--last", @"2m", @"--style", @"json", @"--predicate", predicate ]];
     [task setStandardOutput:pipe.get()];

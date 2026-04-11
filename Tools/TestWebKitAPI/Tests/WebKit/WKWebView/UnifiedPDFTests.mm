@@ -206,7 +206,7 @@ TEST_F(UnifiedPDFWithKeyboardScrolling, DisplayModeTransitionLandingPage)
 
 UNIFIED_PDF_TEST(CopyEditingCommandOnEmptySelectionShouldNotCrash)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 600, 600) configuration:configurationForWebViewTestingUnifiedPDF().get() addToWindow:YES]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 600, 600) configuration:configurationForWebViewTestingUnifiedPDF().get() addToWindow:YES]);
     [webView setForceWindowToBecomeKey:YES];
 
     RetainPtr request = [NSURLRequest requestWithURL:[NSBundle.test_resourcesBundle URLForResource:@"multiple-pages" withExtension:@"pdf"]];
@@ -300,7 +300,7 @@ UNIFIED_PDF_TEST(PrintSize)
             mimeType = @"application/pdf";
             data = [NSData dataWithContentsOfURL:[NSBundle.test_resourcesBundle URLForResource:@"test_print" withExtension:@"pdf"]];
         }
-        auto response = adoptNS([[NSURLResponse alloc] initWithURL:url MIMEType:mimeType expectedContentLength:data.length textEncodingName:nil]);
+        RetainPtr response = adoptNS([[NSURLResponse alloc] initWithURL:url MIMEType:mimeType expectedContentLength:data.length textEncodingName:nil]);
         [task didReceiveResponse:response.get()];
         [task didReceiveData:data];
         [task didFinish];

@@ -1002,7 +1002,7 @@ namespace Util {
 
 RetainPtr<TestWebExtensionManager> parseExtension(NSDictionary *manifest, NSDictionary *resources, WKWebExtensionControllerConfiguration *configuration, BOOL usesEnhancedSecurity)
 {
-    auto extension = adoptNS([[WKWebExtension alloc] _initWithManifestDictionary:manifest resources:resources]);
+    RetainPtr extension = adoptNS([[WKWebExtension alloc] _initWithManifestDictionary:manifest resources:resources]);
     return adoptNS([[TestWebExtensionManager alloc] initForExtension:extension.get() extensionControllerConfiguration:configuration usesEnhancedSecurity:usesEnhancedSecurity]);
 }
 
@@ -1021,7 +1021,7 @@ void loadAndRunExtension(NSDictionary *manifest, NSDictionary *resources, WKWebE
 NSData *makePNGData(CGSize size, SEL colorSelector)
 {
 #if USE(APPKIT)
-    auto image = adoptNS([[NSImage alloc] initWithSize:size]);
+    RetainPtr image = adoptNS([[NSImage alloc] initWithSize:size]);
 
     [image lockFocus];
 
@@ -1031,7 +1031,7 @@ NSData *makePNGData(CGSize size, SEL colorSelector)
     [image unlockFocus];
 
     auto cgImageRef = [image CGImageForProposedRect:NULL context:nil hints:nil];
-    auto newImageRep = adoptNS([[NSBitmapImageRep alloc] initWithCGImage:cgImageRef]);
+    RetainPtr newImageRep = adoptNS([[NSBitmapImageRep alloc] initWithCGImage:cgImageRef]);
     newImageRep.get().size = size;
 
     return [newImageRep representationUsingType:NSBitmapImageFileTypePNG properties:@{ }];

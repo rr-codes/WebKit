@@ -119,7 +119,7 @@ static NSString *contentTypeForFileExtension(NSString *fileExtension)
 
     if ([requestURL.host isEqualToString:@"redirect"]) {
         NSData *data = [@"PASS" dataUsingEncoding:NSASCIIStringEncoding];
-        auto response = adoptNS([[NSURLResponse alloc] initWithURL:requestURL MIMEType:@"text/html" expectedContentLength:data.length textEncodingName:nil]);
+        RetainPtr response = adoptNS([[NSURLResponse alloc] initWithURL:requestURL MIMEType:@"text/html" expectedContentLength:data.length textEncodingName:nil]);
         [self.client URLProtocol:self wasRedirectedToRequest:[NSURLRequest requestWithURL:createRedirectURL(requestURL.query)] redirectResponse:response.get()];
         return;
     }
@@ -142,7 +142,7 @@ static NSString *contentTypeForFileExtension(NSString *fileExtension)
     if (auto& headers = additionalResponseHeaders())
         [responseHeaders addEntriesFromDictionary:headers.get()];
 
-    auto response = adoptNS([[NSHTTPURLResponse alloc] initWithURL:requestURL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:responseHeaders]);
+    RetainPtr response = adoptNS([[NSHTTPURLResponse alloc] initWithURL:requestURL statusCode:200 HTTPVersion:@"HTTP/1.1" headerFields:responseHeaders]);
 
     [self.client URLProtocol:self didReceiveResponse:response.get() cacheStoragePolicy:NSURLCacheStorageNotAllowed];
     [self.client URLProtocol:self didLoadData:data];

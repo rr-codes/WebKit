@@ -53,7 +53,7 @@ TEST(PAL, MediaTime)
 static RetainPtr<CMFormatDescriptionRef> makeFormatDescriptionWithTencData(std::span<const uint8_t> tencData)
 {
     auto data = adoptCF(CFDataCreate(kCFAllocatorDefault, tencData.data(), tencData.size()));
-    auto extensions = adoptNS([[NSDictionary alloc] initWithObjectsAndKeys:(__bridge NSData *)data.get(), @"CommonEncryptionTrackEncryptionBox", nil]);
+    RetainPtr extensions = adoptNS([[NSDictionary alloc] initWithObjectsAndKeys:(__bridge NSData *)data.get(), @"CommonEncryptionTrackEncryptionBox", nil]);
     CMFormatDescriptionRef desc = nullptr;
     PAL::CMVideoFormatDescriptionCreate(kCFAllocatorDefault, kCMVideoCodecType_H264, 1920, 1080, (__bridge CFDictionaryRef)extensions.get(), &desc);
     return adoptCF(desc);

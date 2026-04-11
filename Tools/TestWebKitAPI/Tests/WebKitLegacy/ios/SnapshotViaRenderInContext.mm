@@ -82,8 +82,8 @@ TEST(WebKitLegacy, RenderInContextSnapshot)
     const NSInteger width = 800;
     const NSInteger height = 600;
     
-    auto uiWindow = adoptNS([[UIWindow alloc] initWithFrame:NSMakeRect(0, 0, width, height)]);
-    auto uiWebView = adoptNS([[UIWebViewWithoutSafeArea alloc] initWithFrame:NSMakeRect(0, 0, width, height)]);
+    RetainPtr uiWindow = adoptNS([[UIWindow alloc] initWithFrame:NSMakeRect(0, 0, width, height)]);
+    RetainPtr uiWebView = adoptNS([[UIWebViewWithoutSafeArea alloc] initWithFrame:NSMakeRect(0, 0, width, height)]);
     [uiWindow addSubview:uiWebView.get()];
     
     RetainPtr<RenderInContextWebViewDelegate> uiDelegate = adoptNS([[RenderInContextWebViewDelegate alloc] init]);

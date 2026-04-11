@@ -39,7 +39,7 @@
 
 TEST(WKWebViewThemeColor, MetaElementValidNameAndColor)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='red'>"];
@@ -51,7 +51,7 @@ TEST(WKWebViewThemeColor, MetaElementValidNameAndColor)
 
 TEST(WKWebViewThemeColor, MetaElementValidNameAndColorAndMedia)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='red' media='screen'>"];
@@ -63,7 +63,7 @@ TEST(WKWebViewThemeColor, MetaElementValidNameAndColorAndMedia)
 
 TEST(WKWebViewThemeColor, MetaElementInvalidName)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='not-theme-color' content='blue'><meta name='theme-color' content='red'>"];
@@ -75,7 +75,7 @@ TEST(WKWebViewThemeColor, MetaElementInvalidName)
 
 TEST(WKWebViewThemeColor, MetaElementInvalidColor)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='invalid'><meta name='theme-color' content='red'>"];
@@ -87,7 +87,7 @@ TEST(WKWebViewThemeColor, MetaElementInvalidColor)
 
 TEST(WKWebViewThemeColor, MetaElementInvalidMedia)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='blue' media='invalid'><meta name='theme-color' content='red' media='screen'>"];
@@ -99,7 +99,7 @@ TEST(WKWebViewThemeColor, MetaElementInvalidMedia)
 
 TEST(WKWebViewThemeColor, MetaElementMultipleValid)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<div><meta name='theme-color' content='red'></div><meta name='theme-color' content='blue'>"];
@@ -111,7 +111,7 @@ TEST(WKWebViewThemeColor, MetaElementMultipleValid)
 
 TEST(WKWebViewThemeColor, MetaElementValidSubframe)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<iframe srcdoc=\"<meta name='theme-color' content='blue'>\"></iframe><meta name='theme-color' content='red'>"];
@@ -219,8 +219,8 @@ TEST(WKWebViewThemeColor, KVO)
     auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     auto blueColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
 
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
-    auto themeColorObserver = adoptNS([[WKWebViewThemeColorObserver alloc] initWithWebView:webView.get()]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr themeColorObserver = adoptNS([[WKWebViewThemeColorObserver alloc] initWithWebView:webView.get()]);
     EXPECT_NSSTRING_EQ("after-init", [themeColorObserver state]);
     EXPECT_TRUE(![webView themeColor]);
 
@@ -291,7 +291,7 @@ TEST(WKWebViewThemeColor, ApplicationManifest)
     auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
 
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     NSDictionary *manifestObject = @{ @"name": @"Test", @"theme_color": @"red" };
@@ -311,7 +311,7 @@ TEST(WKWebViewThemeColor, ApplicationManifest)
 
 TEST(WKWebViewThemeColor, MetaElementOverridesApplicationManifest)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
 
     NSDictionary *manifestObject = @{ @"name": @"Test", @"theme_color": @"blue" };

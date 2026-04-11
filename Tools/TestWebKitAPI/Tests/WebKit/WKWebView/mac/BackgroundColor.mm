@@ -42,7 +42,7 @@ namespace TestWebKitAPI {
 
 TEST(WebKit, BackgroundColorDefault)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
     NSColor *defaultColor = DEFAULT_BACKGROUND_COLOR;
     NSColor *backgroundColor = [webView _backgroundColor];
@@ -56,7 +56,7 @@ TEST(WebKit, BackgroundColorDefault)
 
 TEST(WebKit, BackgroundColorSystemColor)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
     NSColor *systemColor = [NSColor textBackgroundColor];
     [webView _setBackgroundColor:systemColor];
@@ -72,7 +72,7 @@ TEST(WebKit, BackgroundColorSystemColor)
 
 TEST(WebKit, BackgroundColorNil)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
     [webView _setBackgroundColor:nil];
 
@@ -88,7 +88,7 @@ TEST(WebKit, BackgroundColorNil)
 
 TEST(WebKit, BackgroundColorNoDrawsBackground)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
     [webView _setDrawsBackground:NO];
 
@@ -104,7 +104,7 @@ TEST(WebKit, BackgroundColorNoDrawsBackground)
 
 TEST(WebKit, BackgroundColorCustomColorNoDrawsBackground)
 {
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
     [webView _setDrawsBackground:NO];
     [webView _setBackgroundColor:[NSColor textBackgroundColor]];
@@ -122,7 +122,7 @@ TEST(WebKit, BackgroundColorToggleAppearance)
 {
     const NSInteger width = 800;
     const NSInteger height = 600;
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height)]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, width, height)]);
 
     const auto& checkWhitePixel = [&] {
         uint8_t* pixelBuffer = static_cast<uint8_t*>(calloc(width * height, 4));

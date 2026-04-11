@@ -104,7 +104,7 @@ using namespace TestWebKitAPI;
 - (NSArray *)_test_waitForAlertWithEnhancedSecurity
 {
     EXPECT_FALSE(self.UIDelegate);
-    auto uiDelegate = adoptNS([TestUIDelegate new]);
+    RetainPtr uiDelegate = adoptNS([TestUIDelegate new]);
     self.UIDelegate = uiDelegate.get();
     NSArray *result = [uiDelegate waitForAlertWithEnhancedSecurity];
     self.UIDelegate = nil;
@@ -200,7 +200,7 @@ static RetainPtr<TestWKWebView> enhancedSecurityTestConfiguration(
 
     [configuration setWebsiteDataStore:adoptNS([[WKWebsiteDataStore alloc] _initWithConfiguration:storeConfiguration.get()]).get()];
 
-    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1) configuration:configuration]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 1, 1) configuration:configuration]);
 
     if (secureServer) {
         auto navigationDelegate = [TestNavigationDelegate new];
@@ -220,7 +220,7 @@ static void runActionAndCheckEnhancedSecurityAlerts(
 {
     RELEASE_ASSERT(!webView.get().UIDelegate);
 
-    __block auto uiDelegate = adoptNS([TestUIDelegate new]);
+    __block RetainPtr uiDelegate = adoptNS([TestUIDelegate new]);
     [webView setUIDelegate:uiDelegate.get()];
 
     __block auto navigationDelegate = [webView navigationDelegate];
@@ -1224,7 +1224,7 @@ enum class SeenOutsideEnhancedSecurity : bool { Seen, NotSeen };
 
 static NSURL *enhancedSecuritySitesPath()
 {
-    auto dataStoreConfiguration = adoptNS([[_WKWebsiteDataStoreConfiguration alloc] init]);
+    RetainPtr dataStoreConfiguration = adoptNS([[_WKWebsiteDataStoreConfiguration alloc] init]);
     NSURL *rootStorage = [dataStoreConfiguration.get().generalStorageDirectory URLByDeletingLastPathComponent];
     NSURL *enhancedSecurityDirectory = [rootStorage URLByAppendingPathComponent:@"EnhancedSecurity"];
     NSURL *enhancedSecurityFile = [enhancedSecurityDirectory URLByAppendingPathComponent:@"EnhancedSecuritySites.db"];
@@ -1348,7 +1348,7 @@ TEST(EnhancedSecurityPolicies, NonPersistentDataStoreCookieNotification)
 
     auto webView = enhancedSecurityTestConfiguration(&plaintextServer, nullptr, /* useSiteIsolation */ false, /* useNonPersistentStore */ true);
 
-    auto observer = adoptNS([EnhancedSecurityCookieObserver new]);
+    RetainPtr observer = adoptNS([EnhancedSecurityCookieObserver new]);
     globalCookieStore = webView.get().configuration.websiteDataStore.httpCookieStore;
     [globalCookieStore addObserver:observer.get()];
 
@@ -1433,7 +1433,7 @@ static void runContentRuleListCallbackOccurs(bool useSiteIsolation)
 
     [[webView.get().configuration userContentController] addContentRuleList:contentRuleList.get()];
 
-    auto navigationDelegate = adoptNS([TestNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([TestNavigationDelegate new]);
 
     __block bool receivedActionNotification { false };
     navigationDelegate.get().contentRuleListPerformedAction = ^(WKWebView *, NSString *identifier, _WKContentRuleListAction *action, NSURL *url) {

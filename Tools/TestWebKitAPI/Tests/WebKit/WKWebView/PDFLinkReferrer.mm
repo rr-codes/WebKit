@@ -47,7 +47,7 @@ static void emptyReleaseInfoCallback(void*)
 
 static RetainPtr<NSData> createPDFWithLinkToURL(NSURL *url)
 {
-    auto pdfData = adoptNS([[NSMutableData alloc] init]);
+    RetainPtr pdfData = adoptNS([[NSMutableData alloc] init]);
     
     CGDataConsumerCallbacks callbacks;
     callbacks.putBytes = (CGDataConsumerPutBytesCallback)putPDFBytesCallback;
@@ -93,7 +93,7 @@ TEST(WebKit, PDFLinkReferrer)
 
     RetainPtr<TestWKWebView> webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
 
-    auto navigationDelegate = adoptNS([[TestNavigationDelegate alloc] init]);
+    RetainPtr navigationDelegate = adoptNS([[TestNavigationDelegate alloc] init]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     auto *linkURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://127.0.0.1:%hu", server.port()]];

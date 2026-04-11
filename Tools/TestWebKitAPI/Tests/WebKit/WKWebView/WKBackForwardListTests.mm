@@ -53,7 +53,7 @@ static NSString *loadableURL3 = @"data:text/html,no%20error%20C";
 
 TEST(WKBackForwardList, RemoveCurrentItem)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
     [webView _test_waitForDidFinishNavigation];
@@ -88,7 +88,7 @@ TEST(WKBackForwardList, RemoveCurrentItemWithNeighbors)
     // Regression test: when the current item is filtered out, the currentIndex should
     // be decremented (so the predecessor becomes current), not left unchanged (which
     // would make the successor current).
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
     [webView _test_waitForDidFinishNavigation];
@@ -124,7 +124,7 @@ TEST(WKBackForwardList, RemoveCurrentItemWithNeighbors)
 
 TEST(WKBackForwardList, CanNotGoBackAfterRestoringEmptySessionState)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
     [webView _test_waitForDidFinishNavigation];
@@ -138,7 +138,7 @@ TEST(WKBackForwardList, CanNotGoBackAfterRestoringEmptySessionState)
     EXPECT_EQ((NSUInteger)1, list.backList.count);
     EXPECT_EQ((NSUInteger)0, list.forwardList.count);
 
-    auto singlePageWebView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr singlePageWebView = adoptNS([[WKWebView alloc] init]);
 
     [singlePageWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
     [singlePageWebView _test_waitForDidFinishNavigation];
@@ -155,7 +155,7 @@ TEST(WKBackForwardList, CanNotGoBackAfterRestoringEmptySessionState)
 
 TEST(WKBackForwardList, RestoringNilSessionState)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
     [webView _test_waitForDidFinishNavigation];
@@ -169,7 +169,7 @@ TEST(WKBackForwardList, RestoringNilSessionState)
     EXPECT_EQ((NSUInteger)1, list.backList.count);
     EXPECT_EQ((NSUInteger)0, list.forwardList.count);
 
-    auto singlePageWebView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr singlePageWebView = adoptNS([[WKWebView alloc] init]);
 
     [singlePageWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
     [singlePageWebView _test_waitForDidFinishNavigation];
@@ -211,8 +211,8 @@ TEST(WKBackForwardList, WindowLocationAsyncPolicyDecision)
 {
     NSURL *simple = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
     NSURL *simple2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
-    auto webView = adoptNS([[WKWebView alloc] init]);
-    auto delegate = adoptNS([[AsyncPolicyDecisionDelegate alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr delegate = adoptNS([[AsyncPolicyDecisionDelegate alloc] init]);
     [webView setNavigationDelegate:delegate.get()];
     [webView loadHTMLString:@"<script>window.location='simple.html'</script>" baseURL:simple2];
     TestWebKitAPI::Util::run(&done);
@@ -221,7 +221,7 @@ TEST(WKBackForwardList, WindowLocationAsyncPolicyDecision)
 
 TEST(WKBackForwardList, InteractionStateRestoration)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
     NSURL *url2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
@@ -302,7 +302,7 @@ TEST(WKBackForwardList, InteractionStateRestoration)
 
 TEST(WKBackForwardList, InteractionStateRestorationNil)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
     NSURL *url2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
@@ -332,7 +332,7 @@ TEST(WKBackForwardList, InteractionStateRestorationNil)
 
 TEST(WKBackForwardList, InteractionStateRestorationInvalid)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
     NSURL *url2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
@@ -444,11 +444,11 @@ static RetainPtr<WKNavigation> lastNavigation;
 
 TEST(WKBackForwardList, BackSwipeNavigationSkipsItemsWithoutUserGesture)
 {
-    auto webView = adoptNS([[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500)]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500)]);
     [webView setAllowsBackForwardNavigationGestures:YES];
     [webView becomeFirstResponder];
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
@@ -486,11 +486,11 @@ TEST(WKBackForwardList, BackSwipeNavigationSkipsItemsWithoutUserGesture)
 
 TEST(WKBackForwardList, BackSwipeNavigationDoesNotSkipItemsWithUserGesture)
 {
-    auto webView = adoptNS([[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500)]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500)]);
     [webView setAllowsBackForwardNavigationGestures:YES];
     [webView becomeFirstResponder];
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
@@ -522,9 +522,9 @@ TEST(WKBackForwardList, BackSwipeNavigationDoesNotSkipItemsWithUserGesture)
 
 static void runBackForwardNavigationSkipsItemsWithoutUserGestureTest(Function<void(WKWebView *, ASCIILiteral destination)>&& navigate)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
@@ -660,9 +660,9 @@ TEST(WKBackForwardList, BackForwardNavigationSkipsItemsWithoutUserGestureSubfram
         { "/iframe.html"_s, { "<script>onload = () => { setTimeout(() => { history.pushState(null, document.title, '#'); }, 0); };</script>"_s } },
     }, TestWebKitAPI::HTTPServer::Protocol::Http);
 
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     [webView loadRequest:server.request("/source.html"_s)];
@@ -700,9 +700,9 @@ TEST(WKBackForwardList, BackForwardNavigationSkipsClientSideRedirectWithCOOP)
         { "/destination.html"_s, { "foo"_s } },
     }, TestWebKitAPI::HTTPServer::Protocol::Https);
 
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     [webView loadRequest:server.request("/source.html"_s)];
@@ -736,9 +736,9 @@ TEST(WKBackForwardList, BackForwardNavigationSkipsClientSideRedirectWithCOOP)
 
 static void runBackForwardNavigationDoesNotSkipItemsWithUserGestureTest(Function<void(WKWebView *, ASCIILiteral fragment)>&& navigate)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     // Test case: url1 -> url2 -> url2#a (with user gesture)
@@ -828,9 +828,9 @@ TEST(WKBackForwardList, BackForwardNavigationDoesNotSkipItemsWithRecentUserGestu
 
 TEST(WKBackForwardList, BackForwardNavigationDoesNotSkipUpdatedItemWithRecentUserGesture)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
@@ -859,9 +859,9 @@ TEST(WKBackForwardList, BackForwardNavigationDoesNotSkipUpdatedItemWithRecentUse
 
 TEST(WKBackForwardList, BackNavigationHijacking)
 {
-    auto webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
 
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
 
     NSURL *url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
@@ -904,10 +904,10 @@ TEST(WKBackForwardList, BackForwardListRemoveAndAddSubframes)
         { "/frame2"_s, { "<script> alert('frame2'); </script>"_s } },
         { "/frame3"_s, { "<script> alert('frame3'); </script>"_s } },
     }, TestWebKitAPI::HTTPServer::Protocol::Https);
-    auto webView = adoptNS([[WKWebView alloc] init]);
-    auto navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
     webView.get().navigationDelegate = navigationDelegate.get();
-    auto uiDelegate = adoptNS([TestUIDelegate new]);
+    RetainPtr uiDelegate = adoptNS([TestUIDelegate new]);
     webView.get().UIDelegate = uiDelegate.get();
 
     [webView loadRequest:server.request("/index"_s)];
@@ -947,7 +947,7 @@ TEST(WKBackForwardList, SessionStateTitleTruncation)
         { "/"_s, { "<script>document.title='a'.repeat(10000);window.history.pushState({}, '', window.location+'?a=b');</script>"_s } }
     });
 
-    auto webView = adoptNS([WKWebView new]);
+    RetainPtr webView = adoptNS([WKWebView new]);
     [webView loadRequest:server.request()];
     while (!webView.get().canGoBack)
         TestWebKitAPI::Util::spinRunLoop();

@@ -60,7 +60,7 @@ TEST(TextStyleFontSize, Startup)
 
     static NSString *testMarkup = @"<html><head></head><body><div id='target' style='-webkit-text-size-adjust: none; font: -apple-system-body;'>Hello</div></body></html>";
 
-    auto webView = adoptNS([[TextStyleFontSizeWebView alloc] initWithFrame:CGRectMake(0, 0, 960, 360)]);
+    RetainPtr webView = adoptNS([[TextStyleFontSizeWebView alloc] initWithFrame:CGRectMake(0, 0, 960, 360)]);
     [webView synchronouslyLoadHTMLString:testMarkup];
     auto actual = [webView stringByEvaluatingJavaScript:@"parseInt(window.getComputedStyle(document.getElementById('target')).getPropertyValue('font-size'))"].integerValue;
     
@@ -81,7 +81,7 @@ TEST(TextStyleFontSize, AfterCrash)
 
     static NSString *testMarkup = @"<html><head></head><body><div id='target' style='-webkit-text-size-adjust: none; font: -apple-system-body;'>Hello</div></body></html>";
 
-    auto webView = adoptNS([[TextStyleFontSizeWebView alloc] initWithFrame:CGRectMake(0, 0, 960, 360)]);
+    RetainPtr webView = adoptNS([[TextStyleFontSizeWebView alloc] initWithFrame:CGRectMake(0, 0, 960, 360)]);
     [webView synchronouslyLoadHTMLString:testMarkup];
     [webView _killWebContentProcessAndResetState];
     [webView synchronouslyLoadHTMLString:testMarkup];

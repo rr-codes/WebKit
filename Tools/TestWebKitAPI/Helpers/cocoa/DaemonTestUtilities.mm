@@ -71,7 +71,7 @@ static RetainPtr<NSURL> currentExecutableLocation()
     buffer.resize(size + 1);
     _NSGetExecutablePath(buffer.mutableSpan().data(), &size);
     buffer[size] = '\0';
-    auto pathString = adoptNS([[NSString alloc] initWithUTF8String:buffer.span().data()]);
+    RetainPtr pathString = adoptNS([[NSString alloc] initWithUTF8String:buffer.span().data()]);
     return adoptNS([[NSURL alloc] initFileURLWithPath:pathString.get() isDirectory:NO]);
 }
 
@@ -130,7 +130,7 @@ void registerPlistWithLaunchD(NSDictionary<NSString *, id> *plist, NSURL *tempDi
     auto xpcPlist = convertDictionaryToXPC(plist);
     xpc_dictionary_set_string(xpcPlist.get(), "_ManagedBy", "TestWebKitAPI");
     xpc_dictionary_set_bool(xpcPlist.get(), "RootedSimulatorPath", true);
-    auto launchDJob = adoptNS([[OSLaunchdJob alloc] initWithPlist:xpcPlist.get()]);
+    RetainPtr launchDJob = adoptNS([[OSLaunchdJob alloc] initWithPlist:xpcPlist.get()]);
     [launchDJob submit:&error];
 #else
     NSURL *plistLocation = [tempDir URLByAppendingPathComponent:@"DaemonInfo.plist"];
@@ -147,7 +147,7 @@ void registerPlistWithLaunchD(NSDictionary<NSString *, id> *plist, NSURL *tempDi
 
 static int pidOfFirstDaemonInstance(NSString *daemonExecutableName)
 {
-    auto task = adoptNS([[NSTask alloc] init]);
+    RetainPtr task = adoptNS([[NSTask alloc] init]);
     task.get().launchPath = @"/bin/ps";
     task.get().arguments = @[
         @"-ax",
@@ -155,16 +155,16 @@ static int pidOfFirstDaemonInstance(NSString *daemonExecutableName)
         @"pid,comm"
     ];
 
-    auto taskPipe = adoptNS([[NSPipe alloc] init]);
+    RetainPtr taskPipe = adoptNS([[NSPipe alloc] init]);
     [task setStandardOutput:taskPipe.get()];
     [task launch];
 
-    auto data = adoptNS([[NSMutableData alloc] init]);
+    RetainPtr data = adoptNS([[NSMutableData alloc] init]);
     while ([task isRunning])
         [data appendData:[[taskPipe fileHandleForReading] readDataToEndOfFile]];
     [data appendData:[[taskPipe fileHandleForReading] readDataToEndOfFile]];
 
-    auto psString = adoptNS([[NSString alloc] initWithData:data.get() encoding:NSUTF8StringEncoding]);
+    RetainPtr psString = adoptNS([[NSString alloc] initWithData:data.get() encoding:NSUTF8StringEncoding]);
     NSArray<NSString *> *psEntries = [psString componentsSeparatedByString:@"\n"];
 
     for (NSString* entry in psEntries) {
@@ -184,7 +184,7 @@ void killFirstInstanceOfDaemon(NSString *daemonExecutableName)
     if (!pid)
         return;
 
-    auto task = adoptNS([[NSTask alloc] init]);
+    RetainPtr task = adoptNS([[NSTask alloc] init]);
     task.get().launchPath = @"/bin/kill";
     task.get().arguments = @[
         @"-9",
@@ -208,7 +208,7 @@ BOOL restartService(NSString *, NSString *daemonExecutableName)
 
 BOOL restartService(NSString *serviceName, NSString *)
 {
-    auto task = adoptNS([[NSTask alloc] init]);
+    RetainPtr task = adoptNS([[NSTask alloc] init]);
     [task setLaunchPath:@"/bin/launchctl"];
     [task setArguments:@[@"kickstart", @"-k", @"-p", [NSString stringWithFormat:@"gui/%u/%@", geteuid(), serviceName]]];
     [task launch];

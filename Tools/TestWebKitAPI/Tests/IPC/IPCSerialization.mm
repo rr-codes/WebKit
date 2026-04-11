@@ -844,14 +844,14 @@ static RetainPtr<SecKeyRef> createPrivateKey()
 
 static RetainPtr<NSPersonNameComponents> personNameComponentsForTesting()
 {
-    auto phoneticComponents = adoptNS([[NSPersonNameComponents alloc] init]);
+    RetainPtr phoneticComponents = adoptNS([[NSPersonNameComponents alloc] init]);
     phoneticComponents.get().familyName = @"Family";
     phoneticComponents.get().middleName = @"Middle";
     phoneticComponents.get().namePrefix = @"Doctor";
     phoneticComponents.get().givenName = @"Given";
     phoneticComponents.get().nickname = @"Buddy";
 
-    auto components = adoptNS([[NSPersonNameComponents alloc] init]);
+    RetainPtr components = adoptNS([[NSPersonNameComponents alloc] init]);
     components.get().familyName = @"Familia";
     components.get().middleName = @"Median";
     components.get().namePrefix = @"Physician";
@@ -2010,7 +2010,7 @@ TEST(IPCSerialization, DataDetectors)
     runTestNS({ scannerResult.get() });
 
     // DDActionContext/DDSecureActionContext
-    auto actionContext = adoptNS([PAL::allocWKDDActionContextInstance() init]);
+    RetainPtr actionContext = adoptNS([PAL::allocWKDDActionContextInstance() init]);
     [actionContext setAllResults:@[ (__bridge id)scannerResult.get().coreResult ]];
     [actionContext setMainResult:scannerResult.get().coreResult];
     auto components = personNameComponentsForTesting();

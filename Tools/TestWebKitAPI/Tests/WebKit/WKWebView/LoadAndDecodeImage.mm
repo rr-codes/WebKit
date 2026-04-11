@@ -72,7 +72,7 @@ TEST(WebKit, LoadAndDecodeImage)
         { "/redirect"_s, { 302, { { "Location"_s, "/test_png"_s } }, "redirecting..."_s } },
         { "/not_image"_s, { "this is not an image"_s } }
     };
-    auto webView = adoptNS([WKWebView new]);
+    RetainPtr webView = adoptNS([WKWebView new]);
 
     auto imageOrError = [&] (auto requestPath, CGSize size = CGSizeZero) -> Expected<RetainPtr<Util::PlatformImage>, RetainPtr<NSError>> {
         __block RetainPtr<Util::PlatformImage> image;

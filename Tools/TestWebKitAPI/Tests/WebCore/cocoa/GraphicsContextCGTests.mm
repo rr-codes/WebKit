@@ -121,7 +121,7 @@ TEST(GraphicsContextTests, IOSurfaceRenderingModeIsAccelerated)
 
 TEST(GraphicsContextTests, SmallLayerRenderingModeIsUnaccelerated)
 {
-    auto device = adoptNS(MTLCreateSystemDefaultDevice());
+    RetainPtr device = adoptNS(MTLCreateSystemDefaultDevice());
     if (!device)
         return;
 #if !PLATFORM(IOS_FAMILY)
@@ -158,7 +158,7 @@ TEST(GraphicsContextTests, LargeLayerRenderingModeIsExpected)
 #if PLATFORM(IOS_FAMILY_SIMULATOR)
     expected = WebCore::RenderingMode::Unaccelerated;
 #endif
-    auto device = adoptNS(MTLCreateSystemDefaultDevice());
+    RetainPtr device = adoptNS(MTLCreateSystemDefaultDevice());
     if (!device)
         return;
 #if !PLATFORM(IOS_FAMILY)
