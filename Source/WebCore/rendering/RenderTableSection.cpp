@@ -419,7 +419,7 @@ void RenderTableSection::distributeExtraLogicalHeightToPercentRows(LayoutUnit& e
     LayoutUnit totalHeight = m_rowPos[totalRows] + extraLogicalHeight;
     LayoutUnit totalLogicalHeightAdded;
     totalPercent = std::min(totalPercent, 100);
-    LayoutUnit rowHeight = m_rowPos[1] - m_rowPos[0];
+    auto rowHeight = rowLogicalHeight(0);
     for (unsigned r = 0; r < totalRows; ++r) {
         if (auto percentageLogicalHeight = m_grid[r].logicalHeight.tryPercentage(); totalPercent > 0 && percentageLogicalHeight) {
             LayoutUnit toAdd = std::min(extraLogicalHeight, LayoutUnit((totalHeight * percentageLogicalHeight->value / 100) - rowHeight));
@@ -432,7 +432,7 @@ void RenderTableSection::distributeExtraLogicalHeightToPercentRows(LayoutUnit& e
         }
         ASSERT(totalRows >= 1);
         if (r < totalRows - 1)
-            rowHeight = m_rowPos[r + 2] - m_rowPos[r + 1];
+            rowHeight = rowLogicalHeight(r + 1);
         m_rowPos[r + 1] += totalLogicalHeightAdded;
     }
 }
@@ -455,6 +455,16 @@ void RenderTableSection::distributeExtraLogicalHeightToAutoRows(LayoutUnit& extr
     }
 }
 
+LayoutUnit RenderTableSection::rowLogicalHeight(unsigned row) const
+{
+    ASSERT(!needsLayout());
+    if (row >= m_grid.size()) {
+        ASSERT_NOT_REACHED();
+        return { };
+    }
+    return m_rowPos[row + 1] - m_rowPos[row] - table()->vBorderSpacing();
+}
+
 void RenderTableSection::distributeRemainingExtraLogicalHeight(LayoutUnit& extraLogicalHeight)
 {
     unsigned totalRows = m_grid.size();
@@ -462,14 +472,28 @@ void RenderTableSection::distributeRemainingExtraLogicalHeight(LayoutUnit& extra
     if (extraLogicalHeight <= 0 || !m_rowPos[totalRows])
         return;
 
-    // FIXME: m_rowPos[totalRows] - m_rowPos[0] is the total rows' size.
-    LayoutUnit totalRowSize = m_rowPos[totalRows];
+    // Pre-compute row heights before distribution since the loop modifies m_rowPos.
+    Vector<LayoutUnit, 8> rowHeights(totalRows);
+    LayoutUnit totalRowSize;
+    for (unsigned r = 0; r < totalRows; ++r) {
+        rowHeights[r] = rowLogicalHeight(r);
+        totalRowSize += rowHeights[r];
+    }
+
+    if (totalRowSize <= 0) {
+        // All rows are zero-height — distribute equally.
+        LayoutUnit totalLogicalHeightAdded;
+        for (unsigned r = 0; r < totalRows; ++r) {
+            totalLogicalHeightAdded += extraLogicalHeight / totalRows;
+            m_rowPos[r + 1] += totalLogicalHeightAdded;
+        }
+        extraLogicalHeight -= totalLogicalHeightAdded;
+        return;
+    }
+
     LayoutUnit totalLogicalHeightAdded;
-    LayoutUnit previousRowPosition = m_rowPos[0];
-    for (unsigned r = 0; r < totalRows; r++) {
-        // weight with the original height
-        totalLogicalHeightAdded += extraLogicalHeight * (m_rowPos[r + 1] - previousRowPosition) / totalRowSize;
-        previousRowPosition = m_rowPos[r + 1];
+    for (unsigned r = 0; r < totalRows; ++r) {
+        totalLogicalHeightAdded += extraLogicalHeight * rowHeights[r] / totalRowSize;
         m_rowPos[r + 1] += totalLogicalHeightAdded;
     }
 

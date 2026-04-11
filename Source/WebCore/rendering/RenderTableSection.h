@@ -192,6 +192,8 @@ private:
 
     void relayoutCellIfFlexed(RenderTableCell&, int rowIndex, int rowHeight);
     
+    LayoutUnit rowLogicalHeight(unsigned row) const;
+
     void distributeExtraLogicalHeightToPercentRows(LayoutUnit& extraLogicalHeight, int totalPercent);
     void NODELETE distributeExtraLogicalHeightToAutoRows(LayoutUnit& extraLogicalHeight, unsigned autoRowsCount);
     void NODELETE distributeRemainingExtraLogicalHeight(LayoutUnit& extraLogicalHeight);
