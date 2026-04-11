@@ -3309,7 +3309,7 @@ static double clampDoubleToByte(double d)
         d = 0;
     else if (d > 255)
         d = 255;
-    return std::nearbyint(d);
+    return roundeven(d);
 }
 
 static void compileClampIntegerToByte(JITCompiler& jit, GPRReg resultGPR, GPRReg scratch1GPR)

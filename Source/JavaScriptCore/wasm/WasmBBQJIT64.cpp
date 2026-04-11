@@ -2905,7 +2905,7 @@ PartialResult BBQJIT::addI32WrapI64(Value operand, Value& result)
 {
     EMIT_UNARY(
         "F32Nearest", TypeKind::F32,
-        BLOCK(Value::fromF32(std::nearbyintf(operand.asF32()))),
+        BLOCK(Value::fromF32(roundevenf(operand.asF32()))),
         BLOCK(
             m_jit.roundTowardNearestIntFloat(operandLocation.asFPR(), resultLocation.asFPR());
         )
@@ -2916,7 +2916,7 @@ PartialResult BBQJIT::addI32WrapI64(Value operand, Value& result)
 {
     EMIT_UNARY(
         "F64Nearest", TypeKind::F64,
-        BLOCK(Value::fromF64(std::nearbyint(operand.asF64()))),
+        BLOCK(Value::fromF64(roundeven(operand.asF64()))),
         BLOCK(
             m_jit.roundTowardNearestIntDouble(operandLocation.asFPR(), resultLocation.asFPR());
         )

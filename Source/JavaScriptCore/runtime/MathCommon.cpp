@@ -594,14 +594,12 @@ JSC_DEFINE_NOEXCEPT_JIT_OPERATION(roundFloat, float, (float value))
 #if USE(JSVALUE32_64)
 JSC_DEFINE_NOEXCEPT_JIT_OPERATION(f32_nearest, float, (float operand))
 {
-    static_assert(std::numeric_limits<float>::round_style == std::round_to_nearest);
-    return std::nearbyint(operand);
+    return roundevenf(operand);
 }
 
 JSC_DEFINE_NOEXCEPT_JIT_OPERATION(f64_nearest, double, (double operand))
 {
-    static_assert(std::numeric_limits<float>::round_style == std::round_to_nearest);
-    return std::nearbyint(operand);
+    return roundeven(operand);
 }
 
 JSC_DEFINE_NOEXCEPT_JIT_OPERATION(f32_roundeven, float, (float operand)) { return roundevenf(operand); }
