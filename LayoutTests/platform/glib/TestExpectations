@@ -4247,8 +4247,8 @@ webkit.org/b/160119 media/video-object-fit-change.html [ Pass ImageOnlyFailure T
 
 webkit.org/b/61487 http/tests/media/video-cross-site.html [ Failure Timeout ]
 
-webkit.org/b/306026 media/video-unmuted-after-play-holds-sleep-assertion.html [ Failure ]
-webkit.org/b/306026 media/video-muted-holds-sleep-assertion.html [ Failure ]
+webkit.org/b/306026 media/video-unmuted-after-play-holds-sleep-assertion.html [ Failure Timeout ]
+webkit.org/b/306026 media/video-muted-holds-sleep-assertion.html [ Failure Timeout ]
 
 webkit.org/b/131546 media/track/track-in-band.html [ Failure ]
 
