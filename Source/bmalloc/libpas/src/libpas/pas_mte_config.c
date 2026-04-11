@@ -67,7 +67,7 @@ static pas_basic_heap_runtime_config* all_bmalloc_runtime_configs[] = {
 #endif // PAS_ENABLE_BMALLOC
 #if PAS_ENABLE_JIT
 extern const pas_heap_config jit_heap_config;
-extern pas_basic_heap_runtime_config jit_heap_runtime_config;
+extern pas_heap_runtime_config jit_heap_runtime_config;
 #endif // PAS_ENABLE_JIT
 #if PAS_ENABLE_ISO
 extern const pas_heap_config iso_heap_config;
@@ -269,8 +269,10 @@ static void pas_report_config(void)
     cfg.small_bitfit_config.base.is_enabled, cfg.small_bitfit_config.base.allow_mte_tagging, max_object_size_for_page_config_sans_heap(&cfg.small_bitfit_config.base), \
     cfg.medium_bitfit_config.base.is_enabled, cfg.medium_bitfit_config.base.allow_mte_tagging, max_object_size_for_page_config_sans_heap(&cfg.medium_bitfit_config.base), \
     cfg.marge_bitfit_config.base.is_enabled, cfg.marge_bitfit_config.base.allow_mte_tagging, max_object_size_for_page_config_sans_heap(&cfg.marge_bitfit_config.base)
-#define LOG_FMT_VARS_FOR_HEAP_RUNTIME_CONFIG(rcfg) \
+#define LOG_FMT_VARS_FOR_BASIC_HEAP_RUNTIME_CONFIG(rcfg) \
     rcfg.base.max_segregated_object_size, rcfg.base.max_bitfit_object_size, rcfg.base.directory_size_bound_for_baseline_allocators, rcfg.base.directory_size_bound_for_no_view_cache
+#define LOG_FMT_VARS_FOR_HEAP_RUNTIME_CONFIG(rcfg) \
+    rcfg.max_segregated_object_size, rcfg.max_bitfit_object_size, rcfg.directory_size_bound_for_baseline_allocators, rcfg.directory_size_bound_for_no_view_cache
 
     fprintf(stderr,
         "%s(%d,0x%x) malloc: libpas config:"
@@ -306,10 +308,10 @@ static void pas_report_config(void)
 #if PAS_ENABLE_BMALLOC
         pas_system_heap_should_supplant_bmalloc(pas_heap_config_kind_bmalloc),
         LOG_FMT_VARS_FOR_HEAP_CONFIG(bmalloc_heap_config),
-        LOG_FMT_VARS_FOR_HEAP_RUNTIME_CONFIG(bmalloc_flex_runtime_config),
-        LOG_FMT_VARS_FOR_HEAP_RUNTIME_CONFIG(bmalloc_intrinsic_runtime_config),
-        LOG_FMT_VARS_FOR_HEAP_RUNTIME_CONFIG(bmalloc_typed_runtime_config),
-        LOG_FMT_VARS_FOR_HEAP_RUNTIME_CONFIG(bmalloc_primitive_runtime_config),
+        LOG_FMT_VARS_FOR_BASIC_HEAP_RUNTIME_CONFIG(bmalloc_flex_runtime_config),
+        LOG_FMT_VARS_FOR_BASIC_HEAP_RUNTIME_CONFIG(bmalloc_intrinsic_runtime_config),
+        LOG_FMT_VARS_FOR_BASIC_HEAP_RUNTIME_CONFIG(bmalloc_typed_runtime_config),
+        LOG_FMT_VARS_FOR_BASIC_HEAP_RUNTIME_CONFIG(bmalloc_primitive_runtime_config),
 #endif
 #if PAS_ENABLE_JIT
         LOG_FMT_VARS_FOR_HEAP_CONFIG(jit_heap_config),
