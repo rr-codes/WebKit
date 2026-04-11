@@ -71,8 +71,21 @@ enum class GridAvoidanceReason : uint8_t {
     GridItemHasUnsupportedBlockAxisAlignment,
     GridItemHasNonVisibleOverflow,
     GridItemHasContainsSize,
-    GridItemHasUnsupportedColumnPlacement,
-    GridItemHasUnsupportedRowPlacement,
+
+    GridItemColumnStartHasLineName,
+    GridItemColumnStartHasNegativeLineNumber,
+    GridItemColumnStartHasSpan,
+    GridItemHasColumnStartOutsideExplicitGrid,
+    GridItemHasUnsupportedColumnEnd,
+
+    GridNeedsImplicitColumnsForItemsLockedToRow,
+    GridItemHasAutomaticRowStartPlacement,
+    GridItemRowStartHasLineName,
+    GridItemRowStartHasNegativeLineNumber,
+    GridItemRowStartHasSpan,
+    GridItemHasRowStartOutsideExplicitGrid,
+    GridItemHasUnsupportedRowEnd,
+
     GridItemHasUnsupportedWidthValue,
     GridItemHasUnsupportedAutomaticInlineSizing,
     GridItemHasUnsupportedHeightValue,
@@ -82,6 +95,37 @@ enum class GridAvoidanceReason : uint8_t {
     NotAGrid,
     GridFormattingContextIntegrationDisabled,
 };
+
+#if ASSERT_ENABLED
+static bool avoidanceReasonIsColumnPlacementRelated(GridAvoidanceReason gridAvoidanceReason)
+{
+    switch (gridAvoidanceReason) {
+    case GridAvoidanceReason::GridItemColumnStartHasLineName:
+    case GridAvoidanceReason::GridItemColumnStartHasNegativeLineNumber:
+    case GridAvoidanceReason::GridItemColumnStartHasSpan:
+    case GridAvoidanceReason::GridItemHasColumnStartOutsideExplicitGrid:
+    case GridAvoidanceReason::GridItemHasUnsupportedColumnEnd:
+        return true;
+    default:
+        return false;
+    }
+}
+
+static bool avoidanceReasonIsRowPlacementRelated(GridAvoidanceReason gridAvoidanceReason)
+{
+    switch (gridAvoidanceReason) {
+    case GridAvoidanceReason::GridItemHasAutomaticRowStartPlacement:
+    case GridAvoidanceReason::GridItemRowStartHasLineName:
+    case GridAvoidanceReason::GridItemRowStartHasNegativeLineNumber:
+    case GridAvoidanceReason::GridItemRowStartHasSpan:
+    case GridAvoidanceReason::GridItemHasRowStartOutsideExplicitGrid:
+    case GridAvoidanceReason::GridItemHasUnsupportedRowEnd:
+        return true;
+    default:
+        return false;
+    }
+}
+#endif
 
 #ifndef NDEBUG
 #define ADD_REASON_AND_RETURN_IF_NEEDED(reason, reasons, reasonCollectionMode) { \
@@ -96,7 +140,6 @@ enum class GridAvoidanceReason : uint8_t {
         return reasons; \
     }
 #endif
-
 
 static bool hasValidColumnEnd(const Style::GridPositionExplicit& explicitColumnStart, const Style::GridPosition columnEnd, size_t linesFromGridTemplateColumnsCount)
 {
@@ -429,42 +472,51 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
             [&](const CSS::Keyword::Auto& autoPosition) -> std::optional<GridAvoidanceReason> {
                 auto& columnEnd = gridItemStyle->gridItemColumnEnd();
                 if (!hasValidColumnEnd(autoPosition, columnEnd))
-                    return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
+                    return GridAvoidanceReason::GridItemHasUnsupportedColumnEnd;
                 return { };
             },
             [&](const Style::GridPositionExplicit& explicitPosition) -> std::optional<GridAvoidanceReason> {
-                if (!columnStart.namedGridLine().isEmpty() || columnStart.explicitPosition() < 0 || columnStart.explicitPosition() > static_cast<int>(linesFromGridTemplateColumnsCount))
-                    return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
+                auto columnStartLineNumber = explicitPosition.position.value;
+                if (!columnStart.namedGridLine().isEmpty())
+                    return GridAvoidanceReason::GridItemColumnStartHasLineName;
+                if (columnStartLineNumber < 0)
+                    return GridAvoidanceReason::GridItemColumnStartHasNegativeLineNumber;
+                if (columnStartLineNumber > static_cast<int>(linesFromGridTemplateColumnsCount))
+                    return GridAvoidanceReason::GridItemHasColumnStartOutsideExplicitGrid;
                 if (!hasValidColumnEnd(explicitPosition, gridItemStyle->gridItemColumnEnd(), linesFromGridTemplateColumnsCount))
-                    return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
+                    return GridAvoidanceReason::GridItemHasUnsupportedColumnEnd;
                 return { };
             },
             [&](const Style::GridPositionSpan&) -> std::optional<GridAvoidanceReason> {
-                return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
+                return GridAvoidanceReason::GridItemColumnStartHasSpan;
             },
             [&](const Style::CustomIdent&) -> std::optional<GridAvoidanceReason> {
-                return GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement;
+                return GridAvoidanceReason::GridItemColumnStartHasLineName;
             }
         );
 
         if (columnPositioningAvoidanceReason) {
-            ASSERT(columnPositioningAvoidanceReason == GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement);
+            ASSERT(avoidanceReasonIsColumnPlacementRelated(*columnPositioningAvoidanceReason));
             ADD_REASON_AND_RETURN_IF_NEEDED(*columnPositioningAvoidanceReason, reasons, reasonCollectionMode);
         }
 
         auto& rowStart = gridItemStyle->gridItemRowStart();
         auto rowPositioningAvoidanceReason = WTF::switchOn(rowStart,
             [&](const CSS::Keyword::Auto&) -> std::optional<GridAvoidanceReason> {
-                return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
+                return GridAvoidanceReason::GridItemHasAutomaticRowStartPlacement;
             },
             [&](const Style::GridPositionExplicit& explicitPosition) -> std::optional<GridAvoidanceReason> {
                 auto rowStartLineNumber = explicitPosition.position.value;
-                if (!rowStart.namedGridLine().isEmpty() || rowStartLineNumber < 0 || rowStartLineNumber > static_cast<int>(linesFromGridTemplateRowsCount))
-                    return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
+                if (!rowStart.namedGridLine().isEmpty())
+                    return GridAvoidanceReason::GridItemRowStartHasLineName;
+                if (rowStartLineNumber < 0)
+                    return GridAvoidanceReason::GridItemRowStartHasNegativeLineNumber;
+                if (rowStartLineNumber > static_cast<int>(linesFromGridTemplateRowsCount))
+                    return GridAvoidanceReason::GridItemHasRowStartOutsideExplicitGrid;
 
                 auto rowEnd = gridItemStyle->gridItemRowEnd();
                 if (!hasValidRowEnd(explicitPosition, rowEnd, linesFromGridTemplateRowsCount))
-                    return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
+                    return GridAvoidanceReason::GridItemHasUnsupportedRowEnd;
 
                 ASSERT(rowEnd.isExplicit());
                 size_t rowIndex = rowStartLineNumber + 1;
@@ -475,15 +527,15 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
                 return { };
             },
             [&](const Style::GridPositionSpan&) -> std::optional<GridAvoidanceReason> {
-                return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
+                return GridAvoidanceReason::GridItemRowStartHasSpan;
             },
             [&](const Style::CustomIdent&) -> std::optional<GridAvoidanceReason> {
-                return GridAvoidanceReason::GridItemHasUnsupportedRowPlacement;
+                return GridAvoidanceReason::GridItemRowStartHasLineName;
             }
         );
 
         if (rowPositioningAvoidanceReason) {
-            ASSERT(rowPositioningAvoidanceReason == GridAvoidanceReason::GridItemHasUnsupportedRowPlacement);
+            ASSERT(avoidanceReasonIsRowPlacementRelated(*rowPositioningAvoidanceReason));
             ADD_REASON_AND_RETURN_IF_NEEDED(*rowPositioningAvoidanceReason, reasons, reasonCollectionMode);
         }
 
@@ -495,7 +547,7 @@ static EnumSet<GridAvoidanceReason> gridLayoutAvoidanceReason(const RenderGrid& 
             return itemsInRowCount >= linesFromGridTemplateColumnsCount;
         });
         if (ineligibleRowIndex != notFound)
-            ADD_REASON_AND_RETURN_IF_NEEDED(GridAvoidanceReason::GridItemHasUnsupportedRowPlacement, reasons, reasonCollectionMode);
+            ADD_REASON_AND_RETURN_IF_NEEDED(GridAvoidanceReason::GridNeedsImplicitColumnsForItemsLockedToRow, reasons, reasonCollectionMode);
 
         if (gridItemStyle->writingMode().isVertical())
             ADD_REASON_AND_RETURN_IF_NEEDED(GridAvoidanceReason::GridItemHasVerticalWritingMode, reasons, reasonCollectionMode);
@@ -641,11 +693,41 @@ static void printReason(GridAvoidanceReason reason, TextStream& stream)
     case GridAvoidanceReason::GridItemHasContainsSize:
         stream << "grid item has contains: size";
         break;
-    case GridAvoidanceReason::GridItemHasUnsupportedColumnPlacement:
-        stream << "grid item has unsupported column placement";
+    case GridAvoidanceReason::GridItemColumnStartHasLineName:
+        stream << "grid item column start has line name";
         break;
-    case GridAvoidanceReason::GridItemHasUnsupportedRowPlacement:
-        stream << "grid item has unsupported row placement";
+    case GridAvoidanceReason::GridItemColumnStartHasNegativeLineNumber:
+        stream << "grid item column start has negative line number";
+        break;
+    case GridAvoidanceReason::GridItemColumnStartHasSpan:
+        stream << "grid item column start has span";
+        break;
+    case GridAvoidanceReason::GridItemHasColumnStartOutsideExplicitGrid:
+        stream << "grid item has column start outside explicit grid";
+        break;
+    case GridAvoidanceReason::GridItemHasUnsupportedColumnEnd:
+        stream << "grid item has unsupported column end";
+        break;
+    case GridAvoidanceReason::GridNeedsImplicitColumnsForItemsLockedToRow:
+        stream << "grid needs implicit columns for items locked to row";
+        break;
+    case GridAvoidanceReason::GridItemHasAutomaticRowStartPlacement:
+        stream << "grid item has automatic row start placement";
+        break;
+    case GridAvoidanceReason::GridItemRowStartHasLineName:
+        stream << "grid item row start has line name";
+        break;
+    case GridAvoidanceReason::GridItemRowStartHasNegativeLineNumber:
+        stream << "grid item row start has negative line number";
+        break;
+    case GridAvoidanceReason::GridItemRowStartHasSpan:
+        stream << "grid item row start has span";
+        break;
+    case GridAvoidanceReason::GridItemHasRowStartOutsideExplicitGrid:
+        stream << "grid item has row start outside explicit grid";
+        break;
+    case GridAvoidanceReason::GridItemHasUnsupportedRowEnd:
+        stream << "grid item has unsupported row end";
         break;
     case GridAvoidanceReason::GridItemHasUnsupportedMinWidth:
         stream << "grid item has unsupported min-width";
@@ -653,7 +735,8 @@ static void printReason(GridAvoidanceReason reason, TextStream& stream)
     case GridAvoidanceReason::GridItemHasUnsupportedMinHeight:
         stream << "grid item has unsupported min-height";
         break;
-    default:
+    case GridAvoidanceReason::NotAGrid:
+        stream << "not a grid";
         break;
     }
 }
