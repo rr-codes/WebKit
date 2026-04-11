@@ -33,6 +33,8 @@ public:
     static Ref<HTMLEmbedElement> create(Document&);
     static Ref<HTMLEmbedElement> create(const QualifiedName&, Document&);
 
+    bool isExposed() const;
+
 private:
     HTMLEmbedElement(const QualifiedName&, Document&);
 
