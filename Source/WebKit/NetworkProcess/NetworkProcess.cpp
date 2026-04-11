@@ -174,6 +174,9 @@ Ref<NetworkProcess> NetworkProcess::create(AuxiliaryProcessInitializationParamet
 
 NetworkProcess::NetworkProcess(AuxiliaryProcessInitializationParameters&& parameters)
     : m_downloadManager(*this)
+#if HAVE(LSDATABASECONTEXT)
+    , m_launchServicesDatabaseObserver(LaunchServicesDatabaseObserver::create())
+#endif
 #if ENABLE(CONTENT_EXTENSIONS)
     , m_networkContentRuleListManager(*this)
 #endif
@@ -190,9 +193,6 @@ NetworkProcess::NetworkProcess(AuxiliaryProcessInitializationParameters&& parame
     addSupplementWithoutRefCountedCheck<WebCookieManager>();
 #if ENABLE(LEGACY_CUSTOM_PROTOCOL_MANAGER)
     addSupplementWithoutRefCountedCheck<LegacyCustomProtocolManager>();
-#endif
-#if HAVE(LSDATABASECONTEXT)
-    addSupplement<LaunchServicesDatabaseObserver>();
 #endif
 #if PLATFORM(COCOA) && ENABLE(LEGACY_CUSTOM_PROTOCOL_MANAGER)
     LegacyCustomProtocolManager::networkProcessCreated(*this);
@@ -388,6 +388,10 @@ void NetworkProcess::initializeConnection(IPC::Connection* connection)
 
     for (auto& supplement : m_supplements.values())
         supplement->initializeConnection(connection);
+
+#if HAVE(LSDATABASECONTEXT)
+    m_launchServicesDatabaseObserver->initializeConnection(connection);
+#endif
 }
 
 void NetworkProcess::createNetworkConnectionToWebProcess(ProcessIdentifier identifier, PAL::SessionID sessionID, NetworkProcessConnectionParameters&& parameters, CompletionHandler<void(std::optional<IPC::Connection::Handle>&&, HTTPCookieAcceptPolicy)>&& completionHandler)

@@ -38,7 +38,12 @@ static constexpr auto testMessageFromEndpoint = "test-message-from-endpoint"_s;
 static constexpr auto testMessageFromClient = "test-message-from-client"_s;
 
 class XPCEndpoint final : public WebKit::XPCEndpoint {
+public:
+    static Ref<XPCEndpoint> create() { return adoptRef(*new XPCEndpoint); }
+
 private:
+    XPCEndpoint() = default;
+
     ASCIILiteral xpcEndpointMessageNameKey() const final
     {
         return { };
@@ -86,10 +91,10 @@ private:
 
 TEST(WebKit, XPCEndpoint)
 {
-    XPCEndpoint xpcEndpoint;
+    Ref xpcEndpoint = XPCEndpoint::create();
     XPCEndpointClient xpcEndpointClient;
 
-    xpcEndpointClient.setEndpoint(xpcEndpoint.endpoint().get());
+    xpcEndpointClient.setEndpoint(xpcEndpoint->endpoint().get());
 
     TestWebKitAPI::Util::run(&clientConnectedToEndpoint);
     TestWebKitAPI::Util::run(&endpointReceivedMessageFromClient);
