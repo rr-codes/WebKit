@@ -101,6 +101,9 @@ fast/scrolling/rtl-scrollbars-animation-property.html [ Pass ]
 imported/w3c/web-platform-tests/css/css-masking/clip-path-svg-content/clip-path-shape-circle-004.svg [ Pass ]
 imported/w3c/web-platform-tests/css/css-multicol/multicol-scroll-content.html [ Pass ]
 
+webanimations/simultaneous-animations-removed-separately.html [ Pass ]
+webanimations/transform-accelerated-animation-finishes-before-removal.html [ Pass ]
+
 imported/w3c/web-platform-tests/css/css-content/quotes-033.html [ ImageOnlyFailure ]
 
 #//////////////////////////////////////////////////////////////////////////////////////////
@@ -899,7 +902,6 @@ webrtc/vp8-then-h264.html [ Pass ]
 imported/w3c/web-platform-tests/css/filter-effects/backdrop-filter-plus-filter.html [ ImageOnlyFailure ]
 
 # Flaky tests Nov2023
-webkit.org/b/264680 fast/dom/access-key-iframe.html [ Failure Pass ]
 webkit.org/b/264680 imported/w3c/web-platform-tests/webcodecs/videoFrame-construction.crossOriginSource.sub.html [ Failure Pass ]
 
 # Also webkit.org/b/266573
@@ -948,9 +950,6 @@ compositing/video/video-border-radius-clipping.html [ Pass ImageOnlyFailure ]
 # No support for blend modes on compositing layers
 imported/w3c/web-platform-tests/css/compositing/mix-blend-mode/mix-blend-mode-blended-element-overflow-scroll.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/compositing/mix-blend-mode/mix-blend-mode-parent-element-overflow-scroll.html [ ImageOnlyFailure ]
-
-# This is expected to fail in all platforms but it rarely passes in WPE
-imported/w3c/web-platform-tests/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ ImageOnlyFailure Pass ]
 
 media/media-source/media-detachablemse-append.html [ Timeout Pass ]
 
@@ -1258,7 +1257,6 @@ webkit.org/b/310273 imported/w3c/web-platform-tests/uievents/textInput/basic.htm
 webkit.org/b/310279 imported/w3c/web-platform-tests/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.html [ Pass Failure ]
 
 webkit.org/b/310739 imported/w3c/web-platform-tests/editing/other/copy-elements-with-css-vars.tentative.html [ Pass Crash Failure ]
-webkit.org/b/310740 imported/w3c/web-platform-tests/css/css-content/element-replacement-dynamic.html [ Pass ImageOnlyFailure ]
 webkit.org/b/310741 imported/w3c/web-platform-tests/navigation-api/navigate-event/defer/tentative/defer-restore-callback-abort.html [ Pass Timeout ]
 webkit.org/b/310743 imported/w3c/web-platform-tests/css/css-position/sticky/position-sticky-table-td-right.html [ Pass ImageOnlyFailure ]
 webkit.org/b/310744 imported/w3c/web-platform-tests/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Pass ImageOnlyFailure ]

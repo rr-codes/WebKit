@@ -1478,10 +1478,11 @@ webkit.org/b/310757 media/video-main-content-allow-then-scroll.html [ Pass Timeo
 
 inspector/unit-tests/retryuntil.html [ Pass Failure ]
 
-webanimations/simultaneous-animations-removed-separately.html [ Failure ]
-webanimations/transform-accelerated-animation-finishes-before-removal.html [ Failure ]
-
 pointer-lock/lock-lost-on-alert.html [ Pass Failure ]
 
 webkit.org/b/311846 webrtc/h264-high.html [ Pass Failure Timeout ]
 webkit.org/b/311847 webrtc/dtmf-gc.html [ Pass Timeout ]
+
+webkit.org/b/311927 accessibility/combobox/gtk/combobox-collapsed-selection-changed.html [ Failure Pass ]
+
+webkit.org/b/311930 fonts/font-cache-memory-pressure-crash.html [ Failure Pass ]
