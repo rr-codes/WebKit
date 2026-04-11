@@ -29,6 +29,7 @@
 
 #include "BlobRegistry.h"
 #include "ByteArrayPixelBuffer.h"
+#include "CrossOriginMode.h"
 #include "CryptoKeyAES.h"
 #include "CryptoKeyEC.h"
 #include "CryptoKeyHMAC.h"
@@ -2182,21 +2183,27 @@ private:
                 if (!addToObjectPoolIfNotDupe<ArrayBufferTag, ResizableArrayBufferTag, SharedArrayBufferTag>(obj))
                     return true;
                 
-                if (arrayBuffer->isShared() && (m_context == SerializationContext::WorkerPostMessage || m_forStorage == SerializationForStorage::Yes)) {
+                if (arrayBuffer->isShared()) {
                     // https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal
-                    if (!JSC::Options::useSharedArrayBuffer() || m_forStorage == SerializationForStorage::Yes) {
+                    if (m_context == SerializationContext::WorkerPostMessage) {
+                        if (!JSC::Options::useSharedArrayBuffer() || m_forStorage == SerializationForStorage::Yes) {
+                            code = SerializationReturnCode::DataCloneError;
+                            return true;
+                        }
+                        uint32_t index = m_sharedBuffers.size();
+                        ArrayBufferContents contents;
+                        if (arrayBuffer->shareWith(contents)) {
+                            appendObjectPoolTag(SharedArrayBufferTag);
+                            write(SharedArrayBufferTag);
+                            m_sharedBuffers.append(WTF::move(contents));
+                            write(index);
+                            return true;
+                        }
+                    } else if (m_context != SerializationContext::WindowPostMessage || ScriptExecutionContext::crossOriginMode() != CrossOriginMode::Isolated) {
                         code = SerializationReturnCode::DataCloneError;
                         return true;
                     }
-                    uint32_t index = m_sharedBuffers.size();
-                    ArrayBufferContents contents;
-                    if (arrayBuffer->shareWith(contents)) {
-                        appendObjectPoolTag(SharedArrayBufferTag);
-                        write(SharedArrayBufferTag);
-                        m_sharedBuffers.append(WTF::move(contents));
-                        write(index);
-                        return true;
-                    }
+                    // WindowPostMessage in a cross-origin isolated context: fall through to serialize as a non-shared copy.
                 }
                 
                 if (arrayBuffer->isResizableOrGrowableShared()) {
