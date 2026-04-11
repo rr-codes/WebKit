@@ -1632,10 +1632,6 @@ public:
     void handleClickForDataDetectionResult(const WebCore::DataDetectorElementInfo&, const WebCore::IntPoint&);
 #endif
 
-    unsigned extendIncrementalRenderingSuppression();
-    void stopExtendingIncrementalRenderingSuppression(unsigned token);
-    bool shouldExtendIncrementalRenderingSuppression() { return !m_activeRenderingSuppressionTokens.isEmpty(); }
-
     WebCore::ScrollPinningBehavior NODELETE scrollPinningBehavior();
     void setScrollPinningBehavior(WebCore::ScrollPinningBehavior);
 
@@ -3161,9 +3157,6 @@ private:
 
     HashSet<String, ASCIICaseInsensitiveHash> m_mimeTypesWithCustomContentProviders;
     std::optional<WebCore::Color> m_backgroundColor { WebCore::Color::white };
-
-    HashSet<unsigned> m_activeRenderingSuppressionTokens;
-    unsigned m_maximumRenderingSuppressionToken { 0 };
 
     std::optional<WebCore::ScrollbarOverlayStyle> m_scrollbarOverlayStyle;
 
