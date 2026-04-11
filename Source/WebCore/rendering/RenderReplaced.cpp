@@ -852,6 +852,19 @@ void RenderReplaced::computeIntrinsicLogicalWidths(LayoutUnit& minLogicalWidth, 
     minLogicalWidth = maxLogicalWidth = intrinsicLogicalWidth();
 }
 
+void RenderReplaced::computeIntrinsicKeywordLogicalWidths(LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const
+{
+    if (hasIntrinsicAspectRatio() && !style().logicalHeight().isAuto()) {
+        if (auto fixedHeight = style().logicalHeight().tryFixed()) {
+            auto heightDerivedWidth = LayoutUnit { fixedHeight->resolveZoom(style().usedZoomForLength()) * computeIntrinsicAspectRatio() };
+            minLogicalWidth = heightDerivedWidth;
+            maxLogicalWidth = heightDerivedWidth;
+            return;
+        }
+    }
+    RenderBox::computeIntrinsicKeywordLogicalWidths(minLogicalWidth, maxLogicalWidth);
+}
+
 void RenderReplaced::computePreferredLogicalWidths()
 {
     ASSERT(needsPreferredLogicalWidthsUpdate());
