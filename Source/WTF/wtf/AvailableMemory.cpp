@@ -27,7 +27,7 @@
 #include <wtf/AvailableMemory.h>
 
 #include <mutex>
-#include <wtf/CheckedArithmetic.h>
+#include <wtf/PageBlock.h>
 #include <wtf/text/ParsingUtilities.h>
 #include <wtf/text/StringToIntegerConversion.h>
 
