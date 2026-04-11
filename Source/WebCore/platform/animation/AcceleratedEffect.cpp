@@ -645,6 +645,37 @@ void AcceleratedEffect::clearProperty(AcceleratedEffectProperty property)
         keyframe.clearProperty(property);
 }
 
+void AcceleratedEffect::makeForwardsFilling()
+{
+    m_timing.fill = (m_timing.fill == FillMode::Backwards) ? FillMode::Both : FillMode::Forwards;
+}
+
+const OptionSet<AcceleratedEffectProperty> AcceleratedEffect::composedProperties() const
+{
+    // If the effect is marked as additive entirely, all of its properties are composed.
+    if (m_compositeOperation != CompositeOperation::Replace)
+        return m_animatedProperties;
+
+    // Otherwise, we need to go through the effect's keyframes to see which one may compose.
+    OptionSet<AcceleratedEffectProperty> additiveOrAccumulativeProperties;
+    OptionSet<AcceleratedEffectProperty> propertiesWithExplicitFromValue;
+    OptionSet<AcceleratedEffectProperty> propertiesWithExplicitToValue;
+    for (auto& keyframe : m_keyframes) {
+        if (keyframe.compositeOperation() == CompositeOperation::Add || keyframe.compositeOperation() == CompositeOperation::Accumulate)
+            additiveOrAccumulativeProperties.add(keyframe.animatedProperties());
+        else {
+            if (!keyframe.offset())
+                propertiesWithExplicitFromValue.add(keyframe.animatedProperties());
+            if (keyframe.offset() == 1.0)
+                propertiesWithExplicitToValue.add(keyframe.animatedProperties());
+        }
+    }
+
+    auto propertiesWithImplicitFromValue = m_animatedProperties ^ propertiesWithExplicitFromValue;
+    auto propertiesWithImplicitToValue = m_animatedProperties ^ propertiesWithExplicitToValue;
+    return additiveOrAccumulativeProperties | propertiesWithImplicitFromValue | propertiesWithImplicitToValue;
+}
+
 } // namespace WebCore
 
 #endif // ENABLE(THREADED_ANIMATIONS)

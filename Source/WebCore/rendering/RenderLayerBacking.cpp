@@ -4663,6 +4663,31 @@ void RenderLayerBacking::updateAcceleratedEffectsAndBaseValues(HashSet<Ref<Accel
         baseValues.backdropFilter = { };
     }
 
+    // Accelerated effects remain in the remote layer tree as long as they are interpolating. Once their
+    // associated animation reaches its natural end, their target's accelerated effect stack will be update
+    // and a new remote layer tree transaction will be committed to remove that accelerated effect. However,
+    // in the case where that effect does not fill forwards, there could be a moment between the moment it
+    // finished naturally in the remote layer tree and the moment it is indeed removed where the associated
+    // layer is in an unwanted state for a frame (or more if the Web process is under heavy load). As such,
+    // we must make such effects forward-filling. It is important however not to do so for effects that will
+    // be used as input for other effects further up the stack.
+    OptionSet<AcceleratedEffectProperty> composedAcceleratedProperties;
+    for (auto& effect : acceleratedEffects | std::views::reverse) {
+        // Nothing to do if the effect is not associated with a monotonic timeline.
+        if (!effect->timeline()->isMonotonic())
+            continue;
+        // Nothing to do if the effect is forward-filling already.
+        const auto& fill = effect->timing().fill;
+        if (fill == FillMode::Forwards || fill == FillMode::Both)
+            continue;
+        // We only want to force the effect to be forward-filling if none of its
+        // animated properties affect other effects up the stack.
+        auto shouldBecomeForwardsFilling = !composedAcceleratedProperties.containsAny(effect->animatedProperties());
+        composedAcceleratedProperties.add(effect->composedProperties());
+        if (shouldBecomeForwardsFilling)
+            effect->makeForwardsFilling();
+    }
+
     m_graphicsLayer->setAcceleratedEffectsAndBaseValues(WTF::move(acceleratedEffects), WTF::move(baseValues));
 
     m_owningLayer.setNeedsPostLayoutCompositingUpdate();
