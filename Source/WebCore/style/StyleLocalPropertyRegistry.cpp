@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -16,32 +16,36 @@
  * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL APPLE INC. OR
  * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
  * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
  * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
  * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "config.h"
+#include "StyleLocalPropertyRegistry.h"
 
-#include "CSSCustomPropertySyntax.h"
-#include "CSSVariableData.h"
-#include "StyleCustomProperty.h"
-#include <wtf/text/AtomString.h>
+#include "CSSParserIdioms.h"
 
 namespace WebCore {
+namespace Style {
 
-struct CSSRegisteredCustomProperty {
-    WTF_DEPRECATED_MAKE_STRUCT_FAST_ALLOCATED(CSSRegisteredCustomProperty);
-
-    AtomString name;
-    CSSCustomPropertySyntax syntax;
-    bool inherits { };
-    RefPtr<const Style::CustomProperty> initialValue { };
-    RefPtr<const CSSVariableData> initialValueTokensForViewportUnits { };
-
-    ~CSSRegisteredCustomProperty();
-};
-
+const CSSRegisteredCustomProperty* LocalPropertyRegistry::get(const AtomString& name) const
+{
+    ASSERT(isCustomPropertyName(name) || name == "result"_s);
+    return m_properties.get(name);
 }
+
+bool LocalPropertyRegistry::isInherited(const AtomString& name) const
+{
+    auto* registered = get(name);
+    return registered ? registered->inherits : true;
+}
+
+void LocalPropertyRegistry::add(CSSRegisteredCustomProperty&& property)
+{
+    m_properties.set(property.name, makeUniqueRef<CSSRegisteredCustomProperty>(WTF::move(property)));
+}
+
+} // namespace Style
+} // namespace WebCore

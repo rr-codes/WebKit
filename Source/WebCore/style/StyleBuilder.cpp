@@ -240,7 +240,7 @@ void Builder::applyCustomPropertyImpl(const AtomString& name, const PropertyCasc
 
     auto createInvalidOrUnset = [&] -> Variant<Ref<const Style::CustomProperty>, CSSWideKeyword> {
         // https://drafts.csswg.org/css-variables-2/#invalid-variables
-        auto* registered = m_state->document().customPropertyRegistry().get(name);
+        auto* registered = m_state->registeredProperty(name);
         // The property is a non-registered custom property:
         // The property is a registered custom property with universal syntax:
         // The computed value is the guaranteed-invalid value.
@@ -440,7 +440,7 @@ void Builder::applyCustomProperty(const AtomString& name, Variant<Ref<const Styl
 {
     auto& style = m_state->style();
 
-    auto registeredCustomProperty = m_state->document().customPropertyRegistry().get(name);
+    auto registeredCustomProperty = m_state->registeredProperty(name);
 
     auto applyValue = [&](Ref<const CustomProperty>&& valueToApply) {
         bool isInherited = !registeredCustomProperty || registeredCustomProperty->inherits;
@@ -595,7 +595,7 @@ RefPtr<const CustomProperty> Builder::resolveCustomPropertyForContainerQueries(c
     return WTF::switchOn(*resolvedValue,
         [&](const CSSWideKeyword& keyword) -> RefPtr<const CustomProperty> {
             auto name = value.name();
-            auto* registered = m_state->document().customPropertyRegistry().get(name);
+            auto* registered = m_state->registeredProperty(name);
             bool isInherited = !registered || registered->inherits;
 
             auto initial = [&]() -> RefPtr<const CustomProperty> {
@@ -661,7 +661,7 @@ std::optional<Variant<Ref<const Style::CustomProperty>, CSSWideKeyword>> Builder
     if (auto keyword = value.tryCSSWideKeyword())
         return { { *keyword } };
 
-    auto* registered = m_state->document().customPropertyRegistry().get(name);
+    auto* registered = m_state->registeredProperty(name);
     auto preResolved = switchOn(value.value(),
         [&](const Ref<CSSSubstitutionValue>&) -> std::optional<Variant<Ref<const Style::CustomProperty>, CSSWideKeyword>> {
             return { };

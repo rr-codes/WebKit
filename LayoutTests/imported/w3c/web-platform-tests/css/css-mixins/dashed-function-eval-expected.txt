@@ -1,8 +1,8 @@
 
 PASS Literal result
 PASS Literal result, typed return
-FAIL Literal result, typed return, calc assert_equals: expected "13px" but got "calc(12px + 1px)"
-FAIL Literal result, typed return, mismatch assert_equals: expected "" but got "12s"
+PASS Literal result, typed return, calc
+PASS Literal result, typed return, mismatch
 PASS Missing result descriptor
 PASS Literal result, empty
 PASS result cascading behavior
@@ -11,17 +11,17 @@ PASS Unused argument
 PASS Single parameter
 PASS Multiple parameters
 PASS Single parameter, typed
-FAIL Typed parameter with calc() assert_equals: expected "101px" but got "calc(100px + 1px)"
+PASS Typed parameter with calc()
 PASS Untyped parameter with calc()
-FAIL Various typed parameters assert_equals: expected "101px 360deg 1s" but got "calc(100px + 1px) 1turn 1000ms"
+PASS Various typed parameters
 PASS Parameter with complex type (auto)
 PASS Parameter with complex type (px)
 FAIL Passing argument to inner function assert_equals: expected "12px" but got ""
 PASS var() in argument resolved before call
-FAIL var() in argument resolved before call, typed assert_equals: expected "101px" but got "calc(100px + 1px)"
+PASS var() in argument resolved before call, typed
 FAIL Argument captures IACVT due to invalid var() assert_equals: expected "PASS" but got ""
 FAIL Argument captures IACVT due to invalid var(), typed assert_equals: expected "PASS" but got ""
-FAIL Argument captures IACVT due to type mismatch assert_equals: expected "PASS" but got "red"
+PASS Argument captures IACVT due to type mismatch
 PASS Single parameter with default value
 PASS Multiple parameters with defaults
 PASS Multiple parameters with defaults, typed
@@ -31,7 +31,7 @@ FAIL Default referencing another defaulted parameter assert_equals: expected "5p
 FAIL Typed default with reference assert_equals: expected "5px 6px" but got ""
 FAIL IACVT arguments are defaulted assert_equals: expected "1 2 3" but got ""
 FAIL IACVT arguments are defaulted, typed assert_equals: expected "1 2 3" but got ""
-FAIL Arguments are defaulted on type mismatch assert_equals: expected "1 2 3" but got "red 2 360deg"
+FAIL Arguments are defaulted on type mismatch assert_equals: expected "1 2 3" but got ""
 PASS Unused local
 PASS Local does not affect outer scope
 PASS Substituting local in result
@@ -39,7 +39,7 @@ PASS Substituting multiple locals in result
 PASS Local referring to another local
 PASS Locals appearing after result
 PASS Locals cascading behavior
-FAIL Custom properties are visible inside function assert_equals: expected "10px" but got ""
+PASS Custom properties are visible inside function
 FAIL Substitute local from outer scope assert_equals: expected "PASS" but got ""
 FAIL Substitute argument from outer scope assert_equals: expected "PASS" but got ""
 FAIL Inner argument shadowing outer argument assert_equals: expected "PASS" but got ""
@@ -57,7 +57,7 @@ PASS Parameter shadows custom property
 PASS Local shadows parameter
 FAIL IACVT argument shadows outer scope assert_equals: expected "PASS" but got ""
 FAIL IACVT argument shadows outer scope, typed assert_equals: expected "PASS" but got ""
-FAIL IACVT argument shadows outer scope, type mismatch assert_equals: expected "PASS" but got "red"
+FAIL IACVT argument shadows outer scope, type mismatch assert_equals: expected "PASS" but got "FAIL"
 PASS Missing only argument
 PASS Missing one argument of several
 FAIL Passing list as only argument assert_equals: expected "1px,2px" but got "{1px,2px}"
@@ -66,8 +66,8 @@ FAIL Passing list as second argument assert_equals: expected "1px | 2px, 3px" bu
 FAIL Passing comma as argument assert_equals: expected "," but got "{,}"
 FAIL Passing {} as argument assert_equals: expected "{}" but got "{{}}"
 FAIL Passing non-whole-value {} as argument assert_equals: expected "foo{}" but got "{foo{}}"
-FAIL Local variable with initial keyword assert_equals: expected "PASS" but got ""
-FAIL Local variable with initial keyword, defaulted assert_equals: expected "PASS" but got ""
+PASS Local variable with initial keyword
+PASS Local variable with initial keyword, defaulted
 FAIL Local variable with initial keyword, no value via IACVT-capture assert_equals: expected "PASS" but got ""
 FAIL Default with initial keyword assert_equals: expected "PASS" but got ""
 FAIL initial appearing via fallback assert_equals: expected "PASS" but got ""

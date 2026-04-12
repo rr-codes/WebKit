@@ -111,6 +111,8 @@ public:
 
     ValueOrReference<HashSet<AnimatableCSSProperty>> overriddenAnimatedProperties() const;
 
+    const MatchResult& matchResult() const LIFETIME_BOUND { return m_matchResult; }
+
     PropertyBitSet& propertyIsPresent() LIFETIME_BOUND { return m_propertyIsPresent; }
     const PropertyBitSet& propertyIsPresent() const LIFETIME_BOUND { return m_propertyIsPresent; }
 

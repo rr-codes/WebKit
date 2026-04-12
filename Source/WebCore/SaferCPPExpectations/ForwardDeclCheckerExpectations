@@ -71,3 +71,4 @@ style/StyleExtractorState.h
 style/StyleScope.h
 style/values/images/kinds/StyleCachedImage.cpp
 testing/Internals.cpp
+style/StyleBuilderState.h

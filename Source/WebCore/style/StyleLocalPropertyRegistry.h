@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,50 +25,23 @@
 #pragma once
 
 #include "CSSRegisteredCustomProperty.h"
-#include "StyleRule.h"
 #include <wtf/HashMap.h>
-#include <wtf/TZoneMalloc.h>
 
 namespace WebCore {
-
-class RenderStyle;
-
 namespace Style {
 
-class CustomProperty;
-class Scope;
-
-class CustomPropertyRegistry {
-    WTF_MAKE_TZONE_ALLOCATED(CustomPropertyRegistry);
+// Lightweight property registration for custom function evaluation.
+// Unlike CustomPropertyRegistry, this has no association with a Style::Scope
+// and no invalidation or prototype style management.
+class LocalPropertyRegistry {
 public:
-    CustomPropertyRegistry(Scope&);
-
     const CSSRegisteredCustomProperty* get(const AtomString&) const;
     bool isInherited(const AtomString&) const;
 
-    bool registerFromAPI(CSSRegisteredCustomProperty&&);
-    void registerFromStylesheet(const StyleRuleProperty::Descriptor&);
-    void clearRegisteredFromStylesheets();
-
-    const RenderStyle& initialValuePrototypeStyle() const LIFETIME_BOUND;
-
-    bool invalidatePropertiesWithViewportUnits(Document&);
-
-    enum class ViewportUnitDependency : bool { No, Yes };
-    enum class ParseInitialValueError : uint8_t { NotComputationallyIndependent, DidNotParse };
-    static Expected<std::pair<RefPtr<const CustomProperty>, ViewportUnitDependency>, ParseInitialValueError> parseInitialValue(const Document&, const AtomString& propertyName, const CSSCustomPropertySyntax&, CSSParserTokenRange);
+    void add(CSSRegisteredCustomProperty&&);
 
 private:
-    void invalidate(const AtomString&);
-    void notifyAnimationsOfCustomPropertyRegistration(const AtomString&);
-
-    Scope& m_scope;
-
-    UncheckedKeyHashMap<AtomString, UniqueRef<CSSRegisteredCustomProperty>> m_propertiesFromAPI;
-    UncheckedKeyHashMap<AtomString, UniqueRef<CSSRegisteredCustomProperty>> m_propertiesFromStylesheet;
-
-    mutable std::unique_ptr<RenderStyle> m_initialValuePrototypeStyle;
-    mutable bool m_hasInvalidPrototypeStyle { false };
+    UncheckedKeyHashMap<AtomString, UniqueRef<CSSRegisteredCustomProperty>> m_properties;
 };
 
 } // namespace Style

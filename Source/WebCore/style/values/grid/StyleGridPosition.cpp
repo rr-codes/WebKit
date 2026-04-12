@@ -37,6 +37,7 @@
 #include "CSSPrimitiveValue.h"
 #include "StyleBuilderChecking.h"
 #include "StylePrimitiveKeyword+Logging.h"
+#include "StylePrimitiveNumericTypes+Conversions.h"
 #include "StylePrimitiveNumericTypes+Logging.h"
 #include <wtf/text/TextStream.h>
 
