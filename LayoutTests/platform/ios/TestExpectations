@@ -5549,6 +5549,7 @@ webkit.org/b/141436 fast/loader/subframe-navigate-during-main-frame-load.html [ 
 # FIXME: Broken tests that use window.open (do not timeout on WK1)
 http/tests/cache/history-navigation-no-resource-revalidation.html [ Skip ]
 http/tests/navigation/target-blank-opener-post.html [ Skip ]
+imported/w3c/web-platform-tests/html/browsers/windows/consume-user-activation/window-open.html [ Skip ]
 
 # Unskip otherwise globally-skipped test
 css2.1/20110323/replaced-intrinsic-002.htm [ Pass ]

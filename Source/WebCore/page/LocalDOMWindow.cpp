@@ -2861,6 +2861,11 @@ ExceptionOr<RefPtr<Frame>> LocalDOMWindow::createWindow(const String& urlString,
     if (!newFrame)
         return RefPtr<Frame> { nullptr };
 
+    // https://html.spec.whatwg.org/#the-rules-for-choosing-a-navigable
+    // Consume user activation when a new browsing context is created.
+    if (created == CreatedNewPage::Yes)
+        activeWindow.consumeTransientActivation();
+
     if (!noopener) {
         ASSERT(!newFrame->opener() || newFrame->opener() == &openerFrame);
         if (auto* page = newFrame->page())
