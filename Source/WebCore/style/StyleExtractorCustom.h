@@ -355,6 +355,13 @@ template<CSSPropertyID propertyID> struct InsetEdgeSharedAdaptor {
             // See http://www.w3.org/TR/CSS2/visuren.html#position-props
             //
             // Margins are included in offsetTop/offsetLeft so we need to remove them here.
+
+            // Per spec, when position-area or anchor-center is used, the used value
+            // of any auto inset properties and auto margin properties resolves to 0.
+            // See https://drafts.csswg.org/css-anchor-position-1/#position-area.
+            if (AnchorPositionEvaluator::isLayoutTimeAnchorPositioned(box.style()) && AnchorPositionEvaluator::defaultAnchorForBox(box)) [[unlikely]]
+                return LayoutUnit { };
+
             auto paddingBoxWidth = [&]() -> LayoutUnit {
                 if (CheckedPtr renderBlock = dynamicDowncast<RenderBlock>(container))
                     return renderBlock->paddingBoxWidth();
