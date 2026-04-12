@@ -36,8 +36,9 @@ public:
         : m_frame(frame)
     {
         if (frame) {
-            if (auto* localFrame = dynamicDowncast<LocalFrame>(frame->mainFrame()))
-                ++localFrame->m_navigationDisableCount;
+            ++frame->m_navigationDisableCount;
+            if (auto* mainFrame = dynamicDowncast<LocalFrame>(frame->mainFrame()))
+                ++mainFrame->m_totalNavigationDisableCount;
         } else // Disable all navigations when destructing a frame-less document.
             ++s_globalNavigationDisableCount;
     }
@@ -45,9 +46,11 @@ public:
     ~NavigationDisabler()
     {
         if (auto* frame = m_frame.get()) {
+            ASSERT(frame->m_navigationDisableCount);
+            --frame->m_navigationDisableCount;
             if (auto* mainFrame = dynamicDowncast<LocalFrame>(frame->mainFrame())) {
-                ASSERT(mainFrame->m_navigationDisableCount);
-                --mainFrame->m_navigationDisableCount;
+                ASSERT(mainFrame->m_totalNavigationDisableCount);
+                --mainFrame->m_totalNavigationDisableCount;
             }
         } else {
             ASSERT(s_globalNavigationDisableCount);
@@ -57,8 +60,26 @@ public:
 
     static bool isNavigationAllowed(Frame& frame)
     {
-        if (auto* localFrame = dynamicDowncast<LocalFrame>(frame.mainFrame()))
-            return !localFrame->m_navigationDisableCount && !s_globalNavigationDisableCount;
+        if (s_globalNavigationDisableCount)
+            return false;
+        auto* localMainFrame = dynamicDowncast<LocalFrame>(frame.mainFrame());
+        if (!localMainFrame || !localMainFrame->m_totalNavigationDisableCount)
+            return true;
+        // Check if the target frame or any of its ancestors has navigation disabled.
+        for (auto* ancestor = &frame; ancestor; ancestor = ancestor->tree().parent()) {
+            if (auto* localAncestor = dynamicDowncast<LocalFrame>(*ancestor)) {
+                if (localAncestor->m_navigationDisableCount)
+                    return false;
+            }
+        }
+        // Check if any descendant of the target frame has navigation disabled,
+        // since navigating an ancestor would disrupt the descendant's beforeunload.
+        for (auto* descendant = frame.tree().firstChild(); descendant; descendant = descendant->tree().traverseNext(&frame)) {
+            if (auto* localDescendant = dynamicDowncast<LocalFrame>(*descendant)) {
+                if (localDescendant->m_navigationDisableCount)
+                    return false;
+            }
+        }
         return true;
     }
 
