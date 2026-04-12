@@ -694,10 +694,9 @@ IPIntGenerator::IPIntGenerator(ModuleInformation& info, FunctionCodeIndex functi
     return { };
 }
 
-Value IPIntGenerator::addConstant(Type type, uint64_t value)
+Value IPIntGenerator::addConstant(Type, uint64_t)
 {
     changeStackSize(1);
-    m_metadata->addLEB128ConstantAndLengthForType(type, value, getCurrentInstructionLength());
     return { };
 }
 
@@ -706,16 +705,14 @@ Value IPIntGenerator::addConstant(Type type, uint64_t value)
 [[nodiscard]] PartialResult IPIntGenerator::addSIMDLoad(ExpressionType, uint32_t offset, ExpressionType&, uint8_t memoryIndex)
 {
     changeStackSize(0); // Pop address, push v128 value (net change = 0)
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addSIMDMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addSIMDStore(ExpressionType, ExpressionType, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2); // Pop address and v128 value
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addSIMDMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
@@ -754,16 +751,14 @@ Value IPIntGenerator::addConstant(Type type, uint64_t value)
 [[nodiscard]] PartialResult IPIntGenerator::addSIMDLoadLane(SIMDLaneOperation, ExpressionType, ExpressionType, uint32_t offset, uint8_t, ExpressionType&, uint8_t memoryIndex)
 {
     changeStackSize(-1);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addSIMDMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addSIMDStoreLane(SIMDLaneOperation, ExpressionType, ExpressionType, uint32_t offset, uint8_t, uint8_t memoryIndex)
 {
     changeStackSize(-2);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addSIMDMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
@@ -848,7 +843,7 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 [[nodiscard]] PartialResult IPIntGenerator::addRefFunc(FunctionSpaceIndex index, ExpressionType&)
 {
     changeStackSize(1);
-    m_metadata->addLEB128ConstantInt32AndLength(index, getCurrentInstructionLength());
+    m_metadata->addRefFunc(index, getCurrentInstructionLength());
     return { };
 }
 
@@ -867,14 +862,14 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 
 [[nodiscard]] PartialResult IPIntGenerator::addTableGet(unsigned index, ExpressionType, ExpressionType&)
 {
-    m_metadata->addLEB128ConstantInt32AndLength(index, getCurrentInstructionLength());
+    m_metadata->addTableAccess(index, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addTableSet(unsigned index, ExpressionType, ExpressionType)
 {
     changeStackSize(-2);
-    m_metadata->addLEB128ConstantInt32AndLength(index, getCurrentInstructionLength());
+    m_metadata->addTableAccess(index, getCurrentInstructionLength());
     return { };
 }
 
@@ -892,14 +887,14 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 
 [[nodiscard]] PartialResult IPIntGenerator::addElemDrop(unsigned elementIndex)
 {
-    m_metadata->addLEB128ConstantInt32AndLength(elementIndex, getCurrentInstructionLength());
+    m_metadata->addElemDrop(elementIndex, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addTableSize(unsigned tableIndex, ExpressionType&)
 {
     changeStackSize(1);
-    m_metadata->addLEB128ConstantInt32AndLength(tableIndex, getCurrentInstructionLength());
+    m_metadata->addTableAccess(tableIndex, getCurrentInstructionLength());
     return { };
 }
 
@@ -1087,24 +1082,14 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 
 // Loads and Stores
 
-[[nodiscard]] PartialResult IPIntGenerator::load(LoadOpType, ExpressionType, ExpressionType&, uint64_t offset, uint8_t memoryIndex)
+[[nodiscard]] PartialResult IPIntGenerator::load(LoadOpType, ExpressionType, ExpressionType&, uint64_t, uint8_t)
 {
-    m_metadata->addMemoryIndex(memoryIndex);
-    if (m_info.memory(memoryIndex).isMemory64())
-        m_metadata->addLEB128ConstantInt64AndLength(offset, getCurrentInstructionLength());
-    else
-        m_metadata->addLEB128ConstantInt32AndLength(static_cast<uint32_t>(offset), getCurrentInstructionLength());
     return { };
 }
 
-[[nodiscard]] PartialResult IPIntGenerator::store(StoreOpType, ExpressionType, ExpressionType, uint64_t offset, uint8_t memoryIndex)
+[[nodiscard]] PartialResult IPIntGenerator::store(StoreOpType, ExpressionType, ExpressionType, uint64_t, uint8_t)
 {
     changeStackSize(-2);
-    m_metadata->addMemoryIndex(memoryIndex);
-    if (m_info.memory(memoryIndex).isMemory64())
-        m_metadata->addLEB128ConstantInt64AndLength(offset, getCurrentInstructionLength());
-    else
-        m_metadata->addLEB128ConstantInt32AndLength(static_cast<uint32_t>(offset), getCurrentInstructionLength());
     return { };
 }
 
@@ -1112,45 +1097,41 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 
 [[nodiscard]] PartialResult IPIntGenerator::addGrowMemory(ExpressionType, ExpressionType&, uint8_t memoryIndex)
 {
-    m_metadata->addMemoryIndex(memoryIndex);
+    m_metadata->addMemoryGrow(memoryIndex);
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addCurrentMemory(ExpressionType&, uint8_t memoryIndex)
 {
     changeStackSize(1);
-    m_metadata->addMemoryIndex(memoryIndex);
+    m_metadata->addMemorySize(memoryIndex);
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addMemoryFill(ExpressionType, ExpressionType, ExpressionType, uint8_t memoryIndex)
 {
     changeStackSize(-3);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLength(getCurrentInstructionLength());
+    m_metadata->addMemoryFill(memoryIndex, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addMemoryCopy(ExpressionType, ExpressionType, ExpressionType, uint8_t dstMemoryIndex, uint8_t srcMemoryIndex)
 {
     changeStackSize(-3);
-    m_metadata->addMemoryIndex(dstMemoryIndex);
-    m_metadata->addMemoryIndex(srcMemoryIndex);
-    m_metadata->addLength(getCurrentInstructionLength());
+    m_metadata->addMemoryCopy(dstMemoryIndex, srcMemoryIndex, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addMemoryInit(unsigned dataIndex, ExpressionType, ExpressionType, ExpressionType, uint8_t memoryIndex)
 {
     changeStackSize(-3);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(dataIndex, getCurrentInstructionLength());
+    m_metadata->addMemoryInit(memoryIndex, dataIndex, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::addDataDrop(unsigned dataIndex)
 {
-    m_metadata->addLEB128ConstantInt32AndLength(dataIndex, getCurrentInstructionLength());
+    m_metadata->addDataAccess(dataIndex, getCurrentInstructionLength());
     return { };
 }
 
@@ -1158,48 +1139,42 @@ IPIntGenerator::ExpressionType IPIntGenerator::addSIMDConstant(v128_t)
 
 [[nodiscard]] PartialResult IPIntGenerator::atomicLoad(ExtAtomicOpType, Type, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addAtomicMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::atomicStore(ExtAtomicOpType, Type, ExpressionType, ExpressionType, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addAtomicMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::atomicBinaryRMW(ExtAtomicOpType, Type, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-1);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addAtomicMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::atomicCompareExchange(ExtAtomicOpType, Type, ExpressionType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addAtomicMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::atomicWait(ExtAtomicOpType, ExpressionType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-2);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addAtomicMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
 [[nodiscard]] PartialResult IPIntGenerator::atomicNotify(ExtAtomicOpType, ExpressionType, ExpressionType, ExpressionType&, uint32_t offset, uint8_t memoryIndex)
 {
     changeStackSize(-1);
-    m_metadata->addMemoryIndex(memoryIndex);
-    m_metadata->addLEB128ConstantInt32AndLength(offset, getCurrentInstructionLength());
+    m_metadata->addAtomicMemoryAccess(memoryIndex, offset, getCurrentInstructionLength());
     return { };
 }
 
