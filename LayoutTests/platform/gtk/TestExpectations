@@ -1479,7 +1479,7 @@ inspector/unit-tests/retryuntil.html [ Pass Failure ]
 
 pointer-lock/lock-lost-on-alert.html [ Pass Failure ]
 
-webkit.org/b/311846 webrtc/h264-high.html [ Pass Failure Timeout ]
+webkit.org/b/311846 webrtc/h264-high.html [ Pass Failure Slow ]
 webkit.org/b/311847 webrtc/dtmf-gc.html [ Pass Timeout ]
 
 webkit.org/b/311927 accessibility/combobox/gtk/combobox-collapsed-selection-changed.html [ Failure Pass ]
