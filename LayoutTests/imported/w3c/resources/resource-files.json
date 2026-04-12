@@ -770,6 +770,7 @@
         "web-platform-tests/css/CSS2/floats/negative-block-margin-pushing-float-out-of-block-formatting-context-ref.html",
         "web-platform-tests/css/CSS2/floats/overflow-scroll-float-paint-order-ref.html",
         "web-platform-tests/css/CSS2/floats/overhanging-float-paint-order-ref.html",
+        "web-platform-tests/css/CSS2/floats/table-sizing-with-adjacent-floats-ref.html",
         "web-platform-tests/css/CSS2/linebox/anonymous-inline-inherit-001-ref.html",
         "web-platform-tests/css/CSS2/linebox/baseline-block-with-overflow-001-ref.html",
         "web-platform-tests/css/CSS2/linebox/border-padding-bleed-001-ref.xht",
