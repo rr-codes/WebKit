@@ -30,6 +30,9 @@ set(bmalloc_SOURCES
 
     libpas/src/libpas/bmalloc_heap.c
     libpas/src/libpas/bmalloc_heap_config.c
+    libpas/src/libpas/bmalloc_heap_flex.c
+    libpas/src/libpas/bmalloc_heap_iso.c
+    libpas/src/libpas/bmalloc_heap_utils.c
     libpas/src/libpas/jit_heap.c
     libpas/src/libpas/pas_bitfit_page_config_kind.c
     libpas/src/libpas/pas_heap_config_kind.c
@@ -39,6 +42,9 @@ set(bmalloc_SOURCES
 set_source_files_properties(
     libpas/src/libpas/bmalloc_heap.c
     libpas/src/libpas/bmalloc_heap_config.c
+    libpas/src/libpas/bmalloc_heap_flex.c
+    libpas/src/libpas/bmalloc_heap_iso.c
+    libpas/src/libpas/bmalloc_heap_utils.c
     libpas/src/libpas/jit_heap.c
     libpas/src/libpas/pas_bitfit_page_config_kind.c
     libpas/src/libpas/pas_heap_config_kind.c
@@ -236,10 +242,13 @@ set(bmalloc_PUBLIC_HEADERS
     bmalloc/valgrind.h
 
     libpas/src/libpas/bmalloc_heap_config.h
+    libpas/src/libpas/bmalloc_heap_flex_internal.h
     libpas/src/libpas/bmalloc_heap.h
     libpas/src/libpas/bmalloc_heap_inlines.h
     libpas/src/libpas/bmalloc_heap_innards.h
+    libpas/src/libpas/bmalloc_heap_iso_internal.h
     libpas/src/libpas/bmalloc_heap_ref.h
+    libpas/src/libpas/bmalloc_heap_utils.h
     libpas/src/libpas/bmalloc_type.h
     libpas/src/libpas/hotbit_heap_config.h
     libpas/src/libpas/hotbit_heap.h
