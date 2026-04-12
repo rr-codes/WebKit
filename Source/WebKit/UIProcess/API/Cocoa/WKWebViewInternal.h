@@ -534,6 +534,8 @@ struct PerWebProcessState {
 
     RetainPtr<WKScrollGeometry> _currentScrollGeometry;
 
+    std::pair<URL, RetainPtr<NSURL>> _cachedActiveNSURL;
+
     BOOL _allowsMagnification;
 
 #if ENABLE(PDF_PAGE_NUMBER_INDICATOR)

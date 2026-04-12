@@ -1214,7 +1214,7 @@ void WebPageProxy::setClientNavigationActivity(API::Navigation& navigation)
 
 bool WebPageProxy::shouldAllowAutoFillForCellularIdentifiers() const
 {
-    return WebKit::shouldAllowAutoFillForCellularIdentifiers(URL { protect(pageLoadState())->activeURL() });
+    return WebKit::shouldAllowAutoFillForCellularIdentifiers(protect(pageLoadState())->activeURL());
 }
 
 #endif

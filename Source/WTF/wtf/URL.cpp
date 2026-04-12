@@ -975,14 +975,14 @@ bool protocolIsInHTTPFamily(StringView url)
 
 
 static StaticStringImpl aboutBlankString { "about:blank" };
-const URL& aboutBlankURL()
+SUPPRESS_NODELETE const URL& aboutBlankURL()
 {
     static NeverDestroyed<URL> staticBlankURL { &aboutBlankString };
     return staticBlankURL;
 }
 
 static StaticStringImpl aboutSrcDocString { "about:srcdoc" };
-const URL& aboutSrcDocURL()
+SUPPRESS_NODELETE const URL& aboutSrcDocURL()
 {
     static NeverDestroyed<URL> staticSrcDocURL { &aboutSrcDocString };
     return staticSrcDocURL;

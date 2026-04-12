@@ -307,8 +307,8 @@ WTF_EXPORT_PRIVATE bool NODELETE isEqualIgnoringQueryAndFragments(const URL&, co
 WTF_EXPORT_PRIVATE Vector<String> removeQueryParameters(URL&, const HashSet<String>&);
 WTF_EXPORT_PRIVATE Vector<String> removeQueryParameters(URL&, NOESCAPE const Function<bool(const String&, const String&)>&);
 
-WTF_EXPORT_PRIVATE const URL& aboutBlankURL();
-WTF_EXPORT_PRIVATE const URL& aboutSrcDocURL();
+WTF_EXPORT_PRIVATE const URL& NODELETE aboutBlankURL();
+WTF_EXPORT_PRIVATE const URL& NODELETE aboutSrcDocURL();
 
 // Functions to do URL operations on strings.
 // These are operations that aren't faster on a parsed URL.

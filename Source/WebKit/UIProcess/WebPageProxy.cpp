@@ -1738,7 +1738,7 @@ RefPtr<API::Navigation> WebPageProxy::launchProcessForReload()
     if (!url.isEmpty()) {
         Ref protectedPageLoadState = pageLoadState();
         auto transaction = protectedPageLoadState->transaction();
-        protectedPageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), url });
+        protectedPageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), URL { url } });
     }
 
     auto publicSuffix = WebCore::PublicSuffixStore::singleton().publicSuffix(URL(currentItem->url()));
@@ -2233,7 +2233,7 @@ void WebPageProxy::loadRequestWithNavigationShared(Ref<WebProcessProxy>&& proces
 #endif
 
     if (shouldTreatAsContinuingLoad == ShouldTreatAsContinuingLoad::No)
-        pageLoadState->setPendingAPIRequest(transaction, { navigation.navigationID(), url.string() });
+        pageLoadState->setPendingAPIRequest(transaction, { navigation.navigationID(), url });
 
     pageLoadState->setHTTPFallbackInProgress(transaction, navigationUpgradeToHTTPSBehavior == NavigationUpgradeToHTTPSBehavior::HTTPFallback);
 
@@ -2336,7 +2336,7 @@ RefPtr<API::Navigation> WebPageProxy::loadFile(const String& fileURLString, cons
     Ref pageLoadState = internals().pageLoadState;
     auto transaction = pageLoadState->transaction();
 
-    pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), fileURLString }, resourceDirectoryURL);
+    pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), URL { fileURLString } }, resourceDirectoryURL);
 
     auto request = ResourceRequest(URL { fileURL });
     request.setIsAppInitiated(isAppInitiated);
@@ -2414,7 +2414,7 @@ void WebPageProxy::loadDataWithNavigationShared(Ref<WebProcessProxy>&& process, 
     Ref pageLoadState = internals().pageLoadState;
     auto transaction = pageLoadState->transaction();
 
-    pageLoadState->setPendingAPIRequest(transaction, { navigation.navigationID(), !baseURL.isEmpty() ? baseURL : aboutBlankURL().string() });
+    pageLoadState->setPendingAPIRequest(transaction, { navigation.navigationID(), !baseURL.isEmpty() ? URL { baseURL } : aboutBlankURL() });
 
     LoadParameters loadParameters;
     loadParameters.sessionHistoryVisibility = sessionHistoryVisibility;
@@ -2474,7 +2474,7 @@ RefPtr<API::Navigation> WebPageProxy::loadSimulatedRequest(WebCore::ResourceRequ
     auto baseURL = simulatedRequest.url().string();
     simulatedResponse.setURL(URL { simulatedRequest.url() }); // These should always match for simulated load
 
-    pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), !baseURL.isEmpty() ? baseURL : aboutBlankURL().string() });
+    pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), !baseURL.isEmpty() ? URL { baseURL } : aboutBlankURL() });
 
     LoadParameters loadParameters;
     loadParameters.navigationID = navigation->navigationID();
@@ -2532,8 +2532,8 @@ void WebPageProxy::loadAlternateHTML(Ref<WebCore::DataSegment>&& htmlData, const
     Ref pageLoadState = internals().pageLoadState;
     auto transaction = pageLoadState->transaction();
 
-    pageLoadState->setPendingAPIRequest(transaction, { { }, unreachableURL.string() });
-    pageLoadState->setUnreachableURL(transaction, unreachableURL.string());
+    pageLoadState->setPendingAPIRequest(transaction, { { }, unreachableURL });
+    pageLoadState->setUnreachableURL(transaction, unreachableURL);
 
     if (RefPtr mainFrame = m_mainFrame)
         mainFrame->setUnreachableURL(unreachableURL);
@@ -2616,7 +2616,7 @@ RefPtr<API::Navigation> WebPageProxy::reload(OptionSet<WebCore::ReloadOption> op
     if (!url.isEmpty()) {
         Ref pageLoadState = internals().pageLoadState;
         auto transaction = pageLoadState->transaction();
-        pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), url });
+        pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), URL { url } });
     }
 
     // Store decision to reload without content blockers on the navigation so that we can later set the corresponding
@@ -2732,7 +2732,7 @@ RefPtr<API::Navigation> WebPageProxy::goToBackForwardItem(WebBackForwardListFram
     Ref navigation = m_navigationState->createBackForwardNavigation(process->coreProcessIdentifier(), frameItem, protect(backForwardList().currentItem()), frameLoadType);
     Ref pageLoadState = internals().pageLoadState;
     auto transaction = pageLoadState->transaction();
-    pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), item->url() });
+    pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), URL { item->url() } });
 
     process->markProcessAsRecentlyUsed();
 
@@ -5336,7 +5336,7 @@ void WebPageProxy::receivedNavigationActionPolicyDecision(WebProcessProxy& proce
     }
 #endif
 
-    URL sourceURL { pageLoadState().url() };
+    URL sourceURL = pageLoadState().url();
     if (RefPtr provisionalPage = provisionalPageProxy()) {
         if (provisionalPage->navigationID() == navigation.navigationID())
             sourceURL = provisionalPage->provisionalURL();
@@ -5361,7 +5361,7 @@ void WebPageProxy::receivedNavigationActionPolicyDecision(WebProcessProxy& proce
         protect(this->websiteDataStore())->trackEnhancedSecurityForDomain(RegistrableDomain { navigation.currentRequest().url() }, enhancedSecurity);
 
     Site site { navigation.currentRequest().url() };
-    Site mainFrameSite = frame.isMainFrame() ? site : Site { URL(pageLoadState().activeURL()) };
+    Site mainFrameSite = frame.isMainFrame() ? site : Site { pageLoadState().activeURL() };
     auto continueWithProcessForNavigation = [
         this,
         protectedThis = Ref { *this },
@@ -5821,7 +5821,7 @@ void WebPageProxy::continueNavigationInNewProcess(API::Navigation& navigation, W
 
             Ref pageLoadState = internals().pageLoadState;
             auto transaction = pageLoadState->transaction();
-            pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), item->url() });
+            pageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), URL { item->url() } });
 
             provisionalPage->goToBackForwardItem(navigation, *item, WTF::move(websitePolicies), shouldTreatAsContinuingLoad, existingNetworkResourceLoadIdentifierToResume, processSwapDisposition);
             return;
@@ -5985,12 +5985,11 @@ SessionState WebPageProxy::sessionState(WTF::Function<bool (WebBackForwardListIt
     sessionState.backForwardListState = backForwardList().backForwardListState(WTF::move(filter));
 #endif
 
-    String provisionalURLString = internals().pageLoadState.pendingAPIRequestURL();
-    if (provisionalURLString.isEmpty())
-        provisionalURLString = internals().pageLoadState.provisionalURL();
+    auto& pendingURL = internals().pageLoadState.pendingAPIRequestURL();
+    auto& provisionalURL = !pendingURL.isEmpty() ? pendingURL : internals().pageLoadState.provisionalURL();
 
-    if (!provisionalURLString.isEmpty())
-        sessionState.provisionalURL = URL { provisionalURLString };
+    if (!provisionalURL.isEmpty())
+        sessionState.provisionalURL = provisionalURL;
 
     sessionState.renderTreeSize = renderTreeSize();
     sessionState.isAppInitiated = m_lastNavigationWasAppInitiated;
@@ -7524,7 +7523,7 @@ void WebPageProxy::didStartProvisionalLoadForFrameShared(Ref<WebProcessProxy>&& 
         process->didStartProvisionalLoadForMainFrame(url);
         reportPageLoadResult(ResourceError { ResourceError::Type::Cancellation });
         internals().pageLoadStart = MonotonicTime::now();
-        pageLoadState->didStartProvisionalLoad(transaction, url.string(), unreachableURL.string());
+        pageLoadState->didStartProvisionalLoad(transaction, url, unreachableURL);
         protectedPageClient->didStartProvisionalLoadForMainFrame();
         closeOverlayedViews();
     }
@@ -7567,7 +7566,7 @@ void WebPageProxy::didExplicitOpenForFrame(IPC::Connection& connection, FrameIde
     auto transaction = pageLoadState->transaction();
 
     if (frame->isMainFrame())
-        pageLoadState->didExplicitOpen(transaction, url.string());
+        pageLoadState->didExplicitOpen(transaction, url);
 
     frame->didExplicitOpen(WTF::move(url), WTF::move(mimeType));
 
@@ -7609,7 +7608,7 @@ void WebPageProxy::didReceiveServerRedirectForProvisionalLoadForFrameShared(Ref<
 
     URL requestURL = request.url();
     if (frame->isMainFrame()) {
-        pageLoadState->didReceiveServerRedirectForProvisionalLoad(transaction, requestURL.string());
+        pageLoadState->didReceiveServerRedirectForProvisionalLoad(transaction, requestURL);
         // If the main frame in a provisional page is getting a server-side redirect, make sure the
         // committed page's provisional URL is kept up-to-date too.
         RefPtr mainFrame = m_mainFrame;
@@ -7679,7 +7678,7 @@ void WebPageProxy::didChangeProvisionalURLForFrameShared(Ref<WebProcessProxy>&& 
     // Internally, we handle this the same way we handle a server redirect. There are no client callbacks
     // for this, but if this is the main frame, clients may observe a change to the page's URL.
     if (frame->isMainFrame())
-        pageLoadState->didReceiveServerRedirectForProvisionalLoad(transaction, url.string());
+        pageLoadState->didReceiveServerRedirectForProvisionalLoad(transaction, url);
 
     frame->didReceiveServerRedirectForProvisionalLoad(WTF::move(url));
 }
@@ -8393,7 +8392,7 @@ void WebPageProxy::didSameDocumentNavigationForFrame(IPC::Connection& connection
 
     bool isMainFrame = frame->isMainFrame();
     if (isMainFrame)
-        protectedPageLoadState->didSameDocumentNavigation(transaction, url.string());
+        protectedPageLoadState->didSameDocumentNavigation(transaction, url);
 
     if (m_controlledByAutomation) {
         if (RefPtr automationSession = m_configuration->processPool().automationSession())
@@ -8444,7 +8443,7 @@ void WebPageProxy::didSameDocumentNavigationForFrameViaJS(IPC::Connection& conne
 
     bool isMainFrame = frame->isMainFrame();
     if (isMainFrame)
-        protectedPageLoadState->didSameDocumentNavigation(transaction, url.string());
+        protectedPageLoadState->didSameDocumentNavigation(transaction, url);
 
     if (m_controlledByAutomation) {
         if (RefPtr automationSession = m_configuration->processPool().automationSession())
@@ -8966,7 +8965,7 @@ void WebPageProxy::decidePolicyForNavigationAction(Ref<WebProcessProxy>&& proces
                 Ref protectedPageLoadState = pageLoadState();
                 auto transaction = protectedPageLoadState->transaction();
                 protectedPageLoadState->setHadSafeBrowsingWarning(transaction);
-                protectedPageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), safeBrowsingWarning->url().string() });
+                protectedPageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), safeBrowsingWarning->url() });
                 protectedPageLoadState->commitChanges();
             }
 
@@ -9068,7 +9067,7 @@ void WebPageProxy::decidePolicyForNavigationAction(Ref<WebProcessProxy>&& proces
 
     auto wasPotentiallyInitiatedByUser = navigation->isLoadedWithNavigationShared() || navigation->wasUserInitiated();
     if (!sessionID().isEphemeral())
-        logFrameNavigation(frame, URL { internals().pageLoadState.url() }, request, navigationAction->data().redirectResponse.url(), wasPotentiallyInitiatedByUser);
+        logFrameNavigation(frame, internals().pageLoadState.url(), request, navigationAction->data().redirectResponse.url(), wasPotentiallyInitiatedByUser);
 
     if (m_policyClient)
         m_policyClient->decidePolicyForNavigationAction(*this, &frame, WTF::move(navigationAction), originatingFrame.get(), originalRequest, WTF::move(request), WTF::move(listener));
@@ -9291,7 +9290,7 @@ void WebPageProxy::decidePolicyForResponseShared(Ref<WebProcessProxy>&& process,
                 Ref protectedPageLoadState = pageLoadState();
                 auto transaction = protectedPageLoadState->transaction();
                 protectedPageLoadState->setHadSafeBrowsingWarning(transaction);
-                protectedPageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), safeBrowsingWarning->url().string() });
+                protectedPageLoadState->setPendingAPIRequest(transaction, { navigation->navigationID(), safeBrowsingWarning->url() });
                 protectedPageLoadState->commitChanges();
             }
 
@@ -12410,11 +12409,11 @@ void WebPageProxy::didChangeProcessIsResponsive()
 
 String WebPageProxy::currentURL() const
 {
-    String url = pageLoadState().activeURL();
+    auto& url = pageLoadState().activeURL();
     RefPtr currentItem = backForwardList().currentItem();
     if (url.isEmpty() && currentItem)
-        url = currentItem->url();
-    return url;
+        return currentItem->url();
+    return url.string();
 }
 
 URL WebPageProxy::currentResourceDirectoryURL() const
@@ -12520,7 +12519,7 @@ void WebPageProxy::tryReloadAfterProcessTermination()
         m_recentCrashCount = 0;
         return;
     }
-    URL pendingAPIRequestURL { internals().pageLoadState.pendingAPIRequestURL() };
+    URL pendingAPIRequestURL = internals().pageLoadState.pendingAPIRequestURL();
     if (pendingAPIRequestURL.isValid()) {
         WEBPAGEPROXY_RELEASE_LOG(Process, "tryReloadAfterProcessTermination: process crashed and the client did not handle it, loading the pending API request URL again");
         loadRequest(ResourceRequest { WTF::move(pendingAPIRequestURL) });
