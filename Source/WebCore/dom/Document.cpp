@@ -385,6 +385,7 @@
 #include <wtf/UUID.h>
 #include <wtf/text/MakeString.h>
 #include <wtf/text/StringBuffer.h>
+#include <wtf/text/TextPosition.h>
 #include <wtf/text/TextStream.h>
 
 #if ENABLE(APP_HIGHLIGHTS)
@@ -12075,6 +12076,14 @@ void Document::updateCachedSetInnerHTML(const String& sourceString, ContainerNod
     cache.cachedContainer = &container;
     cache.contextElementName = contextElement.elementName();
     container.clearDidMutateSubtreeAfterSetInnerHTML();
+}
+
+std::optional<TextPosition> Document::currentParserSourcePosition() const
+{
+    if (scriptableDocumentParser() && !isInDocumentWrite())
+        return { scriptableDocumentParser()->textPosition() };
+
+    return { };
 }
 
 } // namespace WebCore

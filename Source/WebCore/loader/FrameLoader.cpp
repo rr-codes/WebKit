@@ -564,7 +564,7 @@ void FrameLoader::submitForm(Ref<FormSubmission>&& submission)
     }
 
     URL formAction = submission->action();
-    if (!protect(document->contentSecurityPolicy())->allowFormAction(formAction))
+    if (!protect(document->contentSecurityPolicy())->allowFormAction(formAction, document->currentParserSourcePosition()))
         return;
 
     RefPtr targetFrame = findFrameForNavigation(submission->target(), &submission->state()->sourceDocument());
@@ -1207,8 +1207,9 @@ bool FrameLoader::checkIfFormActionAllowedByCSP(const URL& url, bool didReceiveR
     if (m_submittedFormURL.isEmpty())
         return true;
 
+    Ref document = *m_frame->document();
     auto redirectResponseReceived = didReceiveRedirectResponse ? ContentSecurityPolicy::RedirectResponseReceived::Yes : ContentSecurityPolicy::RedirectResponseReceived::No;
-    return protect(protect(m_frame->document())->contentSecurityPolicy())->allowFormAction(url, redirectResponseReceived, preRedirectURL);
+    return protect(document->contentSecurityPolicy())->allowFormAction(url, document->currentParserSourcePosition(), redirectResponseReceived, preRedirectURL);
 }
 
 void FrameLoader::provisionalLoadStarted()

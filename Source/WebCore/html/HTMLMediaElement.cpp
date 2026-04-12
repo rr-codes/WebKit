@@ -2802,8 +2802,9 @@ static inline bool isAllowedToLoadMediaURL(const HTMLMediaElement& element, cons
     if (isInUserAgentShadowTree)
         return true;
 
-    ASSERT(element.document().contentSecurityPolicy());
-    return protect(protect(element.document())->contentSecurityPolicy())->allowMediaFromSource(url);
+    Ref document = element.document();
+    ASSERT(document->contentSecurityPolicy());
+    return protect(document->contentSecurityPolicy())->allowMediaFromSource(url, document->currentParserSourcePosition());
 }
 
 bool HTMLMediaElement::isSafeToLoadURL(const URL& url, InvalidURLAction actionIfInvalid, bool shouldLog) const

@@ -90,6 +90,7 @@ class InputCursor;
 
 namespace WTF {
 class TextStream;
+class TextPosition;
 }
 
 namespace PAL {
@@ -1584,7 +1585,7 @@ public:
 
     bool visualUpdatesAllowed() const { return m_visualUpdatesPreventedReasons.isEmpty(); }
 
-    bool isInDocumentWrite() { return m_writeRecursionDepth > 0; }
+    bool isInDocumentWrite() const { return m_writeRecursionDepth > 0; }
 
     void suspendScheduledTasks(ReasonForSuspension);
     void resumeScheduledTasks(ReasonForSuspension);
@@ -2074,6 +2075,8 @@ public:
 
     WEBCORE_EXPORT void ariaNotify(const String&);
     WEBCORE_EXPORT void ariaNotify(const String&, const AriaNotifyOptions&);
+
+    std::optional<TextPosition> currentParserSourcePosition() const;
 
 protected:
     enum class ConstructionFlag : uint8_t {

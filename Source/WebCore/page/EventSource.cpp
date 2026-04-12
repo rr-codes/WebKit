@@ -36,6 +36,7 @@
 #include "CachedResourceRequestInitiatorTypes.h"
 #include "ContentSecurityPolicy.h"
 #include "ContextDestructionObserverInlines.h"
+#include "Document.h"
 #include "EventLoop.h"
 #include "EventNames.h"
 #include "ExceptionOr.h"
@@ -77,7 +78,12 @@ ExceptionOr<Ref<EventSource>> EventSource::create(ScriptExecutionContext& contex
         return Exception { ExceptionCode::SyntaxError };
 
     // FIXME: Convert this to check the isolated world's Content Security Policy once webkit.org/b/104520 is resolved.
-    if (!context.shouldBypassMainWorldContentSecurityPolicy() && !protect(context.contentSecurityPolicy())->allowConnectToSource(fullURL)) {
+    std::optional<TextPosition> sourcePosition;
+    // FIXME(304193): Get source position for workers, too.
+    if (RefPtr document = dynamicDowncast<Document>(context))
+        sourcePosition = document->currentParserSourcePosition();
+
+    if (!context.shouldBypassMainWorldContentSecurityPolicy() && !protect(context.contentSecurityPolicy())->allowConnectToSource(fullURL, WTF::move(sourcePosition))) {
         // FIXME: Should this be throwing an exception?
         return Exception { ExceptionCode::SecurityError };
     }
