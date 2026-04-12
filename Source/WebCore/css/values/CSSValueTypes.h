@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Samuel Weinig <sam@webkit.org>
+ * Copyright (C) 2024-2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -63,7 +63,6 @@ struct SerializeInvoker {
 };
 inline constexpr SerializeInvoker serializationForCSS{};
 
-void serializationForCSSPropertyIdentifier(StringBuilder&, const SerializationContext&, const PropertyIdentifier&);
 void serializationForCSSString(StringBuilder&, const SerializationContext&, const WTF::AtomString&);
 void serializationForCSSString(StringBuilder&, const SerializationContext&, const WTF::String&);
 
@@ -179,14 +178,6 @@ template<CSSValueID C> struct Serialize<Constant<C>> {
     template<typename... Rest> void operator()(StringBuilder& builder, const SerializationContext&, const Constant<C>& value, Rest&&...)
     {
         builder.append(nameLiteralForSerialization(value.value));
-    }
-};
-
-// Specialization for `PropertyIdentifier`.
-template<> struct Serialize<PropertyIdentifier> {
-    template<typename... Rest> void operator()(StringBuilder& builder, const SerializationContext& context, const PropertyIdentifier& value, Rest&&...)
-    {
-        serializationForCSSPropertyIdentifier(builder, context, value);
     }
 };
 
@@ -309,14 +300,6 @@ template<VariantLike CSSType> struct ComputedStyleDependenciesCollector<CSSType>
 // Specialization for `Constant`.
 template<CSSValueID C> struct ComputedStyleDependenciesCollector<Constant<C>> {
     constexpr void operator()(ComputedStyleDependencies&, const Constant<C>&)
-    {
-        // Nothing to do.
-    }
-};
-
-// Specialization for `PropertyIdentifier`.
-template<> struct ComputedStyleDependenciesCollector<PropertyIdentifier> {
-    constexpr void operator()(ComputedStyleDependencies&, const PropertyIdentifier&)
     {
         // Nothing to do.
     }
@@ -447,14 +430,6 @@ template<CSSValueID C> struct CSSValueChildrenVisitor<Constant<C>> {
     }
 };
 
-// Specialization for `PropertyIdentifier`.
-template<> struct CSSValueChildrenVisitor<PropertyIdentifier> {
-    constexpr IterationStatus operator()(NOESCAPE const Function<IterationStatus(CSSValue&)>&, const PropertyIdentifier&)
-    {
-        return IterationStatus::Continue;
-    }
-};
-
 // Specialization for `WTF::AtomString`.
 template<> struct CSSValueChildrenVisitor<WTF::AtomString> {
     constexpr IterationStatus operator()(NOESCAPE const Function<IterationStatus(CSSValue&)>&, const WTF::AtomString&)
@@ -492,7 +467,6 @@ struct CSSValueCreationInvoker {
 inline constexpr CSSValueCreationInvoker createCSSValue{};
 
 Ref<CSSValue> NODELETE makePrimitiveCSSValue(CSSValueID);
-Ref<CSSValue> makePrimitiveCSSValue(const PropertyIdentifier&);
 Ref<CSSValue> makePrimitiveCSSValue(const WTF::AtomString&);
 Ref<CSSValue> makePrimitiveCSSValue(const WTF::String&);
 Ref<CSSValue> makeFunctionCSSValue(CSSValueID, Ref<CSSValue>&&);
@@ -563,14 +537,6 @@ template<CSSValueID Id> struct CSSValueCreation<Constant<Id>> {
     template<typename... Rest> Ref<CSSValue> operator()(CSSValuePool&, const Constant<Id>&, Rest&&...)
     {
         return makePrimitiveCSSValue(Id);
-    }
-};
-
-// Specialization for `PropertyIdentifier`.
-template<> struct CSSValueCreation<PropertyIdentifier> {
-    template<typename... Rest> Ref<CSSValue> operator()(CSSValuePool&, const PropertyIdentifier& propertyIdentifier, Rest&&...)
-    {
-        return makePrimitiveCSSValue(propertyIdentifier);
     }
 };
 

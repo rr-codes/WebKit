@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2011-2025 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -485,7 +486,7 @@ static bool stringFromCSSValue(CSSValue& value, String& result)
                 return true;
             }
         }
-    } else if (value.isValueList() || value.isAppleColorFilterValue() || value.isFilterValue() || value.isTextShadowPropertyValue() || value.isBoxShadowPropertyValue() || value.isURL()) {
+    } else if (value.isValueList() || value.isAppleColorFilterValue() || value.isFilterValue() || value.isTextShadowPropertyValue() || value.isBoxShadowPropertyValue() || value.isURL() || value.isPropertyIdentifierValue()) {
         result = value.cssText(CSS::defaultSerializationContext());
         return true;
     }

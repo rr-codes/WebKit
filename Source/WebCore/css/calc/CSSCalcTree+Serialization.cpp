@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 Samuel Weinig <sam@webkit.org>
+ * Copyright (C) 2024-2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -196,7 +196,6 @@ static unsigned NODELETE sortPriority(CSSUnitType unit)
     case CSSUnitType::CSS_DIMENSION:
     case CSSUnitType::CSS_FONT_FAMILY:
     case CSSUnitType::CSS_IDENT:
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_QUIRKY_EM:
     case CSSUnitType::CSS_STRING:
     case CSSUnitType::CSS_UNKNOWN:

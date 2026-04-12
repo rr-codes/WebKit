@@ -1,6 +1,7 @@
 /*
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2004-2023 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -116,6 +117,7 @@ public:
     bool isPositionXValue() const { return m_classType == ClassType::PositionX; }
     bool isPositionYValue() const { return m_classType == ClassType::PositionY; }
     bool isPrimitiveValue() const { return m_classType == ClassType::Primitive; }
+    bool isPropertyIdentifierValue() const { return m_classType == ClassType::PropertyIdentifier; }
     bool isQuad() const { return m_classType == ClassType::Quad; }
     bool isRatioValue() const { return m_classType == ClassType::Ratio; }
     bool isRayValue() const { return m_classType == ClassType::Ray; }
@@ -245,6 +247,7 @@ protected:
         Position,
         PositionX,
         PositionY,
+        PropertyIdentifier,
         Quad,
         Ratio,
         Ray,

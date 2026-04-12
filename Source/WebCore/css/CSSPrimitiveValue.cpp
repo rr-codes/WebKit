@@ -1,6 +1,7 @@
 /*
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2004-2023 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -29,7 +30,6 @@
 #include "CSSPrimitiveNumericTypes+ComputedStyleDependencies.h"
 #include "CSSPrimitiveNumericTypes+Serialization.h"
 #include "CSSPrimitiveValueMappings.h"
-#include "CSSPropertyNames.h"
 #include "CSSSerializationContext.h"
 #include "CSSToLengthConversionData.h"
 #include "CSSValueKeywords.h"
@@ -128,7 +128,6 @@ static inline bool NODELETE isValidCSSUnitTypeForDoubleConversion(CSSUnitType un
         return true;
     case CSSUnitType::CSS_ATTR:
     case CSSUnitType::CSS_FONT_FAMILY:
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_STRING:
     case CSSUnitType::CSS_UNKNOWN:
     case CSSUnitType::CSS_VALUE_ID:
@@ -189,7 +188,6 @@ static inline bool isStringType(CSSUnitType type)
     case CSSUnitType::CSS_INTEGER:
     case CSSUnitType::CSS_PC:
     case CSSUnitType::CSS_PERCENTAGE:
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_PT:
     case CSSUnitType::CSS_PX:
     case CSSUnitType::CSS_Q:
@@ -243,7 +241,6 @@ CSSUnitType CSSPrimitiveValue::primitiveType() const
 {
     auto type = primitiveUnitType();
     switch (type) {
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_VALUE_ID:
         return CSSUnitType::CSS_IDENT;
     case CSSUnitType::CSS_FONT_FAMILY:
@@ -256,13 +253,6 @@ CSSUnitType CSSPrimitiveValue::primitiveType() const
 
         return type;
     }
-}
-
-CSSPrimitiveValue::CSSPrimitiveValue(CSSPropertyID propertyID)
-    : CSSValue(ClassType::Primitive)
-{
-    setPrimitiveUnitType(CSSUnitType::CSS_PROPERTY_ID);
-    m_value.propertyID = propertyID;
 }
 
 CSSPrimitiveValue::CSSPrimitiveValue(double number, CSSUnitType type)
@@ -397,7 +387,6 @@ CSSPrimitiveValue::~CSSPrimitiveValue()
     case CSSUnitType::CSS_RLH:
     case CSSUnitType::CSS_IDENT:
     case CSSUnitType::CSS_UNKNOWN:
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_VALUE_ID:
     case CSSUnitType::CSS_CQW:
     case CSSUnitType::CSS_CQH:
@@ -412,11 +401,6 @@ CSSPrimitiveValue::~CSSPrimitiveValue()
         ASSERT(serializedPrimitiveValues().contains(this));
         serializedPrimitiveValues().remove(this);
     }
-}
-
-Ref<CSSPrimitiveValue> CSSPrimitiveValue::create(CSSPropertyID propertyID)
-{
-    return adoptRef(*new CSSPrimitiveValue(propertyID));
 }
 
 static CSSPrimitiveValue* valueFromPool(std::span<AlignedStorage<CSSPrimitiveValue>> pool, double value)
@@ -820,8 +804,6 @@ String CSSPrimitiveValue::stringValue() const
         return m_value.string;
     case CSSUnitType::CSS_VALUE_ID:
         return nameString(m_value.valueID);
-    case CSSUnitType::CSS_PROPERTY_ID:
-        return nameString(m_value.propertyID);
     case CSSUnitType::CSS_ATTR:
         return protect(cssAttrValue())->cssText(CSS::defaultSerializationContext());
     default:
@@ -917,7 +899,6 @@ ASCIILiteral CSSPrimitiveValue::unitTypeString(CSSUnitType unitType)
     case CSSUnitType::CSS_IDENT:
     case CSSUnitType::CSS_INTEGER:
     case CSSUnitType::CSS_NUMBER:
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_QUIRKY_EM:
     case CSSUnitType::CSS_STRING:
     case CSSUnitType::CSS_UNKNOWN:
@@ -1015,7 +996,6 @@ ALWAYS_INLINE String CSSPrimitiveValue::serializeInternal(const CSS::Serializati
     case CSSUnitType::CSS_CALC_PERCENTAGE_WITH_ANGLE:
     case CSSUnitType::CSS_CALC_PERCENTAGE_WITH_LENGTH:
     case CSSUnitType::CSS_IDENT:
-    case CSSUnitType::CSS_PROPERTY_ID:
     case CSSUnitType::CSS_UNKNOWN:
     case CSSUnitType::CSS_VALUE_ID:
         break;
@@ -1031,8 +1011,6 @@ String CSSPrimitiveValue::customCSSText(const CSS::SerializationContext& context
         return String();
     case CSSUnitType::CSS_VALUE_ID:
         return nameStringForSerialization(m_value.valueID);
-    case CSSUnitType::CSS_PROPERTY_ID:
-        return nameString(m_value.propertyID);
     default:
         auto& map = serializedPrimitiveValues();
         ASSERT(map.contains(this) == m_hasCachedCSSText);
@@ -1121,8 +1099,6 @@ bool CSSPrimitiveValue::equals(const CSSPrimitiveValue& other) const
     case CSSUnitType::CSS_CQMIN:
     case CSSUnitType::CSS_CQMAX:
         return m_value.number == other.m_value.number;
-    case CSSUnitType::CSS_PROPERTY_ID:
-        return m_value.propertyID == other.m_value.propertyID;
     case CSSUnitType::CSS_VALUE_ID:
         return m_value.valueID == other.m_value.valueID;
     case CSSUnitType::CSS_STRING:
@@ -1217,9 +1193,6 @@ bool CSSPrimitiveValue::addDerivedHash(Hasher& hasher) const
     case CSSUnitType::CSS_CQMIN:
     case CSSUnitType::CSS_CQMAX:
         add(hasher, m_value.number);
-        break;
-    case CSSUnitType::CSS_PROPERTY_ID:
-        add(hasher, m_value.propertyID);
         break;
     case CSSUnitType::CSS_VALUE_ID:
         add(hasher, m_value.valueID);

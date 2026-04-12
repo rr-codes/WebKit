@@ -37,8 +37,9 @@ public:
 
     String customCSSText(const CSS::SerializationContext&) const;
     bool equals(const CSSCustomIdentValue&) const;
-
     IterationStatus customVisitChildren(const Function<IterationStatus(CSSValue&)>&) const;
+
+    String stringValue() const;
 
 private:
     CSSCustomIdentValue(CSS::CustomIdent&&);

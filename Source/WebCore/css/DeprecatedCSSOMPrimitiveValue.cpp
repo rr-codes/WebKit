@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2016-2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -29,6 +30,7 @@
 #include "CSSColorValue.h"
 #include "CSSCounterValue.h"
 #include "CSSCustomIdentValue.h"
+#include "CSSPropertyIdentifierValue.h"
 #include "CSSRectValue.h"
 #include "CSSSerializationContext.h"
 #include "CSSURLValue.h"
@@ -55,6 +57,8 @@ unsigned short DeprecatedCSSOMPrimitiveValue::primitiveType() const
         return CSS_URI;
     if (m_value->isCustomIdentValue())
         return CSS_IDENT;
+    if (m_value->isPropertyIdentifierValue())
+        return CSS_IDENT;
 
     RefPtr primitiveValue = dynamicDowncast<CSSPrimitiveValue>(m_value.get());
     if (!primitiveValue)
@@ -79,7 +83,6 @@ unsigned short DeprecatedCSSOMPrimitiveValue::primitiveType() const
     case CSSUnitType::CSS_NUMBER:                       return CSS_NUMBER;
     case CSSUnitType::CSS_PC:                           return CSS_PC;
     case CSSUnitType::CSS_PERCENTAGE:                   return CSS_PERCENTAGE;
-    case CSSUnitType::CSS_PROPERTY_ID:                  return CSS_IDENT;
     case CSSUnitType::CSS_PT:                           return CSS_PT;
     case CSSUnitType::CSS_PX:                           return CSS_PX;
     case CSSUnitType::CSS_RAD:                          return CSS_RAD;
@@ -94,7 +97,7 @@ unsigned short DeprecatedCSSOMPrimitiveValue::primitiveType() const
 
 ExceptionOr<float> DeprecatedCSSOMPrimitiveValue::getFloatValue(unsigned short unitType) const
 {
-    auto numericType = [&]() -> std::optional<CSSUnitType> {
+    auto numericType = [&] -> std::optional<CSSUnitType> {
         switch (unitType) {
         case CSS_CM:            return CSSUnitType::CSS_CM;
         case CSS_DEG:           return CSSUnitType::CSS_DEG;
@@ -131,7 +134,9 @@ ExceptionOr<String> DeprecatedCSSOMPrimitiveValue::getStringValue() const
         return downcast<CSSPrimitiveValue>(m_value.get()).stringValue();
     case CSS_IDENT:
         if (RefPtr customIdentValue = dynamicDowncast<CSSCustomIdentValue>(m_value))
-            return String { customIdentValue->customIdent().value.string() };
+            return customIdentValue->stringValue();
+        if (RefPtr propertyIdentifierValue = dynamicDowncast<CSSPropertyIdentifierValue>(m_value))
+            return propertyIdentifierValue->stringValue();
         return downcast<CSSPrimitiveValue>(m_value.get()).stringValue();
     case CSS_STRING:
         return downcast<CSSPrimitiveValue>(m_value.get()).stringValue();

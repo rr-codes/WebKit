@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Samuel Weinig <sam@webkit.org>
+ * Copyright (C) 2024-2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,11 +36,6 @@
 namespace WebCore {
 namespace CSS {
 
-void serializationForCSSPropertyIdentifier(StringBuilder& builder, const SerializationContext&, const PropertyIdentifier& value)
-{
-    builder.append(nameLiteral(value.value));
-}
-
 void serializationForCSSString(StringBuilder& builder, const SerializationContext&, const WTF::AtomString& value)
 {
     WebCore::serializeString(builder, value);
@@ -54,11 +49,6 @@ void serializationForCSSString(StringBuilder& builder, const SerializationContex
 Ref<CSSValue> makePrimitiveCSSValue(CSSValueID value)
 {
     return CSSPrimitiveValue::create(value);
-}
-
-Ref<CSSValue> makePrimitiveCSSValue(const PropertyIdentifier& value)
-{
-    return CSSPrimitiveValue::create(value.value);
 }
 
 Ref<CSSValue> makePrimitiveCSSValue(const WTF::AtomString& value)

@@ -33,12 +33,14 @@
 #include "CSSAppleColorFilterValue.h"
 #include "CSSBoxShadowPropertyValue.h"
 #include "CSSCalcValue.h"
+#include "CSSCustomIdentValue.h"
 #include "CSSCustomPropertyValue.h"
 #include "CSSEasingFunctionValue.h"
 #include "CSSFilterValue.h"
 #include "CSSKeywordValue.h"
 #include "CSSNumericFactory.h"
 #include "CSSParser.h"
+#include "CSSPropertyIdentifierValue.h"
 #include "CSSPropertyParser.h"
 #include "CSSSerializationContext.h"
 #include "CSSShorthandSubstitutionValue.h"
@@ -289,9 +291,11 @@ ExceptionOr<Ref<CSSStyleValue>> CSSStyleValueFactory::reifyValue(Document& docum
         default:
             break;
         }
-    } else if (auto* customIdentValue = dynamicDowncast<CSSCustomIdentValue>(cssValue)) {
+    } else if (auto* customIdentValue = dynamicDowncast<CSSCustomIdentValue>(cssValue))
         return upcast<CSSStyleValue>(CSSKeywordValue::rectifyKeywordish(customIdentValue->cssText(CSS::defaultSerializationContext())));
-    } else if (auto* imageValue = dynamicDowncast<CSSImageValue>(cssValue))
+    else if (auto* propertyIdentifierValue = dynamicDowncast<CSSPropertyIdentifierValue>(cssValue))
+        return upcast<CSSStyleValue>(CSSKeywordValue::rectifyKeywordish(propertyIdentifierValue->cssText(CSS::defaultSerializationContext())));
+    else if (auto* imageValue = dynamicDowncast<CSSImageValue>(cssValue))
         return Ref<CSSStyleValue> { CSSStyleImageValue::create(const_cast<CSSImageValue&>(*imageValue), document) };
     else if (auto* referenceValue = dynamicDowncast<CSSSubstitutionValue>(cssValue)) {
         return Ref<CSSStyleValue> { CSSUnparsedValue::create(referenceValue->data().tokenRange()) };

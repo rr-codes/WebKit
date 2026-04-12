@@ -2,6 +2,7 @@
  * (C) 1999-2003 Lars Knoll (knoll@kde.org)
  * Copyright (C) 2004-2023 Apple Inc. All rights reserved.
  * Copyright (C) 2007 Alexey Proskuryakov <ap@webkit.org>
+ * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -24,7 +25,6 @@
 #include <WebCore/CSSAttrValue.h>
 #include <WebCore/CSSCalcValue.h>
 #include <WebCore/CSSPrimitiveNumericUnits.h>
-#include <WebCore/CSSPropertyNames.h>
 #include <WebCore/CSSValue.h>
 #include <WebCore/CSSValueKeywords.h>
 #include <WebCore/LayoutUnit.h>
@@ -93,10 +93,6 @@ public:
     static inline Ref<CSSPrimitiveValue> create(CSSValueID);
     bool isValueID() const { return primitiveUnitType() == CSSUnitType::CSS_VALUE_ID; }
     CSSValueID valueID() const { return isValueID() ? m_value.valueID : CSSValueInvalid; }
-
-    static Ref<CSSPrimitiveValue> NODELETE create(CSSPropertyID);
-    bool isPropertyID() const { return primitiveUnitType() == CSSUnitType::CSS_PROPERTY_ID; }
-    CSSPropertyID propertyID() const { return isPropertyID() ? m_value.propertyID : CSSPropertyInvalid; }
 
     bool isString() const { return primitiveUnitType() == CSSUnitType::CSS_STRING; }
     static Ref<CSSPrimitiveValue> create(String);
@@ -188,7 +184,6 @@ private:
     friend LazyNeverDestroyed<CSSPrimitiveValue>;
     friend bool CSSValue::addHash(Hasher&) const;
 
-    explicit CSSPrimitiveValue(CSSPropertyID);
     CSSPrimitiveValue(const String&, CSSUnitType);
     CSSPrimitiveValue(double, CSSUnitType);
     explicit CSSPrimitiveValue(Ref<CSSCalc::Value>);
@@ -244,7 +239,6 @@ private:
     static constexpr bool isViewportPercentageLength(CSSUnitType);
 
     union {
-        CSSPropertyID propertyID;
         CSSValueID valueID;
         double number;
         StringImpl* string;

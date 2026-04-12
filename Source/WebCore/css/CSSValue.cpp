@@ -2,6 +2,7 @@
  * Copyright (C) 2011 Andreas Kling (kling@webkit.org)
  * Copyright (C) 2013 Adobe Systems Incorporated. All rights reserved.
  * Copyright (C) 2021-2023 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -71,6 +72,7 @@
 #include "CSSPositionValue.h"
 #include "CSSPrimitiveValue.h"
 #include "CSSProperty.h"
+#include "CSSPropertyIdentifierValue.h"
 #include "CSSQuadValue.h"
 #include "CSSRatioValue.h"
 #include "CSSRayValue.h"
@@ -200,6 +202,8 @@ template<typename Visitor> constexpr decltype(auto) CSSValue::visitDerived(Visit
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSPositionYValue>(*this));
     case Primitive:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSPrimitiveValue>(*this));
+    case PropertyIdentifier:
+        return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSPropertyIdentifierValue>(*this));
     case Quad:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSQuadValue>(*this));
     case Ratio:
@@ -374,6 +378,7 @@ Ref<DeprecatedCSSOMValue> CSSValue::createDeprecatedCSSOMWrapper(CSSStyleDeclara
     case Color:
     case Counter:
     case CustomIdent:
+    case PropertyIdentifier:
     case Quad:
     case Rect:
     case URL:
