@@ -253,7 +253,16 @@ bool KeyframeEffectStack::allowsAcceleration() const
         if (effect->preventsAcceleration())
             return false;
         auto& acceleratedProperties = effect->acceleratedProperties();
-        if (!allAcceleratedProperties.isEmpty()) {
+
+        auto effectSupportsImplicitKeyframesComposition = [&] {
+#if ENABLE(THREADED_ANIMATIONS)
+            return effect->canHaveAcceleratedRepresentation();
+#else
+            return false;
+#endif
+        };
+
+        if (!allAcceleratedProperties.isEmpty() && !effectSupportsImplicitKeyframesComposition()) {
             auto previouslySeenAcceleratedPropertiesAffectingCurrentEffect = allAcceleratedProperties.intersectionWith(acceleratedProperties);
             if (!previouslySeenAcceleratedPropertiesAffectingCurrentEffect.isEmpty()
                 && !effect->acceleratedPropertiesWithImplicitKeyframe().intersectionWith(previouslySeenAcceleratedPropertiesAffectingCurrentEffect).isEmpty()) {
