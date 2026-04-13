@@ -422,7 +422,6 @@ private:
     int m_activeDOMObjectsAndAnimationsSuspendedCount { 0 };
     bool m_documentIsBeingReplaced { false };
     unsigned m_navigationDisableCount { 0 };
-    unsigned m_totalNavigationDisableCount { 0 }; // Sum of m_navigationDisableCount across all frames in the page. Only used on the main frame.
     unsigned m_selfOnlyRefCount { 0 };
     bool m_hasHadUserInteraction { false };
 
