@@ -2872,7 +2872,7 @@ template<typename Keyword> void RenderBox::computeIntrinsicKeywordLogicalWidths(
     else {
         if (shouldComputeLogicalWidthFromAspectRatio()) {
             minLogicalWidth = maxLogicalWidth = computeLogicalWidthFromAspectRatioInternal() - borderAndPadding;
-            if (firstChild()) {
+            if (firstChild() && style().logicalMinWidth().isAuto()) {
                 LayoutUnit minChildrenLogicalWidth;
                 LayoutUnit maxChildrenLogicalWidth;
                 computeIntrinsicKeywordLogicalWidths(minChildrenLogicalWidth, maxChildrenLogicalWidth);
