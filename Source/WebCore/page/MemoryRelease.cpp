@@ -100,6 +100,7 @@ static void releaseNoncriticalMemory(MaintainMemoryCache maintainMemoryCache)
             LayoutIntegration::LineLayout::releaseCaches(*renderView);
             Layout::TextBreakingPositionCache::singleton().clear();
             renderView->layoutContext().deleteDetachedRenderersNow();
+            renderView->layoutContext().deleteDetachedInlineContentNow();
         }
     }
 

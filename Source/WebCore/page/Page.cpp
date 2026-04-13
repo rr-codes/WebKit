@@ -5358,6 +5358,7 @@ void Page::deleteRemovedNodesAndDetachedRenderers()
         if (!frameView)
             return;
         protect(frameView->layoutContext())->deleteDetachedRenderersNow();
+        protect(frameView->layoutContext())->deleteDetachedInlineContentNow();
     });
 }
 
