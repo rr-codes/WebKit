@@ -2961,9 +2961,9 @@ std::optional<LayoutUnit> RenderBlock::availableLogicalHeightForPercentageComput
         }
 
         // A positioned element that specified both top/bottom or that specifies
-        // height should be treated as though it has a height explicitly specified
-        // that can be used for any percentage computations.
-        auto isOutOfFlowPositionedWithSpecifiedHeight = isOutOfFlowPositioned() && (!style.logicalHeight().isAuto() || (!style.logicalTop().isAuto() && !style.logicalBottom().isAuto()));
+        // a definite height should be treated as though it has a height explicitly
+        // specified that can be used for any percentage computations.
+        auto isOutOfFlowPositionedWithSpecifiedHeight = isOutOfFlowPositioned() && (style.logicalHeight().isSpecified() || (!style.logicalTop().isAuto() && !style.logicalBottom().isAuto()));
         if (isOutOfFlowPositionedWithSpecifiedHeight) {
             // Don't allow this to affect the block' size() member variable, since this
             // can get called while the block is still laying out its kids.
