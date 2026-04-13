@@ -38,7 +38,6 @@
 
 #include <stddef.h>
 #ifdef __APPLE__
-#include <mach/kern_return.h>
 #include <mach/mach_types.h>
 #include <mach/vm_types.h>
 #endif

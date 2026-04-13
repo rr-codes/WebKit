@@ -29,7 +29,6 @@
 #include "pas_config.h"
 #include "pas_platform.h"
 #if defined(PAS_BMALLOC)
-#include "BPlatform.h"
 // FIXME: Find a way to declare bmalloc's symbol visibility without having to
 // import a bmalloc header.
 #include "BExport.h"
