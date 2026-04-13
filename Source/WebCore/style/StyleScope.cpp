@@ -499,7 +499,6 @@ auto Scope::collectActiveStyleSheets() -> ActiveStyleSheetCollection
     for (auto& adoptedStyleSheet : treeScope().adoptedStyleSheets()) {
         if (!canActivateAdoptedStyleSheet(adoptedStyleSheet.get()))
             continue;
-        styleSheetsForStyleSheetsList.append(adoptedStyleSheet.get());
         sheets.append(adoptedStyleSheet.get());
     }
 
