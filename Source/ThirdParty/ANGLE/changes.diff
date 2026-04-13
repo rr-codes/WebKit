@@ -1901,14 +1901,11 @@ diff --git a/src/compiler/translator/InfoSink.h b/src/compiler/translator/InfoSi
 index af8914a52e3a838afed41b98da82b2ed07e90420..ba40416d77dcd9aa9d6623f971637dc8b2a9f9a2 100644
 --- a/src/compiler/translator/InfoSink.h
 +++ b/src/compiler/translator/InfoSink.h
-@@ -22,7 +22,11 @@ class TSymbol;
+@@ -22,7 +22,8 @@ class TSymbol;
  class TType;
- 
+
  // Returns the fractional part of the given floating-point number.
 -inline float fractionalPart(float f)
-+#ifdef WK_WORKAROUND_RDAR_145268301_ASAN_STACK_USE_AFTER_SCOPE
-+__attribute__((no_sanitize_address))
-+#endif
 +inline float
 +fractionalPart(float f)
  {
