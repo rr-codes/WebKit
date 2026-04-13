@@ -34,7 +34,6 @@
 #include "RenderStyle+GettersInlines.h"
 #include "RotateTransformOperation.h"
 #include "ScaleTransformOperation.h"
-#include "Settings.h"
 #include "StyleInterpolation.h"
 #include "StyleRotate.h"
 #include "StyleScale.h"
@@ -334,14 +333,8 @@ void KeyframeEffectStack::applyPendingAcceleratedActions() const
     }
 }
 
-bool KeyframeEffectStack::hasAcceleratedEffects(const Settings& settings) const
+bool KeyframeEffectStack::hasAcceleratedEffects() const
 {
-#if ENABLE(THREADED_ANIMATIONS)
-    if (settings.threadedScrollDrivenAnimationsEnabled() || settings.threadedTimeBasedAnimationsEnabled())
-        return !m_acceleratedEffects.isEmptyIgnoringNullReferences();
-#else
-    UNUSED_PARAM(settings);
-#endif
     return hasMatchingEffect([](const auto& effect) {
         return effect.isRunningAccelerated();
     });
