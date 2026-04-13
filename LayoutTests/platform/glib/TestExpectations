@@ -3010,6 +3010,7 @@ imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-createAnswer.html [ Pas
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-createDataChannel.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-description-attributes-timing.https.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-generateCertificate.html [ Failure ]
+imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats.https.html?rest [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Pass Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getTransceivers.html [ Pass Failure Timeout ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-helper-test.html [ Pass ]
@@ -3055,6 +3056,7 @@ imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-getCapabilities.html [ Pas
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-getContributingSources.https.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-getParameters.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-getStats.https.html [ Failure ]
+imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-getStats.https.html?rest [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-jitterBufferTarget.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-track-settings.tentative.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-video-anyCodec.html [ Failure ]
