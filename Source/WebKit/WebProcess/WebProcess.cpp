@@ -1782,7 +1782,7 @@ void WebProcess::prepareToSuspend(bool isSuspensionImminent, MonotonicTime estim
     double remainingRunTime = nowTime > estimatedSuspendTime ? (nowTime - estimatedSuspendTime).value() : 0.0;
 #endif
 
-    WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WEBPROCESS_PREPARE_TO_SUSPEND, isSuspensionImminent, remainingRunTime);
+    WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WebProcessPrepareToSuspend, isSuspensionImminent, remainingRunTime);
     SetForScope allowExitScope(m_allowExitOnMemoryPressure, false);
     m_processIsSuspended = true;
 
@@ -1790,7 +1790,7 @@ void WebProcess::prepareToSuspend(bool isSuspensionImminent, MonotonicTime estim
 
 #if PLATFORM(COCOA)
     if (m_processType == ProcessType::PrewarmedWebContent) {
-        WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WEBPROCESS_READY_TO_SUSPEND);
+        WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WebProcessReadyToSuspend);
         return completionHandler();
     }
 #endif
@@ -1823,7 +1823,7 @@ void WebProcess::prepareToSuspend(bool isSuspensionImminent, MonotonicTime estim
 #endif
 
     markAllLayersVolatile([this, protectedThis = Ref { *this }, completionHandler = WTF::move(completionHandler)]() mutable {
-        WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WEBPROCESS_READY_TO_SUSPEND);
+        WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WebProcessReadyToSuspend);
         completionHandler();
     });
 }
@@ -1844,7 +1844,7 @@ void WebProcess::accessibilityRelayProcessSuspended(bool suspended)
 
 void WebProcess::markAllLayersVolatile(CompletionHandler<void()>&& completionHandler)
 {
-    WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WEBPROCESS_MARK_ALL_LAYERS_VOLATILE);
+    WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WebProcessMarkAllLayersVolatile);
     auto callbackAggregator = CallbackAggregator::create(WTF::move(completionHandler));
     for (auto& page : m_pageMap.values()) {
         page->markLayersVolatile([this, protectedThis = Ref { *this }, callbackAggregator, pageID = page->identifier()] (bool succeeded) {
@@ -1865,7 +1865,7 @@ void WebProcess::cancelMarkAllLayersVolatile()
 
 void WebProcess::freezeAllLayerTrees()
 {
-    WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WEBPROCESS_FREEZE_ALL_LAYER_TREES);
+    WEBPROCESS_RELEASE_LOG_FORWARDABLE(ProcessSuspension, WebProcessFreezeAllLayerTrees);
     for (auto& page : m_pageMap.values())
         page->freezeLayerTree(WebPage::LayerTreeFreezeReason::ProcessSuspended);
 }
