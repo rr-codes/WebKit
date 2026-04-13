@@ -364,7 +364,7 @@ bool addKeyToKeychain(const String& privateKeyBase64, const String& rpId, const 
         (id)kSecAttrKeySizeInBits: @256,
     };
     CFErrorRef errorRef = nullptr;
-    auto key = adoptCF(SecKeyCreateWithData(
+    RetainPtr key = adoptCF(SecKeyCreateWithData(
         (__bridge CFDataRef)adoptNS([[NSData alloc] initWithBase64EncodedString:privateKeyBase64.createNSString().get() options:NSDataBase64DecodingIgnoreUnknownCharacters]).get(),
         (__bridge CFDictionaryRef)options,
         &errorRef

@@ -728,9 +728,9 @@ TEST(WKScrollViewTests, IndicatorStyleSetByClient)
 
 TEST(WKScrollViewTests, BackgroundColorSetByClient)
 {
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto blackColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blackColorComponents));
-    auto whiteColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), whiteColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr blackColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blackColorComponents));
+    RetainPtr whiteColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), whiteColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 320, 500)]);
 

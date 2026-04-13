@@ -2812,7 +2812,7 @@ static bool isTestServerTrust(SecTrustRef trust)
     if (SecTrustGetCertificateCount(trust) != 1)
         return false;
 
-    auto chain = adoptCF(SecTrustCopyCertificateChain(trust));
+    RetainPtr chain = adoptCF(SecTrustCopyCertificateChain(trust));
     auto certificate = checked_cf_cast<SecCertificateRef>(CFArrayGetValueAtIndex(chain.get(), 0));
     if (![bridge_cast(adoptCF(SecCertificateCopySubjectSummary(certificate)).get()) isEqualToString:@"Me"])
         return false;

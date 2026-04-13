@@ -119,14 +119,14 @@ static void simulateKeyDown(NSWindow *window)
 static bool hasAssertionType(CFStringRef type)
 {
     int32_t pid = getpid();
-    auto cfPid = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &pid));
+    RetainPtr cfPid = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &pid));
     CFDictionaryRef bareAssertionsByPID = nullptr;
 
     IOPMCopyAssertionsByProcess(&bareAssertionsByPID);
     if (!bareAssertionsByPID)
         return false;
 
-    auto assertionsByPID = adoptCF(bareAssertionsByPID);
+    RetainPtr assertionsByPID = adoptCF(bareAssertionsByPID);
 
     CFArrayRef assertions = (CFArrayRef)CFDictionaryGetValue(assertionsByPID.get(), cfPid.get());
     if (!assertions)

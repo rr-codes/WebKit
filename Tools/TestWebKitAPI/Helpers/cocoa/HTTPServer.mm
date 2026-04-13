@@ -78,7 +78,7 @@ static RetainPtr<nw_protocol_definition_t> proxyDefinition(HTTPServer::Protocol 
                         "Proxy-Authenticate: Basic realm=\"testrealm\"\r\n"
                         "Content-Length: 0\r\n"
                         "\r\n";
-                    auto response = adoptOSObject(dispatch_data_create(challengeResponse, strlen(challengeResponse), nullptr, nullptr));
+                    OSObjectPtr response = adoptOSObject(dispatch_data_create(challengeResponse, strlen(challengeResponse), nullptr, nullptr));
                     nw_framer_write_output_data(retainedFramer.get(), response.get());
                     state = State::DidRequestCredentials;
                     break;
@@ -90,7 +90,7 @@ static RetainPtr<nw_protocol_definition_t> proxyDefinition(HTTPServer::Protocol 
                     const char* negotiationResponse = ""
                         "HTTP/1.1 200 Connection Established\r\n"
                         "Connection: close\r\n\r\n";
-                    auto response = adoptOSObject(dispatch_data_create(negotiationResponse, strlen(negotiationResponse), nullptr, nullptr));
+                    OSObjectPtr response = adoptOSObject(dispatch_data_create(negotiationResponse, strlen(negotiationResponse), nullptr, nullptr));
                     nw_framer_write_output_data(retainedFramer.get(), response.get());
                     nw_framer_mark_ready(retainedFramer.get());
                     state = State::PassThrough;

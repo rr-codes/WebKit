@@ -126,8 +126,8 @@ TEST(WebKit, BackgroundColorToggleAppearance)
 
     const auto& checkWhitePixel = [&] {
         uint8_t* pixelBuffer = static_cast<uint8_t*>(calloc(width * height, 4));
-        auto colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
-        auto context = adoptCF(CGBitmapContextCreate(pixelBuffer, width, height, 8, 4 * width, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr context = adoptCF(CGBitmapContextCreate(pixelBuffer, width, height, 8, 4 * width, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
 
         [[webView layer] renderInContext:context.get()];
 

@@ -44,8 +44,8 @@ TEST(WKWebViewThemeColor, MetaElementValidNameAndColor)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='red'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -56,8 +56,8 @@ TEST(WKWebViewThemeColor, MetaElementValidNameAndColorAndMedia)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='red' media='screen'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -68,8 +68,8 @@ TEST(WKWebViewThemeColor, MetaElementInvalidName)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='not-theme-color' content='blue'><meta name='theme-color' content='red'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -80,8 +80,8 @@ TEST(WKWebViewThemeColor, MetaElementInvalidColor)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='invalid'><meta name='theme-color' content='red'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -92,8 +92,8 @@ TEST(WKWebViewThemeColor, MetaElementInvalidMedia)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<meta name='theme-color' content='blue' media='invalid'><meta name='theme-color' content='red' media='screen'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -104,8 +104,8 @@ TEST(WKWebViewThemeColor, MetaElementMultipleValid)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<div><meta name='theme-color' content='red'></div><meta name='theme-color' content='blue'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -116,8 +116,8 @@ TEST(WKWebViewThemeColor, MetaElementValidSubframe)
 
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:@"<iframe srcdoc=\"<meta name='theme-color' content='blue'>\"></iframe><meta name='theme-color' content='red'>"];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 
@@ -215,9 +215,9 @@ TEST(WKWebViewThemeColor, MetaElementValidSubframe)
 
 TEST(WKWebViewThemeColor, KVO)
 {
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
-    auto blueColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr blueColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     RetainPtr themeColorObserver = adoptNS([[WKWebViewThemeColorObserver alloc] initWithWebView:webView.get()]);
@@ -288,8 +288,8 @@ TEST(WKWebViewThemeColor, KVO)
 
 TEST(WKWebViewThemeColor, ApplicationManifest)
 {
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(![webView themeColor]);
@@ -317,8 +317,8 @@ TEST(WKWebViewThemeColor, MetaElementOverridesApplicationManifest)
     NSDictionary *manifestObject = @{ @"name": @"Test", @"theme_color": @"blue" };
     [webView synchronouslyLoadHTMLStringAndWaitUntilAllImmediateChildFramesPaint:[NSString stringWithFormat:@"<link rel='manifest' href='data:application/manifest+json;charset=utf-8;base64,%@'><meta name='theme-color' content='red'>", [[NSJSONSerialization dataWithJSONObject:manifestObject options:0 error:nil] base64EncodedStringWithOptions:0]]];
 
-    auto sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor([webView themeColor].CGColor, redColor.get()));
 }
 

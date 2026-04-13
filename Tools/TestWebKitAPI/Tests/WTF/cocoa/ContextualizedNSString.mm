@@ -255,8 +255,8 @@ TEST(WTF_ContextualizedNSString, tokenizer)
     RetainPtr contextualizedString = adoptNS([[WTFContextualizedNSString alloc] initWithContext:context contents:contents]);
     auto contextualizedCFString = bridge_cast(static_cast<NSString *>(contextualizedString.get()));
 
-    auto locale = adoptCF(CFLocaleCreate(kCFAllocatorDefault, CFSTR("en_US")));
-    auto tokenizer = adoptCF(CFStringTokenizerCreate(kCFAllocatorDefault, contextualizedCFString, CFRangeMake(0, CFStringGetLength(contextualizedCFString)), kCFStringTokenizerUnitWord, locale.get()));
+    RetainPtr locale = adoptCF(CFLocaleCreate(kCFAllocatorDefault, CFSTR("en_US")));
+    RetainPtr tokenizer = adoptCF(CFStringTokenizerCreate(kCFAllocatorDefault, contextualizedCFString, CFRangeMake(0, CFStringGetLength(contextualizedCFString)), kCFStringTokenizerUnitWord, locale.get()));
 
     CFIndex indices[] = { 4, 7, 12, 17 };
     unsigned index = 0;

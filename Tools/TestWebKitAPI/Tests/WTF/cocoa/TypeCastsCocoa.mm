@@ -120,7 +120,7 @@ TEST(TypeCastsCocoa, bridge_id_cast)
     }
 
     @autoreleasepool {
-        auto objectCF = adoptCF(CFStringCreateWithBytes(NULL, (const UInt8*)helloWorldCString, helloWorldCStringLength(), kCFStringEncodingUTF8, false));
+        RetainPtr objectCF = adoptCF(CFStringCreateWithBytes(NULL, (const UInt8*)helloWorldCString, helloWorldCStringLength(), kCFStringEncodingUTF8, false));
         auto objectCFPtr = reinterpret_cast<uintptr_t>(objectCF.get());
         EXPECT_EQ(1L, CFGetRetainCount((CFTypeRef)objectCFPtr));
 
