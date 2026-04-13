@@ -480,6 +480,7 @@ void TextIterator::advance()
     m_positionNode = nullptr;
     m_copyableText.reset();
     m_text = StringView();
+    m_isBlockNewline = false;
 
     // handle remembered node that needed a newline after the text node's newline
     if (RefPtr nodeForAdditionalNewline = std::exchange(m_nodeForAdditionalNewline, nullptr).get()) {
@@ -491,6 +492,7 @@ void TextIterator::advance()
         // iteration, instead of using m_needsAnotherNewline.
         RefPtr parentNode = nodeForAdditionalNewline->parentNode();
         emitCharacter('\n', WTF::move(parentNode), WTF::move(nodeForAdditionalNewline), 1, 1);
+        m_isBlockNewline = true;
         return;
     }
 
@@ -973,18 +975,20 @@ static bool NODELETE shouldEmitNewlineBeforeNode(Node& node)
     return shouldEmitNewlinesBeforeAndAfterNode(node); 
 }
 
-static bool shouldEmitExtraNewlineForNode(Node& node)
+static bool shouldEmitExtraNewlineForNode(Node& node, bool emitsNewlinesPerInnerTextSpec)
 {
-    // When there is a significant collapsed bottom margin, emit an extra
-    // newline for a more realistic result. We end up getting the right
-    // result even without margin collapsing. For example: <div><p>text</p></div>
-    // will work right even if both the <div> and the <p> have bottom margins.
-
     CheckedPtr renderBox = dynamicDowncast<RenderBox>(node.renderer());
     if (!renderBox || !renderBox->height())
         return false;
 
-    // NOTE: We only do this for a select set of nodes, and WinIE appears not to do this at all.
+    // Per the WHATWG spec, <p> elements get a required line break count of 2,
+    // meaning a blank line (two newlines) before and after, unconditionally.
+    // Heading elements (<h1>-<h6>) do NOT get this treatment.
+    if (emitsNewlinesPerInnerTextSpec)
+        return is<HTMLParagraphElement>(node);
+
+    // For non-innerText uses (accessibility, selection, etc.), use the original
+    // margin-based heuristic for both <p> and heading elements.
     RefPtr element = dynamicDowncast<HTMLElement>(node);
     if (!element || !isAnyOf<HTMLHeadingElement, HTMLParagraphElement>(*element))
         return false;
@@ -1097,9 +1101,24 @@ void TextIterator::representNodeOffsetZero()
             emitCharacter('\t', WTF::move(parentNode), WTF::move(currentNode), 0, 0);
         }
     } else if (shouldEmitNewlineBeforeNode(*currentNode)) {
+        bool emitsNewlinesPerInnerTextSpec = m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec);
         if (shouldRepresentNodeOffsetZero()) {
             RefPtr parentNode = currentNode->parentNode();
             emitCharacter('\n', WTF::move(parentNode), WTF::move(currentNode), 0, 0);
+            // Per the spec, <p> elements require a blank line (2 newlines) before them.
+            if (emitsNewlinesPerInnerTextSpec && is<HTMLParagraphElement>(*m_currentNode))
+                m_nodeForAdditionalNewline = m_currentNode.get();
+        } else if (emitsNewlinesPerInnerTextSpec && is<HTMLParagraphElement>(*currentNode) && m_hasEmitted && m_consecutiveNewlineCount < 2) {
+            // shouldRepresentNodeOffsetZero() returned false because m_lastCharacter == '\n',
+            // but <p> requires a blank line. Emit one more newline if we don't have enough.
+            RefPtr parentNode = currentNode->parentNode();
+            emitCharacter('\n', WTF::move(parentNode), WTF::move(currentNode), 0, 0);
+            // If the preceding '\n' was a content newline (e.g. from <pre> text) rather
+            // than a block-boundary newline, m_consecutiveNewlineCount was reset to 0 by
+            // emitText and the single emitCharacter above only brings it to 1. Schedule
+            // one more so <p> gets its full required line break count of 2.
+            if (m_consecutiveNewlineCount < 2)
+                m_nodeForAdditionalNewline = m_currentNode.get();
         }
     } else if (shouldEmitSpaceBeforeAndAfterNode(*currentNode)) {
         if (shouldRepresentNodeOffsetZero()) {
@@ -1148,20 +1167,23 @@ void TextIterator::exitNode(Node* exitedNode)
     // See <rdar://problem/5428427> for an example of how this mismatch will cause problems.
     if (m_lastTextNode && shouldEmitNewlineAfterNode(*protect(m_currentNode), m_behaviors.contains(TextIteratorBehavior::EmitsCharactersBetweenAllVisiblePositions))) {
         // use extra newline to represent margin bottom, as needed
-        bool addNewline = shouldEmitExtraNewlineForNode(*protect(m_currentNode));
-        
+        bool addNewline = shouldEmitExtraNewlineForNode(*protect(m_currentNode), m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec));
+
         // FIXME: We need to emit a '\n' as we leave an empty block(s) that
         // contain a VisiblePosition when doing selection preservation.
         if (m_lastCharacter != '\n') {
             // insert a newline with a position following this block's contents.
             emitCharacter('\n', protect(baseNode->parentNode()), baseNode.copyRef(), 1, 1);
+            m_isBlockNewline = true;
             // remember whether to later add a newline for the current node
             ASSERT(!m_nodeForAdditionalNewline);
             if (addNewline)
                 m_nodeForAdditionalNewline = baseNode.get();
-        } else if (addNewline)
+        } else if (addNewline) {
             // insert a newline with a position following this block's contents.
             emitCharacter('\n', protect(baseNode->parentNode()), baseNode.copyRef(), 1, 1);
+            m_isBlockNewline = true;
+        }
     }
     
     // If nothing was emitted, see if we need to emit a space.
@@ -1185,6 +1207,10 @@ void TextIterator::emitCharacter(char16_t character, RefPtr<Node>&& characterNod
     m_copyableText.set(character);
     m_text = m_copyableText.text();
     m_lastCharacter = character;
+    if (character == '\n')
+        ++m_consecutiveNewlineCount;
+    else
+        m_consecutiveNewlineCount = 0;
     m_lastTextNodeEndedWithCollapsedSpace = false;
 }
 
@@ -1210,6 +1236,10 @@ void TextIterator::emitText(Text& textNode, RenderText& renderer, int textStartO
     m_positionEndOffset = textEndOffset;
 
     m_lastCharacter = string[textEndOffset - 1];
+    // Reset to 0 even if the text ends with '\n', because content newlines
+    // (e.g. inside <pre>) are distinct from block-boundary newlines and should
+    // not suppress the extra newline required before <p> elements.
+    m_consecutiveNewlineCount = 0;
     m_copyableText.set(WTF::move(string), textStartOffset, textEndOffset - textStartOffset);
     m_text = m_copyableText.text();
 
@@ -2067,12 +2097,23 @@ String plainText(const SimpleRange& range, TextIteratorBehaviors defaultBehavior
     if (it.atEnd())
         return emptyString();
 
+    bool stripsTrailingBlockNewlines = behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec);
     StringBuilder builder;
     builder.reserveCapacity(initialCapacity);
+    unsigned trailingBlockNewlines = 0;
 
     for (; !it.atEnd(); it.advance()) {
         it.appendTextToStringBuilder(builder);
+        if (stripsTrailingBlockNewlines) {
+            if (it.isBlockNewline())
+                ++trailingBlockNewlines;
+            else
+                trailingBlockNewlines = 0;
+        }
     }
+
+    if (trailingBlockNewlines)
+        builder.shrink(builder.length() - trailingBlockNewlines);
 
     if (builder.isEmpty())
         return emptyString();
