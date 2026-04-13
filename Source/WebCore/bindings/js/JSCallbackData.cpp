@@ -30,7 +30,6 @@
 #include "JSCallbackData.h"
 
 #include "Document.h"
-#include <JavaScriptCore/ErrorInstance.h>
 #include "JSDOMBinding.h"
 #include "JSDOMGlobalObject.h"
 #include "JSExecState.h"
@@ -91,33 +90,10 @@ JSValue JSCallbackData::invokeCallback(JSDOMGlobalObject& globalObject, JSObject
 {
     ASSERT(callback);
 
-    VM& vm = globalObject.vm();
+    JSGlobalObject* lexicalGlobalObject = &globalObject;
+    VM& vm = lexicalGlobalObject->vm();
 
     auto scope = DECLARE_THROW_SCOPE(vm);
-
-    // Per WebIDL, use the callback object's associated Realm for error creation,
-    // property lookups, and invocation.
-    // https://webidl.spec.whatwg.org/#call-a-user-objects-operation
-    JSGlobalObject* callbackRealm = callback->realmMayBeNull();
-    if (!callbackRealm) [[unlikely]] {
-        returnedException = JSC::Exception::create(vm, createTypeError(&globalObject));
-        return JSValue();
-    }
-
-    // Per WebIDL "prepare to run script", if the callback's Realm's responsible
-    // document is not fully active (e.g., detached iframe), throw a TypeError.
-    if (auto* callbackDOMGlobalObject = jsDynamicCast<JSDOMGlobalObject*>(callbackRealm)) [[likely]] {
-        RefPtr callbackContext = callbackDOMGlobalObject->scriptExecutionContext();
-        bool isActive = true;
-        if (!callbackContext)
-            isActive = false;
-        else if (RefPtr callbackDocument = dynamicDowncast<Document>(callbackContext))
-            isActive = callbackDocument->isFullyActive();
-        if (!isActive) {
-            returnedException = JSC::Exception::create(vm, createTypeError(&globalObject));
-            return JSValue();
-        }
-    }
 
     JSValue function;
     CallData callData;
@@ -128,12 +104,12 @@ JSValue JSCallbackData::invokeCallback(JSDOMGlobalObject& globalObject, JSObject
     }
     if (callData.type == CallData::Type::None) {
         if (method == CallbackType::Function) {
-            returnedException = JSC::Exception::create(vm, createTypeError(callbackRealm));
+            returnedException = JSC::Exception::create(vm, createTypeError(lexicalGlobalObject));
             return JSValue();
         }
 
         ASSERT(!functionName.isNull());
-        function = callback->get(callbackRealm, functionName);
+        function = callback->get(lexicalGlobalObject, functionName);
         if (scope.exception()) [[unlikely]] {
             returnedException = scope.exception();
             TRY_CLEAR_EXCEPTION(scope, JSValue());
@@ -142,7 +118,7 @@ JSValue JSCallbackData::invokeCallback(JSDOMGlobalObject& globalObject, JSObject
 
         callData = JSC::getCallData(function);
         if (callData.type == CallData::Type::None) {
-            returnedException = JSC::Exception::create(vm, createTypeError(callbackRealm, makeString('\'', String(functionName.uid()), "' property of callback interface should be callable"_s)));
+            returnedException = JSC::Exception::create(vm, createTypeError(lexicalGlobalObject, makeString('\'', String(functionName.uid()), "' property of callback interface should be callable"_s)));
             return JSValue();
         }
 
@@ -160,18 +136,7 @@ JSValue JSCallbackData::invokeCallback(JSDOMGlobalObject& globalObject, JSObject
     JSExecState::instrumentFunction(context.get(), callData);
 
     returnedException = nullptr;
-    JSValue result = JSExecState::profiledCall(callbackRealm, JSC::ProfilingReason::Other, function, callData, thisValue, args, returnedException);
-
-    // Per WebIDL "call a user object's operation", the callback's Realm is the
-    // "current Realm" during invocation (via "prepare to run script"). JSC's
-    // native function dispatch uses the callee's own Realm for error creation,
-    // so re-create cross-Realm TypeErrors in the callback's Realm.
-    if (returnedException) {
-        if (auto* errorInstance = jsDynamicCast<ErrorInstance*>(returnedException->value())) {
-            if (errorInstance->errorType() == ErrorType::TypeError && errorInstance->realmMayBeNull() != callbackRealm)
-                returnedException = JSC::Exception::create(vm, createTypeError(callbackRealm, errorInstance->tryGetMessageForDebugging()));
-        }
-    }
+    JSValue result = JSExecState::profiledCall(lexicalGlobalObject, JSC::ProfilingReason::Other, function, callData, thisValue, args, returnedException);
 
     InspectorInstrumentation::didCallFunction(context.get());
 
