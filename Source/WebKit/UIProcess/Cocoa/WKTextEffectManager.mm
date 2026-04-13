@@ -137,7 +137,7 @@ static constexpr WTTextEffectManagerWritingDirection toTextEffectWritingDirectio
     completionHandler(_webView.get());
 }
 
-static RetainPtr<NSArray<_WTTextPreview *>> textPreviewsFromIndicator(const RefPtr<WebCore::TextIndicator>& textIndicator)
+static RetainPtr<NSArray<_WTTextPreview *>> textPreviewsFromIndicator(const RefPtr<WebCore::TextIndicator>& textIndicator, CocoaView *rootView, CocoaView *containerView)
 {
     if (!textIndicator)
         return nil;
@@ -156,12 +156,13 @@ static RetainPtr<NSArray<_WTTextPreview *>> textPreviewsFromIndicator(const RefP
     if (!snapshotPlatformImage)
         return nil;
 
-    CGRect snapshotRectInBoundingRectCoordinates = textIndicator->textBoundingRectInRootViewCoordinates();
+    CGRect boundingRectInRootViewCoordinates = textIndicator->textBoundingRectInRootViewCoordinates();
 
     for (auto textRectInSnapshotCoordinates : textIndicator->textRectsInBoundingRectCoordinates()) {
-        CGRect textLineFrameInBoundingRectCoordinates = CGRectOffset(textRectInSnapshotCoordinates, snapshotRectInBoundingRectCoordinates.origin.x, snapshotRectInBoundingRectCoordinates.origin.y);
+        CGRect frameInRootViewCoordinates = CGRectOffset(textRectInSnapshotCoordinates, boundingRectInRootViewCoordinates.origin.x, boundingRectInRootViewCoordinates.origin.y);
+        CGRect presentationFrame = [rootView convertRect:frameInRootViewCoordinates toView:containerView];
         textRectInSnapshotCoordinates.scale(textIndicator->contentImageScaleFactor());
-        [previews addObject:adoptNS([PAL::alloc_WTTextPreviewInstance() initWithSnapshotImage:adoptCF(CGImageCreateWithImageInRect(snapshotPlatformImage.get(), textRectInSnapshotCoordinates)).get() presentationFrame:textLineFrameInBoundingRectCoordinates]).get()];
+        [previews addObject:adoptNS([PAL::alloc_WTTextPreviewInstance() initWithSnapshotImage:adoptCF(CGImageCreateWithImageInRect(snapshotPlatformImage.get(), textRectInSnapshotCoordinates)).get() presentationFrame:presentationFrame]).get()];
     }
 
     return previews;
@@ -178,20 +179,27 @@ static RetainPtr<NSArray<_WTTextPreview *>> textPreviewsFromIndicator(const RefP
         return completionHandler(nil, nil);
 
     [webView _page]->textIndicatorForTextEffectID(*textEffectUUID, [protectedSelf = retainPtr(self), textEffectUUID = *textEffectUUID, completionHandler = makeBlockPtr(completionHandler)](RefPtr<WebCore::TextIndicator> textIndicator) {
-        RetainPtr textPreviews = textPreviewsFromIndicator(textIndicator);
-        if (!textPreviews) {
-            completionHandler(nil, nil);
-            return;
-        }
-
         RetainPtr webView = protectedSelf->_webView.get();
         if (!webView) {
             completionHandler(nil, nil);
             return;
         }
 
-        [webView _page]->decorationIndicatorForTextEffectID(textEffectUUID, [textPreviews = WTF::move(textPreviews), completionHandler](RefPtr<WebCore::TextIndicator> decorationIndicator) {
-            auto underlinePreviews = textPreviewsFromIndicator(decorationIndicator);
+#if PLATFORM(IOS_FAMILY)
+        CocoaView *rootView = webView->_contentView.get();
+#else
+        CocoaView *rootView = webView.get();
+#endif
+        CocoaView *containerView = webView.get();
+
+        RetainPtr textPreviews = textPreviewsFromIndicator(textIndicator, rootView, containerView);
+        if (!textPreviews) {
+            completionHandler(nil, nil);
+            return;
+        }
+
+        [webView _page]->decorationIndicatorForTextEffectID(textEffectUUID, [textPreviews = WTF::move(textPreviews), rootView = retainPtr(rootView), containerView = retainPtr(containerView), completionHandler](RefPtr<WebCore::TextIndicator> decorationIndicator) {
+            auto underlinePreviews = textPreviewsFromIndicator(decorationIndicator, rootView.get(), containerView.get());
             completionHandler(textPreviews.get(), underlinePreviews.get());
         });
     });
