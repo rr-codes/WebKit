@@ -1875,8 +1875,10 @@ webkit.org/b/312138 [ Debug ] media/media-event-listeners.html [ Failure ]
 webkit.org/b/312138 [ Debug ] media/media-source/media-source-webm-configuration-change.html [ Failure ]
 webkit.org/b/312138 [ Debug ] media/video-background-playback.html [ Failure ]
 webkit.org/b/312138 [ Debug ] webrtc/video-rotation-black.html [ Failure ]
-webkit.org/b/312138 [ Debug ] http/tests/media/video-play-waiting.html [ Timeout ]
+webkit.org/b/312138 [ Debug ] http/tests/media/video-play-waiting.html [ Pass Failure Timeout ]
+webkit.org/b/312138 fast/mediastream/mediastreamtrack-video-zoom.html [ Pass Failure ]
 webkit.org/b/312138 [ Debug ] imported/w3c/web-platform-tests/video-rvfc/request-video-frame-callback.html [ Crash ]
+webkit.org/b/312157 fast/mediastream/error.html [ Crash ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of GStreamer-related bugs
