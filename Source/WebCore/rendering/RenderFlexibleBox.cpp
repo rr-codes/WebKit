@@ -290,7 +290,7 @@ public:
         , m_flexItem(flexItem)
 #endif
     {
-        if (flexBox.flexItemCrossSizeShouldUseContainerCrossSize(flexItem) && !flexBox.isFlexItem()) {
+        if (flexBox.hasDefiniteCrossSizeForFlexItem(flexItem) && !flexBox.isFlexItem()) {
             auto axis = flexBox.mainAxisIsFlexItemInlineAxis(flexItem) ? OverridingSizesScope::Axis::Block : OverridingSizesScope::Axis::Inline;
             m_overridingScope.emplace(flexItem, axis, flexBox.computeCrossSizeForFlexItemUsingContainerCrossSize(flexItem));
             if (invalidatePreferredWidths == InvalidatePreferredWidths::Yes) {
@@ -453,6 +453,14 @@ bool RenderFlexibleBox::hitTestChildren(const HitTestRequest& request, HitTestRe
     return false;
 }
 
+void RenderFlexibleBox::clearFlexItemOverridingSizes()
+{
+    for (auto* flexItem = firstChildBox(); flexItem; flexItem = flexItem->nextSiblingBox()) {
+        if (!flexItem->isOutOfFlowPositioned())
+            flexItem->clearOverridingSize();
+    }
+}
+
 void RenderFlexibleBox::layoutBlock(RelayoutChildren relayoutChildren, LayoutUnit)
 {
     ASSERT(needsLayout());
@@ -473,6 +481,8 @@ void RenderFlexibleBox::layoutBlock(RelayoutChildren relayoutChildren, LayoutUni
 
     if (!style().marginTrim().isNone())
         initializeMarginTrimState();
+
+    clearFlexItemOverridingSizes();
 
     if (recomputeLogicalWidth())
         relayoutChildren = RelayoutChildren::Yes;
@@ -1201,7 +1211,7 @@ template<typename SizeType> LayoutUnit RenderFlexibleBox::computeMainSizeFromAsp
                 : adjustBorderBoxLogicalWidthForBoxSizing(Style::evaluate<LayoutUnit>(calcCrossSizeLength, contentBoxWidth(), flexItem.style().usedZoomForLength()));
         },
         [&](const CSS::Keyword::Auto&) -> std::optional<LayoutUnit> {
-            ASSERT(flexItemCrossSizeShouldUseContainerCrossSize(flexItem));
+            ASSERT(hasDefiniteCrossSizeForFlexItem(flexItem));
             return computeCrossSizeForFlexItemUsingContainerCrossSize(flexItem);
         },
         [&](const CSS::Keyword::Stretch&) -> std::optional<LayoutUnit> {
@@ -1297,10 +1307,10 @@ bool RenderFlexibleBox::flexItemHasComputableAspectRatio(const RenderBox& flexIt
 bool RenderFlexibleBox::flexItemHasComputableAspectRatioAndCrossSizeIsConsideredDefinite(const RenderBox& flexItem)
 {
     return flexItemHasComputableAspectRatio(flexItem)
-        && (flexItemCrossSizeIsDefinite(flexItem, preferredCrossSizeLengthForFlexItem(flexItem)) || flexItemCrossSizeShouldUseContainerCrossSize(flexItem));
+        && (flexItemCrossSizeIsDefinite(flexItem, preferredCrossSizeLengthForFlexItem(flexItem)) || hasDefiniteCrossSizeForFlexItem(flexItem));
 }
 
-bool RenderFlexibleBox::flexItemCrossSizeShouldUseContainerCrossSize(const RenderBox& flexItem) const
+bool RenderFlexibleBox::hasDefiniteCrossSizeForFlexItem(const RenderBox& flexItem) const
 {
     // 9.8 https://drafts.csswg.org/css-flexbox/#definite-sizes
     // 1. If a single-line flex container has a definite cross size, the automatic preferred outer cross size of any
@@ -1850,7 +1860,7 @@ bool RenderFlexibleBox::canUseFlexItemForPercentageResolution(const RenderBox& f
 
     auto canUseByLayoutPhase = [&] {
         if (m_inFlexItemIntrinsicWidthComputation)
-            return flexItemCrossSizeShouldUseContainerCrossSize(flexItem) && !isFlexItem();
+            return hasDefiniteCrossSizeForFlexItem(flexItem) && !isFlexItem();
 
         if (m_afterMainAxisItemSizing) {
             // Final sizes for flex items are available only along the main axis.
@@ -1950,7 +1960,6 @@ void RenderFlexibleBox::maybeCacheFlexItemMainIntrinsicSize(RenderBox& flexItem,
 RenderFlexibleBox::FlexLayoutItem RenderFlexibleBox::constructFlexLayoutItem(RenderBox& flexItem, RelayoutChildren relayoutChildren)
 {
     auto everHadLayout = flexItem.everHadLayout();
-    flexItem.clearOverridingSize();
     if (auto* flexibleBox = dynamicDowncast<RenderFlexibleBox>(flexItem))
         flexibleBox->resetHasDefiniteHeight();
 
@@ -2227,7 +2236,7 @@ LayoutUnit RenderFlexibleBox::computeCrossSizeForFlexItemUsingContainerCrossSize
     if (isColumnFlow())
         return contentBoxLogicalWidth();
 
-    // Keep this sync'ed with flexItemCrossSizeShouldUseContainerCrossSize().
+    // Keep this sync'ed with hasDefiniteCrossSizeForFlexItem().
     auto definiteSizeValue = [&] {
         // Let's compute the definite size value for the flex item (value that we can resolve without running layout).
         auto isHorizontal = isHorizontalFlow();

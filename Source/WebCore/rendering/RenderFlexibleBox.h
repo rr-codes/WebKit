@@ -197,7 +197,8 @@ private:
     bool flexItemHasComputableAspectRatioAndCrossSizeIsConsideredDefinite(const RenderBox&);
 
     bool crossAxisIsLogicalWidth() const;
-    bool flexItemCrossSizeShouldUseContainerCrossSize(const RenderBox& flexItem) const;
+    void clearFlexItemOverridingSizes();
+    bool hasDefiniteCrossSizeForFlexItem(const RenderBox& flexItem) const;
     LayoutUnit computeCrossSizeForFlexItemUsingContainerCrossSize(const RenderBox& flexItem) const;
     void computeChildIntrinsicLogicalWidths(RenderBox&, LayoutUnit& minLogicalWidth, LayoutUnit& maxLogicalWidth) const override;
     template<typename SizeType> LayoutUnit computeMainSizeFromAspectRatioUsing(const RenderBox& flexItem, const SizeType& crossSizeLength) const;
