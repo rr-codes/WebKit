@@ -2786,6 +2786,8 @@ webkit.org/b/265865 imported/w3c/web-platform-tests/webrtc-stats/rtp-stats-creat
 
 fast/mediastream/video-rotation2.html [ Failure Pass Timeout ]
 
+http/wpt/mediastream/webrtc-vp9-colorspace.html [ Failure ]
+
 # Regressions introduced by https://commits.webkit.org/263750@main
 fast/mediastream/apply-constraints-advanced.html [ Failure ]
 fast/mediastream/apply-constraints-video.html [ Failure ]
