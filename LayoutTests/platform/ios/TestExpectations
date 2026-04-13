@@ -8239,6 +8239,8 @@ webkit.org/b/297067 fast/forms/state-restore-form-associated-custom-elements.htm
 fast/forms/form-control-refresh/accent-color-contrast-does-not-affect-inactive-window-light-mode.html [ Skip ]
 fast/forms/form-control-refresh/accent-color-contrast-does-not-affect-inactive-window-dark-mode.html [ Skip ]
 
+webkit.org/b/312190 compositing/accelerated-layers-after-back-2.html [ ImageOnlyFailure Pass ]
+
 webkit.org/b/297144 fast/forms/state-restore-to-non-edited-controls.html [ Pass Timeout ]
 
 webkit.org/b/297240 http/tests/site-isolation/edge-sampling-commit-root-frame-load.html [ Failure ]
