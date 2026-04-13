@@ -1677,7 +1677,8 @@ webkit.org/b/306457 http/wpt/mediarecorder/MediaRecorder-audio-bitrate-webm.html
 webkit.org/b/213699 http/wpt/mediarecorder/MediaRecorder-AV-audio-video-dataavailable.html [ Crash Timeout Failure ]
 webkit.org/b/213699 http/wpt/mediarecorder/MediaRecorder-first-frame.html [ Failure Pass ]
 
-webkit.org/b/307032 imported/w3c/web-platform-tests/mediacapture-streams/MediaStream-removetrack.https.html [ Pass Failure ]
+# Timeout due to webkit.org/b/312138
+webkit.org/b/307032 imported/w3c/web-platform-tests/mediacapture-streams/MediaStream-removetrack.https.html [ Timeout Failure ]
 
 # No support for Matroska container in GStreamer port.
 http/wpt/mediarecorder/MediaRecorder-matroska-AV-audio-video-dataavailable.html
@@ -1858,6 +1859,24 @@ webkit.org/b/281343 media/media-source/media-managedmse-webvtt-track.html [ Skip
 webkit.org/b/307142 media/video-currentTime.html [ Failure Pass ]
 
 webkit.org/b/184457 media/video-aspect-ratio.html [ Pass Failure ]
+
+webkit.org/b/256768 fast/mediastream/captureStream/canvas3d.html [ Pass Failure ]
+webkit.org/b/312138 http/wpt/mediasession/setCaptureState.html [ Pass Failure ]
+webkit.org/b/312138 fast/mediastream/MediaStream-add-remove-tracks.html [ Pass Timeout ]
+webkit.org/b/312138 fast/mediastream/MediaStreamTrack-kind.html [ Pass Timeout ]
+webkit.org/b/312138 fast/mediastream/mediastreamtrack-video-frameRate-clone-decreasing.html [ Failure ]
+webkit.org/b/312138 imported/w3c/web-platform-tests/webrtc/protocol/candidate-exchange.https.html?interop-2026 [ Failure ]
+webkit.org/b/312138 [ Debug ] media/media-preload-no-delay-loadevent.html [ Failure Pass ]
+webkit.org/b/312138 [ Debug ] media/track/webvtt-parser-does-not-leak.html [ Failure Pass ]
+webkit.org/b/312138 [ Debug ] http/wpt/webcodecs/videoFrame-video-element-compressed.html [ Failure ]
+webkit.org/b/312138 [ Debug ] imported/w3c/web-platform-tests/media-source/mediasource-append-buffer.html [ Failure ]
+webkit.org/b/312138 [ Debug ] media/audio-concurrent-supported.html [ Failure ]
+webkit.org/b/312138 [ Debug ] media/media-event-listeners.html [ Failure ]
+webkit.org/b/312138 [ Debug ] media/media-source/media-source-webm-configuration-change.html [ Failure ]
+webkit.org/b/312138 [ Debug ] media/video-background-playback.html [ Failure ]
+webkit.org/b/312138 [ Debug ] webrtc/video-rotation-black.html [ Failure ]
+webkit.org/b/312138 [ Debug ] http/tests/media/video-play-waiting.html [ Timeout ]
+webkit.org/b/312138 [ Debug ] imported/w3c/web-platform-tests/video-rvfc/request-video-frame-callback.html [ Crash ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of GStreamer-related bugs
@@ -2817,7 +2836,6 @@ fast/mediastream/getDisplayMedia-max-constraints5.html [ Skip ]
 
 # DataChannel GstWebRTC implementation incomplete, missing stats support.
 webkit.org/b/235885 webrtc/datachannel/datachannel-stats.html [ Skip ]
-webkit.org/b/235885 webrtc/datachannel/getStats-no-prflx-remote-candidate.html [ Failure ]
 # Crash due to webkit.org/b/286859
 webkit.org/b/187064 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats.https.html [ Failure Crash ]
 
@@ -2890,13 +2908,6 @@ webrtc/video-replace-track.html [ Pass Failure Timeout Crash ]
 
 # GStreamerRtpSenderBackend::setMediaStreamIds() unimplemented.
 webkit.org/b/235885 webrtc/video.html [ Skip ]
-
-# Expected to pass when updating SDK to GStreamer 1.28.
-webkit.org/b/235885 webrtc/candidate-stats.html [ Failure ]
-webkit.org/b/262989 imported/w3c/web-platform-tests/webrtc-stats/getStats-remote-candidate-address.html [ Failure ]
-imported/w3c/web-platform-tests/webrtc/protocol/candidate-exchange.https.html [ Failure ]
-imported/w3c/web-platform-tests/webrtc/protocol/candidate-exchange.https.html?interop-2026 [ Failure ]
-imported/w3c/web-platform-tests/webrtc/RTCIceTransport.html [ Skip ]
 
 # Pending investigation.
 webkit.org/b/235885 fast/mediastream/mediastreamtrack-video-clone.html [ Failure ]
@@ -3029,7 +3040,7 @@ imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription-of
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription-pranswer.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription-replaceTrack.https.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription-rollback.html [ Skip ] # Timeout
-imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Pass ]
+imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription-simulcast.https.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setRemoteDescription.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-transceivers.https.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-transport-stats.https.html [ Failure ]
@@ -3058,13 +3069,14 @@ imported/w3c/web-platform-tests/webrtc/RTCRtpTransceiver-stop.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpTransceiver-stopping.https.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCSctpTransport-constructor.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCSctpTransport-events.html [ Skip ] # Timeout
-imported/w3c/web-platform-tests/webrtc/RTCSctpTransport-maxChannels.html [ Failure ]
+imported/w3c/web-platform-tests/webrtc/RTCSctpTransport-maxChannels.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCSctpTransport-maxMessageSize.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCTrackEvent-constructor.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCTrackEvent-fire.html  [ Skip ] # Timeout
 webkit.org/b/307440 imported/w3c/web-platform-tests/webrtc/simplecall.https.html [ Pass Failure ]
 imported/w3c/web-platform-tests/webrtc/toJSON.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/transfer-datachannel.html [ Skip ] # Timeout
+imported/w3c/web-platform-tests/webrtc/RTCIceTransport.html [ Skip ] # Timeout
 
 # Triggers an assert in webrtcbin.
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-setLocalDescription-offer.html [ Skip ] # Crash
@@ -3102,11 +3114,8 @@ imported/w3c/web-platform-tests/webrtc/protocol/handover-datachannel.html [ Fail
 # set-up, so rtpbin doesn't create src pads and thus neither is webrtcbin.
 imported/w3c/web-platform-tests/webrtc/protocol/msid-parse.html [ Failure Timeout ]
 
-# Expected to pass when our SDK ships GStreamer 1.28. See also:
-# https://gitlab.freedesktop.org/gstreamer/gstreamer/-/commit/80e663d5605124fbd7e4b69e69060749a541e491
-# https://gitlab.freedesktop.org/gstreamer/gstreamer/-/commit/ea69849cd89a9d1a69c98bd9c640452a5deb72c2
-imported/w3c/web-platform-tests/webrtc/protocol/ice-state.https.html [ Failure ]
-imported/w3c/web-platform-tests/webrtc/protocol/ice-ufragpwd.html [ Failure ]
+# Still failing after update to GStreamer 1.28, to be investigated.
+imported/w3c/web-platform-tests/webrtc/protocol/ice-state.https.html [ Skip ] # Timeout
 
 # Missing support for multiple MediaStreams per track/transceiver.
 # https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/3954
@@ -3121,9 +3130,6 @@ imported/w3c/web-platform-tests/webrtc/RTCRtpParameters-codecs.html [ Failure ]
 # The 'Can demux two video tracks with the same payload type on an unbundled connection' test times
 # out, the metadataToBeLoaded promise never resolves.
 webkit.org/b/286481 imported/w3c/web-platform-tests/webrtc/protocol/rtp-demuxing.html [ Failure ]
-
-# webrtcbin expects mid in its offer/answer SDP, this is not spec compliant, it's an optional field.
-imported/w3c/web-platform-tests/webrtc/protocol/missing-fields.html [ Failure ]
 
 # Simulcast support is not complete yet.
 imported/w3c/web-platform-tests/webrtc/simulcast [ Pass ]
@@ -3196,7 +3202,7 @@ webkit.org/b/306207 imported/w3c/web-platform-tests/webrtc-stats/hardware-capabi
 # The main difference is that in this test an additional message is sent on the data-channel.
 webkit.org/b/264936 imported/w3c/web-platform-tests/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Failure ]
 
-webkit.org/b/276587 webrtc/video-av1.html [ Pass Timeout ]
+webkit.org/b/276587 webrtc/video-av1.html [ Pass Failure ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of WebRTC-related bugs

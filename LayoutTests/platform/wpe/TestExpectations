@@ -552,7 +552,8 @@ webkit.org/b/307143 imported/w3c/web-platform-tests/preload/preload-in-data-doc.
 
 # Flaky tests detected from 29Jan2023 to 23Feb2023
 webkit.org/b/252878 gamepad/gamepad-event-handlers.html [ Pass Timeout ]
-webkit.org/b/252878 http/tests/media/video-play-waiting.html [ Failure Pass ]
+# timeout due to webkit.org/b/312138
+webkit.org/b/252878 http/tests/media/video-play-waiting.html [ Timeout ]
 webkit.org/b/281053 http/tests/media/user-gesture-preserved-across-xmlhttprequest.html [ Failure ]
 webkit.org/b/252878 http/wpt/service-workers/controlled-sharedworker.https.html [ Failure Pass ]
 webkit.org/b/252878 imported/blink/fast/transforms/transform-update-frame-overflow.html [ ImageOnlyFailure ]
