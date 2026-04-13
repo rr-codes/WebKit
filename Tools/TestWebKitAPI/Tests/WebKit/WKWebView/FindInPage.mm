@@ -48,6 +48,8 @@
 typedef enum : NSUInteger {
     NSTextFinderAsynchronousDocumentFindOptionsBackwards = 1 << 0,
     NSTextFinderAsynchronousDocumentFindOptionsWrap = 1 << 1,
+    NSTextFinderAsynchronousDocumentFindOptionsCaseInsensitive = 1 << 2,
+    NSTextFinderAsynchronousDocumentFindOptionsStartsWith = 1 << 3,
 } NSTextFinderAsynchronousDocumentFindOptions;
 
 constexpr auto noFindOptions = (NSTextFinderAsynchronousDocumentFindOptions)0;
@@ -322,6 +324,197 @@ TEST(WebKit, FindAndReplace)
     EXPECT_WK_STREQ("hi", [webView stringByEvaluatingJavaScript:@"first.value"]);
     EXPECT_WK_STREQ("hi", [webView stringByEvaluatingJavaScript:@"second.value"]);
     EXPECT_WK_STREQ("hi hi", [webView stringByEvaluatingJavaScript:@"document.body.textContent"]);
+}
+
+TEST(WebKit, FindMatchesWithDifferentOptionsInSuccession)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+    [webView synchronouslyLoadHTMLString:
+        @"<p>findme</p>"
+        "<p>findme</p>"
+        "<p>FINDME</p>"
+        "<p>findme</p>"
+        "<p>foobarFINDME</p>"
+    ];
+
+    {
+        auto result = findMatches(webView.get(), @"findme", noFindOptions);
+        EXPECT_EQ(3U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"findme", (NSTextFinderAsynchronousDocumentFindOptions)(noFindOptions | NSTextFinderAsynchronousDocumentFindOptionsCaseInsensitive));
+        EXPECT_EQ(5U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"findme", (NSTextFinderAsynchronousDocumentFindOptions)(noFindOptions | NSTextFinderAsynchronousDocumentFindOptionsStartsWith | NSTextFinderAsynchronousDocumentFindOptionsCaseInsensitive));
+        EXPECT_EQ(4U, [result.matches count]);
+    }
+}
+
+TEST(WebKit, FindMatchesInShadowRoots)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+    [webView synchronouslyLoadHTMLString:
+        @"<p>hello</p>"
+        "<div id='host'></div>"
+        "<p>hello</p>"
+        "<script>"
+        "  const host = document.getElementById('host');"
+        "  const shadow = host.attachShadow({ mode: 'open' });"
+        "  shadow.innerHTML = '<p>hello</p><p>shadow-only</p>';"
+        "</script>"
+    ];
+
+    {
+        auto result = findMatches(webView.get(), @"hello");
+        EXPECT_EQ(3U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"shadow-only");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+}
+
+TEST(WebKit, FindMatchesCrossShadowBoundary)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+
+    [webView synchronouslyLoadHTMLString:
+        @"<span id='host'>slotted</span>"
+        "<script>"
+        "  const shadow = document.getElementById('host').attachShadow({ mode: 'open' });"
+        "  shadow.innerHTML = 'before <slot></slot> after';"
+        "</script>"
+    ];
+
+    {
+        auto result = findMatches(webView.get(), @"before slotted");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"slotted after");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"before slotted after");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"slotted");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+}
+
+TEST(WebKit, FindMatchesCrossNestedShadowBoundary)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+
+    [webView synchronouslyLoadHTMLString:
+        @"<span id='outer-host'>"
+        "  <span id='inner-host'>deep</span>"
+        "</span>"
+        "<script>"
+        "  const outerShadow = document.getElementById('outer-host').attachShadow({ mode: 'open' });"
+        "  outerShadow.innerHTML = 'outer-start <slot></slot> outer-end';"
+        "  const innerShadow = document.getElementById('inner-host').attachShadow({ mode: 'open' });"
+        "  innerShadow.innerHTML = 'inner-start <slot></slot> inner-end';"
+        "</script>"
+    ];
+
+    {
+        auto result = findMatches(webView.get(), @"outer-start inner-start deep");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"deep inner-end outer-end");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"outer-start inner-start deep inner-end outer-end");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+}
+
+TEST(WebKit, FindMatchesNotFoundAcrossNonAdjacentFlatTreeContent)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+
+    [webView synchronouslyLoadHTMLString:
+        @"before <span id='host'>middle</span> after"
+        "<script>"
+        "  const shadow = document.getElementById('host').attachShadow({ mode: 'open' });"
+        "  shadow.innerHTML = 'shadow-start <slot></slot> shadow-end';"
+        "</script>"
+    ];
+
+    {
+        auto result = findMatches(webView.get(), @"before middle");
+        EXPECT_EQ(0U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"middle after");
+        EXPECT_EQ(0U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"before shadow-start");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"shadow-end after");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+}
+
+TEST(WebKit, FindMatchesUnslottedContentNotFound)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+
+    [webView synchronouslyLoadHTMLString:
+        @"<span id='host'>unslotted-text</span>"
+        "<script>"
+        "  const shadow = document.getElementById('host').attachShadow({ mode: 'open' });"
+        "  shadow.innerHTML = 'shadow-only';"
+        "</script>"
+    ];
+
+    {
+        auto result = findMatches(webView.get(), @"unslotted-text");
+        EXPECT_EQ(0U, [result.matches count]);
+    }
+
+    {
+        auto result = findMatches(webView.get(), @"shadow-only");
+        EXPECT_EQ(1U, [result.matches count]);
+    }
+}
+
+TEST(WebKit, FindMatchesAfterDOMMutation)
+{
+    auto webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 400, 400)]);
+    [webView synchronouslyLoadHTMLString:@"<p>findme</p><p>findme</p>"];
+
+    {
+        auto result = findMatches(webView.get(), @"findme");
+        EXPECT_EQ(2U, [result.matches count]);
+    }
+
+    [webView stringByEvaluatingJavaScript:@"document.body.appendChild(document.createElement('p')).textContent = 'findme'"];
+
+    {
+        auto result = findMatches(webView.get(), @"findme");
+        EXPECT_EQ(3U, [result.matches count]);
+    }
 }
 
 #if ENABLE(IMAGE_ANALYSIS)

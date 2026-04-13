@@ -1443,6 +1443,7 @@ editing/AppendNodeCommand.cpp
 editing/ApplyBlockElementCommand.cpp
 editing/ApplyStyleCommand.cpp
 editing/BreakBlockquoteCommand.cpp
+editing/CachedMatchFinder.cpp
 editing/ChangeListTypeCommand.cpp
 editing/CharacterRange.cpp
 editing/CompositeEditCommand.cpp
@@ -1462,6 +1463,7 @@ editing/FontShadow.cpp
 editing/FormatBlockCommand.cpp
 editing/FrameSelection.cpp
 editing/HTMLInterchange.cpp
+editing/ICUSearcher.cpp
 editing/IndentOutdentCommand.cpp
 editing/InsertIntoTextNodeCommand.cpp
 editing/InsertLineBreakCommand.cpp
@@ -1470,7 +1472,6 @@ editing/InsertNestedListCommand.cpp
 editing/InsertNodeBeforeCommand.cpp
 editing/InsertParagraphSeparatorCommand.cpp
 editing/InsertTextCommand.cpp
-editing/ICUSearcher.cpp
 editing/MarkupAccumulator.cpp
 editing/MergeIdenticalElementsCommand.cpp
 editing/ModifySelectionListLevel.cpp

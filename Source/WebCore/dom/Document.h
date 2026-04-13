@@ -1547,7 +1547,7 @@ public:
     WEBCORE_EXPORT unsigned NODELETE touchEventHandlerCount() const;
 
     WEBCORE_EXPORT void NODELETE startTrackingStyleRecalcs();
-    WEBCORE_EXPORT unsigned styleRecalcCount() const { return m_styleRecalcCount; }
+    unsigned styleRecalcCount() const { return m_styleRecalcCount; }
 
 #if ENABLE(TOUCH_EVENTS)
     bool hasTouchEventHandlers() const;

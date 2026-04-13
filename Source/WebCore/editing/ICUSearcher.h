@@ -32,10 +32,17 @@ namespace WebCore {
 
 class ICUSearcher {
 public:
-    explicit ICUSearcher();
+    explicit ICUSearcher(const String& foldedTarget, FindOptions&);
     ~ICUSearcher();
-    UStringSearch* searcher();
+    void setCollationStrength(UCollationStrength);
+    void setAttribute(USearchAttribute, USearchAttributeValue);
+    void setPattern(std::span<const char16_t>);
+    void setText(std::span<const char16_t>);
+    void setOffset(size_t);
+    std::optional<size_t> next();
+    size_t matchedLength();
 private:
+    UStringSearch* searcher();
     void reset();
     void NODELETE lock();
     void NODELETE unlock();
