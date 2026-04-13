@@ -844,12 +844,6 @@ inline void wtfCompileTimeCheckPrintfSpecifier(const char* format, ...)
 
 /* ALWAYS_LOG */
 
-#define ALWAYS_LOG_WITH_STREAM(commands) do { \
-        WTF::TextStream stream(WTF::TextStream::LineMode::SingleLine); \
-        commands; \
-        WTFLogAlways("%s", stream.release().utf8().data()); \
-    } while (0)
-
 #define WTF_ALWAYS_LOG(commands) do { \
         WTF::TextStream stream(WTF::TextStream::LineMode::SingleLine); \
         stream << commands; \

@@ -633,7 +633,7 @@ void BifurcatedGraphicsContext::verifyStateSynchronization()
     // will cause further painting to the secondary context to be mistransformed.
     auto secondaryContextCTM = m_secondaryContext.getCTM();
     if (!m_hasLoggedAboutDesynchronizedState && !primaryContextCTM.isEssentiallyEqualToAsFloats(secondaryContextCTM)) {
-        ALWAYS_LOG_WITH_STREAM(stream << "BifurcatedGraphicsContext(" << this << ") CTM is out of sync: " << primaryContextCTM << " != " << secondaryContextCTM);
+        WTF_ALWAYS_LOG("BifurcatedGraphicsContext(" << this << ") CTM is out of sync: " << primaryContextCTM << " != " << secondaryContextCTM);
         m_hasLoggedAboutDesynchronizedState = true;
     }
 }
