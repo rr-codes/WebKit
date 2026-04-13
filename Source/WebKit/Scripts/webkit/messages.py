@@ -201,6 +201,7 @@ def types_that_must_be_moved():
         'std::optional<Win32Handle>',
         'WebKit::ImageBufferSetPrepareBufferForDisplayOutputData',
         'HashMap<WebKit::ImageBufferSetIdentifier, std::unique_ptr<WebKit::BufferSetBackendHandle>>',
+        'WebCore::DMABufBufferAttributes',
         'std::optional<WebCore::DMABufBufferAttributes>',
     ]
 
