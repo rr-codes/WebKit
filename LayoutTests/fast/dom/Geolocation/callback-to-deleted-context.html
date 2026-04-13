@@ -1,7 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE html>
 <html>
 <head>
-<script src="../../../resources/js-test-pre.js"></script>
+<script src="../../../resources/js-test.js"></script>
 </head>
 <body>
 <script>
@@ -13,7 +13,7 @@ function onFirstIframeLoaded() {
 
 function onSecondIframeLoaded() {
     window.setTimeout(function() {
-        testFailed('No callbacks invoked');
+        testPassed('No callbacks invoked');
         finishJSTest();
     }, 500);
 }
@@ -24,6 +24,5 @@ document.body.appendChild(iframe);
 
 window.jsTestIsAsync = true;
 </script>
-<script src="../../../resources/js-test-post.js"></script>
 </body>
 </html>
