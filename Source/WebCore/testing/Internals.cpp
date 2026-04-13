@@ -733,6 +733,10 @@ void Internals::resetToConsistentState(Page& page)
 
     PlatformMediaEngineConfigurationFactory::disableMock();
 
+#if ENABLE(ENCRYPTED_MEDIA)
+    MockCDMFactory::unregisterAllMockFactories();
+#endif
+
 #if ENABLE(MEDIA_STREAM)
     page.settings().setInterruptAudioOnPageVisibilityChangeEnabled(false);
 #endif
