@@ -2589,12 +2589,7 @@ static std::optional<WebCore::JSHandleIdentifier> jsHandleIdentifierInFrame(cons
 
 - (void)willBeginWritingToolsSession:(WTSession *)session requestContexts:(void (^)(NSArray<WTContext *> *))completion
 {
-    BOOL proofreadingReview = NO;
-#if ENABLE(WRITING_TOOLS_EXTENDED_PROOFREADING)
-    if ([session respondsToSelector:@selector(proofreadingSessionType)] && [session proofreadingSessionType] == WTProofreadingSessionTypeGrammarChecking)
-        proofreadingReview = YES;
-#endif
-    [self willBeginWritingToolsSession:session forProofreadingReview:proofreadingReview requestContexts:completion];
+    [self willBeginWritingToolsSession:session forProofreadingReview:NO requestContexts:completion];
 }
 
 - (void)didBeginWritingToolsSession:(WTSession *)session contexts:(NSArray<WTContext *> *)contexts

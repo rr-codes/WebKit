@@ -91,12 +91,6 @@ typedef NS_ENUM(NSInteger, WTRequestedTool) {
 
 // MARK: WTSession
 
-typedef NS_ENUM(NSInteger, WTProofreadingSessionType) {
-    WTProofreadingSessionTypeNone,
-    WTProofreadingSessionTypeUserInitiated,
-    WTProofreadingSessionTypeGrammarChecking,
-};
-
 typedef NS_ENUM(NSInteger, WTCompositionSessionType) {
     WTCompositionSessionTypeNone,
     WTCompositionSessionTypeMagic,
@@ -122,7 +116,6 @@ typedef NS_ENUM(NSInteger, WTSessionType) {
 
 @property (nonatomic, readonly) NSUUID *uuid;
 @property (nonatomic, readonly) WTSessionType type;
-@property (nonatomic, readonly) WTProofreadingSessionType proofreadingSessionType;
 
 @property (nonatomic, weak) id<WTTextViewDelegate_Proposed_v1> textViewDelegate;
 
