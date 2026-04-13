@@ -49,6 +49,7 @@
 #include "RenderView.h"
 #include "StyleBuilderState.h"
 #include "StyleScope.h"
+#include "StyleableInlines.h"
 #include "WritingMode.h"
 #include <ranges>
 
@@ -784,11 +785,11 @@ CheckedPtr<RenderBoxModelObject> AnchorPositionEvaluator::findAnchorForAnchorFun
     if (!isValid())
         return { };
 
-    Ref elementOrHost = *builderState.element();
+    Styleable styleable { *const_cast<Element*>(builderState.element()), style.pseudoElementIdentifier() };
 
-    // PseudoElement nodes are created on-demand by render tree builder so dont' work as keys here.
+    // PseudoElement nodes are created on-demand by render tree builder so don't work as keys here.
     auto& anchorPositionedStates = *builderState.anchorPositionedStates();
-    auto& anchorPositionedState = anchorPositionedStates.ensure({ elementOrHost.ptr(), style.pseudoElementIdentifier() }, [&] {
+    auto& anchorPositionedState = anchorPositionedStates.ensure(styleable, [&] {
         return makeUniqueRef<AnchorPositionedState>();
     }).iterator->value.get();
 
@@ -798,7 +799,7 @@ CheckedPtr<RenderBoxModelObject> AnchorPositionEvaluator::findAnchorForAnchorFun
         return defaultAnchorName(style);
     };
 
-    auto resolvedAnchorName = ResolvedScopedName::createFromScopedName(elementOrHost, scopedAnchorName());
+    auto resolvedAnchorName = ResolvedScopedName::createFromScopedName(styleable.element, scopedAnchorName());
 
     // Collect anchor names that this element refers to in anchor() or anchor-size()
     bool isNewAnchorName = anchorPositionedState.anchorNames.add(resolvedAnchorName).isNewEntry;
@@ -835,7 +836,8 @@ CheckedPtr<RenderBoxModelObject> AnchorPositionEvaluator::findAnchorForAnchorFun
         return { };
     }
 
-    if (auto* state = anchorPositionedStates.get(keyForElementOrPseudoElement(*anchorElement))) {
+    // FIXME: don't use Styleable::fromElement here.
+    if (auto* state = anchorPositionedStates.get(Styleable::fromElement(*anchorElement))) {
         // Check if the anchor is itself anchor-positioned but hasn't been positioned yet.
         if (state->stage < AnchorPositionResolutionStage::Positioned) {
             anchorPositionedState.stage = AnchorPositionResolutionStage::WaitingForAnchorToBePositioned;
@@ -1276,36 +1278,39 @@ void AnchorPositionEvaluator::updateAnchorPositioningStatesAfterInterleavedLayou
     // FIXME: Make the code below oeprate on renderers (boxes) rather than elements.
     auto anchorsForAnchorName = collectAnchorsForAnchorName(document);
 
-    for (auto& elementAndState : anchorPositionedStates) {
-        auto& state = elementAndState.value.get();
+    for (auto& [weakStyleable, state] : anchorPositionedStates) {
+        auto styleable = weakStyleable.styleable();
+        if (!styleable)
+            continue;
 
-        switch (state.stage) {
+        CheckedPtr renderer = styleable->renderer();
+
+        switch (state->stage) {
         case AnchorPositionResolutionStage::FindAnchors: {
-            RefPtr element = elementAndState.key.first;
-            if (elementAndState.key.second)
-                element = element->pseudoElementIfExists(*elementAndState.key.second);
-
-            CheckedPtr renderer = element ? element->renderer() : nullptr;
             if (renderer) {
+                // FIXME: change the anchor finding pipeline to use Styleable instead.
+                RefPtr elementForFinding = &styleable->element;
+                if (styleable->pseudoElementIdentifier)
+                    elementForFinding = elementForFinding->pseudoElementIfExists(*styleable->pseudoElementIdentifier);
+
                 // FIXME: Remove the redundant anchorElements member. The mappings are available in anchorPositionedToAnchorMap.
-                state.anchorElements = findAnchorsForAnchorPositionedElement(*element, state.anchorNames, anchorsForAnchorName);
+                state->anchorElements = findAnchorsForAnchorPositionedElement(*elementForFinding, state->anchorNames, anchorsForAnchorName);
                 if (isLayoutTimeAnchorPositioned(renderer->style()))
                     renderer->setNeedsLayout();
 
                 Vector<ResolvedAnchor> anchors;
-                for (auto& anchorNameAndElement : state.anchorElements) {
+                for (auto& anchorNameAndElement : state->anchorElements) {
                     CheckedPtr anchorElement = anchorNameAndElement.value.get();
                     anchors.append(ResolvedAnchor {
                         .renderer = anchorElement ? dynamicDowncast<RenderBoxModelObject>(anchorElement->renderer()) : nullptr,
                         .name = anchorNameAndElement.key
                     });
                 }
-                document.styleScope().anchorPositionedToAnchorMap().set(*element, AnchorPositionedToAnchorEntry {
-                    .pseudoElementIdentifier = elementAndState.key.second,
+                document.styleScope().anchorPositionedToAnchorMap().set(*styleable, AnchorPositionedToAnchorEntry {
                     .anchors = WTF::move(anchors)
                 });
             }
-            state.stage = AnchorPositionResolutionStage::Resolved;
+            state->stage = AnchorPositionResolutionStage::Resolved;
             break;
         }
 
@@ -1313,11 +1318,10 @@ void AnchorPositionEvaluator::updateAnchorPositioningStatesAfterInterleavedLayou
             break;
 
         case AnchorPositionResolutionStage::Resolved:
-            if (CheckedPtr anchored = elementAndState.key.first->renderer()) {
-                if (auto anchoredBox = dynamicDowncast<RenderBox>(anchored.get()))
-                    AnchorPositionEvaluator::captureScrollSnapshots(*anchoredBox, false);
-            }
-            state.stage = AnchorPositionResolutionStage::Positioned;
+            if (auto anchoredBox = dynamicDowncast<RenderBox>(renderer))
+                AnchorPositionEvaluator::captureScrollSnapshots(*anchoredBox, false);
+
+            state->stage = AnchorPositionResolutionStage::Positioned;
             break;
 
         case AnchorPositionResolutionStage::Positioned:
@@ -1339,7 +1343,9 @@ void AnchorPositionEvaluator::updateAnchorPositionedStateForDefaultAnchorAndPosi
     if (!shouldResolveDefaultAnchor && !hasPositionVisibilityNoOverflow)
         return;
 
-    auto& state = states.ensure({ &element, style.pseudoElementIdentifier() }, [&] {
+    Styleable styleable { element, style.pseudoElementIdentifier() };
+
+    auto& state = states.ensure(styleable, [&] {
         return makeUniqueRef<AnchorPositionedState>();
     }).iterator->value.get();
 
@@ -1358,14 +1364,23 @@ auto AnchorPositionEvaluator::makeAnchorPositionedForAnchorMap(AnchorPositionedT
 {
     AnchorToAnchorPositionedMap map;
 
-    for (auto elementAndAnchors : toAnchorMap) {
-        CheckedRef anchorPositionedElement = elementAndAnchors.key;
-        for (auto& anchor : elementAndAnchors.value.anchors) {
+    for (auto& [weakStyleable, anchors] : toAnchorMap) {
+        auto styleable = weakStyleable.styleable();
+        if (!styleable)
+            continue;
+
+        for (auto& anchor : anchors.anchors) {
             if (!anchor.renderer)
                 continue;
+
+            // FIXME: change AnchorToAnchorPositionedMap to use Styleable instead.
+            RefPtr element = &styleable->element;
+            if (styleable->pseudoElementIdentifier)
+                element = element->pseudoElementIfExists(*styleable->pseudoElementIdentifier);
+
             map.ensure(*anchor.renderer, [&] {
                 return Vector<Ref<Element>> { };
-            }).iterator->value.append(anchorPositionedElement);
+            }).iterator->value.append(*element);
         }
     }
     return map;
@@ -1645,13 +1660,6 @@ RefPtr<const Element> AnchorPositionEvaluator::anchorPositionedElementOrPseudoEl
     return element;
 }
 
-AnchorPositionedKey AnchorPositionEvaluator::keyForElementOrPseudoElement(const Element& element)
-{
-    if (auto* pseudoElement = dynamicDowncast<PseudoElement>(element))
-        return { pseudoElement->hostElement(), PseudoElementIdentifier { pseudoElement->pseudoElementType() } };
-    return { &element, { } };
-}
-
 bool AnchorPositionEvaluator::isAnchor(const RenderStyle& style)
 {
     if (!style.anchorNames().isNone())
@@ -1694,14 +1702,16 @@ CheckedPtr<RenderBoxModelObject> AnchorPositionEvaluator::defaultAnchorForBox(co
     if (!box.element())
         return nullptr;
 
-    CheckedRef element = *box.element();
+    auto styleable = Styleable::fromRenderer(box);
+    if (!styleable)
+        return nullptr;
 
     auto& anchorPositionedMap = box.document().styleScope().anchorPositionedToAnchorMap();
-    auto it = anchorPositionedMap.find(element);
+    auto it = anchorPositionedMap.find(*styleable);
     if (it == anchorPositionedMap.end())
         return nullptr;
 
-    auto anchorName = ResolvedScopedName::createFromScopedName(element, defaultAnchorName(box.style()));
+    auto anchorName = ResolvedScopedName::createFromScopedName(styleable->element, defaultAnchorName(box.style()));
 
     for (auto& anchor : it->value.anchors) {
         if (anchorName == anchor.name)
@@ -1710,16 +1720,17 @@ CheckedPtr<RenderBoxModelObject> AnchorPositionEvaluator::defaultAnchorForBox(co
     return nullptr;
 }
 
-HashMap<AnchorPositionedKey, size_t> AnchorPositionEvaluator::recordLastSuccessfulPositionOptions(const SingleThreadWeakHashSet<const RenderBox>& positionTryBoxes)
+HashMap<WeakStyleable, size_t> AnchorPositionEvaluator::recordLastSuccessfulPositionOptions(const SingleThreadWeakHashSet<const RenderBox>& positionTryBoxes)
 {
-    HashMap<Style::AnchorPositionedKey, size_t> lastSuccessfulPositionOptionMap;
+    HashMap<WeakStyleable, size_t> lastSuccessfulPositionOptionMap;
 
     for (const auto& positionTryBox : positionTryBoxes) {
         auto styleable = Styleable::fromRenderer(positionTryBox);
-        ASSERT(styleable);
+        if (!styleable)
+            continue;
 
         if (auto usedPositionOptionIndex = positionTryBox.style().usedPositionOptionIndex())
-            lastSuccessfulPositionOptionMap.add({ styleable->element, styleable->pseudoElementIdentifier }, *usedPositionOptionIndex);
+            lastSuccessfulPositionOptionMap.add(*styleable, *usedPositionOptionIndex);
     }
 
     return lastSuccessfulPositionOptionMap;
