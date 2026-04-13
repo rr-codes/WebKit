@@ -88,6 +88,7 @@ Ref<FontFace> FontFace::create(ScriptExecutionContext& context, const String& fa
             if (fontBinaryParsingPolicy(arrayBufferView->span(), fontTrustedTypes) == FontParsingPolicy::Deny)
                 return { };
 
+            result->m_sourceIsImmediateBuffer = true;
             dataRequiresAsynchronousLoading = populateFontFaceWithArrayBuffer(result->backing(), WTF::move(arrayBufferView));
             return { };
         },
@@ -95,6 +96,7 @@ Ref<FontFace> FontFace::create(ScriptExecutionContext& context, const String& fa
             if (fontBinaryParsingPolicy(arrayBuffer->span(), fontTrustedTypes) == FontParsingPolicy::Deny)
                 return { };
 
+            result->m_sourceIsImmediateBuffer = true;
             unsigned byteLength = arrayBuffer->byteLength();
             auto arrayBufferView = JSC::Uint8Array::create(WTF::move(arrayBuffer), 0, byteLength);
             dataRequiresAsynchronousLoading = populateFontFaceWithArrayBuffer(result->backing(), WTF::move(arrayBufferView));
@@ -352,7 +354,7 @@ void FontFace::fontStateChanged(CSSFontFace& face, CSSFontFace::Status, CSSFontF
         // FIXME: This check should not be needed, but because FontFace's are sometimes adopted after they have already
         // gone through a load cycle, we can sometimes come back through here and try to resolve the promise again.
         if (!m_loadedPromise->isFulfilled())
-            m_loadedPromise->reject(Exception { ExceptionCode::NetworkError });
+            m_loadedPromise->reject(Exception { m_sourceIsImmediateBuffer ? ExceptionCode::SyntaxError : ExceptionCode::NetworkError });
         return;
     case CSSFontFace::Status::Pending:
         ASSERT_NOT_REACHED();

@@ -109,6 +109,7 @@ private:
     Ref<CSSFontFace> m_backing;
     const UniqueRef<LoadedPromise> m_loadedPromise;
     bool m_mayLoadedPromiseBeScriptObservable { false };
+    bool m_sourceIsImmediateBuffer { false };
 };
 
 }

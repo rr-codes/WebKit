@@ -1,3 +1,3 @@
 
-FAIL Constructing a FontFace from an ArrayBuffer should reject with a SyntaxError promise_rejects_dom: function "function() { throw e; }" threw object "NetworkError:  A network error occurred." that is not a DOMException SyntaxError: property "code" is equal to 19, expected 12
+PASS Constructing a FontFace from an ArrayBuffer should reject with a SyntaxError
 
