@@ -665,6 +665,7 @@ bool hasCapacityToUseLargeGigacage();
     v(Bool, useJSONSourceTextAccess, true, Normal, "Expose JSON source text access feature."_s) \
     v(Bool, useJSPI, true, Normal, "Enable the implementation of JavaScript Promise Integration."_s) \
     v(Bool, useMoreCurrencyDisplayChoices, false, Normal, "Enable more currencyDisplay choices for Intl.NumberFormat"_s) \
+    v(Bool, usePromiseIsPromise, false, Normal, nullptr) \
     v(Bool, useSharedArrayBuffer, false, Normal, nullptr) \
     v(Bool, useShadowRealm, false, Normal, "Expose the ShadowRealm object."_s) \
     v(Bool, useTemporal, false, Normal, "Expose the Temporal object."_s) \
