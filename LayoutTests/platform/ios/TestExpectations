@@ -1068,6 +1068,7 @@ webkit.org/b/116046 fast/events/sequential-focus-navigation-starting-point.html 
 webkit.org/b/159240 fast/events/remove-focus-navigation-starting-point-crash.html [ Skip ]
 webkit.org/b/164888 fast/shadow-dom/focus-navigation-out-of-slot.html [ Skip ]
 webkit.org/b/164888 fast/shadow-dom/focus-navigation-passes-shadow-host.html [ Skip ]
+webkit.org/b/311742 fast/shadow-dom/focus-navigation-many-non-focusable-shadow-hosts.html [ Skip ]
 webkit.org/b/164888 fast/shadow-dom/focus-navigation-passes-svg-use-element.html [ Skip ]
 webkit.org/b/202497 imported/w3c/web-platform-tests/shadow-dom/focus/ [ Skip ]
 imported/w3c/web-platform-tests/shadow-dom/focus/focus-pseudo-matches-on-shadow-host.html [ Pass ]
