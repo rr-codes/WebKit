@@ -9700,10 +9700,11 @@ void ByteCodeParser::parseBlock(unsigned limit)
                 break;
             }
             case ModuleVar: {
-                // Since the value of the "scope" virtual register is not used in LLInt / baseline op_resolve_scope with ModuleVar,
-                // we need not to keep it alive by the Phantom node.
                 // Module environment is already strongly referenced by the CodeBlock.
                 set(bytecode.m_dst, weakJSConstant(lexicalEnvironment));
+                // BytecodeUseDef reports m_scope as a use regardless of resolve type,
+                // so we need to keep it OSR-available even though LLInt won't read it.
+                addToGraph(Phantom, get(bytecode.m_scope));
                 break;
             }
             case ResolvedClosureVar:
