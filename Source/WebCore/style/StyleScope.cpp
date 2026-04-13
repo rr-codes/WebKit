@@ -391,6 +391,31 @@ void Scope::addStyleSheetCandidateNode(Node& node, bool createdByParser)
     m_styleSheetCandidateNodes.insertBefore(*followingNode, node);
 }
 
+void Scope::establishPreferredStylesheetSetName(const Element& element, const CSSStyleSheet& sheet)
+{
+    // Per CSSOM spec "add a CSS style sheet", the preferred CSS style sheet set
+    // name is established when a sheet is added, based on insertion order — not
+    // tree order. This is called at sheet-creation time so that a later-inserted
+    // stylesheet placed earlier in tree order does not override the name.
+    // https://drafts.csswg.org/cssom/#add-a-css-style-sheet
+    if (!m_preferredStylesheetSetName.isEmpty())
+        return;
+
+    if (element.isInShadowTree())
+        return;
+
+    auto title = sheet.title();
+    if (title.isNull() || title.isEmpty())
+        return;
+
+    if (is<HTMLStyleElement>(element))
+        m_preferredStylesheetSetName = title;
+    else if (auto* linkElement = dynamicDowncast<HTMLLinkElement>(element)) {
+        if (!linkElement->isEnabledViaScript() && !linkElement->attributeWithoutSynchronization(HTMLNames::relAttr).contains("alternate"_s))
+            m_preferredStylesheetSetName = title;
+    }
+}
+
 void Scope::removeStyleSheetCandidateNode(Node& node)
 {
     if (m_styleSheetCandidateNodes.remove(node))

@@ -93,6 +93,7 @@ public:
     void removeStyleSheetCandidateNode(Node&);
 
     void setPreferredStylesheetSetName(const String&);
+    void establishPreferredStylesheetSetName(const Element&, const CSSStyleSheet&);
 
     void addPendingSheet(const Element&);
     void removePendingSheet(const Element&);
