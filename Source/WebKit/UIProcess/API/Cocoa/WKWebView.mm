@@ -1169,8 +1169,8 @@ static void addBrowsingContextControllerMethodStubsIfNeeded()
 - (NSURL *)URL
 {
     auto& activeURL = _page->pageLoadState().activeURL();
-    if (_cachedActiveNSURL.first != activeURL) {
-        _cachedActiveNSURL.first = activeURL;
+    if (_cachedActiveNSURL.first != activeURL.string()) {
+        _cachedActiveNSURL.first = activeURL.string();
         _cachedActiveNSURL.second = activeURL.createNSURL();
     }
     return _cachedActiveNSURL.second.getAutoreleased();
