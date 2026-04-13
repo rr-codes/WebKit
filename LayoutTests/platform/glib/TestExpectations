@@ -902,6 +902,7 @@ accessibility/aria-owns-text-stitching.html [ Skip ]
 accessibility/dynamic-text-stitching.html [ Skip ]
 accessibility/hit-test-on-stitched-text.html [ Skip ]
 accessibility/list-marker-text-stitching.html [ Skip ]
+accessibility/stitched-text-path.html [ Skip ]
 accessibility/text-stitching-across-inline-elements.html [ Skip ]
 accessibility/text-stitching-after-atomic-inline.html [ Skip ]
 accessibility/text-stitching-end-text-marker.html [ Skip ]
@@ -1091,6 +1092,8 @@ webkit.org/b/215405 [ Release ] accessibility/roles-exposed.html [ Failure ]
 webkit.org/b/217260 accessibility/spinbutton-crash.html [ Failure ]
 
 webkit.org/b/217801 accessibility/text-element-path.html [ Failure ]
+accessibility/label-static-text-path.html [ Failure ]
+accessibility/statictext-path.html [ Failure ]
 
 # aria-braille* attributes are not implemented:
 webkit.org/b/220719 accessibility/braille-label-role.html [ Failure ]
