@@ -45,24 +45,24 @@ PASS selected single-byte: windows-1258
 PASS selected single-byte: iso-8859-8-i
 PASS selected single-byte: iso-8859-16
 PASS selected single-byte: x-mac-cyrillic
-FAIL Concatenating two ISO-2022-JP outputs is not always valid assert_equals: expected "¥\ufffd¥" but got "\ufffd¥\ufffd¥"
+PASS Concatenating two ISO-2022-JP outputs is not always valid
 PASS gb18030 version and ranges
 PASS gbk version and ranges
 PASS gbk decoder is gb18030 decoder
 PASS Replacement, push back ASCII characters: big5
-FAIL Replacement, push back ASCII characters: iso-2022-jp assert_equals: expected "\ufffd\ufffd" but got "\ufffd$"
+PASS Replacement, push back ASCII characters: iso-2022-jp
 PASS Replacement, push back ASCII characters: gb18030
 PASS Replacement, push back ASCII characters: euc-jp
 PASS Replacement, push back ASCII characters: euc-kr
 PASS Replacement, push back ASCII characters: shift_jis
 PASS Replacement, push back ASCII characters: gbk
-FAIL Sticky multibyte state: iso-2022-jp assert_equals: expected "@" but got "\ufffd@"
-FAIL Sticky multibyte state: gb18030 assert_equals: expected "@" but got ":@"
-FAIL Sticky multibyte state: big5 assert_equals: expected "@" but got ":@"
-FAIL Sticky multibyte state: shift_jis assert_equals: expected "@" but got ":@"
-FAIL Sticky multibyte state: euc-kr assert_equals: expected "@" but got ":@"
-FAIL Sticky multibyte state: gbk assert_equals: expected "@" but got ":@"
-FAIL Sticky multibyte state: euc-jp assert_equals: expected "　" but got "\ufffd"
+PASS Sticky multibyte state: iso-2022-jp
+PASS Sticky multibyte state: gb18030
+PASS Sticky multibyte state: big5
+PASS Sticky multibyte state: shift_jis
+PASS Sticky multibyte state: euc-kr
+PASS Sticky multibyte state: gbk
+PASS Sticky multibyte state: euc-jp
 PASS Sticky fatal BOM: utf-8
 PASS Sticky fatal BOM: utf-16le
 PASS Sticky fatal BOM: utf-16be
