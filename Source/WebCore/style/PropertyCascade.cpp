@@ -295,6 +295,8 @@ bool PropertyCascade::addMatch(const MatchedProperties& matchedProperties, Origi
 #endif
             if (propertyAllowlist == PropertyAllowlist::Marker && !isValidMarkerStyleProperty(propertyID))
                 return false;
+            if (propertyAllowlist == PropertyAllowlist::Highlight && !isValidHighlightStyleProperty(propertyID))
+                return false;
 
             if (m_includedProperties.types.containsAll(normalPropertyTypes()))
                 return true;
