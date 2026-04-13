@@ -117,7 +117,6 @@ set(WTF_PUBLIC_HEADERS
     GenericHashKey.h
     GenericTimeMixin.h
     GetPtr.h
-    Gigacage.h
     GlobalVersion.h
     GraphNodeWorklist.h
     GregorianDateTime.h
@@ -557,7 +556,6 @@ set(WTF_SOURCES
     FilePrintStream.cpp
     FileSystem.cpp
     FunctionDispatcher.cpp
-    Gigacage.cpp
     GlobalVersion.cpp
     GregorianDateTime.cpp
     HashTable.cpp
