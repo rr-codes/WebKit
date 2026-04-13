@@ -2,6 +2,9 @@ set_property(DIRECTORY . PROPERTY FOLDER "ANGLE")
 
 if (APPLE)
     set(is_mac TRUE)
+    # GLESv2.cmake:131 (converted from ANGLE's gn) gates system_utils_{apple,posix,mac}.cpp on
+    # is_apple (gn's naming), but this shim only set is_mac. 25 undefined angle::* at link.
+    set(is_apple TRUE)
 elseif (WIN32)
     set(is_win TRUE)
     set(angle_enable_d3d9 TRUE)
@@ -83,8 +86,8 @@ set(ANGLE_SOURCES
     ${angle_translator_essl_symbol_table_sources}
     ${angle_translator_glsl_and_vulkan_base_sources}
     ${angle_translator_glsl_sources}
+    $<$<BOOL:${is_apple}>:${angle_translator_glsl_apple_sources}>
     ${angle_translator_sources}
-    ${angle_system_utils_sources}
     src/common/angle_version_info.cpp
     src/libANGLE/capture/FrameCapture_mock.cpp
     src/libANGLE/capture/serialize_mock.cpp
@@ -224,7 +227,7 @@ if (ENABLE_WEBGL)
     WEBKIT_COPY_FILES(LibGLESv2EntryPointsHeaders
         DESTINATION ${ANGLE_FRAMEWORK_HEADERS_DIR}/ANGLE
         FILES ${libglesv2_entry_points_headers}
-        FLATTENED
+        FLATTENED NO_SYMLINK  # adjust-angle-include-paths.py rewrites these in-place
     )
     if (WIN32 AND TARGET GLESv2)
         # GLESv2 needs to have a direct or indirect dependency to
