@@ -2723,6 +2723,7 @@ sub GenerateDefaultValue
             my $useAtomString = $type->extendedAttributes->{AtomString};
             return $useAtomString ? "typename Converter<${IDLType}>::ReturnType { nullAtom() }" : "typename Converter<${IDLType}>::ReturnType { String() }";
         }
+        return "typename Converter<${IDLType}>::ReturnType { }" if $type->name eq "object";
         return "typename Converter<${IDLType}>::ReturnType { std::nullopt }";
     }
 
