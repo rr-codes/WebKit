@@ -78,6 +78,7 @@
 #include "RenderScrollbarPart.h"
 #include "RenderTableRow.h"
 #include "RenderTextControl.h"
+#include "RenderTextFragment.h"
 #include "RenderTheme.h"
 #include "RenderTreeBuilder.h"
 #include "RenderView.h"
@@ -2179,7 +2180,34 @@ static Vector<FloatRect> absoluteRectsForRangeInText(const SimpleRange& range, T
         offsetRange.start--;
     if (offsetRange.end < node.data().length() && offsetRange.end && U16_IS_TRAIL(node.data()[offsetRange.end]) && U16_IS_LEAD(node.data()[offsetRange.end - 1]))
         offsetRange.end++;
-    auto textQuads = renderer->absoluteQuadsForRange(offsetRange.start, offsetRange.end, behavior);
+
+    Vector<FloatQuad> textQuads;
+    auto handleFirstLetterQuads = [&] {
+        CheckedPtr textFragmentWithRemainingTextAfterFirstLetter = dynamicDowncast<RenderTextFragment>(*renderer);
+        if (!textFragmentWithRemainingTextAfterFirstLetter || !textFragmentWithRemainingTextAfterFirstLetter->firstLetter())
+            return false;
+
+        auto remainingTextStart = textFragmentWithRemainingTextAfterFirstLetter->start();
+        if (offsetRange.start < remainingTextStart) {
+            if (CheckedPtr firstLetterRenderer = dynamicDowncast<RenderText>(textFragmentWithRemainingTextAfterFirstLetter->firstLetter()->firstChild())) {
+                auto firstLetterEnd = std::min(offsetRange.end, remainingTextStart);
+                textQuads.appendVector(firstLetterRenderer->absoluteQuadsForRange(offsetRange.start, firstLetterEnd, behavior));
+            }
+            offsetRange.start = 0;
+            offsetRange.end = offsetRange.end > remainingTextStart ? offsetRange.end - remainingTextStart : 0;
+            return true;
+        }
+
+        ASSERT(offsetRange.start >= remainingTextStart);
+        ASSERT(offsetRange.end >= remainingTextStart);
+        offsetRange.start -= remainingTextStart;
+        offsetRange.end -= remainingTextStart;
+        return true;
+    };
+
+    auto hasFirstLetter = handleFirstLetterQuads();
+    if (!hasFirstLetter || offsetRange.start < offsetRange.end)
+        textQuads.appendVector(renderer->absoluteQuadsForRange(offsetRange.start, offsetRange.end, behavior));
 
     if (behavior.contains(RenderObject::BoundingRectBehavior::RespectClipping)) {
         auto absoluteClippedOverflowRect = renderer->absoluteClippedOverflowRectForRepaint();
