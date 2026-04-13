@@ -3693,4 +3693,5 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     ${WebCore_DERIVED_SOURCES_DIR}/WebCoreLogDefinitions.h
     ${WebCore_DERIVED_SOURCES_DIR}/WebCoreVirtualLogFunctions.h
     ${WebCore_DERIVED_SOURCES_DIR}/WebKitFontFamilyNames.h
+    ${WebCore_DERIVED_SOURCES_DIR}/XMLNSNames.h
 )
