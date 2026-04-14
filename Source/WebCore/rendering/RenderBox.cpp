@@ -2930,7 +2930,9 @@ LayoutUnit RenderBox::computeSizingKeywordLogicalWidthUsing(CSS::Keyword::Stretc
         logicalWidthResult += (marginStart + marginEnd) - adjustedMargin;
     }
 
-    if (containingBlock->containsFloats() && avoidsFloats())
+    // Floats resolve stretch against the containing block (CSS Sizing 4, 6.1), not the space remaining after other floats.
+    auto isNonFloatingBlockThatAvoidsFloats = !isFloating() && avoidsFloats();
+    if (isNonFloatingBlockThatAvoidsFloats && containingBlock->containsFloats())
         logicalWidthResult = std::min(logicalWidthResult, shrinkLogicalWidthToAvoidFloats(marginStart, marginEnd, containingBlock));
 
     return std::max(borderAndPadding, logicalWidthResult);
