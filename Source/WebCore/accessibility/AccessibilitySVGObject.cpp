@@ -50,6 +50,7 @@
 #include "TypedElementDescendantIteratorInlines.h"
 #include "XLinkNames.h"
 #include <wtf/Language.h>
+#include <wtf/NeverDestroyed.h>
 
 namespace WebCore {
 
@@ -188,8 +189,15 @@ String AccessibilitySVGObject::descriptionFromTitleChild(Element* titleChild) co
             return xlinkTitle;
     }
 
-    if (RefPtr target = targetForUseElement())
-        return target->description();
+    if (RefPtr target = targetForUseElement()) {
+        // Avoid infinite recursion from circular <use> references by tracking ones we're currently resolving.
+        static NeverDestroyed<HashSet<Element*>> elementsResolvingDescription;
+        if (elementsResolvingDescription->add(element.get()).isNewEntry) {
+            auto result = target->description();
+            elementsResolvingDescription->remove(element.get());
+            return result;
+        }
+    }
 
     if (m_renderer && m_renderer->isRenderOrLegacyRenderSVGImage()) {
         const auto& alt = getAttribute(HTMLNames::altAttr);
@@ -217,8 +225,15 @@ String AccessibilitySVGObject::helpTextFromChildren(Element* titleChild, Element
             return result;
     }
 
-    if (RefPtr target = targetForUseElement())
-        return target->helpText();
+    if (RefPtr target = targetForUseElement()) {
+        // Avoid infinite recursion from circular <use> references by tracking ones we're currently resolving.
+        static NeverDestroyed<HashSet<Element*>> elementsResolvingHelpText;
+        if (elementsResolvingHelpText->add(element.get()).isNewEntry) {
+            auto result = target->helpText();
+            elementsResolvingHelpText->remove(element.get());
+            return result;
+        }
+    }
 
     if (titleChild) {
         auto titleText = titleChild->textContent();
