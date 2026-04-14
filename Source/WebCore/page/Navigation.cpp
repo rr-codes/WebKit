@@ -474,7 +474,7 @@ Navigation::Result Navigation::performTraversal(JSC::JSGlobalObject& globalObjec
         return createErrorResult(WTF::move(committed), WTF::move(finished), ExceptionCode::InvalidStateError, "Invalid state"_s);
 
     if (!hasEntryWithKey(key))
-        createErrorResult(WTF::move(committed), WTF::move(finished), ExceptionCode::AbortError, "Navigation aborted"_s);
+        return createErrorResult(WTF::move(committed), WTF::move(finished), ExceptionCode::AbortError, "Navigation aborted"_s);
 
     RefPtr frame = this->frame();
     if (!frame->isMainFrame() && protect(window->document())->canNavigate(protect(frame->page()->mainFrame()).ptr()) != CanNavigateState::Able)
