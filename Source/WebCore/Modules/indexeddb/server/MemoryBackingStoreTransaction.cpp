@@ -200,7 +200,7 @@ void MemoryBackingStoreTransaction::abort()
 
     // Restore renamed object stores.
     for (auto iterator : m_originalObjectStoreNames)
-        protect(m_backingStore)->renameObjectStoreForVersionChangeAbort(iterator.key, iterator.value);
+        m_backingStore->renameObjectStoreForVersionChangeAbort(protect(iterator.key), iterator.value);
     m_originalObjectStoreNames.clear();
 
     // Restore added object stores.
