@@ -3235,6 +3235,11 @@ bool RenderLayerBacking::isSimpleContainerCompositingLayer(PaintedContentsInfo& 
     if (m_owningLayer.isRenderViewLayer())
         return false;
 
+    // Scroll containers intentionally use the bitmap path for their background
+    // in updateDrawsContent(), so they are not simple containers.
+    if (m_scrollContainerLayer)
+        return false;
+
     if (hasBackingSharingLayers())
         return false;
 
