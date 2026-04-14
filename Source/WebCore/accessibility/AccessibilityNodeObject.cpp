@@ -1586,7 +1586,7 @@ static RefPtr<Element> nodeActionElement(Node& node)
     if (RefPtr input = dynamicDowncast<HTMLInputElement>(node)) {
         // We only allow date/datetime fields with standard (non-custom) focus here because calling showPicker(), which happens
         // using the action element in AccessibilityObject::press(), on platforms with custom focus (e.g., iOS) is a no-op.
-        if (!input->isDisabledFormControl() && (input->isRadioButton() || input->isCheckbox() || input->isTextButton() || input->isFileUpload() || input->isImageButton() || input->isTextField() || isDateFieldWithStandardFocus(*input)))
+        if (!input->isDisabledFormControl() && (input->isRadioButton() || input->isCheckbox() || input->isTextButton() || input->isFileUpload() || input->isImageButton() || input->isTextField() || isDateFieldWithStandardFocus(*input) || input->isColorControl()))
             return input;
     } else if (elementName == ElementName::HTML_button || elementName == ElementName::HTML_select)
         return &downcast<Element>(node);
