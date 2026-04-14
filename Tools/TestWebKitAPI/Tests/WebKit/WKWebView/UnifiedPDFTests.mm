@@ -412,6 +412,43 @@ UNIFIED_PDF_TEST(TextAnnotationBackgroundColorDoesNotAdaptToColorScheme)
     EXPECT_WK_STREQ(lightModeColor, darkModeColor);
 }
 
+UNIFIED_PDF_TEST(SelectionHighlightColorDoesNotAdaptToColorScheme)
+{
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 600, 600) configuration:configurationForWebViewTestingUnifiedPDF().get() addToWindow:YES]);
+    [webView synchronouslyLoadRequest:[NSURLRequest requestWithURL:[NSBundle.test_resourcesBundle URLForResource:@"test" withExtension:@"pdf"]]];
+    [[webView window] makeFirstResponder:webView.get()];
+    [[webView window] makeKeyAndOrderFront:nil];
+    [[webView window] orderFrontRegardless];
+
+    CGRect webViewBounds = [webView bounds];
+    auto webViewWidth = CGRectGetWidth(webViewBounds);
+    auto webViewHeight = CGRectGetHeight(webViewBounds);
+
+    // We sample the inner 20% of the web view since
+    // the plugin background does adapt to color scheme.
+    CGRect snapshotRect = CGRectMake(webViewWidth * .4, webViewHeight * .4, webViewWidth * .2, webViewHeight * .2);
+
+    [webView forceLightMode];
+    [webView waitForNextPresentationUpdate];
+
+    [webView sendClickAtPoint:NSMakePoint(100, 100)];
+    [webView selectAll:nil];
+    [webView waitForNextPresentationUpdate];
+    auto lightModeColors = [webView sampleColorsInRect:snapshotRect];
+
+    [webView sendClickAtPoint:NSMakePoint(50, 50)];
+    [webView waitForNextPresentationUpdate];
+    [webView forceDarkMode];
+    [webView waitForNextPresentationUpdate];
+
+    [webView sendClickAtPoint:NSMakePoint(100, 100)];
+    [webView selectAll:nil];
+    [webView waitForNextPresentationUpdate];
+    auto darkModeColors = [webView sampleColorsInRect:snapshotRect];
+
+    EXPECT_EQ(lightModeColors, darkModeColors);
+}
+
 #endif // PLATFORM(MAC)
 
 #if ENABLE(PDF_HUD)

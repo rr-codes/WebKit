@@ -823,9 +823,15 @@ static IterationStatus forEachCALayer(CALayer *layer, IterationStatus(^visitor)(
 
 - (CGImageRef)snapshotAfterScreenUpdates
 {
+    return [self snapshotAfterScreenUpdatesInRect:CGRectNull];
+}
+
+- (CGImageRef)snapshotAfterScreenUpdatesInRect:(CGRect)rect
+{
     __block RetainPtr<CGImage> result;
     __block bool done = false;
     RetainPtr configuration = adoptNS([WKSnapshotConfiguration new]);
+    [configuration setRect:rect];
     [configuration setAfterScreenUpdates:YES];
     [self takeSnapshotWithConfiguration:configuration.get() completionHandler:^(TestWebKitAPI::Util::PlatformImage *snapshot, NSError *) {
         result = TestWebKitAPI::Util::convertToCGImage(snapshot);
@@ -1389,11 +1395,21 @@ static UIWindowScene *windowScene()
     return [self sampleColorsWithInterval:TestWebKitAPI::CGImagePixelReader::defaultWebViewSamplingInterval];
 }
 
+- (Vector<WebCore::Color>)sampleColorsInRect:(CGRect)rect
+{
+    return [self sampleColorsInRect:rect withInterval:TestWebKitAPI::CGImagePixelReader::defaultWebViewSamplingInterval];
+}
+
 - (Vector<WebCore::Color>)sampleColorsWithInterval:(unsigned)interval
+{
+    return [self sampleColorsInRect:CGRectNull withInterval:TestWebKitAPI::CGImagePixelReader::defaultWebViewSamplingInterval];
+}
+
+- (Vector<WebCore::Color>)sampleColorsInRect:(CGRect)rect withInterval:(unsigned)interval
 {
     [self waitForNextPresentationUpdate];
     Vector<WebCore::Color> samples;
-    TestWebKitAPI::CGImagePixelReader reader { [self snapshotAfterScreenUpdates] };
+    TestWebKitAPI::CGImagePixelReader reader { [self snapshotAfterScreenUpdatesInRect:rect] };
     for (unsigned x = interval; x < reader.width() - interval; x += interval) {
         for (unsigned y = interval; y < reader.height() - interval; y += interval)
             samples.append(reader.at(x, y));
