@@ -2075,6 +2075,12 @@
     "imported/w3c/web-platform-tests/dom/nodes/ParentNode-querySelector-All.html": [
         "slow"
     ],
+    "imported/w3c/web-platform-tests/dom/nodes/moveBefore/preserve-render-blocking-script.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/dom/nodes/moveBefore/preserve-render-blocking-style.html": [
+        "slow"
+    ],
     "imported/w3c/web-platform-tests/dom/nodes/name-validation.html": [
         "slow"
     ],

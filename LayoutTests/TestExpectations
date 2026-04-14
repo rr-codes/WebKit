@@ -6182,6 +6182,10 @@ webkit.org/b/263305 imported/w3c/web-platform-tests/close-watcher/user-activatio
 webkit.org/b/263305 imported/w3c/web-platform-tests/close-watcher/user-activation/yyy-popovers.html [ Skip ]
 webkit.org/b/263305 imported/w3c/web-platform-tests/close-watcher/user-activation/yyy.html?dialog [ Skip ]
 
+# Needs moveBefore support
+webkit.org/b/281223 imported/w3c/web-platform-tests/dom/nodes/moveBefore/focus-preserve-render.html [ Skip ]
+webkit.org/b/281223 imported/w3c/web-platform-tests/dom/nodes/moveBefore/moveBefore-as-flex-item.html [ ImageOnlyFailure ]
+
 # uncategorized dialog element failures
 webkit.org/b/286022 imported/w3c/web-platform-tests/html/semantics/interactive-elements/the-dialog-element/dialog-close-via-attribute.tentative.html [ Skip ]
 
