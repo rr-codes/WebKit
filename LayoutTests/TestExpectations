@@ -2368,7 +2368,7 @@ webkit.org/b/187003 imported/w3c/web-platform-tests/infrastructure/reftest/refte
 # WPT infrastructure tests failing.
 imported/w3c/web-platform-tests/infrastructure/assumptions/ahem.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/infrastructure/assumptions/min-font-size.html [ ImageOnlyFailure ]
-webkit.org/b/187039 imported/w3c/web-platform-tests/infrastructure/testdriver [ Skip ] # testdriver not supported yet.
+webkit.org/b/197011 imported/w3c/web-platform-tests/infrastructure/testdriver [ Skip ] # largely supported; some actions need interactive window
 webkit.org/b/187093 [ Debug ] imported/w3c/web-platform-tests/infrastructure/assumptions/html-elements.html [ Skip ]
 imported/w3c/web-platform-tests/infrastructure/server/wpt-server-websocket.sub.html [ Skip ] # non deterministic URL in text dump
 
@@ -6912,7 +6912,7 @@ imported/w3c/web-platform-tests/html/canvas/element/layers/2d.layer.valid-calls.
 imported/w3c/web-platform-tests/html/canvas/element/layers/2d.layer.valid-calls.save-beginLayer.html [ Failure ]
 imported/w3c/web-platform-tests/html/canvas/element/layers/2d.layer.valid-calls.save_reset_restore.html [ Failure ]
 
-webkit.org/b/259784 imported/w3c/web-platform-tests/html/canvas/offscreen/layers [ Skip ]
+webkit.org/b/273923 imported/w3c/web-platform-tests/html/canvas/offscreen/layers [ Skip ]
 
 # Some of Canvas Filter API features are not supported yet.
 
