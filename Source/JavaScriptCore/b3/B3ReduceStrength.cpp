@@ -1286,6 +1286,27 @@ private:
                         break;
                     }
 
+                    // Optimization for 33-bit magic constants on 64-bit targets
+                    // (Mitsunari & Hoshino 2026). When magic.add is true, the full
+                    // multiplier c = magicMultiplier | (1 << 32) is 33 bits. We fold c
+                    // and the post-shift into a single UMulHigh64:
+                    //   x / d = Trunc(UMulHigh64(ZExt32(x), c << (31 - shift)))
+                    // This replaces 5 operations (mul + sub + 2 shifts + add) with 1 multiply.
+                    // https://arxiv.org/abs/2604.07902
+                    if (magic.add) {
+                        if constexpr (isARM64() || isX86()) {
+                            ASSERT(!magic.preShift);
+                            uint64_t fullMagic = static_cast<uint64_t>(magic.magicMultiplier) | (1ULL << 32);
+                            uint64_t shiftedMagic = fullMagic << (31 - magic.shift);
+                            Value* ext = m_insertionSet.insert<Value>(m_index, ZExt32, m_value->origin(), dividend);
+                            Value* mulHigh = m_insertionSet.insert<Value>(
+                                m_index, UMulHigh, m_value->origin(), ext,
+                                m_insertionSet.insert<Const64Value>(m_index, m_value->origin(), static_cast<int64_t>(shiftedMagic)));
+                            replaceWithNew<Value>(Trunc, m_value->origin(), mulHigh);
+                            break;
+                        }
+                    }
+
                     // Apply pre-shift if needed (for even divisor optimization)
                     if (magic.preShift > 0) {
                         dividend = m_insertionSet.insert<Value>(
