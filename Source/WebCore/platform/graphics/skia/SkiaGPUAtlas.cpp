@@ -66,11 +66,32 @@ RefPtr<SkiaGPUAtlas> SkiaGPUAtlas::create(const SkiaImageAtlasLayout& layout, Re
 
     RELEASE_ASSERT(atlasSize == atlasTexture->size());
 
-    auto backendTexture = atlasTexture->createSkiaBackendTexture();
-    if (!backendTexture.isValid())
-        return nullptr;
+    ASSERT_IMPLIES(atlasTexture->usesDeferredTextureBinding(), !atlasTexture->id());
+
+    GrBackendTexture backendTexture;
+    if (!atlasTexture->usesDeferredTextureBinding()) {
+        backendTexture = atlasTexture->createSkiaBackendTexture();
+        if (!backendTexture.isValid())
+            return nullptr;
+    }
 
     return adoptRef(*new SkiaGPUAtlas(WTF::move(atlasTexture), WTF::move(backendTexture), layout, atlasSize));
+}
+
+bool SkiaGPUAtlas::ensureBackendTexture()
+{
+    if (!m_atlasTexture->usesDeferredTextureBinding())
+        return m_backendTexture.isValid();
+
+#if USE(GBM)
+    if (!m_atlasTexture->id()) {
+        if (!m_atlasTexture->bindDMABufToTexture())
+            return false;
+        m_backendTexture = m_atlasTexture->createSkiaBackendTexture();
+    }
+#endif
+
+    return m_backendTexture.isValid();
 }
 
 bool SkiaGPUAtlas::uploadImages()
