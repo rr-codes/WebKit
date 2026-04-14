@@ -943,11 +943,11 @@ webkit.org/b/186362 [ Release ] http/tests/resourceLoadStatistics/prevalent-reso
 
 webkit.org/b/189598 compositing/backing/backing-store-attachment-fill-forwards-animation.html [ Pass Failure ]
 
-webkit.org/b/271207 http/wpt/webauthn/public-key-credential-create-failure-local-silent.https.html [ Failure Crash ]
-webkit.org/b/271207 http/wpt/webauthn/public-key-credential-create-failure-local.https.html [ Failure Crash ]
-webkit.org/b/271207 http/wpt/webauthn/public-key-credential-create-success-local.https.html [ Failure Crash ]
-webkit.org/b/271207 http/wpt/webauthn/public-key-credential-get-success-local.https.html [ Failure Crash ]
-webkit.org/b/271207 http/wpt/webauthn/public-key-credential-get-failure-local.https.html [ Failure Crash ]
+webkit.org/b/271207 [ Debug ] http/wpt/webauthn/public-key-credential-create-failure-local-silent.https.html [ Failure Crash ]
+webkit.org/b/271207 [ Debug ] http/wpt/webauthn/public-key-credential-create-failure-local.https.html [ Failure Crash ]
+webkit.org/b/271207 [ Debug ] http/wpt/webauthn/public-key-credential-create-success-local.https.html [ Failure Crash ]
+webkit.org/b/271207 [ Debug ] http/wpt/webauthn/public-key-credential-get-success-local.https.html [ Failure Crash ]
+webkit.org/b/271207 [ Debug ] http/wpt/webauthn/public-key-credential-get-failure-local.https.html [ Failure Crash ]
 
 webkit.org/b/194826 http/tests/resourceLoadStatistics/do-not-block-top-level-navigation-redirect.html [ Pass Timeout ]
 
