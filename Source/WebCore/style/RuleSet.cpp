@@ -291,6 +291,21 @@ void RuleSet::addRule(RuleData&& ruleData, CascadeLayerIdentifier cascadeLayerId
             case CSSSelector::PseudoClass::Scope:
                 m_hasHostOrScopePseudoClassRulesInUniversalBucket = true;
                 break;
+            case CSSSelector::PseudoClass::Is:
+            case CSSSelector::PseudoClass::Where: {
+                auto* selectorList = selector->selectorList();
+                if (selectorList && selectorList->size() == 1) {
+                    for (auto* inner = &selectorList->first(); inner; inner = inner->precedingInComplexSelector()) {
+                        if (inner->match() == CSSSelector::Match::Tag && inner->tagQName().localName() != starAtom() && !tagSelector)
+                            tagSelector = inner;
+                        if (inner->relation() != CSSSelector::Relation::Subselector)
+                            break;
+                    }
+                }
+                if (hasHostOrScopePseudoClassSubjectInSelectorList(selector->selectorList()))
+                    m_hasHostOrScopePseudoClassRulesInUniversalBucket = true;
+                break;
+            }
             default:
                 if (hasHostOrScopePseudoClassSubjectInSelectorList(selector->selectorList()))
                     m_hasHostOrScopePseudoClassRulesInUniversalBucket = true;
