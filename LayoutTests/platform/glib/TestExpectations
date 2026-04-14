@@ -5492,7 +5492,6 @@ webkit.org/b/278719 fast/events/touch/inserted-fragment-touch-target.html [ Time
 imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-supplementary-ideograph.html [ ImageOnlyFailure ]
 
 webkit.org/b/311844 fast/mediastream/mediastreamtrack-configurationchange.html [ Failure ]
-webkit.org/b/311845 media/encrypted-media/mock-navigator-requestMediaKeySystemAccess.html [ Pass Failure ]
 
 # This is expected to fail in all platforms but it rarely passes in GTK and WPE.
 imported/w3c/web-platform-tests/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ ImageOnlyFailure Pass ]
