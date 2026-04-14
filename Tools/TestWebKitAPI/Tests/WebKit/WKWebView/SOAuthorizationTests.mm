@@ -813,6 +813,61 @@ TEST(SOAuthorizationRedirect, InterceptionSucceedWithOtherHttpStatusCode)
     EXPECT_WK_STREQ(testURL.get().absoluteString, finalURL);
 }
 
+TEST(SOAuthorizationRedirect, InterceptionSucceedWith401AndBody)
+{
+    resetState();
+    SWIZZLE_SOAUTH(PAL::getSOAuthorizationClassSingleton());
+
+    RetainPtr testURL = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+
+    RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
+    RetainPtr messageHandler = adoptNS([[TestSOAuthorizationScriptMessageHandler alloc] initWithExpectation:@[@"DeviceAuth"]]);
+    [[configuration userContentController] addScriptMessageHandler:messageHandler.get() name:@"testHandler"];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500) configuration:configuration.get()]);
+    RetainPtr delegate = adoptNS([[TestSOAuthorizationDelegate alloc] init]);
+    configureSOAuthorizationWebView(webView.get(), delegate.get(), OpenExternalSchemesPolicy::Allow);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:testURL.get()]];
+    Util::run(&authorizationPerformed);
+    checkAuthorizationOptions(false, emptyString(), 0);
+    EXPECT_TRUE(policyForAppSSOPerformed);
+
+    // Pass a HTTP 401 response with HTML body to mimic a device authentication challenge.
+    static constexpr auto deviceAuthResponse =
+        "<html>"
+        "<script>"
+        "window.webkit.messageHandlers.testHandler.postMessage('DeviceAuth');"
+        "</script>"
+        "</html>";
+    RetainPtr response = adoptNS([[NSHTTPURLResponse alloc] initWithURL:testURL.get() statusCode:401 HTTPVersion:@"HTTP/1.1" headerFields:nil]);
+    [gDelegate authorization:gAuthorization didCompleteWithHTTPResponse:response.get() httpBody:adoptNS([[NSData alloc] initWithBytes:deviceAuthResponse length:strlen(deviceAuthResponse)]).get()];
+    Util::run(&allMessagesReceived);
+}
+
+TEST(SOAuthorizationRedirect, InterceptionFallbackWith401AndEmptyBody)
+{
+    resetState();
+    SWIZZLE_SOAUTH(PAL::getSOAuthorizationClassSingleton());
+
+    RetainPtr testURL = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500)]);
+    RetainPtr delegate = adoptNS([[TestSOAuthorizationDelegate alloc] init]);
+    configureSOAuthorizationWebView(webView.get(), delegate.get(), OpenExternalSchemesPolicy::Allow);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:testURL.get()]];
+    Util::run(&authorizationPerformed);
+    checkAuthorizationOptions(false, emptyString(), 0);
+    EXPECT_TRUE(policyForAppSSOPerformed);
+
+    // A 401 with empty body should fall back to web path, same as other unhandled status codes.
+    RetainPtr response = adoptNS([[NSHTTPURLResponse alloc] initWithURL:testURL.get() statusCode:401 HTTPVersion:@"HTTP/1.1" headerFields:nil]);
+    [gDelegate authorization:gAuthorization didCompleteWithHTTPResponse:response.get() httpBody:adoptNS([[NSData alloc] init]).get()];
+    Util::run(&navigationCompleted);
+    EXPECT_WK_STREQ(testURL.get().absoluteString, finalURL);
+}
+
 TEST(SOAuthorizationRedirect, InterceptionSucceedWith302POST)
 {
     resetState();
