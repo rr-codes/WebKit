@@ -948,7 +948,7 @@ void HTMLMediaElement::unregisterWithDocument(Document& document)
 void HTMLMediaElement::didMoveToNewDocument(Document& oldDocument, Document& newDocument)
 {
     ActiveDOMObject::didMoveToNewDocument(newDocument);
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(DidMoveToNewDocument);
 
     ASSERT_WITH_SECURITY_IMPLICATION(&document() == &newDocument);
     if (m_shouldDelayLoadEvent) {

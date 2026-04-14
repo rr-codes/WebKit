@@ -63,6 +63,7 @@ HTMLMediaElementConstructor, "HTMLMediaElement::HTMLMediaElement(%" PRIX64 ")", 
 HTMLMediaElementCreateMediaPlayer, "HTMLMediaElement::createMediaPlayer(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementCurrentMediaTimeSeeking, "HTMLMediaElement::currentMediaTime(%" PRIX64 ") seeking, returning %f", (uint64_t, float), DEFAULT, Media
 HTMLMediaElementDestructor, "HTMLMediaElement::~HTMLMediaElement(%" PRIX64 ")", (uint64_t), DEFAULT, Media
+HTMLMediaElementDidMoveToNewDocument, "HTMLMediaElement::didMoveToNewDocument(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementFinishSeek, "HTMLMediaElement::finishSeek(%" PRIX64 ") current time = %f, pending seek = %d", (uint64_t, double, int), DEFAULT, Media
 HTMLMediaElementInsertionSteps, "HTMLMediaElement::insertionSteps(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementMediaEngineWasUpdated, "HTMLMediaElement::mediaEngineWasUpdated(%" PRIX64 ")", (uint64_t), DEFAULT, Media
