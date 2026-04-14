@@ -994,7 +994,7 @@ final class WebBackForwardList {
         callCompletionHandler(completionHandler, consuming: WebKit.VectorRefFrameState(array: frameStates))
     }
 
-    func backForwardItemAtIndex(
+    func backForwardItemAtIndexForWebContent(
         delta: Int32,
         frameID: WebCore.FrameIdentifier,
         completionHandler: CompletionHandlers.WebBackForwardList.BackForwardItemAtIndexCompletionHandler

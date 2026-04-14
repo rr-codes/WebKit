@@ -5945,6 +5945,7 @@
 		5116CE6E2F3F983800968E09 /* WKJSSerializedNode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WKJSSerializedNode.h; sourceTree = "<group>"; };
 		5116CE6F2F3F983800968E09 /* WKJSSerializedNode.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WKJSSerializedNode.mm; sourceTree = "<group>"; };
 		5116CE702F3F983800968E09 /* WKJSSerializedNodeInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WKJSSerializedNodeInternal.h; sourceTree = "<group>"; };
+		51195EA52F8E868000218439 /* WebBackForwardList.messages.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = WebBackForwardList.messages.in; sourceTree = "<group>"; };
 		511F7D3F1EB1BCEE00E47B83 /* WebsiteDataStoreParameters.serialization.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = WebsiteDataStoreParameters.serialization.in; sourceTree = "<group>"; };
 		511F7D401EB1BCEE00E47B83 /* WebsiteDataStoreParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebsiteDataStoreParameters.h; sourceTree = "<group>"; };
 		511FD10F2C51848900BD8163 /* _WKMockUserNotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = _WKMockUserNotificationCenter.h; sourceTree = "<group>"; };
@@ -16057,6 +16058,7 @@
 				46F9B26223526ED0006FE5FA /* WebBackForwardCacheEntry.h */,
 				BC72BA1B11E64907001EB4EA /* WebBackForwardList.cpp */,
 				BC72BA1C11E64907001EB4EA /* WebBackForwardList.h */,
+				51195EA52F8E868000218439 /* WebBackForwardList.messages.in */,
 				5CDEE4922DACEF3400D2400E /* WebBackForwardList.swift */,
 				5C8653142EC38A6600B95ED4 /* WebBackForwardListSwiftUtilities.h */,
 				F036978715F4BF0500C3A80E /* WebColorPicker.cpp */,
