@@ -187,11 +187,12 @@ release r: force
 	@$(call invoke_xcode,,)
 
 release+assert ra: force
-	@$(call set_webkit_configuration,--ra)
+	@$(call set_webkit_configuration,--release)
 	@$(call invoke_xcode,,)
+release+assert ra: override GCC_PREPROCESSOR_ADDITIONS += ASSERT_ENABLED=1
 
 testing t: force
-	@$(call set_webkit_configuration,--testing)
+	@$(call set_webkit_configuration,--debug --force-optimization-level=O3)
 	@$(call invoke_xcode,,)
 
 analyze:

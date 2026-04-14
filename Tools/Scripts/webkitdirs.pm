@@ -1158,7 +1158,7 @@ sub determineConfigurationForVisualStudio
     return if defined $configurationForVisualStudio;
     determineConfiguration();
     # FIXME: We should detect when Debug_All or Production has been chosen.
-    $configurationForVisualStudio = "/p:Configuration=" . baseConfiguration();
+    $configurationForVisualStudio = "/p:Configuration=" . $configuration;
 }
 
 sub usesPerConfigurationBuildDirectory
@@ -1172,15 +1172,15 @@ sub determineConfigurationProductDir
     determineBaseProductDir();
     determineConfiguration();
     if (isWin() || isPlayStation() || (isJSCOnly() && isWindows())) {
-        $configurationProductDir = File::Spec->catdir($baseProductDir, baseConfiguration());
+        $configurationProductDir = File::Spec->catdir($baseProductDir, $configuration);
     } else {
         if (usesPerConfigurationBuildDirectory()) {
             $configurationProductDir = "$baseProductDir";
         } else {
             if (isGtk() or isWPE() or isJSCOnly() or shouldUseFlatpak() or shouldBuildForCrossTarget() or inCrossTargetEnvironment()) {
-                $configurationProductDir = "$baseProductDir/$portName/" . baseConfiguration();
+                $configurationProductDir = "$baseProductDir/$portName/$configuration";
             } else {
-                $configurationProductDir = "$baseProductDir/" . baseConfiguration();
+                $configurationProductDir = "$baseProductDir/$configuration";
             }
             $configurationProductDir .= "-" . xcodeSDKPlatformName() if isEmbeddedWebKit() || isMacCatalystWebKit();
         }
@@ -1253,14 +1253,6 @@ sub architecturesForProducts
 sub configuration()
 {
     determineConfiguration();
-    return $configuration;
-}
-
-sub baseConfiguration()
-{
-    determineConfiguration();
-    return "Release" if $configuration eq "Release+Assert";
-    return "Debug" if $configuration eq "Testing";
     return $configuration;
 }
 
@@ -1403,12 +1395,7 @@ sub XcodeOptions
     if (!checkForArgumentAndRemoveFromARGV("--no-use-workspace")) {
         push @options, ("-workspace", $configuredXcodeWorkspace) if $configuredXcodeWorkspace;
     }
-    push @options, ("-configuration", baseConfiguration());
-    if ($configuration eq "Release+Assert") {
-        push @options, "GCC_PREPROCESSOR_DEFINITIONS=ASSERT_ENABLED=1 \$(inherited)";
-    } elsif ($configuration eq "Testing") {
-        push @options, "GCC_OPTIMIZATION_LEVEL=3";
-    }
+    push @options, ("-configuration", $configuration);
     push @options, ("-destination", $destination) if $destination;
     # Be mindful of adding build settings here. Any settings which don't
     # *exactly* line up with build settings already provided by Xcode will
@@ -2844,7 +2831,7 @@ sub cmakeGeneratedBuildfile(@)
 sub generateBuildSystemFromCMakeProject
 {
     my ($prefixPath, @cmakeArgs) = @_;
-    my $config = baseConfiguration();
+    my $config = configuration();
     my $port = cmakeBasedPortName();
     my $buildPath = productDir();
     File::Path::mkpath($buildPath) unless -d $buildPath;
@@ -2986,7 +2973,7 @@ sub generateBuildSystemFromCMakeProject
 sub buildCMakeGeneratedProject($)
 {
     my (@makeArgs) = @_;
-    my $config = baseConfiguration();
+    my $config = configuration();
     my $buildPath = productDir();
     if (! -d $buildPath) {
         die "Must call generateBuildSystemFromCMakeProject() before building CMake project.";
@@ -3016,7 +3003,7 @@ sub buildCMakeGeneratedProject($)
 
 sub cleanCMakeGeneratedProject()
 {
-    my $config = baseConfiguration();
+    my $config = configuration();
     my $buildPath = productDir();
     if (-d $buildPath) {
         return systemVerbose("cmake", "--build", $buildPath, "--config", $config, "--target", "clean");
