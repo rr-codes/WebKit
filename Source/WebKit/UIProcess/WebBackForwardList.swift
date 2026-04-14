@@ -997,7 +997,7 @@ final class WebBackForwardList {
     func backForwardItemAtIndexForWebContent(
         delta: Int32,
         frameID: WebCore.FrameIdentifier,
-        completionHandler: CompletionHandlers.WebBackForwardList.BackForwardItemAtIndexCompletionHandler
+        completionHandler: CompletionHandlers.WebBackForwardList.BackForwardItemAtIndexForWebContentCompletionHandler
     ) {
         // FIXME: This should verify that the web process requesting the item hosts the specified frame.
         let delta = Int(delta)
