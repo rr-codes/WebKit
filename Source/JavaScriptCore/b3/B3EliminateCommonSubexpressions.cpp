@@ -833,7 +833,8 @@ private:
     void handleMemoryValue(
         Value* ptr, HeapRange range, const Filter& filter, const Replace& replace)
     {
-        MemoryMatches matches = findMemoryValue(ptr, range, filter);
+        // FIXME: Currently we observed some performance regression in this case.
+        MemoryMatches matches = findMemoryValue(ptr, range, filter /* , m_value->as<MemoryValue>()->readsMutability() */);
         if (replaceMemoryValue(matches, replace))
             return;
         m_data.memoryValuesAtTail.add(m_value->as<MemoryValue>());
@@ -898,7 +899,7 @@ private:
     }
 
     template<typename Filter>
-    MemoryMatches findMemoryValue(Value* ptr, HeapRange range, const Filter& filter)
+    MemoryMatches findMemoryValue(Value* ptr, HeapRange range, const Filter& filter, Mutability readsMutability = Mutability::Mutable)
     {
         if constexpr (B3EliminateCommonSubexpressionsInternal::verbose) {
             dataLogLn(*m_value, ": looking backward for ", *ptr, "...");
@@ -915,7 +916,7 @@ private:
             return { match };
         }
 
-        if (m_data.writes.overlaps(range)) {
+        if (readsMutability != Mutability::Immutable && m_data.writes.overlaps(range)) {
             dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Giving up because of writes.");
             return { };
         }
@@ -938,7 +939,7 @@ private:
                 continue;
             }
 
-            if (data.writes.overlaps(range)) {
+            if (readsMutability != Mutability::Immutable && data.writes.overlaps(range)) {
                 dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Giving up because of writes.");
                 return { };
             }
@@ -1019,14 +1020,14 @@ private:
         uint64_t fieldHeapKey = structGet->fieldHeapKey();
 
         dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Processing WasmStructGet: ", *structGet, " fieldHeapKey=", fieldHeapKey);
-        WasmStructMatches matches = findWasmStructValue(structPtr, range, fieldHeapKey, [&](WasmStructFieldValue*) { return true; });
+        WasmStructMatches matches = findWasmStructValue(structPtr, range, fieldHeapKey, [&](WasmStructFieldValue*) { return true; }, structGet->mutability());
         if (replaceWasmStructValue(matches, structGet))
             return;
         m_data.wasmStructValuesAtTail.add(structGet);
     }
 
     template<typename Filter>
-    WasmStructMatches findWasmStructValue(Value* structPtr, HeapRange range, uint64_t fieldHeapKey, const Filter& filter)
+    WasmStructMatches findWasmStructValue(Value* structPtr, HeapRange range, uint64_t fieldHeapKey, const Filter& filter, Mutability readsMutability = Mutability::Mutable)
     {
         if constexpr (B3EliminateCommonSubexpressionsInternal::verbose) {
             dataLogLn(*m_value, ": looking backward for WasmStruct structPtr=", *structPtr, " fieldHeapKey=", fieldHeapKey);
@@ -1040,7 +1041,7 @@ private:
         }
 
         // Check if current block has clobbering writes
-        if (m_data.writes.overlaps(range)) {
+        if (readsMutability != Mutability::Immutable && m_data.writes.overlaps(range)) {
             dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Giving up because of writes.");
             return { };
         }
@@ -1064,7 +1065,7 @@ private:
                 continue;
             }
 
-            if (data.writes.overlaps(range)) {
+            if (readsMutability != Mutability::Immutable && data.writes.overlaps(range)) {
                 dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Giving up because of writes.");
                 return { };
             }
@@ -1260,14 +1261,14 @@ private:
         HeapRange range = arrayGet->range();
 
         dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Processing WasmArrayGet: ", *arrayGet);
-        WasmArrayMatches matches = findWasmArrayValue(arrayPtr, indexValue, range, [&](WasmArrayElementValue*) { return true; });
+        WasmArrayMatches matches = findWasmArrayValue(arrayPtr, indexValue, range, [&](WasmArrayElementValue*) { return true; }, arrayGet->mutability());
         if (replaceWasmArrayValue(matches, arrayGet))
             return;
         m_data.wasmArrayValuesAtTail.add(arrayGet);
     }
 
     template<typename Filter>
-    WasmArrayMatches findWasmArrayValue(Value* arrayPtr, Value* indexValue, HeapRange range, const Filter& filter)
+    WasmArrayMatches findWasmArrayValue(Value* arrayPtr, Value* indexValue, HeapRange range, const Filter& filter, Mutability readsMutability = Mutability::Mutable)
     {
         // Check local block first
         if (auto* match = m_data.wasmArrayValuesAtTail.find(arrayPtr, indexValue, filter)) {
@@ -1275,7 +1276,7 @@ private:
             return { match };
         }
 
-        if (m_data.writes.overlaps(range)) {
+        if (readsMutability != Mutability::Immutable && m_data.writes.overlaps(range)) {
             dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Giving up because of writes.");
             return { };
         }
@@ -1294,7 +1295,7 @@ private:
                 continue;
             }
 
-            if (data.writes.overlaps(range)) {
+            if (readsMutability != Mutability::Immutable && data.writes.overlaps(range)) {
                 dataLogLnIf(B3EliminateCommonSubexpressionsInternal::verbose, "    Giving up because of writes.");
                 return { };
             }
