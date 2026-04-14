@@ -607,6 +607,7 @@ macro(WEBKIT_SETUP_SWIFT_AND_GENERATE_SWIFT_CPP_INTEROP_HEADER _target _module_n
             set(_swift_sdk_flag -sdk ${CMAKE_OSX_SYSROOT})
         endif ()
 
+        set(_header_tmp_path "${_header_path}.tmp")
         add_custom_command(
             OUTPUT ${_header_path}
             DEPENDS ${_swift_sources}
@@ -619,8 +620,12 @@ macro(WEBKIT_SETUP_SWIFT_AND_GENERATE_SWIFT_CPP_INTEROP_HEADER _target _module_n
                 ${_swift_include_dirs}
                 ${_swift_sources}
                 -module-name ${_module_name}
-                -emit-clang-header-path ${_header_path}
+                -emit-clang-header-path ${_header_tmp_path}
                 -emit-dependencies
+            COMMAND
+                ${CMAKE_COMMAND} -E copy_if_different ${_header_tmp_path} ${_header_path}
+            COMMAND
+                ${CMAKE_COMMAND} -E rm -f ${_header_tmp_path}
             DEPFILE ${_depfile_path}
             COMMENT
                 "Generating ${_target} C++ bindings to Swift at '${_header_path}'"

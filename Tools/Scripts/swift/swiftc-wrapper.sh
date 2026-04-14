@@ -31,9 +31,14 @@ for arg in "$@"; do
         "-output-file-map")
             if [[ -n "$is_link" ]]; then
                 skip_next=1
+                output_file_map_next=1
             else
                 args+=("$arg")
             fi
+            ;;
+        "-emit-module-path")
+            args+=("$arg")
+            emit_module_path_next=1
             ;;
         # Standalone -I: CMake INCLUDES use "-I" "/path" as separate args.
         # In link mode, wrap with -Xcc so the path goes to the Clang importer
@@ -62,7 +67,15 @@ for arg in "$@"; do
             ;;
         *)
             if [[ -n "$skip_next" ]]; then
+                if [[ -n "$output_file_map_next" ]]; then
+                    stripped_output_file_map="$arg"
+                    output_file_map_next=
+                fi
                 skip_next=
+            elif [[ -n "$emit_module_path_next" ]]; then
+                emit_module_path="$arg"
+                args+=("$arg")
+                emit_module_path_next=
             elif [[ -n "$skip_next_as_xlinker" ]]; then
                 args+=("-Xlinker" "$arg")
                 skip_next_as_xlinker=
@@ -76,4 +89,27 @@ for arg in "$@"; do
     esac
 done
 
-exec "$REAL_SWIFTC" "${args[@]}"
+"$REAL_SWIFTC" "${args[@]}" || swiftc_status=$?
+swiftc_status=${swiftc_status:-0}
+
+# In the combined compile+link step, we strip -output-file-map to prevent ld
+# from receiving the .json as an input file.  However, without it swiftc in WMO
+# mode does not produce individual .o files that CMake's Ninja generator declares
+# as build outputs.  Touch the expected .o paths so Ninja does not consider the
+# rule perpetually out-of-date.  Also touch the .swiftmodule since swiftc may
+# skip writing it when content is unchanged.
+if [[ $swiftc_status -eq 0 && -n "$stripped_output_file_map" && -f "$stripped_output_file_map" ]]; then
+    python3 -c "
+import json, pathlib, sys
+with open(sys.argv[1]) as f:
+    for v in json.load(f).values():
+        o = v.get('object')
+        if o:
+            pathlib.Path(o).touch()
+" "$stripped_output_file_map" 2>/dev/null || true
+fi
+if [[ $swiftc_status -eq 0 && -n "$emit_module_path" && -f "$emit_module_path" ]]; then
+    touch "$emit_module_path" 2>/dev/null || true
+fi
+
+exit $swiftc_status

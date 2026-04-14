@@ -237,14 +237,21 @@ if (ENABLE_WEBGL)
         add_dependencies(GLESv2 LibGLESv2EntryPointsHeaders)
     endif ()
 
-    add_custom_target(ANGLE-webgl-headers
-        DEPENDS LibGLESv2EntryPointsHeaders ANGLEWebGLHeaders
+    set(_angle_webgl_stamp ${CMAKE_CURRENT_BINARY_DIR}/ANGLE-webgl-headers.stamp)
+    add_custom_command(
+        OUTPUT ${_angle_webgl_stamp}
         COMMAND ${CMAKE_COMMAND} -E env
             BUILT_PRODUCTS_DIR=${ANGLE_FRAMEWORK_HEADERS_DIR}
             PUBLIC_HEADERS_FOLDER_PATH=/ANGLE
             ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/adjust-angle-include-paths.py
+        COMMAND ${CMAKE_COMMAND} -E touch ${_angle_webgl_stamp}
+        DEPENDS
+            ${CMAKE_CURRENT_SOURCE_DIR}/adjust-angle-include-paths.py
+            ${libglesv2_entry_points_headers}
         VERBATIM
     )
+    add_custom_target(ANGLE-webgl-headers DEPENDS ${_angle_webgl_stamp})
+    add_dependencies(ANGLE-webgl-headers LibGLESv2EntryPointsHeaders ANGLEWebGLHeaders)
     add_dependencies(GLESv2Framework ANGLE-webgl-headers)
 endif ()
 
