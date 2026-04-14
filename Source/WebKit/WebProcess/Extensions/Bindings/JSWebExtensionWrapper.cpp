@@ -34,8 +34,10 @@
 #include "WebPage.h"
 #include <JavaScriptCore/APICast.h>
 #include <JavaScriptCore/JSClassRef.h>
+#include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSWeakObjectMapRefPrivate.h>
+#include <WebCore/JSDOMExceptionHandling.h>
 #include <WebCore/JSDOMGlobalObject.h>
 
 namespace WebKit {
@@ -114,7 +116,16 @@ JSValueRef callWithArguments(JSObjectRef callbackFunction, JSRetainPtr<JSGlobalC
     if (!context || context->activeDOMObjectsAreStopped())
         return nil;
 
-    return JSObjectCallAsFunction(globalContext.get(), callbackFunction, nullptr, ArgumentCount, arguments.data(), nullptr);
+    JSValueRef exception = nullptr;
+    JSValueRef result = JSObjectCallAsFunction(globalContext.get(), callbackFunction, nullptr, ArgumentCount, arguments.data(), &exception);
+    if (exception) {
+        JSC::JSLockHolder lock(globalObject->vm());
+        auto exceptionValue = toJS(globalObject, exception);
+        RELEASE_LOG_ERROR(Extensions, "Uncaught exception in extension callback: %" PUBLIC_LOG_STRING, exceptionValue.toWTFString(globalObject).utf8().data());
+        WebCore::reportException(globalObject, exceptionValue);
+    }
+
+    return result;
 }
 
 void WebExtensionCallbackHandler::reportError(const String& message)

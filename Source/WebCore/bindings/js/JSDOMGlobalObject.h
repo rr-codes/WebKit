@@ -119,6 +119,12 @@ public:
 
     JSC::JSObject* readableStreamByteStrategySize();
 
+    using ScriptErrorCallback = Function<void(const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber)>;
+
+    void addScriptErrorCallback(ScriptErrorCallback&&);
+    bool hasScriptErrorCallbacks() const;
+    void invokeScriptErrorCallbacks(const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber) const;
+
 protected:
     JSDOMGlobalObject(JSC::VM&, JSC::Structure*, Ref<DOMWrapperWorld>&&, const JSC::GlobalObjectMethodTable* = nullptr);
     void finishCreation(JSC::VM&);
@@ -156,6 +162,7 @@ private:
     JSC::WeakGCMap<CrossOriginMapKey, JSC::JSFunction> m_crossOriginFunctionMap;
     JSC::WeakGCMap<CrossOriginMapKey, JSC::GetterSetter> m_crossOriginGetterSetterMap;
     JSC::Weak<JSC::JSObject> m_readableStreamByteStrategySize;
+    Vector<ScriptErrorCallback> m_scriptErrorCallbacks;
 };
 
 JSDOMGlobalObject* toJSDOMGlobalObject(ScriptExecutionContext&, DOMWrapperWorld&);

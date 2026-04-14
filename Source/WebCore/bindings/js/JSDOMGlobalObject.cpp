@@ -807,6 +807,22 @@ JSC::JSObject* JSDOMGlobalObject::readableStreamByteStrategySize()
     return m_readableStreamByteStrategySize.get();
 }
 
+void JSDOMGlobalObject::addScriptErrorCallback(ScriptErrorCallback&& callback)
+{
+    m_scriptErrorCallbacks.append(WTF::move(callback));
+}
+
+bool JSDOMGlobalObject::hasScriptErrorCallbacks() const
+{
+    return !m_scriptErrorCallbacks.isEmpty();
+}
+
+void JSDOMGlobalObject::invokeScriptErrorCallbacks(const String& message, const String& sourceURL, unsigned lineNumber, unsigned columnNumber) const
+{
+    for (auto& callback : m_scriptErrorCallbacks)
+        callback(message, sourceURL, lineNumber, columnNumber);
+}
+
 JSDOMGlobalObject* toJSDOMGlobalObject(ScriptExecutionContext& context, DOMWrapperWorld& world)
 {
     if (auto* document = dynamicDowncast<Document>(context))
