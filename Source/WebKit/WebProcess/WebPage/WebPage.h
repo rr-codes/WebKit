@@ -1751,7 +1751,7 @@ public:
     void allowImmersiveElement(CompletionHandler<void(bool)>&&);
     void presentImmersiveElement(const WebCore::LayerHostingContextIdentifier, CompletionHandler<void(bool)>&&);
     void dismissImmersiveElement(CompletionHandler<void()>&&);
-    void exitImmersive() const;
+    void exitImmersive(CompletionHandler<void()>&&);
     bool allowsImmersiveEnvironments() const;
 #endif
 

@@ -1,4 +1,4 @@
-// Copyright (C) 2025 Apple Inc. All rights reserved.
+// Copyright (C) 2026 Apple Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -23,40 +23,32 @@
 
 #if ENABLE_SWIFTUI
 
-import SwiftUI
-@_spi(Private) import WebKit
+public import Foundation
 
-struct ContextMenuContext {
-    #if os(macOS)
-    let menu: @MainActor (WebView.ActivatedElementInfo) -> NSMenu
-    #endif
-}
+extension WebPage {
+    /// An object representing a website-provided immersive environment that is ready for presentation.
+    @MainActor
+    @available(WK_XROS_TBA, *)
+    @available(iOS, unavailable)
+    @available(macOS, unavailable)
+    @available(watchOS, unavailable)
+    @available(tvOS, unavailable)
+    public struct ImmersiveEnvironment: Sendable {
+        // swift-format-ignore: AllPublicDeclarationsHaveDocumentation
+        @_spi(CrossImportOverlay)
+        public init(_ wrapped: WKImmersiveEnvironment) {
+            self.wrapped = wrapped
+        }
 
-struct OnScrollGeometryChangeContext {
-    let transform: (ScrollGeometry) -> AnyHashable
-    let action: (AnyHashable, AnyHashable) -> Void
-}
+        /// The frame information of the website that provided this immersive environment.
+        public var sourceFrame: WebPage.FrameInfo {
+            WebPage.FrameInfo(wrapped.sourceFrame)
+        }
 
-struct ScrollPositionContext {
-    var position: Binding<ScrollPosition>?
+        // swift-format-ignore: AllPublicDeclarationsHaveDocumentation
+        @_spi(CrossImportOverlay)
+        public let wrapped: WKImmersiveEnvironment
+    }
 }
-
-struct ScrollInputBehaviorContext {
-    let behavior: ScrollInputBehavior
-    let input: ScrollInputKind
-}
-
-struct ScrollEdgeEffectStyleContext {
-    let style: ScrollEdgeEffectStyle?
-    let edges: Edge.Set
-}
-
-#if ENABLE_MODEL_ELEMENT_IMMERSIVE
-struct ImmersiveEnvironmentRequestContext {
-    let shouldAllow: @MainActor (_ sourceFrame: WebPage.FrameInfo) async -> Bool
-    let present: @MainActor (_ environment: WebPage.ImmersiveEnvironment) async throws -> Void
-    let dismiss: @MainActor (_ environment: WebPage.ImmersiveEnvironment) async -> Void
-}
-#endif
 
 #endif

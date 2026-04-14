@@ -89,6 +89,8 @@
 #import "WKFormInfoInternal.h"
 #import "WKFrameInfoInternal.h"
 #import "WKHistoryDelegatePrivate.h"
+#import "WKImmersiveEnvironmentDelegate.h"
+#import "WKImmersiveEnvironmentInternal.h"
 #import "WKIntelligenceReplacementTextEffectCoordinator.h"
 #import "WKIntelligenceSmartReplyTextEffectCoordinator.h"
 #import "WKIntelligenceTextEffectCoordinator.h"
@@ -144,7 +146,6 @@
 #import "_WKFrameTreeNodeInternal.h"
 #import "_WKFullscreenDelegate.h"
 #import "_WKHitTestResultInternal.h"
-#import "_WKImmersiveEnvironmentDelegate.h"
 #import "_WKInputDelegate.h"
 #import "_WKInspectorInternal.h"
 #import "_WKPageLoadTimingInternal.h"
@@ -2144,50 +2145,54 @@ inline OptionSet<WebKit::FindOptions> toFindOptions(WKFindConfiguration *configu
 #endif
 
 #if ENABLE(MODEL_ELEMENT_IMMERSIVE)
-- (void)_allowImmersiveElementFromURL:(const URL&)url completion:(CompletionHandler<void(bool)>&&)completion
+- (void)_allowImmersiveElement:(WKFrameInfo *)frameInfo completion:(CompletionHandler<void(bool)>&&)completion
 {
-    id<_WKImmersiveEnvironmentDelegate> immersiveEnvironmentDelegate = self._immersiveEnvironmentDelegate;
+    id<WKImmersiveEnvironmentDelegate> immersiveEnvironmentDelegate = self.immersiveEnvironmentDelegate;
     if (!immersiveEnvironmentDelegate) {
         completion(false);
         return;
     }
 
-    auto nsURL = url.createNSURL();
-    [immersiveEnvironmentDelegate webView:self allowImmersiveEnvironmentFromURL:nsURL.get() completion:makeBlockPtr([completion = WTF::move(completion)](bool allow) mutable {
+    [immersiveEnvironmentDelegate webView:self shouldAllowImmersiveEnvironmentFromFrame:frameInfo completionHandler:makeBlockPtr([completion = WTF::move(completion)](BOOL allow) mutable {
         completion(allow);
     }).get()];
 }
 
-- (void)_presentImmersiveElement:(const WebCore::LayerHostingContextIdentifier)contextID completion:(CompletionHandler<void(bool)>&&)completion
+- (void)_presentImmersiveElement:(const WebCore::LayerHostingContextIdentifier)contextID frameInfo:(WKFrameInfo *)frameInfo completion:(CompletionHandler<void(bool)>&&)completion
 {
-    id<_WKImmersiveEnvironmentDelegate> immersiveEnvironmentDelegate = self._immersiveEnvironmentDelegate;
+    id<WKImmersiveEnvironmentDelegate> immersiveEnvironmentDelegate = self.immersiveEnvironmentDelegate;
     if (!immersiveEnvironmentDelegate) {
         completion(false);
         return;
     }
 
-    RetainPtr environmentView = adoptNS([[UIView alloc] initWithFrame:CGRectZero]);
-    RetainPtr remoteModelView = adoptNS([[_UIRemoteView alloc] initWithFrame:CGRectZero pid:[self _webProcessIdentifier] contextID:contextID.toUInt64()]);
-    [environmentView addSubview:remoteModelView.get()];
-    // To match the assumptions made in ModelProcessModelPlayerProxy.mm, the frame of the model view must stay zero, and be centered inside its container.
-    // This ensures that the model is correctly placed at the world's origin when the client puts the view inside their Immersive Space.
-    [remoteModelView setFrame:CGRectZero];
-    [remoteModelView setAutoresizingMask:(UIViewAutoresizingNone | UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin)];
+    RetainPtr environment = adoptNS([[WKImmersiveEnvironment alloc] _initWithContextID:contextID processIdentifier:[self _webProcessIdentifier] frameInfo:frameInfo]);
+    _currentImmersiveEnvironment = environment;
 
-    [immersiveEnvironmentDelegate webView:self presentImmersiveEnvironment:environmentView.autorelease() completion:makeBlockPtr([completion = WTF::move(completion)](NSError *error) mutable {
+    [immersiveEnvironmentDelegate webView:self presentImmersiveEnvironment:environment.get() completionHandler:makeBlockPtr([weakSelf = WeakObjCPtr<WKWebView>(self), completion = WTF::move(completion)](NSError *error) mutable {
+        if (error) {
+            if (RetainPtr retainedSelf = weakSelf.get())
+                retainedSelf->_currentImmersiveEnvironment = nil;
+        }
         completion(!error);
     }).get()];
 }
 
 - (void)_dismissImmersiveElement:(CompletionHandler<void()>&&)completion
 {
-    id<_WKImmersiveEnvironmentDelegate> immersiveEnvironmentDelegate = self._immersiveEnvironmentDelegate;
+    id<WKImmersiveEnvironmentDelegate> immersiveEnvironmentDelegate = self.immersiveEnvironmentDelegate;
     if (!immersiveEnvironmentDelegate) {
         completion();
         return;
     }
 
-    [immersiveEnvironmentDelegate webView:self dismissImmersiveEnvironment:makeBlockPtr([completion = WTF::move(completion)]() mutable {
+    RetainPtr environment = std::exchange(_currentImmersiveEnvironment, nil);
+    if (!environment) {
+        completion();
+        return;
+    }
+
+    [immersiveEnvironmentDelegate webView:self dismissImmersiveEnvironment:environment.get() completionHandler:makeBlockPtr([completion = WTF::move(completion)]() mutable {
         completion();
     }).get()];
 }
@@ -3892,6 +3897,35 @@ struct WKWebViewData {
 
 #endif
 
+- (id<WKImmersiveEnvironmentDelegate>)immersiveEnvironmentDelegate
+{
+#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
+    return _immersiveEnvironmentDelegate.getAutoreleased();
+#else
+    return nil;
+#endif
+}
+
+- (void)setImmersiveEnvironmentDelegate:(id<WKImmersiveEnvironmentDelegate>)delegate
+{
+#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
+    _immersiveEnvironmentDelegate = delegate;
+#else
+    UNUSED_PARAM(delegate);
+#endif
+}
+
+- (void)dismissImmersiveEnvironmentWithCompletionHandler:(void (^)(void))completionHandler
+{
+#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
+    _page->exitImmersive([completionHandler = makeBlockPtr(completionHandler)] {
+        completionHandler();
+    });
+#else
+    completionHandler();
+#endif
+}
+
 @end
 
 #pragma mark -
@@ -4760,29 +4794,6 @@ static void convertAndAddHighlight(Vector<Ref<WebCore::SharedMemory>>& buffers, 
     _page->restoreAppHighlightsAndScrollToIndex(buffers, 0);
 #else
     UNUSED_PARAM(highlight);
-#endif
-}
-
-- (id<_WKImmersiveEnvironmentDelegate>)_immersiveEnvironmentDelegate
-{
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
-    return _immersiveEnvironmentDelegate.getAutoreleased();
-#else
-    return nil;
-#endif
-}
-
-- (void)_setImmersiveEnvironmentDelegate:(id<_WKImmersiveEnvironmentDelegate>)delegate
-{
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
-    _immersiveEnvironmentDelegate = delegate;
-#endif
-}
-
-- (void)_exitImmersive
-{
-#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
-    _page->exitImmersive();
 #endif
 }
 

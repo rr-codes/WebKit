@@ -967,7 +967,7 @@ messages -> WebPage WantsAsyncDispatchMessage {
 #endif
 
 #if ENABLE(MODEL_ELEMENT_IMMERSIVE)
-    ExitImmersive()
+    ExitImmersive() -> ()
 #endif
 
     UpdateRemoteIntersectionObservers();

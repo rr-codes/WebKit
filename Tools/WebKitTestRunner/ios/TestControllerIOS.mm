@@ -651,7 +651,7 @@ void TestController::setHasMouseDeviceForTesting(bool hasMouseDevice)
 void TestController::exitImmersive()
 {
     TestRunnerWKWebView *webView = mainWebView()->platformView();
-    [webView _exitImmersive];
+    [webView dismissImmersiveEnvironmentWithCompletionHandler:^{ }];
 }
 #endif
 

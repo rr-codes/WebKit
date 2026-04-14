@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Apple Inc. All rights reserved.
+ * Copyright (C) 2026 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,23 +23,16 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <Foundation/Foundation.h>
-#import <WebKit/WKFoundation.h>
+#import <WebKit/WKImmersiveEnvironment.h>
 
-NS_ASSUME_NONNULL_BEGIN
+#if defined(TARGET_OS_VISION) && TARGET_OS_VISION
 
-// FIXME: This SPI should become an API - rdar://problem/164244457
+#import <UIKit/UIKit.h>
 
-WK_SWIFT_UI_ACTOR
-WK_API_AVAILABLE(visionos(26.4))
-@protocol _WKImmersiveEnvironmentDelegate <NSObject>
+@interface WKImmersiveEnvironment ()
 
-#if (defined(TARGET_OS_VISION) && TARGET_OS_VISION)
-- (void)webView:(WKWebView *)webView allowImmersiveEnvironmentFromURL:(NSURL *)url completion:(void (^)(bool allow))completion NS_SWIFT_ASYNC_NAME(webView(_:allowImmersiveEnvironmentFromURL:)) WK_API_AVAILABLE(visionos(26.4));
-- (void)webView:(WKWebView *)webView presentImmersiveEnvironment:(UIView *)environmentView completion:(void (^)(NSError * _Nullable error))completion NS_SWIFT_ASYNC_NAME(webView(_:presentImmersiveEnvironment:)) WK_API_AVAILABLE(visionos(26.4));
-- (void)webView:(WKWebView *)webView dismissImmersiveEnvironment:(void (^)(void))completion NS_SWIFT_ASYNC_NAME(webViewDismissImmersiveEnvironment(_:)) WK_API_AVAILABLE(visionos(26.4));
-#endif
+@property (nonatomic, readonly) UIView *_environmentView;
 
 @end
 
-NS_ASSUME_NONNULL_END
+#endif

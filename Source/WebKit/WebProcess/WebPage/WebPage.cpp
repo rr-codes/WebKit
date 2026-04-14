@@ -7922,7 +7922,7 @@ void WebPage::didCommitLoad(WebFrame* frame)
     flushDeferredDidReceiveMouseEvent();
 
 #if ENABLE(MODEL_ELEMENT_IMMERSIVE)
-    exitImmersive();
+    exitImmersive([] { });
 #endif
 
     if (frame && frame->isMainFrame())
@@ -8135,10 +8135,12 @@ void WebPage::dismissImmersiveElement(CompletionHandler<void()>&& completion)
     sendWithAsyncReply(Messages::WebPageProxy::DismissImmersiveElement(), WTF::move(completion));
 }
 
-void WebPage::exitImmersive() const
+void WebPage::exitImmersive(CompletionHandler<void()>&& completion)
 {
     if (RefPtr localTopDocument = this->localTopDocument(); RefPtr protectedImmersive = localTopDocument->immersiveIfExists())
-        protectedImmersive->exitImmersiveIfNeeded();
+        protectedImmersive->exitImmersiveIfNeeded(WTF::move(completion));
+    else
+        completion();
 }
 
 bool WebPage::allowsImmersiveEnvironments() const
