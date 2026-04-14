@@ -698,19 +698,21 @@ void TextIterator::handleTextRun()
         // Determine what the next text run will be, but don't advance yet
         auto nextTextRun = InlineIterator::nextTextBoxInLogicalOrder(m_textRun, m_textRunLogicalOrderCache);
         if (runStart < runEnd) {
-            auto isNewlineOrTab = [&](char16_t character) {
-                return character == '\n' || character == '\t';
+            bool shouldPreserveNewline = renderer->style().preserveNewline();
+            auto isCollapsibleNewlineOrTab = [&](char16_t character) {
+                return character == '\t' || (character == '\n' && !shouldPreserveNewline);
             };
-            // Handle either a single newline or tab character (which becomes a space),
-            // or a run of characters that does not include newlines or tabs.
-            // This effectively translates newlines and tabs to spaces without copying the text.
-            if (isNewlineOrTab(rendererText[runStart])) {
+            // Handle either a single collapsible newline or tab character (which becomes a space),
+            // or a run of characters that does not include such characters.
+            // This effectively translates collapsible newlines and tabs to spaces without copying the text.
+            // For white-space:pre-line, newlines are preserved rather than collapsed to spaces.
+            if (isCollapsibleNewlineOrTab(rendererText[runStart])) {
                 emitCharacter(' ', textNode.copyRef(), nullptr, runStart, runStart + 1);
                 m_offset = runStart + 1;
             } else {
                 auto subrunEnd = runStart + 1;
                 for (; subrunEnd < runEnd; ++subrunEnd) {
-                    if (isNewlineOrTab(rendererText[subrunEnd]))
+                    if (isCollapsibleNewlineOrTab(rendererText[subrunEnd]))
                         break;
                 }
                 if (subrunEnd == runEnd && m_behaviors.contains(TextIteratorBehavior::BehavesAsIfNodesFollowing)) {
