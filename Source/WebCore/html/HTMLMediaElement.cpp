@@ -103,9 +103,11 @@
 #include "MediaQueryEvaluator.h"
 #include "MediaResourceLoader.h"
 #include "MediaResourceSniffer.h"
+#include "MediaSession.h"
 #include "MessageClientForTesting.h"
 #include "Navigator.h"
 #include "NavigatorMediaDevices.h"
+#include "NavigatorMediaSession.h"
 #include "NetworkingContext.h"
 #include "NodeInlines.h"
 #include "NodeName.h"
@@ -1138,6 +1140,36 @@ void HTMLMediaElement::postConnectionSteps()
     }
 
     configureMediaControls();
+
+    if (protect(document())->quirks().needsYouTubeCaptionsQuirk()) {
+        DocumentMediaElement::from(protect(document())).setupAndCallYouTubeQuirkJS([this](JSDOMGlobalObject& globalObject, JSC::JSGlobalObject& lexicalGlobalObject, ScriptController&, DOMWrapperWorld&) {
+            auto& vm = globalObject.vm();
+            auto scope = DECLARE_THROW_SCOPE(vm);
+
+            auto functionValue = globalObject.get(&lexicalGlobalObject, JSC::Identifier::fromString(vm, "setupCaptionMirroring"_s));
+            if (scope.exception()) [[unlikely]]
+                return false;
+            if (functionValue.isUndefinedOrNull())
+                return false;
+
+            auto mediaJSWrapper = toJS(&lexicalGlobalObject, &globalObject, *this);
+
+            JSC::MarkedArgumentBuffer argList;
+            argList.append(mediaJSWrapper);
+            ASSERT(!argList.hasOverflowed());
+
+            auto* function = functionValue.toObject(&lexicalGlobalObject);
+            RETURN_IF_EXCEPTION(scope, false);
+            auto callData = JSC::getCallData(function);
+            if (callData.type == JSC::CallData::Type::None)
+                return false;
+
+            JSC::call(&lexicalGlobalObject, function, callData, &globalObject, argList);
+
+            RETURN_IF_EXCEPTION(scope, false);
+            return true;
+        });
+    }
 }
 
 void HTMLMediaElement::pauseAfterDetachedTask()
@@ -2633,7 +2665,7 @@ void HTMLMediaElement::textTrackModeChanged(TextTrack& track)
     if (track.mode() != TextTrack::Mode::Disabled && trackIsLoaded)
         textTrackAddCues(track, *protect(track.cues()));
 
-    configureTextTrackDisplay(AssumeTextTrackVisibilityChanged);
+    configureTextTrackDisplay();
 
     if (m_textTracks && m_textTracks->contains(track))
         m_textTracks->scheduleChangeEvent();
@@ -7815,6 +7847,13 @@ bool HTMLMediaElement::hasClosedCaptions() const
     if (player && player->hasClosedCaptions())
         return true;
 
+#if ENABLE(MEDIA_SESSION)
+    if (RefPtr mediaSession = mediaSessionIfNeededAndExists()) {
+        if (mediaSession->captionsEnabled())
+            return true;
+    }
+#endif
+
     if (!m_textTracks)
         return false;
 
@@ -7940,6 +7979,7 @@ void HTMLMediaElement::setClosedCaptionsVisible(bool closedCaptionVisible)
 
     markCaptionAndSubtitleTracksAsUnconfigured(Immediately);
     updateTextTrackDisplay();
+    configureTextTrackDisplay();
 }
 
 #if ENABLE(MEDIA_STATISTICS)
@@ -9822,6 +9862,33 @@ void HTMLMediaElement::audioSessionCategoryChanged(AudioSessionCategory category
 {
     m_clients.forEach([category, mode, policy] (auto& client) {
         client.audioSessionCategoryChanged(category, mode, policy);
+    });
+}
+
+#if ENABLE(MEDIA_SESSION)
+RefPtr<MediaSession> HTMLMediaElement::mediaSessionIfNeededAndExists() const
+{
+    if (!protect(document())->quirks().needsYouTubeCaptionsQuirk())
+        return nullptr;
+
+    if (RefPtr window = document().window())
+        return NavigatorMediaSession::mediaSessionIfExists(protect(window->navigator()));
+
+    return nullptr;
+}
+#endif
+
+void HTMLMediaElement::mediaSessionCaptionTracksChanged()
+{
+    m_clients.forEach([](auto& client) {
+        client.captionTracksChanged();
+    });
+}
+
+void HTMLMediaElement::mediaSessionCaptionsEnabledChanged()
+{
+    m_clients.forEach([](auto& client) {
+        client.captionsEnabledChanged();
     });
 }
 

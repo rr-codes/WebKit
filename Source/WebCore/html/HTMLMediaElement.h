@@ -159,6 +159,9 @@ public:
 
     virtual void audioSessionCategoryChanged(AudioSessionCategory, AudioSessionMode, RouteSharingPolicy) { }
     virtual void routingContextUIDChanged(const String&) { }
+
+    virtual void captionTracksChanged() { }
+    virtual void captionsEnabledChanged() { }
 };
 
 class HTMLMediaElement
@@ -737,6 +740,14 @@ public:
     }
 
     void forceStereoDecoding() { m_forceStereoDecoding = true; }
+
+#if ENABLE(MEDIA_SESSION)
+    RefPtr<MediaSession> mediaSessionIfNeededAndExists() const;
+#endif
+
+    void mediaSessionCaptionTracksChanged();
+    void mediaSessionCaptionsEnabledChanged();
+
 protected:
     HTMLMediaElement(const QualifiedName&, Document&, bool createdByParser);
     virtual ~HTMLMediaElement();

@@ -387,6 +387,17 @@ bool Quirks::needsYouTubeMouseOutQuirk() const
 #endif
 }
 
+bool Quirks::needsYouTubeCaptionsQuirk() const
+{
+#if PLATFORM(COCOA)
+    QUIRKS_EARLY_RETURN_IF_DISABLED_WITH_VALUE(false);
+
+    return m_quirksData.quirkIsEnabled(QuirksData::SiteSpecificQuirk::NeedsYouTubeCaptionQuirk);
+#else
+    return false;
+#endif
+}
+
 // safe.menlosecurity.com rdar://135114489
 // FIXME (rdar://138585709): Remove this quirk for safe.menlosecurity.com once investigation into text corruption on the site is completed and the issue is resolved.
 bool Quirks::shouldDisableWritingSuggestionsByDefault() const
@@ -3563,6 +3574,9 @@ static void handleYouTubeQuirks(QuirksData& quirksData, const URL& quirksURL, co
         QuirksData::SiteSpecificQuirk::NeedsScrollbarWidthThinDisabledQuirk,
         // youtube.com rdar://66242343
         QuirksData::SiteSpecificQuirk::NeedsVP9FullRangeFlagQuirk,
+#if PLATFORM(COCOA)
+        QuirksData::SiteSpecificQuirk::NeedsYouTubeCaptionQuirk,
+#endif
 #if PLATFORM(IOS) || PLATFORM(VISION)
         // youtube.com: rdar://110097836
         QuirksData::SiteSpecificQuirk::ShouldSilenceResizeObservers,
