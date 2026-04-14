@@ -448,9 +448,17 @@ void MarkupAccumulator::startAppendingNode(const Node& node, Namespaces* namespa
 
 void MarkupAccumulator::appendEndTag(StringBuilder& result, const Element& element)
 {
+    AtomString resolvedQualifiedName;
+    if (!m_resolvedElementQualifiedNameStack.isEmpty() && m_resolvedElementQualifiedNameStack.last().first.ptr() == &element)
+        resolvedQualifiedName = m_resolvedElementQualifiedNameStack.takeLast().second;
+
     if (shouldSelfClose(element, m_serializationSyntax) || (!element.hasChildNodes() && elementCannotHaveEndTag(element)))
         return;
-    result.append("</"_s, element.tagQName().toString(), '>');
+
+    if (!resolvedQualifiedName.isNull())
+        result.append("</"_s, resolvedQualifiedName, '>');
+    else
+        result.append("</"_s, element.tagQName().toString(), '>');
 }
 
 StringBuilder MarkupAccumulator::takeMarkup()
@@ -511,9 +519,12 @@ void MarkupAccumulator::appendNamespace(StringBuilder& result, const AtomString&
 {
     namespaces.checkConsistency();
     if (namespaceURI.isEmpty()) {
-        // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-xhtml-syntax.html#xml-fragment-serialization-algorithm
-        if (allowEmptyDefaultNS && namespaces.get(emptyAtom().impl()))
-            result.append(' ', xmlnsAtom(), "=\"\""_s);
+        // https://html.spec.whatwg.org/multipage/xhtml.html#xml-fragment-serialisation-algorithm
+        if (allowEmptyDefaultNS) {
+            RefPtr currentDefaultNamespace = namespaces.get(emptyAtom().impl());
+            if (currentDefaultNamespace && !currentDefaultNamespace->isEmpty())
+                result.append(' ', xmlnsAtom(), "=\"\""_s);
+        }
         return;
     }
 
@@ -675,8 +686,24 @@ void MarkupAccumulator::appendOpenTag(StringBuilder& result, const Element& elem
         // a default namespace declaration to make this namespace well-formed. However, http://www.w3.org/TR/xml-names11/#xmlReserved states
         // "The prefix xml MUST NOT be declared as the default namespace.", so use the xml prefix explicitly.
         if (element.namespaceURI() == XMLNames::xmlNamespaceURI) {
-            result.append(xmlAtom());
-            result.append(':');
+            auto qualifiedName = makeAtomString(xmlAtom(), ':', element.localName());
+            result.append(qualifiedName);
+            m_resolvedElementQualifiedNameStack.append({ element, WTF::move(qualifiedName) });
+            return;
+        } else if (!element.namespaceURI().isEmpty() && !element.hasAttribute(xmlnsAtom())) {
+            // If the element doesn't carry its own default namespace declaration,
+            // look for an existing prefix mapped to this namespace URI in an ancestor
+            // and use it instead of emitting a new default namespace declaration.
+            AtomString inheritedDefaultNS = namespaces->get(emptyAtom().impl());
+            if (inheritedDefaultNS.isNull() || inheritedDefaultNS != element.namespaceURI()) {
+                AtomString existingPrefix = namespaces->get(element.namespaceURI().impl());
+                if (!existingPrefix.isEmpty()) {
+                    auto qualifiedName = makeAtomString(existingPrefix, ':', element.localName());
+                    result.append(qualifiedName);
+                    m_resolvedElementQualifiedNameStack.append({ element, WTF::move(qualifiedName) });
+                    return;
+                }
+            }
         }
     }
     result.append(element.tagQName().toString());
