@@ -1,0 +1,5 @@
+
+FAIL shadowrootslotassignment=manual is serialized and appears before shadowrootclonable and shadowrootserializable assert_equals: expected "manual" but got "named"
+PASS shadowrootslotassignment=named is not serialized as it's the default
+FAIL shadowrootslotassignment=manual serializes between shadowrootdelegatesfocus and shadowrootclonable assert_equals: expected "manual" but got "named"
+

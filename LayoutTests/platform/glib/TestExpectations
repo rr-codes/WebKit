@@ -3837,6 +3837,8 @@ webanimations/accelerated-animations-and-implicit-keyframes.html [ Skip ]
 fast/shadow-dom/focus-ring-on-shadow-host.html [ Skip ]
 fast/shadow-dom/focus-ring-on-shadow-host-focuswithin.html [ Skip ]
 fast/shadow-dom/focus-ring-on-shadow-host-sibling.html [ Skip ]
+imported/w3c/web-platform-tests/shadow-dom/dragleave-related-target.html [ Skip ]
+imported/w3c/web-platform-tests/shadow-dom/focus-navigation/tentative/focus-navigation-scroller-interactive-child.html [ Skip ]
 
 # HLS media playback support is disabled in the GStreamer ports.
 http/tests/media/clearkey/clear-key-hls-aes128.html [ Skip ]

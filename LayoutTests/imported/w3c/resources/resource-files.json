@@ -13519,6 +13519,8 @@
         "web-platform-tests/shadow-dom/directionality-002-ref.html",
         "web-platform-tests/shadow-dom/imperative-slot-layout-invalidation-001-ref.html",
         "web-platform-tests/shadow-dom/invalidate-sibling-different-slots-ref.html",
+        "web-platform-tests/shadow-dom/manual-slot-assignment-no-wrong-unassign-ref.html",
+        "web-platform-tests/shadow-dom/reference/empty.html",
         "web-platform-tests/shadow-dom/shadow-style-invalidation-vw-units-ref.html",
         "web-platform-tests/shadow-dom/slot-fallback-content-001-ref.html",
         "web-platform-tests/shadow-dom/slot-fallback-content-002-ref.html",

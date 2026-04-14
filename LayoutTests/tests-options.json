@@ -5762,6 +5762,66 @@
     "imported/w3c/web-platform-tests/shadow-dom/declarative/gethtml.html": [
         "slow"
     ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/focus-navigation-slot-nested-2levels.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/focus-navigation-slots-in-slot.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/focus-navigation-with-delegatesFocus.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/focus-navigation.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/carousel-grid-order.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/flex-flow.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-auto-flow-reading-order.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-columns.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-pseudo-elements.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-display-contents.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-nested-grids.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-popover.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-position-absolute.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-position-fixed.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-with-slots.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-order.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/grid-rows.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/normal.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/source-order-invalid.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/shadow-dom/focus-navigation/reading-flow/tentative/source-order-valid.html": [
+        "slow"
+    ],
     "imported/w3c/web-platform-tests/speculation-rules/invalid-rules.https.html": [
         "slow"
     ],
