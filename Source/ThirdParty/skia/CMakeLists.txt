@@ -467,6 +467,7 @@ add_library(Skia STATIC
     src/gpu/ganesh/image/SkImage_LazyTexture.cpp
     src/gpu/ganesh/image/SkImage_RasterPinnable.cpp
     src/gpu/ganesh/image/SkSpecialImage_Ganesh.cpp
+    src/gpu/ganesh/mock/GrMockBackendSurface.cpp
     src/gpu/ganesh/mock/GrMockCaps.cpp
     src/gpu/ganesh/mock/GrMockGpu.cpp
     src/gpu/ganesh/mock/GrMockTypes.cpp
