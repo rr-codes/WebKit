@@ -35,8 +35,6 @@ namespace WebCore {
 struct GradientColorStop {
     float offset { 0 };
     Color color;
-
-    friend bool operator==(const GradientColorStop&, const GradientColorStop&) = default;
 };
 
 inline void add(Hasher& hasher, const GradientColorStop& stop)

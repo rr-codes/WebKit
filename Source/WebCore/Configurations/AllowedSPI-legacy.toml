@@ -582,6 +582,7 @@ symbols = [
     "CGSNextRect",
     "CGSRegionEnumerator",
     "CGSReleaseRegionEnumerator",
+    "CGShadingCreateConic",
     "CGStyleCreateColorMatrix",
     "CGStyleCreateFocusRingWithColor",
     "CGStyleCreateGaussianBlur",
