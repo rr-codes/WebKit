@@ -38,7 +38,7 @@ PASS Whitespace collapses across element boundaries ("<div><span>abc </span><spa
 PASS Whitespace collapses across element boundaries ("<div><span>abc </span><span style='white-space:pre'></span> def")
 PASS Whitespace around <input> should not be collapsed ("<div>abc <input> def")
 PASS Whitespace around inline-block should not be collapsed ("<div>abc <span style='display:inline-block'></span> def")
-FAIL Trailing space at end of inline-block should be collapsed ("<div>abc <span style='display:inline-block'> def </span> ghi") assert_equals: innerText expected "abc def ghi" but got "abc def  ghi"
+PASS Trailing space at end of inline-block should be collapsed ("<div>abc <span style='display:inline-block'> def </span> ghi")
 FAIL Whitespace between <input> and block should be collapsed ("<div><input> <div>abc</div>") assert_equals: innerText expected "abc" but got "\nabc"
 PASS Whitespace between inline-block and block should be collapsed ("<div><span style='inline-block'></span> <div>abc</div>")
 PASS Whitespace around <img> should not be collapsed ("<div>abc <img> def")
@@ -169,7 +169,7 @@ FAIL Invisible <p> doesn't induce extra line breaks ("<div style='visibility:hid
 PASS <pre> trailing newlines don't suppress <p> blank line ("<div><pre>abc\n\n</pre><p>def")
 PASS No blank lines around <div> with margin ("<div>abc<div style='margin:2em'>def")
 PASS No newlines at display:inline-block boundary ("<div>123<span style='display:inline-block'>abc</span>def")
-FAIL Leading/trailing space removal at display:inline-block boundary ("<div>123<span style='display:inline-block'> abc </span>def") assert_equals: innerText expected "123abcdef" but got "123 abc def"
+PASS Leading/trailing space removal at display:inline-block boundary ("<div>123<span style='display:inline-block'> abc </span>def")
 PASS Blank lines around <p> even without margin ("<div>123<p style='margin:0px'>abc</p>def")
 PASS No blank lines around <h1> ("<div>123<h1>abc</h1>def")
 PASS No blank lines around <h2> ("<div>123<h2>abc</h2>def")
