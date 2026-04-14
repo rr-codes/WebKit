@@ -7807,17 +7807,17 @@ SpeakerSelectionRequiresUserGesture:
 
 SpeculationRulesPrefetchEnabled:
   type: bool
-  status: stable
+  status: preview
   category: html
   humanReadableName: "SpeculationRules prefetch"
   humanReadableDescription: "SpeculationRules prefetch"
   defaultValue:
     WebKitLegacy:
-      default: true
+      default: false
     WebKit:
-      default: true
+      default: false
     WebCore:
-      default: true
+      default: false
   disableInLockdownMode: true
   sharedPreferenceForWebProcess: true
   richJavaScript: true
