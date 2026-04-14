@@ -7810,7 +7810,6 @@ webkit.org/b/249100 imported/w3c/web-platform-tests/css/CSS2/floats/floats-zero-
 imported/w3c/web-platform-tests/css/CSS2/floats/new-fc-beside-float-with-margin-rtl.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/floats/overflow-scroll-float-paint-order.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/floats/overhanging-float-paint-order.html [ ImageOnlyFailure ]
-webkit.org/b/286883 imported/w3c/web-platform-tests/css/CSS2/floats/remove-block-between-inline-and-float.html [ ImageOnlyFailure ]
 webkit.org/b/286884 imported/w3c/web-platform-tests/css/CSS2/floats/zero-width-floats-positioning.tentative.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/floats/float-nowrap-hyphen-rewind-1.html [ ImageOnlyFailure ]
 [ Debug ] imported/w3c/web-platform-tests/css/CSS2/floats/line-pushed-by-floats-crash.html [ Skip ]
