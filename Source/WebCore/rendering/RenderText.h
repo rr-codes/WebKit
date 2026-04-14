@@ -201,6 +201,9 @@ protected:
     virtual void setTextInternal(const String&, bool force);
 
 private:
+    void updateRenderedText();
+    void updateRenderedText(const String&);
+
     RenderText(Type, Node&, const String&);
 
     ASCIILiteral renderName() const override;
