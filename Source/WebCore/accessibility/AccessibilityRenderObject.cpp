@@ -2836,7 +2836,7 @@ void AccessibilityRenderObject::updateRoleAfterChildrenCreation()
         if (!hasMenuItemDescendant)
             m_role = AccessibilityRole::Generic;
     }
-    if (role == AccessibilityRole::SVGRoot && unignoredChildren().isEmpty())
+    if (role == AccessibilityRole::SVGRoot && !hasUnignoredChild())
         m_role = AccessibilityRole::Image;
 
     if (isAccessibilityList()) {
