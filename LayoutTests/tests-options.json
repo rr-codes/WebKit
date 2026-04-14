@@ -4124,6 +4124,21 @@
     "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-4.html": [
         "slow"
     ],
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-5.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-across-slot.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-form-control.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-inside-shadow-dom.html": [
+        "slow"
+    ],
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-inside-slot.html": [
+        "slow"
+    ],
     "imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-tabindex.html": [
         "slow"
     ],
@@ -4142,10 +4157,10 @@
     "imported/w3c/web-platform-tests/html/semantics/popovers/popover-light-dismiss-hint.html": [
         "slow"
     ],
-    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-light-dismiss-with-anchor.tentative.html": [
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-light-dismiss.html": [
         "slow"
     ],
-    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-light-dismiss.html": [
+    "imported/w3c/web-platform-tests/html/semantics/popovers/popover-shadowhost-focus-navigation.html": [
         "slow"
     ],
     "imported/w3c/web-platform-tests/html/semantics/scripting-1/the-script-element/async_003.htm": [
