@@ -836,7 +836,7 @@ WebBackForwardListItem* WebBackForwardListWrapper::forwardItem() const
 
 RefPtr<WebBackForwardListItem> WebBackForwardListWrapper::itemAtDeltaFromCurrentIndex(int index) const
 {
-    return m_impl->itemAtIndex(index);
+    return m_impl->itemAtDeltaFromCurrentIndex(index);
 }
 
 unsigned WebBackForwardListWrapper::backListCount() const
