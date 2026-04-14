@@ -602,9 +602,6 @@
 		DD4BEE2429CBA49700398E35 /* pas_compact_large_utility_free_heap.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FABDDCD248AB08300A840B3 /* pas_compact_large_utility_free_heap.c */; };
 		DD4BEE2529CBA49700398E35 /* pas_compact_atomic_segregated_heap_page_sharing_pools_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FC409862451496000876DA0 /* pas_compact_atomic_segregated_heap_page_sharing_pools_ptr.h */; };
 		DD4BEE2629CBA49700398E35 /* pas_thread_suspend_lock.h in Headers */ = {isa = PBXBuildFile; fileRef = E35B7BC827ADB44E00C3498F /* pas_thread_suspend_lock.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		DD4BEE2929CBA4E300398E35 /* valgrind.h in Headers */ = {isa = PBXBuildFile; fileRef = 1417F64F18B7280C0076FA99 /* valgrind.h */; };
-		DD4BEE2A29CBA4E300398E35 /* ScopeExit.h in Headers */ = {isa = PBXBuildFile; fileRef = 148EFAE61D6B953B008E721E /* ScopeExit.h */; };
-		DD4BEE2E29CBA4E300398E35 /* ProcessCheck.h in Headers */ = {isa = PBXBuildFile; fileRef = AD14AD27202529A600890E3B /* ProcessCheck.h */; };
 		DE8B13B321CC5D9F00A63FCD /* BVMTags.h in Headers */ = {isa = PBXBuildFile; fileRef = DE8B13B221CC5D9F00A63FCD /* BVMTags.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E31E74802238CA5C005D084A /* StaticPerProcess.h in Headers */ = {isa = PBXBuildFile; fileRef = E31E747F2238CA5B005D084A /* StaticPerProcess.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E39ECE2D2A82360400BF878E /* pas_allocation_result.c in Sources */ = {isa = PBXBuildFile; fileRef = E39ECE2C2A82360400BF878E /* pas_allocation_result.c */; };
@@ -2397,9 +2394,7 @@
 				0100000D37BABA0A0A991999 /* pas_zero_memory.h in Headers */,
 				DD4BED6429CBA49700398E35 /* pas_zero_mode.h in Headers */,
 				AD14AD29202529C400890E3B /* ProcessCheck.h in Headers */,
-				DD4BEE2E29CBA4E300398E35 /* ProcessCheck.h in Headers */,
 				148EFAE81D6B953B008E721E /* ScopeExit.h in Headers */,
-				DD4BEE2A29CBA4E300398E35 /* ScopeExit.h in Headers */,
 				14DD789018F48CEB00950702 /* Sizes.h in Headers */,
 				E31E74802238CA5C005D084A /* StaticPerProcess.h in Headers */,
 				142B44371E2839E7001DA6E9 /* SystemHeap.h in Headers */,
@@ -2411,7 +2406,6 @@
 				65FE739D2B79E09800C5CDAF /* TZoneHeapManager.h in Headers */,
 				652E16982C4869D000C377D7 /* TZoneLog.h in Headers */,
 				14DD78CE18F48D7500950799 /* valgrind.h in Headers */,
-				DD4BEE2929CBA4E300398E35 /* valgrind.h in Headers */,
 				14DD78CF18F48D7500950702 /* Vector.h in Headers */,
 				14DD78D018F48D7500950702 /* VMAllocate.h in Headers */,
 			);
