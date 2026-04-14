@@ -104,6 +104,7 @@ public:
     WEBCORE_EXPORT bool NODELETE shouldIgnoreAriaForFastPathContentObservationCheck() const;
     WEBCORE_EXPORT bool NODELETE shouldIgnoreViewportArgumentsToAvoidExcessiveZoom() const;
     WEBCORE_EXPORT bool NODELETE shouldIgnoreViewportArgumentsToAvoidEnlargedView() const;
+    WEBCORE_EXPORT bool shouldUseDynamicViewportUnitsAsDefault() const;
     WEBCORE_EXPORT bool shouldLayOutAtMinimumWindowWidthWhenIgnoringScalingConstraints() const;
     WEBCORE_EXPORT bool shouldAllowNotificationPermissionWithoutUserGesture() const;
     WEBCORE_EXPORT static bool shouldAllowNavigationToCustomProtocolWithoutUserGesture(StringView protocol, const SecurityOriginData& requesterOrigin);

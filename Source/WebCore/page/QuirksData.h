@@ -208,6 +208,7 @@ struct QuirksData {
 #if ENABLE(META_VIEWPORT)
         ShouldIgnoreViewportArgumentsToAvoidExcessiveZoomQuirk,
         ShouldIgnoreViewportArgumentsToAvoidEnlargedViewQuirk,
+        ShouldUseDynamicViewportUnitsAsDefaultQuirk,
 #endif
         ShouldLayOutAtMinimumWindowWidthWhenIgnoringScalingConstraintsQuirk,
 #if PLATFORM(IOS_FAMILY)

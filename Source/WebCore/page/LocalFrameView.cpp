@@ -6885,6 +6885,9 @@ void LocalFrameView::setOverrideSizeForCSSDefaultViewportUnits(OverrideViewportS
 
 FloatSize LocalFrameView::sizeForCSSDefaultViewportUnits() const
 {
+    if (m_shouldUseDynamicViewportUnitsAsDefault)
+        return sizeForCSSDynamicViewportUnits();
+
     return calculateSizeForCSSViewportUnitsOverride(m_defaultViewportSizeOverride);
 }
 

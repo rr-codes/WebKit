@@ -945,6 +945,17 @@ bool Quirks::shouldIgnoreViewportArgumentsToAvoidEnlargedView() const
     return false;
 }
 
+// slack.com rdar://171190689
+bool Quirks::shouldUseDynamicViewportUnitsAsDefault() const
+{
+#if ENABLE(META_VIEWPORT)
+    QUIRKS_EARLY_RETURN_IF_DISABLED_WITH_VALUE(false);
+    return m_quirksData.quirkIsEnabled(QuirksData::SiteSpecificQuirk::ShouldUseDynamicViewportUnitsAsDefaultQuirk);
+#else
+    return false;
+#endif
+}
+
 // docs.google.com https://bugs.webkit.org/show_bug.cgi?id=199933
 bool Quirks::shouldOpenAsAboutBlank(const String& stringToOpen) const
 {
@@ -2693,6 +2704,8 @@ static void handleSlackQuirks(QuirksData& quirksData, const URL&, const String& 
 #if ENABLE(META_VIEWPORT)
     // slack.com: rdar://138614711
     quirksData.enableQuirk(QuirksData::SiteSpecificQuirk::ShouldIgnoreViewportArgumentsToAvoidEnlargedViewQuirk);
+    // slack.com: rdar://171190689
+    quirksData.enableQuirk(QuirksData::SiteSpecificQuirk::ShouldUseDynamicViewportUnitsAsDefaultQuirk);
 #else
     UNUSED_PARAM(quirksData);
 #endif

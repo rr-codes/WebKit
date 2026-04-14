@@ -7751,6 +7751,14 @@ static void setCanIgnoreViewportArgumentsToAvoidEnlargedViewIfNeeded(ViewportCon
     if (RefPtr document = frame ? frame->document() : nullptr; document && document->quirks().shouldIgnoreViewportArgumentsToAvoidEnlargedView())
         configuration.setCanIgnoreViewportArgumentsToAvoidEnlargedView(true);
 }
+
+static void setUseDynamicViewportUnitsAsDefaultIfNeeded(LocalFrame* frame)
+{
+    if (RefPtr document = frame ? frame->document() : nullptr; document && document->quirks().shouldUseDynamicViewportUnitsAsDefault()) {
+        if (RefPtr view = frame->view())
+            view->setShouldUseDynamicViewportUnitsAsDefault(true);
+    }
+}
 #endif
 
 void WebPage::didCommitLoad(WebFrame* frame)
@@ -7851,6 +7859,7 @@ void WebPage::didCommitLoad(WebFrame* frame)
 
     setCanIgnoreViewportArgumentsToAvoidExcessiveZoomIfNeeded(m_viewportConfiguration, coreFrame.get(), shouldIgnoreMetaViewport());
     setCanIgnoreViewportArgumentsToAvoidEnlargedViewIfNeeded(m_viewportConfiguration, coreFrame.get());
+    setUseDynamicViewportUnitsAsDefaultIfNeeded(coreFrame.get());
 
     m_viewportConfiguration.setPrefersHorizontalScrollingBelowDesktopViewportWidths(shouldEnableViewportBehaviorsForResizableWindows());
 
