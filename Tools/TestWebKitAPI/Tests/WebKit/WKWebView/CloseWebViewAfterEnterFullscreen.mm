@@ -77,6 +77,8 @@ TEST(CloseWebViewAfterEnterFullscreen, VideoFullscreen)
     [webView _close];
 
     TestWebKitAPI::Util::run(&didExitFullscreen);
+
+    TestWebKitAPI::Util::runFor(0.5_s);
 }
 
 TEST(CloseWebViewAfterEnterFullscreen, ElementFullscreen)
@@ -99,6 +101,8 @@ TEST(CloseWebViewAfterEnterFullscreen, ElementFullscreen)
     [webView _close];
 
     TestWebKitAPI::Util::run(&didExitFullscreen);
+
+    TestWebKitAPI::Util::runFor(0.5_s);
 }
 
 } // namespace TestWebKitAPI

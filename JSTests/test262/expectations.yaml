@@ -920,9 +920,6 @@ test/staging/sm/expressions/object-literal-computed-property-evaluation.js:
 test/staging/sm/expressions/short-circuit-compound-assignment-anon-fns.js:
   default: 'Test262Error: Expected SameValue(«"a"», «""») to be true'
   strict mode: 'Test262Error: Expected SameValue(«"a"», «""») to be true'
-test/staging/sm/extensions/DataView-construct-arguments-detaching.js:
-  default: 'Test262Error: byteOffset weirdness should have thrown Expected a TypeError but got a RangeError'
-  strict mode: 'Test262Error: byteOffset weirdness should have thrown Expected a TypeError but got a RangeError'
 test/staging/sm/extensions/function-caller-skips-eval-frames.js:
   default: 'Test262Error: Expected SameValue(«null», «function nest() { return eval("innermost();"); }») to be true'
 test/staging/sm/extensions/new-cross-compartment.js:
