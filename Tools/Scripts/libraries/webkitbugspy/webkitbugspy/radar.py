@@ -22,6 +22,7 @@
 
 import calendar
 import os
+import re
 import subprocess
 import sys
 import time
@@ -42,6 +43,14 @@ class Priority(object):
 
 
 class Tracker(GenericTracker):
+    # Used by Tools/Scripts/hooks/prepare-commit-msg get_bugs_string().
+    RES = [
+        re.compile(r'<?rdar://problem/(?P<id>\d+)>?'),
+        re.compile(r'<?radar://problem/(?P<id>\d+)>?'),
+        re.compile(r'<?rdar:\/\/(?P<id>\d+)>?'),
+        re.compile(r'<?radar:\/\/(?P<id>\d+)>?'),
+        re.compile(r'<?https:\/\/rdar\.apple\.com\/(?P<id>\d+)>?'),
+    ]
 
     OTHER_BUG = 'Other Bug'
     SECURITY = 'Security'
