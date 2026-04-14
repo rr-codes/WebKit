@@ -105,6 +105,7 @@ public:
 
     bool hasCustomProperty(const AtomString&) const;
     const Property& customProperty(const AtomString&) const LIFETIME_BOUND;
+    const Property& functionResultProperty() const LIFETIME_BOUND;
 
     std::span<const CSSPropertyID> logicalGroupPropertyIDs() const LIFETIME_BOUND;
     const HashMap<AtomString, Property>& customProperties() const LIFETIME_BOUND { return m_customProperties; }

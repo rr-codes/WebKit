@@ -640,6 +640,8 @@ RefPtr<const CustomProperty> Builder::resolveCustomPropertyForContainerQueries(c
 
 RefPtr<const CustomProperty> Builder::resolveFunctionResult(const CSSCustomPropertyValue& value)
 {
+    SetForScope resultScope(m_state->m_currentProperty, &m_cascade.functionResultProperty());
+
     auto resolvedValue = resolveCustomPropertyValue(const_cast<CSSCustomPropertyValue&>(value));
     if (!resolvedValue)
         return nullptr;

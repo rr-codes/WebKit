@@ -158,6 +158,7 @@ public:
     const CSSToLengthConversionData& cssToLengthConversionData() const LIFETIME_BOUND { return m_cssToLengthConversionData; }
 
     GuardedSubstitutionContexts::Guard guardSubstitutionContext(SubstitutionContext&& context) { return m_guardedSubstitutionContexts.guard(WTF::move(context)); }
+    void addGuardedFunctionContexts(const BuilderState& other) { m_guardedSubstitutionContexts.addFunctionContextsFrom(other.m_guardedSubstitutionContexts); }
 
     void setIsBuildingKeyframeStyle() { m_isBuildingKeyframeStyle = true; }
     bool hasRevertRuleOrLayerInKeyframeStyle() const { return m_hasRevertRuleOrLayerInKeyframeStyle; }

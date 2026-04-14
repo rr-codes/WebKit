@@ -234,6 +234,12 @@ bool PropertyCascade::mayOverrideExistingProperty(CSSPropertyID propertyID, cons
     return !!m_lastIndexForLogicalGroup;
 }
 
+const PropertyCascade::Property& PropertyCascade::functionResultProperty() const
+{
+    ASSERT(hasNormalProperty(CSSPropertyResult));
+    return normalProperty(CSSPropertyResult);
+}
+
 const PropertyCascade::Property* PropertyCascade::lastPropertyResolvingLogicalPropertyPair(CSSPropertyID propertyID, WritingMode writingMode) const
 {
     ASSERT(CSSProperty::isInLogicalPropertyGroup(propertyID));
