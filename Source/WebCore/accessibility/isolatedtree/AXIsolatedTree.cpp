@@ -315,13 +315,6 @@ RefPtr<AXIsolatedTree> AXIsolatedTree::treeForFrameID(FrameIdentifier frameID)
     return treeFrameCache().get(frameID);
 }
 
-RefPtr<AXIsolatedTree> AXIsolatedTree::treeForFrameIDAlreadyLocked(FrameIdentifier frameID)
-{
-    AX_BROKEN_ASSERT(s_storeLock.isHeld());
-
-    return treeFrameCache().get(frameID);
-}
-
 void AXIsolatedTree::generateSubtree(AccessibilityObject& axObject)
 {
     AXTRACE("AXIsolatedTree::generateSubtree"_s);

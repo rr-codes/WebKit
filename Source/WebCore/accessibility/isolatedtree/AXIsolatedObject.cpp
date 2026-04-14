@@ -2068,8 +2068,7 @@ AXIsolatedObject* AXIsolatedObject::crossFrameParentObject() const
 
     auto parentObjectID = *markableParentObjectID;
 
-    // FIXME: We don't actually hold the lock here.
-    RefPtr parentTree = AXIsolatedTree::treeForFrameIDAlreadyLocked(*parentFrameID);
+    RefPtr parentTree = AXIsolatedTree::treeForFrameID(*parentFrameID);
     if (!parentTree)
         return nullptr;
 
@@ -2082,8 +2081,7 @@ AXIsolatedObject* AXIsolatedObject::crossFrameChildObject() const
         return nullptr;
 
     auto frameID = optionalAttributeValue<FrameIdentifier>(AXProperty::CrossFrameChildFrameID);
-    // FIXME: We don't actually hold the lock here.
-    if (RefPtr childTree = frameID ? AXIsolatedTree::treeForFrameIDAlreadyLocked(*frameID) : nullptr) {
+    if (RefPtr childTree = frameID ? AXIsolatedTree::treeForFrameID(*frameID) : nullptr) {
         childTree->applyPendingChanges();
         return childTree->rootNode();
     }

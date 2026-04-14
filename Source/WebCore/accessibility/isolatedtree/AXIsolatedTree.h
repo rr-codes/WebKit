@@ -441,7 +441,6 @@ public:
 
     // Retrieve the tree for the frame ID of any LocalFrame
     WEBCORE_EXPORT static RefPtr<AXIsolatedTree> treeForFrameID(FrameIdentifier);
-    static RefPtr<AXIsolatedTree> treeForFrameIDAlreadyLocked(FrameIdentifier);
     AXObjectCache* axObjectCache() const;
     constexpr AXGeometryManager* geometryManager() const { return m_geometryManager.get(); }
 
