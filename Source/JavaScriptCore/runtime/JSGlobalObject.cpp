@@ -172,6 +172,7 @@
 #include "JSModuleLoaderInlines.h"
 #include "JSModuleNamespaceObjectInlines.h"
 #include "JSModuleRecord.h"
+#include "JSModuleRecordInlines.h"
 #include "JSNativeStdFunctionInlines.h"
 #include "JSONObjectInlines.h"
 #include "JSPromise.h"
@@ -1802,7 +1803,7 @@ capitalName ## Constructor* lowerName ## Constructor = featureFlag ? capitalName
     m_moduleLoader.initLater(
         [] (const Initializer<JSModuleLoader>& init) {
             auto catchScope = DECLARE_TOP_EXCEPTION_SCOPE(init.vm);
-            init.set(JSModuleLoader::create(init.owner, init.vm, JSModuleLoader::createStructure(init.vm, init.owner, jsNull())));
+            init.set(JSModuleLoader::create(init.owner, init.vm));
             catchScope.releaseAssertNoException();
         });
     if (Options::exposeInternalModuleLoader())

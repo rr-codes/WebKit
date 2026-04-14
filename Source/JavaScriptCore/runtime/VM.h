@@ -535,6 +535,11 @@ public:
     WriteBarrier<Structure> moduleProgramExecutableStructure;
     WriteBarrier<Structure> promiseReactionStructure;
     WriteBarrier<Structure> jsMicrotaskDispatcherStructure;
+    WriteBarrier<Structure> moduleLoaderStructure;
+    WriteBarrier<Structure> moduleRegistryEntryStructure;
+    WriteBarrier<Structure> moduleLoadingContextStructure;
+    WriteBarrier<Structure> moduleLoaderPayloadStructure;
+    WriteBarrier<Structure> moduleGraphLoadingStateStructure;
     WriteBarrier<Structure> promiseCombinatorsContextStructure;
     WriteBarrier<Structure> promiseCombinatorsGlobalContextStructure;
     WriteBarrier<Structure> regExpStructure;
@@ -1191,6 +1196,7 @@ public:
 
     void notifyDebuggerHookInjected() { m_isDebuggerHookInjected = true; }
     bool isDebuggerHookInjected() const { return m_isDebuggerHookInjected; }
+    int64_t incrementModuleAsyncEvaluationCount() { return m_moduleAsyncEvaluationCount++; }
 
 #if ENABLE(WEBASSEMBLY_DEBUGGER)
     JS_EXPORT_PRIVATE Wasm::DebugState* NODELETE debugState();
@@ -1322,6 +1328,8 @@ private:
 
     WTF::Function<void(VM&)> m_onEachMicrotaskTick;
     uintptr_t m_currentWeakRefVersion { 0 };
+
+    int64_t m_moduleAsyncEvaluationCount { 0 };
 
     bool m_hasSideData { false };
     bool m_hasTerminationRequest { false };

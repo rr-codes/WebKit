@@ -150,7 +150,7 @@ public:
     static JSObject* promiseResolve(JSGlobalObject*, JSObject* constructor, JSValue);
     static JSObject* promiseReject(JSGlobalObject*, JSObject* constructor, JSValue);
 
-    JSObject* then(JSGlobalObject*, JSValue onFulfilled, JSValue onRejected);
+    JS_EXPORT_PRIVATE JSObject* then(JSGlobalObject*, JSValue onFulfilled, JSValue onRejected);
 protected:
     JSPromise(VM&, Structure*);
     void finishCreation(VM&);

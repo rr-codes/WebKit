@@ -34,6 +34,7 @@
 #include "JSPIContextInlines.h"
 #include "JSPromise.h"
 #include "PinballHandlerContext.h"
+#include "StackAlignment.h"
 #include "TopExceptionScope.h"
 
 #include <wtf/StdLibExtras.h>

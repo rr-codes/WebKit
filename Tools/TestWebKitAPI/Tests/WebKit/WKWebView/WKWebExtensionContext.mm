@@ -996,7 +996,7 @@ TEST(WKWebExtensionContext, TopLevelThrowInModuleBackground)
 
     auto *error = manager.get().context.errors.firstObject;
     EXPECT_EQ(error.code, WKWebExtensionContextErrorScriptExecutionError);
-    EXPECT_NS_EQUAL(error.localizedDescription, @"Error: Top level module error (background.js:1:42)");
+    EXPECT_NS_EQUAL(error.localizedDescription, @"Error: Top level module error (background.js:1:16)");
 }
 
 TEST(WKWebExtensionContext, ReferenceErrorInBackground)
@@ -1388,7 +1388,7 @@ TEST(WKWebExtensionContext, TopLevelThrowInPopup)
 
     auto *error = manager.get().context.errors.firstObject;
     EXPECT_EQ(error.code, WKWebExtensionContextErrorScriptExecutionError);
-    EXPECT_NS_EQUAL(error.localizedDescription, @"Error: Popup error (popup.js:2:31)");
+    EXPECT_NS_EQUAL(error.localizedDescription, @"Error: Popup error (popup.js:2:16)");
 }
 
 TEST(WKWebExtensionContext, ConsoleErrorReportedNotLogOrWarn)

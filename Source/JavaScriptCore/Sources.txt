@@ -799,6 +799,7 @@ runtime/ConstructData.cpp
 runtime/ControlFlowProfiler.cpp
 runtime/CrossTaskToken.cpp
 runtime/CustomGetterSetter.cpp
+runtime/CyclicModuleRecord.cpp
 runtime/DOMAttributeGetterSetter.cpp
 runtime/DataView.cpp
 runtime/DateConstructor.cpp
@@ -1009,7 +1010,11 @@ runtime/MegamorphicCache.cpp
 runtime/MemoryMode.cpp
 runtime/MemoryStatistics.cpp
 runtime/MicrotaskQueue.cpp
+runtime/ModuleGraphLoadingState.cpp
+runtime/ModuleLoadingContext.cpp
+runtime/ModuleLoaderPayload.cpp
 runtime/ModuleProgramExecutable.cpp
+runtime/ModuleRegistryEntry.cpp
 runtime/NarrowingNumberPredictionFuzzerAgent.cpp
 runtime/NativeCallee.cpp
 runtime/NativeCalleeRegistry.cpp

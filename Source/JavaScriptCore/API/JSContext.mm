@@ -165,7 +165,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
     }
 
     auto scope = DECLARE_TOP_EXCEPTION_SCOPE(vm);
-    JSC::JSArray* result = globalObject->moduleLoader()->dependencyKeysIfEvaluated(globalObject, JSC::jsString(vm, String([[script sourceURL] absoluteString])));
+    JSC::JSArray* result = globalObject->moduleLoader()->dependencyKeysIfEvaluated(globalObject, String([[script sourceURL] absoluteString]));
     if (scope.exception()) {
         JSValueRef exceptionValue = toRef(globalObject, scope.exception()->value());
         scope.clearException();

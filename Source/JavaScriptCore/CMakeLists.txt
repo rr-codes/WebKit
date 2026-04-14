@@ -356,7 +356,6 @@ set(JavaScriptCore_BUILTINS_SOURCES
     ${JAVASCRIPTCORE_DIR}/builtins/MapConstructor.js
     ${JAVASCRIPTCORE_DIR}/builtins/MapIteratorPrototype.js
     ${JAVASCRIPTCORE_DIR}/builtins/MapPrototype.js
-    ${JAVASCRIPTCORE_DIR}/builtins/ModuleLoader.js
     ${JAVASCRIPTCORE_DIR}/builtins/ObjectConstructor.js
     ${JAVASCRIPTCORE_DIR}/builtins/PromiseConstructor.js
     ${JAVASCRIPTCORE_DIR}/builtins/PromiseOperations.js
@@ -1071,6 +1070,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/ControlFlowProfiler.h
     runtime/CrossTaskToken.h
     runtime/CustomGetterSetter.h
+    runtime/CyclicModuleRecord.h
     runtime/DOMAnnotation.h
     runtime/DataView.h
     runtime/DateInstance.h
@@ -1284,7 +1284,12 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/Microtask.h
     runtime/MicrotaskQueue.h
     runtime/MicrotaskQueueInlines.h
+    runtime/ModuleGraphLoadingState.h
+    runtime/ModuleLoaderPayload.h
+    runtime/ModuleLoadingContext.h
+    runtime/ModuleMap.h
     runtime/ModuleProgramExecutable.h
+    runtime/ModuleRegistryEntry.h
     runtime/NativeCallee.h
     runtime/NativeCalleeRegistry.h
     runtime/NativeExecutable.h

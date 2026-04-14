@@ -192,6 +192,10 @@ namespace JSC {
     macro(handleProxyGetTrapResult) \
     macro(importModule) \
     macro(moduleFetchFailureKind) \
+    macro(moduleFailureModuleRecord) \
+    macro(moduleFailureModuleKey) \
+    macro(moduleFailureModuleType) \
+    macro(moduleFailureKind) \
     macro(copyDataProperties) \
     macro(cloneObject) \
     macro(meta) \

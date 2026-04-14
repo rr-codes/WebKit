@@ -812,11 +812,11 @@ JSC_DEFINE_HOST_FUNCTION(globalFuncImportModule, (JSGlobalObject* globalObject, 
     // We always specify parameters as undefined. Once dynamic import() starts accepting fetching parameters,
     // we should retrieve this from the arguments.
     JSValue parameters = callFrame->argument(1);
-    auto* internalPromise = globalObject->moduleLoader()->importModule(globalObject, specifier, parameters, sourceOrigin);
+    auto* importPromise = globalObject->moduleLoader()->importModule(globalObject, specifier, parameters, sourceOrigin);
     RETURN_IF_EXCEPTION(scope, JSValue::encode(promise->rejectWithCaughtException(globalObject, scope)));
 
     scope.release();
-    promise->resolve(globalObject, vm, internalPromise);
+    promise->resolve(globalObject, vm, importPromise);
     return JSValue::encode(promise);
 }
 
