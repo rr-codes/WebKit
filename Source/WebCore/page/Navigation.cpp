@@ -1185,8 +1185,10 @@ std::optional<Navigation::DispatchResult> Navigation::handleSameDocumentNavigati
                 auto* navGlobalObject = protect(protectedThis->scriptExecutionContext())->globalObject();
                 protectedThis->dispatchEvent(ErrorEvent::create(*navGlobalObject, eventNames().navigateerrorEvent, errorMessage, errorInformation.sourceURL, errorInformation.line, errorInformation.column, { navGlobalObject->vm(), result }));
 
-                if (apiMethodTracker)
-                    Ref { apiMethodTracker->finishedPromise }->reject<IDLAny>(result, RejectAsHandled::Yes);
+                if (apiMethodTracker) {
+                    protect(apiMethodTracker->finishedPromise)->reject<IDLAny>(result, RejectAsHandled::Yes);
+                    protectedThis->cleanupAPIMethodTracker(apiMethodTracker);
+                }
 
                 if (RefPtr transition = std::exchange(protectedThis->m_transition, nullptr))
                     transition->rejectPromise(result);
