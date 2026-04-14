@@ -1267,7 +1267,6 @@ imported/w3c/web-platform-tests/css/css-text/hyphens/hyphens-vs-float-clearance-
 imported/w3c/web-platform-tests/css/css-text/letter-spacing/letter-spacing-ligatures-001.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/line-break/line-break-anywhere-overrides-uax-behavior-015.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/text-align/text-align-last-justify-br.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-mixed-001.html [ Failure ]
 imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-002.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/visudet/height-applies-to-010a.xht [ ImageOnlyFailure Pass ]
 imported/w3c/web-platform-tests/css/CSS2/visudet/line-height-204.html [ ImageOnlyFailure ]
@@ -5503,6 +5502,8 @@ imported/w3c/web-platform-tests/css/compositing/background-blending/background-b
 webkit.org/b/311928 fast/css/user-drag-none.html [ Failure Pass ]
 
 webkit.org/b/311929 fast/dom/access-key-iframe.html [ Failure Pass ]
+
+webkit.org/b/312267 imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-mixed-001.html [ ImageOnlyFailure ]
 
 # End: Common failures between GTK and WPE.
 
