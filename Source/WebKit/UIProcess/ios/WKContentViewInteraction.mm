@@ -6337,7 +6337,7 @@ static void logTextInteraction(const char* methodName, UIGestureRecognizer *loup
     [_webView.get() _resetFocusPreservationCountAndReleaseActiveFocusState];
     [self stopRelinquishingFirstResponderToFocusedElement];
     [self endEditingAndUpdateFocusAppearanceWithReason:EndEditingReasonAccessoryDone];
-    protect(_page)->setIsShowingInputViewForFocusedElement(false);
+    protect(_page)->setIsShowingInputViewForFocusedElement(_focusedElementInformation.frameID(), false);
 }
 
 - (void)updateFocusedElementValue:(NSString *)value
@@ -8550,11 +8550,11 @@ static RetainPtr<NSObject <WKFormPeripheral>> createInputPeripheralWithView(WebK
         _editingEndedByUser = NO;
 
     if (!shouldShowInputView || information.elementType == WebKit::InputType::None) {
-        page->setIsShowingInputViewForFocusedElement(false);
+        page->setIsShowingInputViewForFocusedElement(information.frameID(), false);
         return;
     }
 
-    page->setIsShowingInputViewForFocusedElement(true);
+    page->setIsShowingInputViewForFocusedElement(information.frameID(), true);
 
     // FIXME: We should remove this check when we manage to send ElementDidFocus from the WebProcess
     // only when it is truly time to show the keyboard.
@@ -8800,7 +8800,7 @@ static RetainPtr<NSObject <WKFormPeripheral>> createInputPeripheralWithView(WebK
         [_webView.get() _scheduleVisibleContentRectUpdate];
 
         [_webView.get() didEndFormControlInteraction];
-        protect(_page)->setIsShowingInputViewForFocusedElement(false);
+        protect(_page)->setIsShowingInputViewForFocusedElement(_focusedElementInformation.frameID(), false);
     }
 
     _page->setWaitingForPostLayoutEditorStateUpdateAfterFocusingElement(false);

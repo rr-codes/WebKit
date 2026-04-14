@@ -8550,4 +8550,52 @@ TEST(SiteIsolation, OpenEmptySiteFromProcessWithNonEmptySite)
     Util::run(&openedFinishedLoading);
 }
 
+#if PLATFORM(IOS_FAMILY)
+TEST(SiteIsolation, NoRedundantFocusPolicyCallbackAfterBlurAndRefocusInCrossOriginIframe)
+{
+    auto mainHTML = "<iframe src='https://webkit.org/iframe' style='width: 300px; height: 300px;'></iframe>"_s;
+    auto iframeHTML = "<input id='input' type='text' style='width: 200px; font-size: 20px;'>"_s;
+
+    HTTPServer server({
+        { "/example"_s, { mainHTML } },
+        { "/iframe"_s, { { { "Content-Type"_s, "text/html"_s } }, iframeHTML } },
+    }, HTTPServer::Protocol::HttpsProxy);
+
+    auto [webView, navigationDelegate] = siteIsolatedViewAndDelegate(server, CGRectMake(0, 0, 320, 500));
+
+    RetainPtr inputDelegate = adoptNS([TestInputDelegate new]);
+    int focusPolicyCallCount = 0;
+    bool didFocusPolicy = false;
+    [inputDelegate setFocusStartsInputSessionPolicyHandler:[&](WKWebView *, id<_WKFocusedElementInfo>) {
+        focusPolicyCallCount++;
+        didFocusPolicy = true;
+        return _WKFocusStartsInputSessionPolicyAllow;
+    }];
+    [webView _setInputDelegate:inputDelegate.get()];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://example.com/example"]]];
+    [navigationDelegate waitForDidFinishNavigation];
+
+    // Wait for the cross-origin iframe's content to load.
+    EXPECT_TRUE(Util::waitFor([&] {
+        auto frame = [webView firstChildFrame];
+        return frame && [[webView objectByEvaluatingJavaScript:@"!!document.getElementById('input')" inFrame:frame] boolValue];
+    }));
+
+    // Focus the input in the cross-origin iframe. Use WithUserGesture because Element::focus()
+    // is a no-op for cross-origin non-main-frame iframes without a user gesture.
+    [webView objectByEvaluatingJavaScriptWithUserGesture:@"document.getElementById('input').focus()" inFrame:[webView firstChildFrame]];
+    Util::run(&didFocusPolicy);
+    EXPECT_EQ(1, focusPolicyCallCount);
+
+    // Blur and immediately refocus the same element. The focus policy handler should not be
+    // called again because the refocus of the same element should be suppressed.
+    [webView objectByEvaluatingJavaScriptWithUserGesture:@"var i = document.getElementById('input'); i.blur(); i.focus();" inFrame:[webView firstChildFrame]];
+    [webView waitForNextPresentationUpdate];
+    [webView waitForNextPresentationUpdate];
+
+    EXPECT_EQ(1, focusPolicyCallCount);
+}
+#endif
+
 }

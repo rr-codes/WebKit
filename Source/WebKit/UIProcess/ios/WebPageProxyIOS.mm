@@ -904,9 +904,9 @@ void WebPageProxy::restorePageCenterAndScale(IPC::Connection& connection, std::o
         pageClient->restorePageCenterAndScale(center, scale);
 }
 
-void WebPageProxy::setIsShowingInputViewForFocusedElement(bool showingInputView)
+void WebPageProxy::setIsShowingInputViewForFocusedElement(std::optional<WebCore::FrameIdentifier> frameID, bool showingInputView)
 {
-    protect(legacyMainFrameProcess())->send(Messages::WebPage::SetIsShowingInputViewForFocusedElement(showingInputView), webPageIDInMainFrameProcess());
+    sendToProcessContainingFrame(frameID, Messages::WebPage::SetIsShowingInputViewForFocusedElement(showingInputView));
 }
 
 void WebPageProxy::updateInputContextAfterBlurringAndRefocusingElement()
