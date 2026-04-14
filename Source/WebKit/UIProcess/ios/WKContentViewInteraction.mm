@@ -2229,6 +2229,9 @@ typedef NS_ENUM(NSInteger, EndEditingReason) {
         [self doAfterPositionInformationUpdate:[assistant = WeakObjCPtr<WKActionSheetAssistant>(_actionSheetAssistant.get())] (WebKit::InteractionInformationAtPosition information) {
             [assistant.get() interactionDidStartWithPositionInformation:information];
         } forRequest:positionInformationRequest];
+
+        if (_touchEventsCanPreventNativeGestures && [self _isTouchNearSelectionHandle:lastTouchEvent.locationInRootViewCoordinates])
+            _touchStartedNearSelectionHandle = YES;
     }
 
 #if ENABLE(TOUCH_EVENTS)
@@ -2237,13 +2240,17 @@ typedef NS_ENUM(NSInteger, EndEditingReason) {
 
     [self _handleTouchActionsForTouchEvent:nativeWebTouchEvent];
 
-    if (_touchEventsCanPreventNativeGestures)
+    if (_touchStartedNearSelectionHandle && lastTouchEvent.type != WebKit::WKTouchEventType::Begin) {
+        if (lastTouchEvent.type == WebKit::WKTouchEventType::Change || lastTouchEvent.type == WebKit::WKTouchEventType::End)
+            [self _doneDeferringTouchMove:NO];
+    } else if (_touchEventsCanPreventNativeGestures)
         _page->handlePreventableTouchEvent(nativeWebTouchEvent);
     else
         _page->handleUnpreventableTouchEvent(nativeWebTouchEvent);
 
     if (nativeWebTouchEvent.allTouchPointsAreReleased()) {
         _touchEventsCanPreventNativeGestures = YES;
+        _touchStartedNearSelectionHandle = NO;
 
         if (!_page->isScrollingOrZooming())
             [self _resetPanningPreventionFlags];
@@ -3385,6 +3392,38 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     return _page->dataDetectionResults();
 }
 #endif
+
+- (BOOL)_isTouchNearSelectionHandle:(WebCore::FloatPoint)touchPoint
+{
+    if (_lastSelectionDrawingInfo.type != WebCore::SelectionType::Range)
+        return NO;
+
+    if (_suppressSelectionAssistantReasons)
+        return NO;
+
+    if (![_textInteractionWrapper areSelectionHandlesVisible])
+        return NO;
+
+    RefPtr page = _page;
+    if (!page)
+        return NO;
+
+    auto& editorState = page->editorState();
+    if (!editorState.visualData)
+        return NO;
+
+    static constexpr float handleHitTestPadding = 44;
+    auto inflatedContainsPoint = [&](WebCore::IntRect caretRect) -> bool {
+        if (caretRect.isEmpty())
+            return false;
+        WebCore::FloatRect hitArea(caretRect);
+        hitArea.inflate(handleHitTestPadding);
+        return hitArea.contains(touchPoint);
+    };
+
+    return inflatedContainsPoint(editorState.visualData->caretRectAtStart)
+        || inflatedContainsPoint(editorState.visualData->caretRectAtEnd);
+}
 
 - (BOOL)_pointIsInsideSelectionRect:(CGPoint)point outBoundingRect:(WebCore::FloatRect *)outBoundingRect
 {
@@ -10562,6 +10601,9 @@ static WebCore::DataOwnerType coreDataOwnerType(_UIDataOwner platformType)
         return NO;
 
     if (gestureRecognizer == _touchEventGestureRecognizer)
+        return NO;
+
+    if (_touchStartedNearSelectionHandle)
         return NO;
 
 #if HAVE(UIKIT_WITH_MOUSE_SUPPORT)
