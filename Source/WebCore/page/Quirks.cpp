@@ -497,6 +497,9 @@ bool Quirks::shouldDispatchSimulatedMouseEvents(const EventTarget* target) const
             return QuirksData::ShouldDispatchSimulatedMouseEvents::Yes;
         if (m_quirksData.isSoundCloud)
             return QuirksData::ShouldDispatchSimulatedMouseEvents::Yes;
+        // facebook.com rdar://174179871
+        if (m_quirksData.isFacebook)
+            return QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetForFacebook;
 
         const URL& topDocumentURL = this->topDocumentURL();
         const auto registrableDomainString = RegistrableDomain(topDocumentURL).string();
@@ -542,6 +545,13 @@ bool Quirks::shouldDispatchSimulatedMouseEvents(const EventTarget* target) const
         return false;
 
     case QuirksData::ShouldDispatchSimulatedMouseEvents::No:
+        return false;
+
+    case QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetForFacebook:
+        for (RefPtr node = dynamicDowncast<Node>(target); node; node = node->parentNode()) {
+            if (RefPtr element = dynamicDowncast<Element>(*node); element && element->attributeWithoutSynchronization(HTMLNames::roleAttr) == "slider"_s)
+                return true;
+        }
         return false;
 
     case QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetFor_mybinder_org:

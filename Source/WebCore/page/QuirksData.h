@@ -295,6 +295,7 @@ struct QuirksData {
     enum class ShouldDispatchSimulatedMouseEvents : uint8_t {
         Unknown,
         No,
+        DependingOnTargetForFacebook,
         DependingOnTargetFor_mybinder_org,
         Yes,
     };
