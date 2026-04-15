@@ -425,6 +425,7 @@ set(bmalloc_PUBLIC_HEADERS
     libpas/src/libpas/pas_large_heap.h
     libpas/src/libpas/pas_large_heap_physical_page_sharing_cache.h
     libpas/src/libpas/pas_large_map_entry.h
+    libpas/src/libpas/pas_large_map_variant.h
     libpas/src/libpas/pas_large_map.h
     libpas/src/libpas/pas_large_sharing_pool_epoch_update_mode.h
     libpas/src/libpas/pas_large_sharing_pool.h
