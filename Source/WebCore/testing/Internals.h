@@ -1550,6 +1550,8 @@ public:
 
     String focusRingColor();
 
+    double switchAnimationVisuallyOnDuration() const;
+
     bool isRemoteUIAppForAccessibility();
 
     ExceptionOr<unsigned> createSleepDisabler(const String& reason, bool display);

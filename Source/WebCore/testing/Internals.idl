@@ -1414,6 +1414,8 @@ enum ContentsFormat {
     DOMString systemColorForCSSValue(DOMString cssValue, boolean useDarkModeAppearance, boolean useElevatedUserInterfaceLevel);
     DOMString focusRingColor();
 
+    readonly attribute double switchAnimationVisuallyOnDuration;
+
     boolean systemHasBattery();
 
     undefined setSystemHasBatteryForTesting(boolean hasBattery);

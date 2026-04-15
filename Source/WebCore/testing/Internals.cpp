@@ -7738,6 +7738,11 @@ String Internals::focusRingColor()
     return serializationForCSS(RenderTheme::singleton().focusRingColor(StyleColorOptions::UseSystemAppearance));
 }
 
+double Internals::switchAnimationVisuallyOnDuration() const
+{
+    return RenderTheme::singleton().switchAnimationVisuallyOnDuration().seconds();
+}
+
 ExceptionOr<unsigned> Internals::createSleepDisabler(const String& reason, bool display)
 {
     auto* document = contextDocument();
