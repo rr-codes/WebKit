@@ -57,6 +57,7 @@ HTMLMediaElementAddVideoTrack, "HTMLMediaElement::addVideoTrack(%" PRIX64 ") id:
 HTMLMediaElementCanPlayType, "HTMLMediaElement::canPlayType(%" PRIX64 ") %" PUBLIC_LOG_STRING ": %" PUBLIC_LOG_STRING "", (uint64_t, CString, CString), DEFAULT, Media
 HTMLMediaElementCanTransitionFromAutoplayToPlayNotAutoplaying, "HTMLMediaElement::canTransitionFromAutoplayToPlay(%" PRIX64 ") not autoplaying", (uint64_t), DEFAULT, Media
 HTMLMediaElementCanTransitionFromAutoplayToPlayNotEnoughData, "HTMLMediaElement::canTransitionFromAutoplayToPlay(%" PRIX64 ") not enough data", (uint64_t), DEFAULT, Media
+HTMLMediaElementCheckPlaybackTargetCompatibility, "HTMLMediaElement::checkPlaybackTargetCompatibility(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementConfigureTextTrackDisplay, "HTMLMediaElement::configureTextTrackDisplay(%" PRIX64 ") %" PUBLIC_LOG_STRING "", (uint64_t, CString), DEFAULT, Media
 HTMLMediaElementConfigureTextTrackGroup, "HTMLMediaElement::configureTextTrackGroup(%" PRIX64 ") %" PUBLIC_LOG_STRING " track with language %" PUBLIC_LOG_STRING " and BCP 47 language %" PUBLIC_LOG_STRING " has score %d", (uint64_t, CString, CString, CString, int), DEFAULT, Media
 HTMLMediaElementConstructor, "HTMLMediaElement::HTMLMediaElement(%" PRIX64 ")", (uint64_t), DEFAULT, Media

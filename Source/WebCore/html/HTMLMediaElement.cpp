@@ -1390,7 +1390,7 @@ bool HTMLMediaElement::hasEverNotifiedAboutPlaying() const
 
 void HTMLMediaElement::checkPlaybackTargetCompatibility()
 {
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(CheckPlaybackTargetCompatibility);
 
     Ref player = *m_player;
 
