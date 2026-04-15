@@ -1169,7 +1169,9 @@ TEST(ResourceLoadStatistics, DataSummaryWithCachedProcess)
         [delegate waitForDidFinishNavigation];
 
         EXPECT_EQ(i + 1, [processPool _webProcessCount]);
-        EXPECT_EQ(i + 1, [processPool _webProcessCountIgnoringPrewarmedAndCached]);
+        // FIXME: Remove once the back-forward cache is enabled for site isolation: rdar://161762363.
+        if (isUsingBackForwardCache(webView))
+            EXPECT_EQ(i + 1, [processPool _webProcessCountIgnoringPrewarmedAndCached]);
         EXPECT_FALSE([processPool _hasPrewarmedWebProcess]);
     }
     
