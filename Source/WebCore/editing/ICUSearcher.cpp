@@ -163,6 +163,18 @@ std::optional<size_t> ICUSearcher::next()
     return static_cast<size_t>(result);
 }
 
+#if !PLATFORM(PLAYSTATION)
+std::optional<size_t> ICUSearcher::previous()
+{
+    UErrorCode status = U_ZERO_ERROR;
+    SUPPRESS_FORWARD_DECL_ARG int32_t result = usearch_previous(searcher(), &status);
+    ASSERT(U_SUCCESS(status));
+    if (result == USEARCH_DONE)
+        return std::nullopt;
+    return static_cast<size_t>(result);
+}
+#endif
+
 size_t ICUSearcher::matchedLength()
 {
     SUPPRESS_FORWARD_DECL_ARG int32_t result = usearch_getMatchedLength(searcher());

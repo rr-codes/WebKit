@@ -69,8 +69,6 @@ void CachedMatchFinder::performSearch(StringView buffer, unsigned startOffset, c
 
     bool backwards = options.contains(FindOption::Backwards);
 
-    icuSearcher.setOffset(backwards ? 0 : startOffset);
-
     Vector<char16_t> scratchBuffer;
 
     auto isMatch = [&](int matchStart, size_t matchLength) -> bool {
@@ -84,6 +82,20 @@ void CachedMatchFinder::performSearch(StringView buffer, unsigned startOffset, c
     };
 
     if (backwards) {
+#if !PLATFORM(PLAYSTATION)
+        icuSearcher.setOffset(startOffset);
+        while (true) {
+            std::optional<size_t> matchStartCandidate = icuSearcher.previous();
+            if (!matchStartCandidate)
+                break;
+            size_t matchLength = static_cast<size_t>(icuSearcher.matchedLength());
+            if (!isMatch(*matchStartCandidate, matchLength))
+                continue;
+            if (callback(*matchStartCandidate, *matchStartCandidate + matchLength) == SearchShouldContinue::No)
+                break;
+        }
+#else
+        icuSearcher.setOffset(0);
         Vector<std::pair<size_t, size_t>> matches;
         while (true) {
             std::optional<size_t> matchStartCandidate = icuSearcher.next();
@@ -98,7 +110,9 @@ void CachedMatchFinder::performSearch(StringView buffer, unsigned startOffset, c
             if (callback(start, end) == SearchShouldContinue::No)
                 break;
         }
+#endif
     } else {
+        icuSearcher.setOffset(startOffset);
         while (true) {
             std::optional<size_t> matchStartCandidate = icuSearcher.next();
             if (!matchStartCandidate)

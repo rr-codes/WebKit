@@ -40,6 +40,9 @@ public:
     void setText(std::span<const char16_t>);
     void setOffset(size_t);
     std::optional<size_t> next();
+#if !PLATFORM(PLAYSTATION)
+    std::optional<size_t> previous();
+#endif
     size_t matchedLength();
 private:
     UStringSearch* searcher();
