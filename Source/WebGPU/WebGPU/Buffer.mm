@@ -631,7 +631,7 @@ void Buffer::skippedDrawIndirectIndexedValidation(CommandEncoder& commandEncoder
         return;
 
     CommandEncoder::trackEncoder(commandEncoder, m_skippedValidationCommandEncoders);
-    commandEncoder.addOnCommitHandler([weakThis = ThreadSafeWeakPtr { *this }, apiIndexBuffer = RefPtr { apiIndexBuffer }, indexType, indexBufferOffsetInBytes, indirectOffset, minVertexCount, primitiveType](CommandBuffer& commandBuffer, CommandEncoder& commandEncoder) {
+    commandEncoder.addOnCommitHandler([weakThis = ThreadSafeWeakPtr { *this }, apiIndexBuffer = protect(apiIndexBuffer), indexType, indexBufferOffsetInBytes, indirectOffset, minVertexCount, primitiveType](CommandBuffer& commandBuffer, CommandEncoder& commandEncoder) {
         if (!weakThis.get())
             return true;
 

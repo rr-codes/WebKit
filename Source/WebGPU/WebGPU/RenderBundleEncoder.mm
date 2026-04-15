@@ -1114,7 +1114,7 @@ void RenderBundleEncoder::setBindGroup(uint32_t groupIndex, const BindGroup* gro
     m_maxBindGroupSlot = std::max(groupIndex, m_maxBindGroupSlot);
     if (!replayingCommands()) {
         if (groupPtr)
-            m_allBindGroups.add(RefPtr { groupPtr });
+            m_allBindGroups.add(protect(groupPtr));
 
         if (groupIndex >= m_device->limits().maxBindGroups) {
             makeInvalid(@"setBindGroup: groupIndex >= limits.maxBindGroups");
@@ -1140,7 +1140,7 @@ void RenderBundleEncoder::setBindGroup(uint32_t groupIndex, const BindGroup* gro
                 m_icbDescriptor.maxFragmentBufferBindCount = std::max<NSUInteger>(m_icbDescriptor.maxFragmentBufferBindCount, 2 + groupIndex);
         }
 
-        recordCommand([groupIndex, group = RefPtr { groupPtr }, protectedThis = Ref { *this }, dynamicOffsets = WTF::move(dynamicOffsets)]() mutable {
+        recordCommand([groupIndex, group = protect(groupPtr), protectedThis = Ref { *this }, dynamicOffsets = WTF::move(dynamicOffsets)]() mutable {
             protectedThis->setBindGroup(groupIndex, group.get(), WTF::move(dynamicOffsets));
             return false;
         });
@@ -1413,7 +1413,7 @@ void RenderBundleEncoder::setVertexBuffer(uint32_t slot, Buffer* optionalBuffer,
             }
         }
 
-        recordCommand([slot, optionalBuffer = RefPtr { optionalBuffer }, offset, size, protectedThis = Ref { *this }] {
+        recordCommand([slot, optionalBuffer = protect(optionalBuffer), offset, size, protectedThis = Ref { *this }] {
             protectedThis->setVertexBuffer(slot, optionalBuffer.get(), offset, size);
             return false;
         });
