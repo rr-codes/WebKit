@@ -2367,8 +2367,10 @@ void FrameLoader::clearProvisionalLoad()
 void FrameLoader::provisionalLoadFailedInAnotherProcess()
 {
     m_provisionalLoadHappeningInAnotherProcess = false;
+    m_isComplete = true;
+
     if (RefPtr localParent = dynamicDowncast<LocalFrame>(m_frame->tree().parent()))
-        localParent->loader().checkLoadComplete();
+        localParent->loader().checkCompleted();
 }
 
 void FrameLoader::commitProvisionalLoad()
