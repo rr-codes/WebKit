@@ -311,7 +311,16 @@ DecodingMode RenderBoxModelObject::decodingModeForImageDraw(const Image& image, 
 
 LayoutSize RenderBoxModelObject::relativePositionOffset() const
 {
-    auto* containingBlock = this->containingBlock();
+    auto containingBlockSkippingAnonymous = [&] {
+        // This is a workaround for anonymous blocks interfering with percentage
+        // offset resolution. The proper fix is to not construct anonymous blocks in the
+        // first place (see webkit.org/b/307004).
+        auto* containingBlock = this->containingBlock();
+        while (containingBlock && containingBlock->isAnonymousBlock())
+            containingBlock = containingBlock->containingBlock();
+        return containingBlock;
+    };
+    auto* containingBlock = containingBlockSkippingAnonymous();
 
     auto& style = this->style();
     auto& left = style.left();
