@@ -4277,8 +4277,10 @@ template<typename SizeType> LayoutUnit RenderBox::computeOutOfFlowPositionedLogi
                 }
                 return 0_lu;
             } else {
-                if (shouldComputeLogicalWidthFromAspectRatio())
-                    return computeLogicalWidthFromAspectRatio();
+                if (shouldComputeLogicalWidthFromAspectRatio()) {
+                    auto logicalWidth = computeLogicalWidthFromAspectRatio();
+                    return style().boxSizingForAspectRatio() == BoxSizing::BorderBox ? logicalWidth : logicalWidth - inlineConstraints.bordersPlusPadding();
+                }
                 return fallback();
             }
         },
