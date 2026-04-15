@@ -52,6 +52,7 @@
 #import <WebKit/_WKFrameTreeNode.h>
 #import <WebKit/_WKProcessPoolConfiguration.h>
 #import <WebKit/_WKWebsiteDataStoreConfiguration.h>
+#import <source_location>
 #import <wtf/Assertions.h>
 #import <wtf/Function.h>
 #import <wtf/RetainPtr.h>
@@ -159,15 +160,17 @@ static RetainPtr<WKHTTPCookieStore> globalCookieStore;
 
 @end
 
-static void testAlertWithEnhancedSecurity(RetainPtr<TestUIDelegate> uiDelegate, String message, BOOL enhancedSecurityEnabled)
+static void testAlertWithEnhancedSecurity(RetainPtr<TestUIDelegate> uiDelegate, String message, BOOL enhancedSecurityEnabled, std::source_location location)
 {
     NSArray *result = [uiDelegate waitForAlertWithEnhancedSecurity];
 
     EXPECT_WK_STREQ(result[0], message);
-    EXPECT_EQ([result[1] boolValue], enhancedSecurityEnabled);
-
-    if ([result[1] boolValue] != enhancedSecurityEnabled)
-        NSLog(@"Enhanced Security state mismatch for alert: %s (expected: %s, actual: %s)", message.utf8().data() , enhancedSecurityEnabled ? "Enabled" : "Disabled", [result[1] boolValue] ? "Enabled" : "Disabled");
+    if ([result[1] boolValue] != enhancedSecurityEnabled) {
+        ADD_FAILURE_AT(location.file_name(), location.line())
+            << "Enhanced security mismatch for alert '" << message.utf8().data() << "'"
+            << " (expected: " << (enhancedSecurityEnabled ? "Enabled" : "Disabled")
+            << ", actual: " << ([result[1] boolValue] ? "Enabled" : "Disabled") << ")";
+    }
 }
 
 static RetainPtr<TestWKWebView> enhancedSecurityTestConfiguration(
@@ -216,7 +219,8 @@ enum class ExpectedEnhancedSecurity : bool { Disabled = false, Enabled = true };
 static void runActionAndCheckEnhancedSecurityAlerts(
     RetainPtr<TestWKWebView> webView,
     Function<void()>&& performAction,
-    std::initializer_list<std::pair<String, ExpectedEnhancedSecurity>> alerts)
+    std::initializer_list<std::pair<String, ExpectedEnhancedSecurity>> alerts,
+    std::source_location location = std::source_location::current())
 {
     RELEASE_ASSERT(!webView.get().UIDelegate);
 
@@ -236,7 +240,7 @@ static void runActionAndCheckEnhancedSecurityAlerts(
     performAction();
 
     for (auto& pair : alerts)
-        testAlertWithEnhancedSecurity(uiDelegate, pair.first, static_cast<bool>(pair.second));
+        testAlertWithEnhancedSecurity(uiDelegate, pair.first, static_cast<bool>(pair.second), location);
 
     [webView setUIDelegate:nil];
 }
@@ -244,11 +248,12 @@ static void runActionAndCheckEnhancedSecurityAlerts(
 static void loadRequestAndCheckEnhancedSecurityAlerts(
     RetainPtr<TestWKWebView> webView,
     NSString *url,
-    std::initializer_list<std::pair<String, ExpectedEnhancedSecurity>> alerts)
+    std::initializer_list<std::pair<String, ExpectedEnhancedSecurity>> alerts,
+    std::source_location location = std::source_location::current())
 {
     runActionAndCheckEnhancedSecurityAlerts(webView, [webView, url] {
         [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:url]]];
-    }, alerts);
+    }, alerts, location);
 }
 
 #define TEST_WITHOUT_SITE_ISOLATION(test_name) \
