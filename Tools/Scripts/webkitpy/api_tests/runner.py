@@ -334,8 +334,7 @@ class _Worker(object):
             env=self._port.environment_for_api_tests())
 
         status = Runner.STATUS_RUNNING
-        split_test = test.split('.')
-        if len(split_test) > 1 and split_test[1].startswith('DISABLED_') and not self._port.get_option('force'):
+        if test.split('.')[1].startswith('DISABLED_') and not self._port.get_option('force'):
             status = Runner.STATUS_DISABLED
 
         stdout_buffer = ''
