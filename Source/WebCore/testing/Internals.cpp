@@ -7371,6 +7371,37 @@ auto Internals::getCookies() const -> Vector<CookieData>
     });
 }
 
+static Internals::WebDriverCookieData createWebDriverCookieData(Cookie cookie)
+{
+    Internals::WebDriverCookieData data;
+    data.name = cookie.name;
+    data.value = cookie.value;
+    data.path = cookie.path;
+    data.domain = cookie.domain;
+    data.secure = cookie.secure;
+    data.httpOnly = cookie.httpOnly;
+    data.expiry = cookie.expires ? std::make_optional(*cookie.expires / 1000) : std::nullopt;
+
+    // Due to how CFNetwork handles host-only cookies, we may need to prepend a '.' to the domain when
+    // setting a cookie (see CookieStore::set). So we must strip this '.' when returning the cookie.
+    if (data.domain.startsWith('.'))
+        data.domain = data.domain.substring(1, data.domain.length() - 1);
+
+    switch (cookie.sameSite) {
+    case Cookie::SameSitePolicy::Strict:
+        data.sameSite = "Strict"_s;
+        break;
+    case Cookie::SameSitePolicy::Lax:
+        data.sameSite = "Lax"_s;
+        break;
+    case Cookie::SameSitePolicy::None:
+        data.sameSite = "None"_s;
+        break;
+    }
+
+    return data;
+}
+
 auto Internals::webDriverGetCookies(Document& document) const -> Vector<WebDriverCookieData>
 {
     auto* page = document.page();
@@ -7380,7 +7411,7 @@ auto Internals::webDriverGetCookies(Document& document) const -> Vector<WebDrive
     Vector<Cookie> cookies;
     page->cookieJar().getRawCookies(document, document.cookieURL(), cookies);
     return WTF::map(cookies, [](auto& cookie) {
-        return WebDriverCookieData { cookie };
+        return createWebDriverCookieData(cookie);
     });
 }
 
@@ -7463,21 +7494,15 @@ String Internals::highlightPseudoElementColor(const AtomString& highlightName, E
 
     return serializationForCSS(resolvedStyle->style->color());
 }
-    
-Internals::TextIndicatorInfo::TextIndicatorInfo() = default;
-
-Internals::TextIndicatorInfo::TextIndicatorInfo(const WebCore::TextIndicatorData& data)
-    : textBoundingRectInRootViewCoordinates(DOMRect::create(data.textBoundingRectInRootViewCoordinates))
-    , textRectsInBoundingRectCoordinates(DOMRectList::create(data.textRectsInBoundingRectCoordinates))
-{
-}
-    
-Internals::TextIndicatorInfo::~TextIndicatorInfo() = default;
 
 Internals::TextIndicatorInfo Internals::textIndicatorForRange(const Range& range, TextIndicatorOptions options)
 {
     auto indicator = TextIndicator::createWithRange(makeSimpleRange(range), options.coreOptions(), TextIndicatorPresentationTransition::None);
-    return indicator->data();
+    auto data = indicator->data();
+    return {
+        DOMRect::create(data.textBoundingRectInRootViewCoordinates),
+        DOMRectList::create(data.textRectsInBoundingRectCoordinates)
+    };
 }
 
 void Internals::addPrefetchLoadEventListener(HTMLLinkElement& link, RefPtr<EventListener>&& listener)
