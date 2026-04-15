@@ -3543,6 +3543,39 @@ private:
             break;
         }
 
+        case VectorShr: {
+            // Turn this: VectorShr(VectorZipLower(x, x), shiftAmount) where shr is Signed
+            // Into this: VectorExtendLow(x, lane, Signed)
+            //
+            // Turn this: VectorShr(VectorZipHigher(x, x), shiftAmount) where shr is Signed
+            // Into this: VectorExtendHigh(x, lane, Signed)
+            //
+            // VectorZip{Lower,Higher}(x, x) interleaves elements: [x[i],x[i],...]
+            // Interpreted as the wider lane and shifted right by the source element's bit width,
+            // this sign-extends the narrower element to the wider one.
+            //
+            // Supported combinations:
+            //   shr i16x8 by 8  + zip i8x16  -> i8->i16 sign extension
+            //   shr i32x4 by 16 + zip i16x8  -> i16->i32 sign extension
+            //   shr i64x2 by 32 + zip i32x4  -> i32->i64 sign extension
+            SIMDValue* shr = m_value->as<SIMDValue>();
+            if (shr->signMode() == SIMDSignMode::Signed) {
+                SIMDLane lane = shr->simdLane();
+                bool matches = (lane == SIMDLane::i16x8 && m_value->child(1)->isInt32(8))
+                    || (lane == SIMDLane::i32x4 && m_value->child(1)->isInt32(16))
+                    || (lane == SIMDLane::i64x2 && m_value->child(1)->isInt32(32));
+                if (matches) {
+                    Value* child0 = m_value->child(0);
+                    if ((child0->opcode() == VectorZipLower || child0->opcode() == VectorZipHigher) && child0->child(0) == child0->child(1)) {
+                        Opcode extendOp = child0->opcode() == VectorZipLower ? VectorExtendLow : VectorExtendHigh;
+                        replaceWithNew<SIMDValue>(m_value->origin(), extendOp, B3::V128, lane, SIMDSignMode::Signed, child0->child(0));
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+
         case VectorDotProduct: {
             handleCommutativity();
 
