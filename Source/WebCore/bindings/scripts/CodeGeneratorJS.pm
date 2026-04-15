@@ -8094,8 +8094,20 @@ sub GetBaseIDLType
     return $IDLTypes{$type->name} if exists $IDLTypes{$type->name};
     return "IDLEnumeration<" . GetEnumerationClassName($type, $interface) . ">" if $codeGenerator->IsEnumType($type);
     return "IDLDictionary<" . GetDictionaryClassName($type, $interface) . ">" if $codeGenerator->IsDictionaryType($type);
-    return "IDLSequence<" . GetIDLType($interface, @{$type->subtypes}[0]) . ">" if $codeGenerator->IsSequenceType($type);
-    return "IDLFrozenArray<" . GetIDLType($interface, @{$type->subtypes}[0]) . ">" if $codeGenerator->IsFrozenArrayType($type);
+    if ($codeGenerator->IsSequenceType($type)) {
+        my $inner = GetIDLType($interface, @{$type->subtypes}[0]);
+        if (my $inlineCapacity = $type->extendedAttributes->{InlineCapacity}) {
+            return "IDLSequence<$inner, $inlineCapacity>";
+        }
+        return "IDLSequence<$inner>";
+    }
+    if ($codeGenerator->IsFrozenArrayType($type)) {
+        my $inner = GetIDLType($interface, @{$type->subtypes}[0]);
+        if (my $inlineCapacity = $type->extendedAttributes->{InlineCapacity}) {
+            return "IDLFrozenArray<$inner, $inlineCapacity>";
+        }
+        return "IDLFrozenArray<$inner>";
+    }
     return "IDLRecord<" . GetIDLType($interface, @{$type->subtypes}[0]) . ", " . GetIDLType($interface, @{$type->subtypes}[1]) . ">" if $codeGenerator->IsRecordType($type);
     if ($codeGenerator->IsPromiseType($type)) {
         my $promiseType = $type->extendedAttributes->{BypassDocumentFullyActiveCheck} ? "IDLPromiseIgnoringSuspension" : "IDLPromise";

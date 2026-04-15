@@ -233,14 +233,13 @@ enum HEVCParameterCodec {
     ExportMacro=WEBCORE_TESTSUPPORT_EXPORT,
     JSGenerateToJSObject,
     JSGenerateToNativeObject,
-    LegacyNativeDictionaryRequiredInterfaceNullability,
 ] dictionary HEVCParameterSet {
     HEVCParameterCodec codec = "hvc1";
     unsigned short generalProfileSpace = 0;
     unsigned short generalProfileIDC = 0;
     unsigned long generalProfileCompatibilityFlags = 0;
     octet generalTierFlag = 0;
-    required FrozenArray<octet> generalConstraintIndicatorFlags;
+    required [InlineCapacity=6] FrozenArray<octet> generalConstraintIndicatorFlags;
     unsigned short generalLevelIDC = 0;
 };
 
