@@ -294,6 +294,20 @@ static constexpr BOOL shouldEnableSiteIsolation = NO;
     TestWebKitAPI::Util::run(&_done);
 }
 
+- (void)runUntilContextError
+{
+    if (_context.errors.count)
+        return;
+
+    id observer = [NSNotificationCenter.defaultCenter addObserverForName:WKWebExtensionContextErrorsDidUpdateNotification object:_context queue:nil usingBlock:^(NSNotification *) {
+        self->_done = true;
+    }];
+
+    [self runForTimeInterval:5];
+
+    [NSNotificationCenter.defaultCenter removeObserver:observer];
+}
+
 - (id)runUntilTestMessage:(NSString *)message
 {
     id (^processMessage)(void) = ^id {

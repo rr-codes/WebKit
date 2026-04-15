@@ -957,20 +957,13 @@ TEST(WKWebExtensionContext, LoadNonExistentImage)
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
 
-    EXPECT_NS_EQUAL(manager.get().context.errors, @[ ]);
+    [manager runUntilContextError];
 
-    [NSNotificationCenter.defaultCenter addObserverForName:WKWebExtensionContextErrorsDidUpdateNotification object:nil queue:nil usingBlock:^(NSNotification *notification) {
-        auto *extensionContext = dynamic_objc_cast<WKWebExtensionContext>(notification.object);
+    EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
-        EXPECT_EQ(extensionContext.errors.count, 1ul);
-
-        auto *predicate = [NSPredicate predicateWithFormat:@"localizedDescription CONTAINS %@", @"Unable to find \"non-existent-image.png\" in the extension’s resources."];
-        auto *filteredErrors = [extensionContext.errors filteredArrayUsingPredicate:predicate];
-
-        EXPECT_NS_EQUAL(extensionContext.errors, filteredErrors);
-
-        [manager done];
-    }];
+    auto *error = manager.get().context.errors.firstObject;
+    EXPECT_EQ(error.code, WKWebExtensionErrorResourceNotFound);
+    EXPECT_NS_EQUAL(error.localizedDescription, @"Unable to find \"non-existent-image.png\" in the extension’s resources. It is an invalid path.");
 }
 
 TEST(WKWebExtensionContext, TopLevelThrowInModuleBackground)
@@ -990,7 +983,8 @@ TEST(WKWebExtensionContext, TopLevelThrowInModuleBackground)
     auto *backgroundScript = @"throw new Error('Top level module error')";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1016,7 +1010,8 @@ TEST(WKWebExtensionContext, ReferenceErrorInBackground)
     auto *backgroundScript = @"undeclaredVariable.foo";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1042,7 +1037,8 @@ TEST(WKWebExtensionContext, CallingMissingBrowserAPIInBackground)
     auto *backgroundScript = @"browser.runtime.nonExistentMethod()";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1069,7 +1065,8 @@ TEST(WKWebExtensionContext, UncaughtScriptErrorInBackground)
     auto *backgroundScript = @"setTimeout(() => { throw new Error('Test uncaught error') }, 0)";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1095,7 +1092,8 @@ TEST(WKWebExtensionContext, UnhandledPromiseRejectionInBackground)
     auto *backgroundScript = @"Promise.reject(new Error('Test rejection'))";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1119,7 +1117,8 @@ TEST(WKWebExtensionContext, UncaughtScriptErrorInServiceWorkerBackground)
     auto *backgroundScript = @"setTimeout(() => { throw new Error('Service worker uncaught error') }, 0)";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1143,7 +1142,8 @@ TEST(WKWebExtensionContext, UnhandledPromiseRejectionInServiceWorkerBackground)
     auto *backgroundScript = @"Promise.reject(new Error('Service worker rejection'))";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1170,7 +1170,8 @@ TEST(WKWebExtensionContext, SyntaxErrorInBackground)
     auto *backgroundScript = @")(";
 
     auto manager = Util::loadExtension(manifest, @{ @"background.js": backgroundScript });
-    [manager runForTimeInterval:2];
+
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1234,7 +1235,7 @@ TEST(WKWebExtensionContext, UncaughtScriptErrorInContentScript)
     [manager.get().context setPermissionStatus:WKWebExtensionContextPermissionStatusGrantedExplicitly forURL:urlRequest.URL];
     [manager.get().defaultTab.webView loadRequest:urlRequest];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1269,7 +1270,7 @@ TEST(WKWebExtensionContext, UncaughtScriptErrorInMainWorldContentScript)
     [manager.get().context setPermissionStatus:WKWebExtensionContextPermissionStatusGrantedExplicitly forURL:urlRequest.URL];
     [manager.get().defaultTab.webView loadRequest:urlRequest];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1307,7 +1308,7 @@ TEST(WKWebExtensionContext, PageScriptErrorNotReportedToExtension)
     [manager.get().context setPermissionStatus:WKWebExtensionContextPermissionStatusGrantedExplicitly forURL:urlRequest.URL];
     [manager.get().defaultTab.webView loadRequest:urlRequest];
 
-    [manager runForTimeInterval:2];
+    [manager runForTimeInterval:3];
 
     EXPECT_NS_EQUAL(manager.get().context.errors, @[ ]);
 }
@@ -1341,7 +1342,7 @@ TEST(WKWebExtensionContext, UncaughtScriptErrorInEventListener)
 
     [manager.get().context performActionForTab:manager.get().defaultTab];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1382,7 +1383,7 @@ TEST(WKWebExtensionContext, TopLevelThrowInPopup)
 
     [manager runUntilTestMessage:@"Ready"];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1417,7 +1418,7 @@ TEST(WKWebExtensionContext, ConsoleErrorReportedNotLogOrWarn)
 
     [manager runUntilTestMessage:@"Ready"];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1451,7 +1452,7 @@ TEST(WKWebExtensionContext, ConsoleAssertWithMessage)
 
     [manager runUntilTestMessage:@"Ready"];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 
@@ -1485,7 +1486,7 @@ TEST(WKWebExtensionContext, ConsoleAssertWithoutMessage)
 
     [manager runUntilTestMessage:@"Ready"];
 
-    [manager runForTimeInterval:2];
+    [manager runUntilContextError];
 
     EXPECT_EQ(manager.get().context.errors.count, 1ul);
 

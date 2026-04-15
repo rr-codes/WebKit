@@ -75,6 +75,7 @@
 - (void)run;
 - (void)runForTimeInterval:(NSTimeInterval)interval;
 - (id)runUntilTestMessage:(NSString *)message;
+- (void)runUntilContextError;
 
 - (void)done;
 
