@@ -34,6 +34,7 @@ import os
 import shutil
 import subprocess
 import sys
+import unittest
 
 from unittest.mock import MagicMock, patch
 
@@ -41,10 +42,12 @@ from webkitbugspy import mocks as bugspy_mocks
 from webkitcorepy import testing
 
 
-_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
-_SCRIPTS_DIR = _TEST_DIR[:_TEST_DIR.rindex(os.sep + os.path.join('Tools', 'Scripts') + os.sep)] + os.sep + os.path.join('Tools', 'Scripts')
-_HOOKS_DIR = os.path.join(_SCRIPTS_DIR, 'hooks')
-_HOOK_TEMPLATE = os.path.join(_HOOKS_DIR, 'prepare-commit-msg')
+_TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+_SCRIPTS_SUFFIX = os.sep + os.path.join('Tools', 'Scripts') + os.sep
+_SCRIPTS_IDX = _TEST_DIR.rfind(_SCRIPTS_SUFFIX)
+_SCRIPTS_DIR = _TEST_DIR[:_SCRIPTS_IDX] + os.sep + os.path.join('Tools', 'Scripts') if _SCRIPTS_IDX >= 0 else None
+_HOOKS_DIR = os.path.join(_SCRIPTS_DIR, 'hooks') if _SCRIPTS_DIR else None
+_HOOK_TEMPLATE = os.path.join(_HOOKS_DIR, 'prepare-commit-msg') if _HOOKS_DIR else None
 
 
 def _render_hook_template():
@@ -67,6 +70,7 @@ def _render_hook_template():
         )
 
 
+@unittest.skipUnless(_HOOK_TEMPLATE and os.path.isfile(_HOOK_TEMPLATE), 'prepare-commit-msg hook template not found')
 class TestGetBugsString(testing.PathTestCase):
     """Regression tests for prepare-commit-msg get_bugs_string().
 
