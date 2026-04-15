@@ -61,6 +61,7 @@
 #include "RenderImage.h"
 #include "RenderIterator.h"
 #include "RenderObjectInlines.h"
+#include "RenderReplaced.h"
 #include "RenderTableCell.h"
 #include "RenderTableRow.h"
 #include "RenderTextControl.h"
@@ -527,7 +528,7 @@ void TextIterator::advance()
                     m_handledChildren = true;
                 else if (renderer->isRenderText() && m_currentNode->isTextNode())
                     m_handledNode = handleTextNode();
-                else if (isRendererReplacedElement(renderer.get(), m_behaviors))
+                else if (isRendererReplacedElement(renderer.get(), m_behaviors) && (renderer->isInline() || !m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec)))
                     m_handledNode = handleReplacedElement();
                 else
                     m_handledNode = handleNonTextNode();
@@ -821,7 +822,13 @@ bool TextIterator::handleReplacedElement()
         ASSERT_NOT_REACHED();
     }
 
-    m_hasEmitted = true;
+    // In innerText mode, replaced elements that produce no visible text (e.g.
+    // <input>) should not count as having emitted content. This prevents
+    // spurious block-boundary newlines when the only thing before a block
+    // element is a replaced element with no text output. For other modes,
+    // preserve the existing behavior to avoid changing test expectations.
+    if (!m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec))
+        m_hasEmitted = true;
 
     auto shouldEmitObjectReplacementCharacter = [&] {
         if (m_behaviors.contains(TextIteratorBehavior::EmitsObjectReplacementCharacters))
@@ -862,6 +869,7 @@ bool TextIterator::handleReplacedElement()
     if (CheckedPtr renderImage = dynamicDowncast<RenderImage>(*renderer); renderImage && m_behaviors.contains(TextIteratorBehavior::EmitsImageAltText)) {
         auto altText = renderImage->altText();
         if (unsigned length = altText.length()) {
+            m_hasEmitted = true;
             m_lastCharacter = altText[length - 1];
             m_copyableText.set(WTF::move(altText));
             m_text = m_copyableText.text();
@@ -901,6 +909,13 @@ static bool NODELETE shouldEmitReplacementInsteadOfNode(const Node& node)
     // Placeholders should eventually disappear, so treating them as a line break doesn't make sense
     // as when they are removed the text after it is combined with the text before it.
     return is<TextPlaceholderElement>(node);
+}
+
+static bool isBlockLevelReplacedElement(Node& node)
+{
+    auto* renderer = node.renderer();
+    return renderer && !renderer->isInline() && is<RenderReplaced>(*renderer)
+        && !renderer->isFloatingOrOutOfFlowPositioned();
 }
 
 bool shouldEmitNewlinesBeforeAndAfterNode(Node& node)
@@ -1103,7 +1118,7 @@ void TextIterator::representNodeOffsetZero()
             RefPtr parentNode = currentNode->parentNode();
             emitCharacter('\t', WTF::move(parentNode), WTF::move(currentNode), 0, 0);
         }
-    } else if (shouldEmitNewlineBeforeNode(*currentNode)) {
+    } else if (shouldEmitNewlineBeforeNode(*currentNode) || (emitsNewlinesPerInnerTextSpec && isBlockLevelReplacedElement(*currentNode))) {
         if (shouldRepresentNodeOffsetZero()) {
             RefPtr parentNode = currentNode->parentNode();
             emitCharacter('\n', WTF::move(parentNode), WTF::move(currentNode), 0, 0);
@@ -1179,7 +1194,7 @@ void TextIterator::exitNode(Node* exitedNode)
     // the logic in _web_attributedStringFromRange match. We'll get that for free when we switch to use
     // TextIterator in _web_attributedStringFromRange.
     // See <rdar://problem/5428427> for an example of how this mismatch will cause problems.
-    if (m_lastTextNode && shouldEmitNewlineAfterNode(*protect(m_currentNode), m_behaviors.contains(TextIteratorBehavior::EmitsCharactersBetweenAllVisiblePositions))) {
+    if (m_lastTextNode && (shouldEmitNewlineAfterNode(*protect(m_currentNode), m_behaviors.contains(TextIteratorBehavior::EmitsCharactersBetweenAllVisiblePositions)) || (m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec) && isBlockLevelReplacedElement(*protect(m_currentNode))))) {
         // use extra newline to represent margin bottom, as needed
         bool addNewline = shouldEmitExtraNewlineForNode(*protect(m_currentNode), m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec));
 
@@ -1358,7 +1373,7 @@ void SimplifiedBackwardsTextIterator::advance()
             if (CheckedPtr renderText = dynamicDowncast<RenderText>(renderer.get())) {
                 if (renderText->style().visibility() == Visibility::Visible && m_offset > 0)
                     m_handledNode = handleTextNode();
-            } else if (isRendererReplacedElement(renderer.get(), m_behaviors)) {
+            } else if (isRendererReplacedElement(renderer.get(), m_behaviors) && (renderer->isInline() || !m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec))) {
                 if (downcast<RenderElement>(*renderer).style().visibility() == Visibility::Visible && m_offset > 0)
                     m_handledNode = handleReplacedElement();
             } else

@@ -43,7 +43,7 @@ PASS Whitespace around inline-flex should not be collapsed ("<div>abc <span styl
 PASS Trailing space at end of inline-flex should be collapsed ("<div>abc <span style='display:inline-flex'> def </span> ghi")
 PASS Whitespace around inline-grid should not be collapsed ("<div>abc <span style='display:inline-grid'></span> def")
 PASS Trailing space at end of grid-flex should be collapsed ("<div>abc <span style='display:inline-grid'> def </span> ghi")
-FAIL Whitespace between <input> and block should be collapsed ("<div><input> <div>abc</div>") assert_equals: innerText expected "abc" but got "\nabc"
+PASS Whitespace between <input> and block should be collapsed ("<div><input> <div>abc</div>")
 PASS Whitespace between inline-block and block should be collapsed ("<div><span style='inline-block'></span> <div>abc</div>")
 PASS Whitespace between inline-flex and block should be collapsed ("<div><span style='inline-flex'></span> <div>abc</div>")
 PASS Whitespace between inline-grid and block should be collapsed ("<div><span style='inline-grid'></span> <div>abc</div>")
@@ -54,8 +54,8 @@ PASS Trailing whitesapce should not be collapsed ("<div>abc <img>")
 PASS Whitespace around empty span should be collapsed ("<div>abc <b></b> def")
 PASS Whitespace around empty spans should be collapsed ("<div>abc <b><i></i></b> def")
 PASS <canvas> should not collapse following space ("<div><canvas></canvas> abc")
-FAIL Replaced element <img> with display:block should be treated as block-level ("<div>abc <img style='display:block'> def") assert_equals: innerText expected "abc\ndef" but got "abc def"
-FAIL Replaced element <canvas> with display:block should be treated as block-level ("<div>abc <canvas style='display:block'></canvas> def") assert_equals: innerText expected "abc\ndef" but got "abc def"
+PASS Replaced element <img> with display:block should be treated as block-level ("<div>abc <img style='display:block'> def")
+PASS Replaced element <canvas> with display:block should be treated as block-level ("<div>abc <canvas style='display:block'></canvas> def")
 PASS Soft line breaks ignored ("<div style='width:0'>abc def")
 PASS Soft line break at hyphen ignored ("<div style='width:0'>abc-def")
 PASS Whitespace text node preserved ("<div style='width:0'><span>abc</span> <span>def</span>")
