@@ -475,7 +475,7 @@ void CyclicModuleRecord::executeAsync(JSGlobalObject* globalObject)
     // 2. Assert: module.[[HasTLA]] is true.
     ASSERT(hasTLA());
     // 3. Let capability be ! NewPromiseCapability(%Promise%).
-    JSPromise* promise = JSPromise::create(vm, globalObject->internalPromiseStructure());
+    JSPromise* promise = JSPromise::create(vm, globalObject->promiseStructure());
     // 4. Let fulfilledClosure be a new Abstract Closure with no parameters that captures module and performs the following steps when called:
     //     4.a. Perform AsyncModuleExecutionFulfilled(module).
     //     4.b. Return NormalCompletion(undefined).
@@ -632,7 +632,11 @@ void CyclicModuleRecord::asyncExecutionFulfilled(JSGlobalObject* globalObject)
         } else if (m->hasTLA()) {
             // 12.b.i. Perform ExecuteAsyncModule(m).
             m->executeAsync(globalObject);
-            RETURN_IF_EXCEPTION(scope, void());
+            if (Exception* exception = scope.exception()) {
+                JSValue error = exception->value();
+                TRY_CLEAR_EXCEPTION(scope, void());
+                m->asyncExecutionRejected(globalObject, error);
+            }
         // 12.c. Else,
         } else {
             // 12.c.i. Let result be m.ExecuteModule().

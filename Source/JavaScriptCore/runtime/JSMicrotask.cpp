@@ -896,9 +896,14 @@ static void moduleRegistryModuleSettled(JSGlobalObject* globalObject, VM& vm, st
     auto* modulePromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
-        auto* module = jsCast<AbstractModuleRecord*>(arguments[1]);
-        entry->fetchComplete(globalObject, module);
-        modulePromise->resolve(globalObject, vm, module);
+        auto* moduleRecord = jsDynamicCast<AbstractModuleRecord*>(arguments[1]);
+        if (!moduleRecord) {
+            // Promise.prototype.then was tampered with
+            modulePromise->resolve(globalObject, vm, arguments[1]);
+            return;
+        }
+        entry->fetchComplete(globalObject, moduleRecord);
+        modulePromise->resolve(globalObject, vm, moduleRecord);
     } else {
         JSValue errorValue = arguments[1];
         entry->evaluationError(globalObject, errorValue);
