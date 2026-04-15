@@ -3450,7 +3450,7 @@ ExceptionOr<ShadowRoot&> Element::attachShadow(const ShadowRootInit& init, std::
     return shadow.get();
 }
 
-ExceptionOr<ShadowRoot&> Element::attachDeclarativeShadow(ShadowRootMode mode, ShadowRootDelegatesFocus delegatesFocus, ShadowRootClonable clonable, ShadowRootSerializable serializable, String referenceTarget, CustomElementRegistryKind registryKind)
+ExceptionOr<ShadowRoot&> Element::attachDeclarativeShadow(ShadowRootMode mode, ShadowRootDelegatesFocus delegatesFocus, ShadowRootClonable clonable, ShadowRootSerializable serializable, SlotAssignmentMode slotAssignment, String referenceTarget, CustomElementRegistryKind registryKind)
 {
     if (this->shadowRoot())
         return Exception { ExceptionCode::NotSupportedError };
@@ -3459,7 +3459,7 @@ ExceptionOr<ShadowRoot&> Element::attachDeclarativeShadow(ShadowRootMode mode, S
         delegatesFocus == ShadowRootDelegatesFocus::Yes,
         clonable == ShadowRootClonable::Yes,
         serializable == ShadowRootSerializable::Yes,
-        SlotAssignmentMode::Named,
+        slotAssignment,
         std::nullopt,
         referenceTarget,
     }, registryKind);

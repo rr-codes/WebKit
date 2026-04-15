@@ -1,10 +1,10 @@
 
-FAIL shadowrootslotassignment reflection assert_equals: Missing attribute should map to named expected (string) "named" but got (undefined) undefined
-FAIL shadowrootslotassignment reflection, setter assert_equals: expected (string) "manual" but got (object) null
-FAIL Declarative Shadow DOM: shadowrootslotassignment=manual assert_equals: slotAssignment should be "manual" expected "manual" but got "named"
+PASS shadowrootslotassignment reflection
+PASS shadowrootslotassignment reflection, setter
+PASS Declarative Shadow DOM: shadowrootslotassignment=manual
 PASS Declarative Shadow DOM: shadowrootslotassignment=named
-FAIL Declarative Shadow DOM: shadowrootslotassignment is case insensitive assert_equals: slotAssignment should be "manual" (case insensitive) expected "manual" but got "named"
+PASS Declarative Shadow DOM: shadowrootslotassignment is case insensitive
 PASS Declarative Shadow DOM: shadowrootslotassignment invalid value defaults to named
-FAIL Declarative Shadow DOM: shadowrootslotassignment on closed shadows can be set to manual assert_equals: slotAssignment should be "manual" (closed root) expected "manual" but got "named"
+PASS Declarative Shadow DOM: shadowrootslotassignment on closed shadows can be set to manual
 PASS Declarative Shadow DOM: missing shadowrootslotassignment defaults to named
 

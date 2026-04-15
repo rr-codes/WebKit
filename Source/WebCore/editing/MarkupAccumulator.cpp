@@ -405,23 +405,13 @@ void MarkupAccumulator::startAppendingNode(const Node& node, Namespaces* namespa
             m_markup.append("<meta charset=\"UTF-8\"><!-- Encoding specified by WebKit -->"_s);
 
     } else if (RefPtr shadowRoot = suitableShadowRoot(node)) {
-        m_markup.append("<template shadowrootmode=\""_s);
-        switch (shadowRoot->mode()) {
-        case ShadowRootMode::Open:
-            m_markup.append("open"_s);
-            break;
-        case ShadowRootMode::Closed:
-            m_markup.append("closed"_s);
-            break;
-        case ShadowRootMode::UserAgent:
-            ASSERT_NOT_REACHED();
-            break;
-        }
-        m_markup.append('"');
+        m_markup.append("<template shadowrootmode=\""_s, serializeShadowRootMode(shadowRoot->mode()), '"');
         if (shadowRoot->delegatesFocus())
             m_markup.append(" shadowrootdelegatesfocus=\"\""_s);
         if (shadowRoot->serializable())
             m_markup.append(" shadowrootserializable=\"\""_s);
+        if (shadowRoot->slotAssignmentMode() == SlotAssignmentMode::Manual)
+            m_markup.append(" shadowrootslotassignment=\"manual\""_s);
         if (shadowRoot->isClonable())
             m_markup.append(" shadowrootclonable=\"\""_s);
         bool shouldAppendRegistryAttribute = [&] {
