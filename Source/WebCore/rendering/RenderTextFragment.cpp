@@ -94,6 +94,16 @@ void RenderTextFragment::setTextInternal(const String& newText, bool force)
     ASSERT(!textNode() || textNode()->renderer() == this);
 }
 
+void RenderTextFragment::setTextWithOffset(const String& newText, unsigned offset)
+{
+    // Edits within the first-letter range invalidate the first-letter split.
+    // The base class skips the update when the fragment text matches the new
+    // content, but the split is stale and the tree builder needs to recreate it.
+    if (m_firstLetter && offset < m_start)
+        RenderTreeBuilder::current() ? RenderTreeBuilder::current()->destroy(*m_firstLetter) : RenderTreeBuilder(*document().renderView()).destroy(*m_firstLetter);
+    RenderText::setTextWithOffset(newText, offset);
+}
+
 Node* RenderTextFragment::nodeForHitTest() const
 {
     if (!textNode()) {

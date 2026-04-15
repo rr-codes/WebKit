@@ -131,7 +131,7 @@ public:
     WEBCORE_EXPORT IntPoint firstRunLocation() const;
 
     void setText(const String&, bool force = false);
-    void setTextWithOffset(const String&, unsigned offset);
+    virtual void setTextWithOffset(const String&, unsigned offset);
 
     bool canBeSelectionLeaf() const override { return true; }
 
