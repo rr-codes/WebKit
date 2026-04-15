@@ -40,6 +40,7 @@ enum class InternalMicrotask : uint8_t {
     PromiseResolveThenableJobWithInternalMicrotask,
 
     PromiseResolveWithoutHandlerJob,
+    PromiseFulfillWithoutHandlerJob,
 
     PromiseRaceResolveJob,
     PromiseAllResolveJob,
@@ -74,6 +75,7 @@ enum class InternalMicrotask : uint8_t {
     ModuleLoadCombinedStateSettled,
     ModuleLoadLinkEvaluateSettled,
     ModuleLoadReturnRecord,
+    ModuleLoadReturnModuleKey,
     ModuleLoadStoreError,
     DynamicImportLoadSettled,
     DynamicImportEvaluateSettled,

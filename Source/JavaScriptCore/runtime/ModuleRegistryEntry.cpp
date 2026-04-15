@@ -109,6 +109,7 @@ JSPromise* ModuleRegistryEntry::ensureFetchPromise(JSGlobalObject* globalObject)
     VM& vm = globalObject->vm();
 
     JSPromise* promise = JSPromise::create(vm, globalObject->promiseStructure());
+    promise->markAsHandled();
 
     if (m_fetchError)
         promise->reject(vm, globalObject, m_fetchError.get());
@@ -127,6 +128,7 @@ JSPromise* ModuleRegistryEntry::ensureModulePromise(JSGlobalObject* globalObject
     // Pre-create the module promise. It will be resolved/rejected by the
     // ModuleRegistryFetchSettled and ModuleRegistryModuleSettled microtask handlers.
     JSPromise* modulePromise = JSPromise::create(vm, globalObject->promiseStructure());
+    modulePromise->markAsHandled();
     m_modulePromise.set(vm, this, modulePromise);
 
     JSPromise* fetchPromise = ensureFetchPromise(globalObject);
@@ -240,7 +242,7 @@ void ModuleRegistryEntry::provideFetch(JSGlobalObject* globalObject, JSSourceCod
 
     scope.release();
     m_status = Status::Fetching;
-    m_fetchPromise->resolve(globalObject, vm, jsSourceCode);
+    m_fetchPromise->fulfill(vm, globalObject, jsSourceCode);
 }
 
 void ModuleRegistryEntry::fetchComplete(JSGlobalObject* globalObject, AbstractModuleRecord* record)

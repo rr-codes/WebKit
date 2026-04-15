@@ -209,6 +209,17 @@ void JSPromise::fulfill(VM& vm, JSGlobalObject* globalObject, JSValue value)
     }
 }
 
+void JSPromise::pipeFrom(VM& vm, JSPromise* from)
+{
+    int32_t flags = this->flags();
+    if (flags & isFirstResolvingFunctionCalledFlag)
+        return;
+    internalField(Field::Flags).setWithoutWriteBarrier(jsNumber(static_cast<int32_t>(flags | isFirstResolvingFunctionCalledFlag)));
+
+    JSGlobalObject* globalObject = this->realm();
+    from->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::PromiseFulfillWithoutHandlerJob, this, jsUndefined());
+}
+
 void JSPromise::performPromiseThenExported(VM& vm, JSGlobalObject* globalObject, JSValue onFulfilled, JSValue onRejected, JSValue promiseOrCapability)
 {
     return performPromiseThen(vm, globalObject, onFulfilled, onRejected, promiseOrCapability);

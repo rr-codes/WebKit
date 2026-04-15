@@ -866,12 +866,7 @@ static void moduleRegistryFetchSettled(JSGlobalObject* globalObject, VM& vm, Thr
     auto* modulePromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
-        auto* jsSourceCode = jsDynamicCast<JSSourceCode*>(arguments[1]);
-        if (!jsSourceCode) {
-            // Promise.prototype.then was tampered with
-            modulePromise->resolve(globalObject, vm, arguments[1]);
-            return;
-        }
+        auto* jsSourceCode = jsSecureCast<JSSourceCode*>(arguments[1]);
         JSPromise* makeModulePromise = JSModuleLoader::makeModule(globalObject, entry->key(), jsSourceCode);
         if (scope.exception()) {
             modulePromise->rejectWithCaughtException(globalObject, scope);
@@ -896,14 +891,9 @@ static void moduleRegistryModuleSettled(JSGlobalObject* globalObject, VM& vm, st
     auto* modulePromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
-        auto* moduleRecord = jsDynamicCast<AbstractModuleRecord*>(arguments[1]);
-        if (!moduleRecord) {
-            // Promise.prototype.then was tampered with
-            modulePromise->resolve(globalObject, vm, arguments[1]);
-            return;
-        }
+        auto* moduleRecord = jsSecureCast<AbstractModuleRecord*>(arguments[1]);
         entry->fetchComplete(globalObject, moduleRecord);
-        modulePromise->resolve(globalObject, vm, moduleRecord);
+        modulePromise->fulfill(vm, globalObject, moduleRecord);
     } else {
         JSValue errorValue = arguments[1];
         entry->evaluationError(globalObject, errorValue);
@@ -941,12 +931,7 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
     case ModuleLoadingContext::Step::Main: {
         // modulePromise settled: on fulfillment, call loadRequestedModules and chain next step
         if (status == JSPromise::Status::Fulfilled) {
-            auto* module = jsDynamicCast<AbstractModuleRecord*>(arguments[1]);
-            if (!module) {
-                // Promise.prototype.then was tampered with
-                loadPromise->resolve(globalObject, vm, arguments[1]);
-                return;
-            }
+            auto* module = jsSecureCast<AbstractModuleRecord*>(arguments[1]);
             context->module(vm, module);
             JSPromise* requestedPromise = globalObject->moduleLoader()->loadRequestedModules(globalObject, module, context->scriptFetcher());
             if (scope.exception()) {
@@ -973,11 +958,11 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
             auto* entry = context->entry();
             if (auto* cyclic = jsDynamicCast<CyclicModuleRecord*>(module); cyclic && cyclic->status() != CyclicModuleRecord::Status::Unlinked) {
                 ASSERT(cyclic->status() != CyclicModuleRecord::Status::Linking);
-                loadPromise->resolve(globalObject, vm, entry->record());
+                loadPromise->fulfill(vm, globalObject, entry->record());
             } else {
                 entry->record(vm, module);
                 entry->status(ModuleRegistryEntry::Status::Fetched);
-                loadPromise->resolve(globalObject, vm, entry->record());
+                loadPromise->fulfill(vm, globalObject, entry->record());
             }
         } else {
             // onRejected logic: store evaluation error on entry
@@ -991,18 +976,13 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
     case ModuleLoadingContext::Step::Cached: {
         // Cached loadPromise settled: on fulfillment, call finishLoading
         if (status == JSPromise::Status::Fulfilled) {
-            auto* module = jsDynamicCast<AbstractModuleRecord*>(arguments[1]);
-            if (!module) {
-                // Promise.prototype.then was tampered with
-                loadPromise->resolve(globalObject, vm, arguments[1]);
-                return;
-            }
+            auto* module = jsSecureCast<AbstractModuleRecord*>(arguments[1]);
             globalObject->moduleLoader()->finishLoadingImportedModule(globalObject, context->referrer(), context->moduleRequest(), context->payload(), module, context->scriptFetcher());
             if (scope.exception()) {
                 loadPromise->rejectWithCaughtException(globalObject, scope);
                 return;
             }
-            loadPromise->resolve(globalObject, vm, module);
+            loadPromise->fulfill(vm, globalObject, module);
         } else {
             auto* entry = context->entry();
             JSValue errorValue = arguments[1];
@@ -1026,11 +1006,7 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
     auto* intermediatePromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
-        auto* jsSourceCode = jsDynamicCast<JSSourceCode*>(arguments[1]);
-        if (!jsSourceCode) {
-            intermediatePromise->resolve(globalObject, vm, arguments[1]);
-            return;
-        }
+        auto* jsSourceCode = jsSecureCast<JSSourceCode*>(arguments[1]);
 
         const Identifier& specifier = context->moduleRequest().m_specifier;
         auto type = context->moduleRequest().type();
@@ -1043,6 +1019,7 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
         }
 
         JSPromise* statePromise = JSPromise::create(vm, globalObject->promiseStructure());
+        statePromise->markAsHandled();
         AbstractModuleRecord::ModuleRequest request { specifier, ScriptFetchParameters::create(type) };
         ModuleLoaderPayload* modulePayload;
         JSPromise* loadPromise;
@@ -1060,6 +1037,7 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
             }
             // Specifier transform: instead of creating a closure, use a microtask
             JSPromise* transformedStatePromise = JSPromise::create(vm, globalObject->promiseStructure());
+            transformedStatePromise->markAsHandled();
             statePromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadSpecifierTransform, transformedStatePromise, context);
             statePromise = transformedStatePromise;
         }
@@ -1070,11 +1048,12 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
         }
 
         JSPromise* combinedPromise = JSPromise::create(vm, globalObject->promiseStructure());
+        combinedPromise->markAsHandled();
 
         loadPromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadCombinedLoadSettled, combinedPromise, modulePayload);
         statePromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadCombinedStateSettled, combinedPromise, modulePayload);
 
-        intermediatePromise->resolve(globalObject, vm, combinedPromise);
+        intermediatePromise->pipeFrom(vm, combinedPromise);
     } else {
         // onFetchRejected logic
         const Identifier& specifier = context->moduleRequest().m_specifier;
@@ -1106,7 +1085,7 @@ static void moduleLoadTopRejected(JSGlobalObject* globalObject, VM& vm, ThrowSco
     auto* resultPromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled)
-        resultPromise->resolve(globalObject, vm, arguments[1]);
+        resultPromise->fulfill(vm, globalObject, arguments[1]);
     else {
         const Identifier& specifier = context->moduleRequest().m_specifier;
         auto type = context->moduleRequest().type();
@@ -1144,7 +1123,7 @@ static void moduleLoadSpecifierTransform(JSGlobalObject* globalObject, VM& vm, T
     if (status == JSPromise::Status::Fulfilled) {
         auto* context = jsCast<ModuleLoadingContext*>(arguments[2]);
         scope.release();
-        transformedPromise->resolve(globalObject, vm, identifierToJSValue(vm, context->moduleRequest().m_specifier));
+        transformedPromise->fulfill(vm, globalObject, identifierToJSValue(vm, context->moduleRequest().m_specifier));
     } else
         transformedPromise->reject(vm, globalObject, arguments[1]);
 }
@@ -1163,7 +1142,7 @@ static void moduleLoadCombinedLoadSettled(JSGlobalObject* globalObject, VM& vm, 
         if (modulePayload->decrementRemaining() && combinedPromise->status() == JSPromise::Status::Pending) {
             JSValue fulfillmentValue = modulePayload->fulfillment();
             ASSERT(fulfillmentValue);
-            combinedPromise->resolve(globalObject, vm, fulfillmentValue);
+            combinedPromise->fulfill(vm, globalObject, fulfillmentValue);
         }
     } else {
         modulePayload->decrementRemaining();
@@ -1185,7 +1164,7 @@ static void moduleLoadCombinedStateSettled(JSGlobalObject* globalObject, VM& vm,
     if (status == JSPromise::Status::Fulfilled) {
         if (modulePayload->decrementRemaining()) {
             if (combinedPromise->status() == JSPromise::Status::Pending)
-                combinedPromise->resolve(globalObject, vm, arguments[1]);
+                combinedPromise->fulfill(vm, globalObject, arguments[1]);
         } else
             modulePayload->fulfillment(vm, arguments[1]);
     } else {
@@ -1205,11 +1184,7 @@ static void moduleLoadLinkEvaluateSettled(JSGlobalObject* globalObject, VM& vm, 
     auto* resultPromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
-        auto* record = jsDynamicCast<AbstractModuleRecord*>(arguments[1]);
-        if (!record) {
-            resultPromise->resolve(globalObject, vm, arguments[1]);
-            return;
-        }
+        auto* record = jsSecureCast<AbstractModuleRecord*>(arguments[1]);
         if (context->evaluate()) {
             record->link(globalObject, context->scriptFetcher());
             JSModuleLoader::attachErrorInfo(globalObject, scope, record, record->moduleKey(), record->moduleType(), JSModuleLoader::ModuleFailure::Kind::Instantiation);
@@ -1226,7 +1201,7 @@ static void moduleLoadLinkEvaluateSettled(JSGlobalObject* globalObject, VM& vm, 
             // Chain: when evaluation completes, resolve resultPromise with record
             evaluatePromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadReturnRecord, resultPromise, record);
         } else
-            resultPromise->resolve(globalObject, vm, identifierToJSValue(vm, record->moduleKey()));
+            resultPromise->fulfill(vm, globalObject, identifierToJSValue(vm, record->moduleKey()));
     } else
         resultPromise->reject(vm, globalObject, arguments[1]);
 }
@@ -1241,7 +1216,7 @@ static void moduleLoadReturnRecord(JSGlobalObject* globalObject, VM& vm, ThrowSc
     auto status = static_cast<JSPromise::Status>(payload);
     scope.release();
     if (status == JSPromise::Status::Fulfilled)
-        resultPromise->resolve(globalObject, vm, arguments[2]);
+        resultPromise->fulfill(vm, globalObject, arguments[2]);
     else
         resultPromise->reject(vm, globalObject, arguments[1]);
 }
@@ -1315,30 +1290,33 @@ static void dynamicImportEvaluateSettled(JSGlobalObject* globalObject, VM& vm, T
             capabilityPromise->rejectWithCaughtException(globalObject, scope);
             return;
         }
-        capabilityPromise->resolve(globalObject, vm, moduleNamespace);
+        // ContinueDynamicImport https://tc39.es/ecma262/#sec-ContinueDynamicImport
+        // Step 10 resolves the promiseCapability with the namespace. However,
+        // capabilityPromise here is the internal statePromise from moduleLoadTopSettled,
+        // not the user-visible import() promise. The actual spec-required resolve()
+        // happens in importModuleNamespace. Use fulfill here to avoid unnecessary
+        // thenable unwrapping on internal pipeline.
+        capabilityPromise->fulfill(vm, globalObject, moduleNamespace);
     } else
         capabilityPromise->reject(vm, globalObject, arguments[1]);
 }
 
-static void importModuleNamespace(JSGlobalObject* globalObject, VM& vm, ThrowScope& scope, std::span<const JSValue, maxMicrotaskArguments> arguments, uint8_t payload)
+static void importModuleNamespace(JSGlobalObject* globalObject, VM& vm, ThrowScope&, std::span<const JSValue, maxMicrotaskArguments> arguments, uint8_t payload)
 {
     // requestImportModule: namespace getter
     // arguments[0] = resultPromise
-    // arguments[1] = resolution (AbstractModuleRecord*) or error
+    // arguments[1] = module namespace (from dynamic import pipeline) or error
     // arguments[2] = unused
     auto* resultPromise = jsCast<JSPromise*>(arguments[0]);
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
-        auto* record = jsDynamicCast<AbstractModuleRecord*>(arguments[1]);
-        if (!record) {
-            resultPromise->resolve(globalObject, vm, arguments[1]);
-            return;
-        }
-        JSModuleNamespaceObject* moduleNamespace = record->getModuleNamespace(globalObject);
-        if (scope.exception()) {
-            resultPromise->rejectWithCaughtException(globalObject, scope);
-            return;
-        }
+        // The value is a JSModuleNamespaceObject forwarded from the internal
+        // pipeline (dynamicImportEvaluateSettled → combinedPromise → here).
+        // resultPromise is the user-visible import() promise. Must use resolve() per spec:
+        // ContinueDynamicImport https://tc39.es/ecma262/#sec-ContinueDynamicImport
+        // Step 6.d.ii: Call(promiseCapability.[[Resolve]], undefined, « namespace »).
+        // A module namespace that exports "then" is a thenable per spec.
+        auto* moduleNamespace = jsSecureCast<JSModuleNamespaceObject*>(arguments[1]);
         resultPromise->resolve(globalObject, vm, moduleNamespace);
     } else
         resultPromise->reject(vm, globalObject, arguments[1]);
@@ -1429,6 +1407,25 @@ void runInternalMicrotask(JSGlobalObject* globalObject, VM& vm, InternalMicrotas
             promise->rejectPromise(vm, globalObject, resolution);
             break;
         }
+        }
+        return;
+    }
+
+    case InternalMicrotask::PromiseFulfillWithoutHandlerJob: {
+        auto* promise = jsCast<JSPromise*>(arguments[0]);
+        JSValue resolution = arguments[1];
+        switch (static_cast<JSPromise::Status>(payload)) {
+        case JSPromise::Status::Pending:
+            RELEASE_ASSERT_NOT_REACHED();
+            break;
+        case JSPromise::Status::Fulfilled:
+            scope.release();
+            promise->fulfillPromise(vm, globalObject, resolution);
+            break;
+        case JSPromise::Status::Rejected:
+            scope.release();
+            promise->rejectPromise(vm, globalObject, resolution);
+            break;
         }
         return;
     }
@@ -1682,6 +1679,21 @@ void runInternalMicrotask(JSGlobalObject* globalObject, VM& vm, InternalMicrotas
 
     case InternalMicrotask::ModuleLoadReturnRecord: {
         moduleLoadReturnRecord(globalObject, vm, scope, arguments, payload);
+        return;
+    }
+
+    case InternalMicrotask::ModuleLoadReturnModuleKey: {
+        // loadAndEvaluateModule: extract module key from AbstractModuleRecord
+        // arguments[0] = resultPromise
+        // arguments[1] = resolution (AbstractModuleRecord*) or error
+        auto* resultPromise = jsCast<JSPromise*>(arguments[0]);
+        auto status = static_cast<JSPromise::Status>(payload);
+        scope.release();
+        if (status == JSPromise::Status::Fulfilled) {
+            auto* module = jsSecureCast<AbstractModuleRecord*>(arguments[1]);
+            resultPromise->fulfillPromise(vm, globalObject, identifierToJSValue(vm, module->moduleKey()));
+        } else
+            resultPromise->rejectPromise(vm, globalObject, arguments[1]);
         return;
     }
 

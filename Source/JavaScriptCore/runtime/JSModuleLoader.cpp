@@ -379,9 +379,11 @@ JSPromise* JSModuleLoader::loadModule(JSGlobalObject* globalObject, const Identi
     auto* context = ModuleLoadingContext::create(vm, request, scriptFetcher, evaluate, dynamic, useImportMap);
 
     JSPromise* intermediatePromise = JSPromise::create(vm, globalObject->promiseStructure());
+    intermediatePromise->markAsHandled();
     promise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadTopSettled, intermediatePromise, context);
 
     JSPromise* resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
+    resultPromise->markAsHandled();
     intermediatePromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadTopRejected, resultPromise, context);
 
     return resultPromise;
@@ -442,6 +444,7 @@ JSPromise* JSModuleLoader::requestImportModule(JSGlobalObject* globalObject, con
     RETURN_IF_EXCEPTION(scope, nullptr);
 
     JSPromise* resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
+    resultPromise->markAsHandled();
     promise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ImportModuleNamespace, resultPromise, jsUndefined());
 
     return resultPromise;
@@ -660,6 +663,7 @@ JSPromise* JSModuleLoader::hostLoadImportedModule(JSGlobalObject* globalObject, 
             } else {
                 auto* context = ModuleLoadingContext::create(vm, ModuleLoadingContext::Step::Cached, referrer, moduleRequest, payload, mapEntry, scriptFetcher);
                 JSPromise* resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
+                resultPromise->markAsHandled();
                 promise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadStep, resultPromise, context);
                 promise = resultPromise;
             }
@@ -684,7 +688,7 @@ JSPromise* JSModuleLoader::hostLoadImportedModule(JSGlobalObject* globalObject, 
         RETURN_IF_EXCEPTION(scope, nullptr);
 
         mapEntry->status(ModuleRegistryEntry::Status::Fetching);
-        mapEntry->ensureFetchPromise(globalObject)->resolve(globalObject, vm, promise);
+        mapEntry->ensureFetchPromise(globalObject)->pipeFrom(vm, promise);
     }
 
     JSPromise* modulePromise = mapEntry->ensureModulePromise(globalObject);
@@ -692,6 +696,7 @@ JSPromise* JSModuleLoader::hostLoadImportedModule(JSGlobalObject* globalObject, 
 
     auto* context = ModuleLoadingContext::create(vm, ModuleLoadingContext::Step::Main, referrer, moduleRequest, payload, mapEntry, scriptFetcher);
     JSPromise* loadPromise = JSPromise::create(vm, globalObject->promiseStructure());
+    loadPromise->markAsHandled();
 
     modulePromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadStep, loadPromise, context);
 
@@ -710,6 +715,7 @@ JSPromise* JSModuleLoader::loadModule(JSGlobalObject* globalObject, const Module
 
     auto* context = ModuleLoadingContext::create(vm, moduleRequest, scriptFetcher, evaluate, false, useImportMap);
     JSPromise* resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
+    resultPromise->markAsHandled();
 
     promise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadLinkEvaluateSettled, resultPromise, context);
     resultPromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadStoreError, jsUndefined(), context);
@@ -782,7 +788,7 @@ void JSModuleLoader::innerModuleLoading(JSGlobalObject* globalObject, ModuleGrap
                 loaded->status(CyclicModuleRecord::Status::Unlinked);
         });
         // 5.c. Perform ! Call(state.[[PromiseCapability]].[[Resolve]], undefined, « undefined »).
-        state->promise()->resolve(globalObject, vm, module);
+        state->promise()->fulfill(vm, globalObject, module);
     }
     // 6. Return UNUSED.
     scope.release();
@@ -908,6 +914,7 @@ JSPromise* JSModuleLoader::loadRequestedModules(JSGlobalObject* globalObject, Ab
     // 1. If hostDefined is not present, let hostDefined be empty.
     // 2. Let pc be ! NewPromiseCapability(%Promise%).
     JSPromise* pc = JSPromise::create(vm, globalObject->promiseStructure()); // This will eventually be resolved with an AbstractModuleRecord*.
+    pc->markAsHandled();
     // 3. Let state be the GraphLoadingState Record { [[IsLoading]]: true, [[PendingModulesCount]]: 1, [[Visited]]: « », [[PromiseCapability]]: pc, [[HostDefined]]: hostDefined }.
     auto state = ModuleGraphLoadingState::create(vm, pc, scriptFetcher);
     RETURN_IF_EXCEPTION(scope, nullptr);
@@ -1001,6 +1008,7 @@ JSPromise* JSModuleLoader::makeModule(JSGlobalObject* globalObject, const Identi
     const SourceCode& sourceCode = jsSourceCode->sourceCode();
 
     JSPromise* promise = JSPromise::create(vm, globalObject->promiseStructure());
+    promise->markAsHandled();
 
 #if ENABLE(WEBASSEMBLY)
     if (sourceCode.provider()->sourceType() == SourceProviderSourceType::WebAssembly)
@@ -1013,7 +1021,7 @@ JSPromise* JSModuleLoader::makeModule(JSGlobalObject* globalObject, const Identi
         attachErrorInfo(globalObject, scope, moduleRecord, moduleKey, ScriptFetchParameters::JSON, ModuleFailure::Kind::Evaluation);
         RETURN_IF_EXCEPTION(scope, promise->rejectWithCaughtException(globalObject, scope));
         scope.release();
-        promise->resolve(globalObject, vm, moduleRecord);
+        promise->fulfill(vm, globalObject, moduleRecord);
         return promise;
     }
 
@@ -1041,7 +1049,7 @@ JSPromise* JSModuleLoader::makeModule(JSGlobalObject* globalObject, const Identi
         RELEASE_AND_RETURN(scope, promise);
     }
 
-    promise->resolve(globalObject, vm, result.value());
+    promise->fulfill(vm, globalObject, result.value());
     RELEASE_AND_RETURN(scope, promise);
 }
 

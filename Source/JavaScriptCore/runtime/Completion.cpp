@@ -32,7 +32,6 @@
 #include "JSGlobalObject.h"
 #include "JSLock.h"
 #include "JSModuleLoader.h"
-#include "JSNativeStdFunction.h"
 #include "JSPromise.h"
 #include "JSScriptFetchParameters.h"
 #include "JSWithScope.h"
@@ -239,13 +238,11 @@ JSPromise* loadAndEvaluateModule(JSGlobalObject* globalObject, SourceCode&& sour
     JSPromise* promise = globalObject->moduleLoader()->loadModule(globalObject, globalObject, request, ModuleLoaderPayload::create(vm, graphLoadingState), scriptFetcher, true, false);
     RETURN_IF_EXCEPTION(scope, rejectPromise(scope, globalObject));
 
-    promise = jsCast<JSPromise*>(promise->then(globalObject, JSNativeStdFunction::create(vm, globalObject, 1, { }, [](JSGlobalObject* globalObject, CallFrame* callFrame) {
-        auto* module = jsCast<AbstractModuleRecord*>(callFrame->argument(0));
-        return JSValue::encode(JSC::identifierToJSValue(globalObject->vm(), module->moduleKey()));
-    }), jsUndefined()));
-    RETURN_IF_EXCEPTION(scope, rejectPromise(scope, globalObject));
+    JSPromise* resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
+    resultPromise->markAsHandled();
+    promise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadReturnModuleKey, resultPromise, jsUndefined());
 
-    return promise;
+    return resultPromise;
 }
 
 JSPromise* loadModule(JSGlobalObject* globalObject, const Identifier& moduleKey, JSValue parameters, JSValue scriptFetcher)

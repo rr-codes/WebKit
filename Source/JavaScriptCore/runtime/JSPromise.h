@@ -97,7 +97,10 @@ public:
 
     JS_EXPORT_PRIVATE void resolve(JSGlobalObject*, VM&, JSValue);
     JS_EXPORT_PRIVATE void reject(VM&, JSGlobalObject*, JSValue);
-    void fulfill(VM&, JSGlobalObject*, JSValue);
+    JS_EXPORT_PRIVATE void fulfill(VM&, JSGlobalObject*, JSValue);
+    // Pipes its settlement to this promise via internal microtask. Otherwise directly
+    // fulfills. Never triggers user-observable behavior.
+    JS_EXPORT_PRIVATE void pipeFrom(VM&, JSPromise* from);
     JS_EXPORT_PRIVATE void rejectAsHandled(VM&, JSGlobalObject*, JSValue);
     JS_EXPORT_PRIVATE void reject(VM&, JSGlobalObject*, Exception*);
     JS_EXPORT_PRIVATE void rejectAsHandled(VM&, JSGlobalObject*, Exception*);

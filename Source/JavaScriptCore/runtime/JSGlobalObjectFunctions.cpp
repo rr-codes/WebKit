@@ -816,8 +816,7 @@ JSC_DEFINE_HOST_FUNCTION(globalFuncImportModule, (JSGlobalObject* globalObject, 
     RETURN_IF_EXCEPTION(scope, JSValue::encode(promise->rejectWithCaughtException(globalObject, scope)));
 
     scope.release();
-    promise->resolve(globalObject, vm, importPromise);
-    return JSValue::encode(promise);
+    return JSValue::encode(importPromise);
 }
 
 static bool NODELETE canPerformFastPropertyEnumerationForCopyDataProperties(Structure* structure)

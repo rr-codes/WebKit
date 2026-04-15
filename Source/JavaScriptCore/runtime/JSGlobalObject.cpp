@@ -2204,7 +2204,7 @@ capitalName ## Constructor* lowerName ## Constructor = featureFlag ? capitalName
     if (Wasm::isSupported()) {
         m_webAssemblyModuleRecordStructure.initLater(
             [] (const Initializer<Structure>& init) {
-                init.set(WebAssemblyModuleRecord::createStructure(init.vm, init.owner, init.owner->m_objectPrototype.get()));
+                init.set(WebAssemblyModuleRecord::createStructure(init.vm, init.owner, jsNull()));
             });
         m_webAssemblyFunctionStructure.initLater(
             [] (const Initializer<Structure>& init) {
