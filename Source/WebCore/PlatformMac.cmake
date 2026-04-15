@@ -1077,7 +1077,10 @@ set(ADDITIONAL_BINDINGS_DEPENDENCIES
 # in PlatformHave.h. https://bugs.webkit.org/show_bug.cgi?id=312061
 set(CSS_VALUE_PLATFORM_DEFINES "WTF_PLATFORM_MAC WTF_PLATFORM_COCOA ENABLE_APPLE_PAY_NEW_BUTTON_TYPES HAVE_CORE_MATERIAL HAVE_MATERIAL_HOSTING")
 
-set(WebCore_USER_AGENT_SCRIPTS ${WebCore_DERIVED_SOURCES_DIR}/ModernMediaControls.js)
+set(WebCore_USER_AGENT_SCRIPTS
+    ${WebCore_DERIVED_SOURCES_DIR}/ModernMediaControls.js
+    ${WEBCORE_DIR}/Modules/modern-media-controls/media/YouTubeCaptionQuirk.js
+)
 
 list(APPEND WebCoreTestSupport_LIBRARIES PRIVATE WebCore)
 list(APPEND WebCoreTestSupport_PRIVATE_HEADERS testing/cocoa/WebArchiveDumpSupport.h)
