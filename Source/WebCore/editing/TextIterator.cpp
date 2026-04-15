@@ -610,6 +610,7 @@ bool TextIterator::handleTextNode()
     CheckedRef renderer = *textNode->renderer();
     m_lastTextNode = textNode.ptr();
     auto rendererText = rendererTextForBehavior(renderer.get());
+    CheckedPtr textFragmentWithRemainingTextAfterFirstLetter = dynamicDowncast<RenderTextFragment>(renderer.get());
 
     // handle pre-formatted text
     if (!renderer->style().collapseWhiteSpace()) {
@@ -618,8 +619,8 @@ bool TextIterator::handleTextNode()
             emitCharacter(' ', WTF::move(textNode), nullptr, runStart, runStart);
             return false;
         }
-        if (CheckedPtr renderTextFragment = dynamicDowncast<RenderTextFragment>(renderer); renderTextFragment && !m_handledFirstLetter && !m_offset) {
-            handleTextNodeFirstLetter(*renderTextFragment);
+        if (textFragmentWithRemainingTextAfterFirstLetter && !m_handledFirstLetter && !m_offset) {
+            handleTextNodeFirstLetter(*textFragmentWithRemainingTextAfterFirstLetter);
             if (m_firstLetterText) {
                 String firstLetter = m_firstLetterText->text();
                 emitText(textNode, *protect(m_firstLetterText), m_offset, m_offset + firstLetter.length());
@@ -632,6 +633,10 @@ bool TextIterator::handleTextNode()
             return false;
         int rendererTextLength = rendererText.length();
         int end = (textNode.ptr() == m_endContainer) ? m_endOffset : INT_MAX;
+        if (textFragmentWithRemainingTextAfterFirstLetter && textFragmentWithRemainingTextAfterFirstLetter->firstLetter()) {
+            runStart = convertNodeOffsetToOffsetInTextFragment(*textFragmentWithRemainingTextAfterFirstLetter, std::max(0, runStart));
+            end = end == INT_MAX ? INT_MAX : static_cast<int>(convertNodeOffsetToOffsetInTextFragment(*textFragmentWithRemainingTextAfterFirstLetter, end));
+        }
         int runEnd = std::min(rendererTextLength, end);
 
         if (runStart >= runEnd)
@@ -643,8 +648,8 @@ bool TextIterator::handleTextNode()
 
     std::tie(m_textRun, m_textRunLogicalOrderCache) = InlineIterator::firstTextBoxInLogicalOrderFor(renderer.get());
 
-    if (CheckedPtr renderTextFragment = dynamicDowncast<RenderTextFragment>(renderer); renderTextFragment && !m_handledFirstLetter && !m_offset)
-        handleTextNodeFirstLetter(*renderTextFragment);
+    if (textFragmentWithRemainingTextAfterFirstLetter && !m_handledFirstLetter && !m_offset)
+        handleTextNodeFirstLetter(*textFragmentWithRemainingTextAfterFirstLetter);
     else if (!m_textRun && rendererText.length()) {
         if (renderer->style().visibility() != Visibility::Visible && !m_behaviors.contains(TextIteratorBehavior::IgnoresStyleVisibility))
             return false;
@@ -668,12 +673,21 @@ void TextIterator::handleTextRun()
 
     auto [firstTextRun, orderCache] = InlineIterator::firstTextBoxInLogicalOrderFor(renderer);
 
-    auto rendererText = rendererTextForBehavior(renderer.get());
-    unsigned rangeStart = m_offset;
-    auto rangeEnd = std::optional<unsigned> { };
-    if (textNode.ptr() == m_endContainer)
-        rangeEnd = m_endOffset;
+    // For remaining text fragments after a first-letter split, text box offsets are fragment-local but m_offset/m_endOffset are DOM offsets.
+    unsigned remainingFragmentStart = 0;
+    if (auto* renderText = dynamicDowncast<RenderTextFragment>(renderer.get()); renderText && renderText->firstLetter())
+        remainingFragmentStart = renderText->start();
 
+    auto toFragmentLocal = [&](unsigned nodeOffset) {
+        return nodeOffset > remainingFragmentStart ? nodeOffset - remainingFragmentStart : 0;
+    };
+    auto toNodeOffset = [&](unsigned localOffset) {
+        return localOffset + remainingFragmentStart;
+    };
+
+    auto rendererText = rendererTextForBehavior(renderer.get());
+    auto rangeStart = toFragmentLocal(m_offset);
+    auto rangeEnd = textNode.ptr() == m_endContainer ? std::make_optional(toFragmentLocal(m_endOffset)) : std::nullopt;
     while (m_textRun) {
         auto textRunStart = m_textRun->start();
         auto textRunEnd = textRunStart + m_textRun->length();
@@ -709,7 +723,7 @@ void TextIterator::handleTextRun()
             // For white-space:pre-line, newlines are preserved rather than collapsed to spaces.
             if (isCollapsibleNewlineOrTab(rendererText[runStart])) {
                 emitCharacter(' ', textNode.copyRef(), nullptr, runStart, runStart + 1);
-                m_offset = runStart + 1;
+                m_offset = toNodeOffset(runStart + 1);
             } else {
                 auto subrunEnd = runStart + 1;
                 for (; subrunEnd < runEnd; ++subrunEnd) {
@@ -721,13 +735,13 @@ void TextIterator::handleTextRun()
                     if (lastSpaceCollapsedByNextNonTextRun)
                         ++subrunEnd; // runEnd stopped before last space. Increment by one to restore the space.
                 }
-                m_offset = subrunEnd;
+                m_offset = toNodeOffset(subrunEnd);
                 emitText(textNode, renderer, runStart, subrunEnd);
             }
 
             // If we are doing a subrun that doesn't go to the end of the text box,
             // come back again to finish handling this text box; don't advance to the next one.
-            if (static_cast<unsigned>(m_positionEndOffset) < textRunEnd)
+            if (static_cast<unsigned>(m_positionEndOffset) < toNodeOffset(textRunEnd))
                 return;
 
             // Advance and return
@@ -1268,8 +1282,11 @@ void TextIterator::emitText(Text& textNode, RenderText& renderer, int textStartO
 
     m_positionNode = textNode;
     m_positionOffsetBaseNode = nullptr;
-    m_positionStartOffset = textStartOffset;
-    m_positionEndOffset = textEndOffset;
+    // For remaining text fragments after a first-letter split, the text offsets are
+    // fragment-local but position offsets need to be DOM-relative for range() to
+    // return correct boundary points (used by word/sentence boundary detection).
+    m_positionStartOffset = convertOffsetInTextFragmentToNodeOffset(renderer, textStartOffset);
+    m_positionEndOffset = convertOffsetInTextFragmentToNodeOffset(renderer, textEndOffset);
 
     m_lastCharacter = string[textEndOffset - 1];
     // Reset to 0 even if the text ends with '\n', because content newlines
@@ -1491,6 +1508,8 @@ CheckedPtr<RenderText> SimplifiedBackwardsTextIterator::handleFirstLetter(int& s
     m_shouldHandleFirstLetter = false;
     offsetInNode = 0;
     CheckedPtr firstLetterRenderer = firstRenderTextInFirstLetter(protect(fragment->firstLetter()));
+    if (!firstLetterRenderer)
+        return nullptr;
 
     m_offset = firstLetterRenderer->caretMaxOffset();
     m_offset += collapsedSpaceLength(*firstLetterRenderer, m_offset);
