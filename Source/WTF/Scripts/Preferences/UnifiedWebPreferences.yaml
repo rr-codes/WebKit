@@ -9955,10 +9955,10 @@ WebXRLayersAPIEnabled:
     WebKitLegacy:
       default: false
     WebKit:
-      "ENABLE(WEBXR_LAYERS)": true
+      "ENABLE(WEBXR_LAYERS) && USE(OPENXR)": true
       default: false
     WebCore:
-      "ENABLE(WEBXR_LAYERS)": true
+      "ENABLE(WEBXR_LAYERS) && USE(OPENXR)": true
       default: false
 
 WebXRWebGPUBindingsEnabled:
