@@ -4155,7 +4155,6 @@ Vector<AXStitchGroup> AccessibilityNodeObject::stitchGroups() const
                 continue;
             }
 
-            // FIXME: We should also be able to stitch ellipsis-type boxes.
             if (box->isText() || box->isLineBreak()) {
                 const CheckedRef renderer = box->renderer();
                 RefPtr object = cache->getOrCreate(const_cast<RenderObject&>(renderer.get()));

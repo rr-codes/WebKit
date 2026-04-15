@@ -1032,7 +1032,9 @@ void AXIsolatedTree::updateChildren(AccessibilityObject& axObject, ResolveNodeCh
         return;
     }
 
-    // FIXME: This copy out of the hashmap seems unnecessary — can we use HashMap::find instead?
+    // This must be a copy, not a reference via HashMap::find, because collectNodeChangesForSubtree
+    // (called below) can insert into m_nodeMap, potentially triggering a rehash that would
+    // invalidate any iterator or reference into the map.
     auto oldIDs = m_nodeMap.get(axAncestor->objectID());
     auto& oldChildrenIDs = oldIDs.childrenIDs;
 
