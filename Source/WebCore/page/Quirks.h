@@ -68,6 +68,7 @@ public:
 
     bool NODELETE shouldSilenceResizeObservers() const;
     bool NODELETE shouldSilenceWindowResizeEventsDuringApplicationSnapshotting() const;
+    bool shouldDeferIntersectionObserversDuringResize() const;
     bool NODELETE shouldSilenceMediaQueryListChangeEvents() const;
     bool shouldIgnoreInvalidSignal() const;
     bool needsFormControlToBeMouseFocusable() const;

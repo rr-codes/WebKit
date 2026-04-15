@@ -254,6 +254,7 @@ struct QuirksData {
         NeedsChromeOSNavigatorUserAgentQuirk,
 #endif
         ShouldLimitHLSPlaybackRate,
+        ShouldDeferIntersectionObserversDuringResize,
 
         NumberOfQuirks
     };

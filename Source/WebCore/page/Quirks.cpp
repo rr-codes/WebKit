@@ -854,6 +854,13 @@ bool Quirks::shouldSilenceWindowResizeEventsDuringApplicationSnapshotting() cons
 #endif
 }
 
+bool Quirks::shouldDeferIntersectionObserversDuringResize() const
+{
+    QUIRKS_EARLY_RETURN_IF_DISABLED_WITH_VALUE(false);
+
+    return m_quirksData.quirkIsEnabled(QuirksData::SiteSpecificQuirk::ShouldDeferIntersectionObserversDuringResize);
+}
+
 bool Quirks::shouldSilenceMediaQueryListChangeEvents() const
 {
 #if PLATFORM(IOS) || PLATFORM(VISION)
@@ -3441,6 +3448,7 @@ static void handleSpotifyQuirks(QuirksData& quirksData, const URL& quirksURL, co
         QuirksData::SiteSpecificQuirk::ShouldAvoidStartingSelectionOnMouseDownOverPointerCursor,
         QuirksData::SiteSpecificQuirk::ShouldLimitHLSPlaybackRate,
         QuirksData::SiteSpecificQuirk::NeedsWebKitMediaTextTrackDisplayQuirk,
+        QuirksData::SiteSpecificQuirk::ShouldDeferIntersectionObserversDuringResize,
     });
 }
 
