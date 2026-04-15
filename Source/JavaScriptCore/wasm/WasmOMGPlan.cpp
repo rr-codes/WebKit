@@ -29,6 +29,7 @@
 
 #if ENABLE(WEBASSEMBLY_OMGJIT)
 
+#include "HeapCellInlines.h"
 #include "JITCompilation.h"
 #include "LinkBuffer.h"
 #include "WasmCallee.h"

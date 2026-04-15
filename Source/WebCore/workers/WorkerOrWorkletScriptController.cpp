@@ -56,6 +56,7 @@
 #include <JavaScriptCore/Exception.h>
 #include <JavaScriptCore/ExceptionHelpers.h>
 #include <JavaScriptCore/GCActivityCallback.h>
+#include <JavaScriptCore/JSCJSValueInlines.h>
 #include <JavaScriptCore/JSGlobalProxyInlines.h>
 #include <JavaScriptCore/JSInternalPromise.h>
 #include <JavaScriptCore/JSLock.h>
@@ -65,6 +66,7 @@
 #include <JavaScriptCore/JSScriptFetcher.h>
 #include <JavaScriptCore/ScriptCallStack.h>
 #include <JavaScriptCore/StrongInlines.h>
+#include <JavaScriptCore/Symbol.h>
 #include <JavaScriptCore/SyntheticModuleRecord.h>
 #include <JavaScriptCore/VMTrapsInlines.h>
 #include <JavaScriptCore/WebAssemblyModuleRecord.h>

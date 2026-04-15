@@ -28,6 +28,7 @@
 
 #if ENABLE(WEBASSEMBLY_BBQJIT)
 
+#include "HeapCellInlines.h"
 #include "JITCompilation.h"
 #include "JSToWasm.h"
 #include "LinkBuffer.h"

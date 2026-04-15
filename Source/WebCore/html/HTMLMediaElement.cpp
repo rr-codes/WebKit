@@ -152,6 +152,7 @@
 #include "VideoTrackPrivate.h"
 #include "VisibilityAdjustment.h"
 #include "WebCoreJSClientData.h"
+#include <JavaScriptCore/JSObjectInlines.h>
 #include <JavaScriptCore/Uint8Array.h>
 #include <limits>
 #include <pal/SessionID.h>

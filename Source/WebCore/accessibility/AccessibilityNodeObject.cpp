@@ -109,6 +109,7 @@
 #include "RenderBlockFlowInlines.h"
 #include "RenderBoxInlines.h"
 #include "RenderElementInlines.h"
+#include "RenderElementStyleInlines.h"
 #include "RenderImage.h"
 #include "RenderListBox.h"
 #include "RenderListItem.h"

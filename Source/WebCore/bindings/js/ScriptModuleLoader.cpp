@@ -63,6 +63,7 @@
 #include <JavaScriptCore/JSScriptFetcher.h>
 #include <JavaScriptCore/JSSourceCode.h>
 #include <JavaScriptCore/JSString.h>
+#include <JavaScriptCore/ObjectConstructor.h>
 #include <JavaScriptCore/SourceProvider.h>
 #include <JavaScriptCore/Symbol.h>
 #include <wtf/TZoneMallocInlines.h>

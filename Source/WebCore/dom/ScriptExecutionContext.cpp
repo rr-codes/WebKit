@@ -92,6 +92,7 @@
 #include <JavaScriptCore/SourceTaintedOrigin.h>
 #include <JavaScriptCore/StackVisitor.h>
 #include <JavaScriptCore/StrongInlines.h>
+#include <JavaScriptCore/StructureInlines.h>
 #include <JavaScriptCore/TopExceptionScope.h>
 #include <JavaScriptCore/VM.h>
 #include <JavaScriptCore/WeakGCSetInlines.h>

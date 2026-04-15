@@ -37,6 +37,7 @@
 #include "CryptoKeyRSA.h"
 #include "CryptoKeyRSAComponents.h"
 #include "CryptoKeyRaw.h"
+#include "DocumentQuirks.h"
 #include "IDBValue.h"
 #include "ImageBuffer.h"
 #include "JSAudioWorkletGlobalScope.h"

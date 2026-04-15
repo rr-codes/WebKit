@@ -26,6 +26,7 @@
 
 #include "CSSRegisteredCustomProperty.h"
 #include <wtf/HashMap.h>
+#include <wtf/text/AtomStringHash.h>
 
 namespace WebCore {
 namespace Style {

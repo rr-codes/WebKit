@@ -87,6 +87,7 @@
 #include "UserScript.h"
 #include "UserScriptTypes.h"
 #include <JavaScriptCore/CodeBlock.h>
+#include <JavaScriptCore/IdentifierInlines.h>
 #include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/ScriptExecutable.h>
 #include <JavaScriptCore/SourceCode.h>

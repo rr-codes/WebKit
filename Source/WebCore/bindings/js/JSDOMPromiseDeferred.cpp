@@ -41,9 +41,11 @@
 #include "WorkerGlobalScope.h"
 #include <JavaScriptCore/BuiltinNames.h>
 #include <JavaScriptCore/Exception.h>
+#include <JavaScriptCore/JSGlobalObjectInlines.h>
 #include <JavaScriptCore/JSONObject.h>
 #include <JavaScriptCore/JSPromiseConstructor.h>
 #include <JavaScriptCore/Strong.h>
+#include <JavaScriptCore/StrongInlines.h>
 #include <wtf/Scope.h>
 
 namespace WebCore {

@@ -27,6 +27,7 @@
 #include "ModuleAnalyzer.h"
 
 #include "IdentifierInlines.h"
+#include "JSCJSValueInlines.h"
 #include "JSGlobalObject.h"
 #include "JSModuleRecord.h"
 #include "ModuleScopeData.h"
