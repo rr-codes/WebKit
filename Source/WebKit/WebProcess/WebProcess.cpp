@@ -755,11 +755,10 @@ void WebProcess::initializeWebProcess(WebProcessCreationParameters&& parameters,
 
 #if ENABLE(WEBASSEMBLY_DEBUGGER) && ENABLE(REMOTE_INSPECTOR) && CPU(ARM64)
     if (JSC::Options::enableWasmDebugger()) [[unlikely]] {
-        bool success = JSC::Wasm::DebugServer::singleton().startRWI([](const String& response) {
+        JSC::Wasm::DebugServer::singleton().startRWI([](const String& response) {
             return WebKit::WebProcess::singleton().send(Messages::WebProcessProxy::SendWasmDebuggerResponse(response), 0);
         });
-        if (!success)
-            WEBPROCESS_RELEASE_LOG_ERROR(Inspector, "Failed to start WasmDebugServer in RWI mode");
+        send(Messages::WebProcessProxy::WasmDebugServerReady(), 0);
     }
 #endif
 
@@ -859,6 +858,14 @@ void WebProcess::setIsInProcessCache(bool isInProcessCache, CompletionHandler<vo
 #else
     UNUSED_PARAM(isInProcessCache);
 #endif
+
+#if ENABLE(WEBASSEMBLY_DEBUGGER) && ENABLE(REMOTE_INSPECTOR) && CPU(ARM64)
+    // When exiting process cache, notify UIProcess that DebugServer is still running
+    // so it can recreate the debuggable. DebugServer never stops (process-lifetime).
+    if (!isInProcessCache && JSC::Options::enableWasmDebugger())
+        send(Messages::WebProcessProxy::WasmDebugServerReady(), 0);
+#endif
+
     completionHandler();
 }
 
