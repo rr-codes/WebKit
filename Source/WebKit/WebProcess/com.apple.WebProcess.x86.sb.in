@@ -831,15 +831,15 @@
        (global-name "com.apple.system.opendirectoryd.membership"))
 )
 
-(with-filter (require-not (state-flag "BlockOpenDirectoryInWebContentSandbox"))
-    (allow mach-lookup (with telemetry-backtrace)
-        (require-all
-            (extension "com.apple.webkit.extension.mach")
-            (global-name "com.apple.system.opendirectoryd.libinfo"))))
-
-(with-filter (state-flag "BlockOpenDirectoryInWebContentSandbox")
-    (deny mach-lookup (with telemetry-backtrace)
+#if ENABLE(REMOVE_XPC_AND_MACH_SANDBOX_EXTENSIONS_IN_WEBCONTENT)
+(deny mach-lookup (with telemetry-backtrace)
+    (global-name "com.apple.system.opendirectoryd.libinfo"))
+#else
+(allow mach-lookup (with telemetry-backtrace)
+    (require-all
+        (extension "com.apple.webkit.extension.mach")
         (global-name "com.apple.system.opendirectoryd.libinfo")))
+#endif
 
 (allow file-read*
        (subpath "/private/var/db/mds")

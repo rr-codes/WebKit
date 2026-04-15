@@ -738,9 +738,6 @@ WebPage::WebPage(PageIdentifier pageID, WebPageCreationParameters&& parameters)
     auto shouldAllowInstalledFonts = parameters.store.getBoolValueForKey(WebPreferencesKey::shouldAllowUserInstalledFontsKey());
     if (!shouldAllowInstalledFonts || !WTF::MacApplication::isAppleMail())
         sandbox_enable_state_flag("BlockUserInstalledFonts", *auditToken);
-    auto shouldBlockOpenDirectory = parameters.store.getBoolValueForKey(WebPreferencesKey::blockOpenDirectoryInWebContentSandboxKey());
-    if (shouldBlockOpenDirectory)
-        sandbox_enable_state_flag("BlockOpenDirectoryInWebContentSandbox", *auditToken);
 #endif // PLATFORM(MAC)
 #endif // HAVE(SANDBOX_STATE_FLAGS)
     auto shouldBlockIOKit = parameters.store.getBoolValueForKey(WebPreferencesKey::blockIOKitInWebContentSandboxKey())
