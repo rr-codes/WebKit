@@ -230,7 +230,7 @@ void BoxTreeUpdater::adjustStyleIfNeeded(const RenderElement& renderer, RenderSt
         adjustStyle(*firstLineStyle);
 }
 
-static void updateListMarkerAttributes(const RenderListMarker& listMarkerRenderer, Layout::ElementBox& layoutBox)
+static EnumSet<Layout::ElementBox::ListMarkerAttribute> calculateListMarkerAttribute(const RenderListMarker& listMarkerRenderer)
 {
     auto listMarkerAttributes = EnumSet<Layout::ElementBox::ListMarkerAttribute> { };
     if (listMarkerRenderer.isImage())
@@ -240,7 +240,7 @@ static void updateListMarkerAttributes(const RenderListMarker& listMarkerRendere
     if (listMarkerRenderer.shouldCollapseAnonymousBlockParent())
         listMarkerAttributes.add(Layout::ElementBox::ListMarkerAttribute::ShouldCollapseAnonymousBlockParent);
 
-    layoutBox.setListMarkerAttributes(listMarkerAttributes);
+    return listMarkerAttributes;
 }
 
 UniqueRef<Layout::Box> BoxTreeUpdater::createLayoutBox(RenderObject& renderer)
@@ -296,11 +296,8 @@ UniqueRef<Layout::Box> BoxTreeUpdater::createLayoutBox(RenderObject& renderer)
     auto style = RenderStyle::clone(renderElement.style());
     adjustStyleIfNeeded(renderElement, style, firstLineStyle.get());
 
-    if (CheckedPtr listMarkerRenderer = dynamicDowncast<RenderListMarker>(renderElement)) {
-        auto layoutBox = makeUniqueRef<Layout::ElementBox>(elementAttributes(renderElement), EnumSet<Layout::ElementBox::ListMarkerAttribute> { }, WTF::move(style), WTF::move(firstLineStyle));
-        updateListMarkerAttributes(*listMarkerRenderer, layoutBox.get());
-        return layoutBox;
-    }
+    if (CheckedPtr listMarkerRenderer = dynamicDowncast<RenderListMarker>(renderElement))
+        return makeUniqueRef<Layout::ElementBox>(elementAttributes(renderElement), calculateListMarkerAttribute(*listMarkerRenderer), WTF::move(style), WTF::move(firstLineStyle));
 
     return makeUniqueRef<Layout::ElementBox>(elementAttributes(renderElement), WTF::move(style), WTF::move(firstLineStyle));
 };
@@ -399,8 +396,10 @@ void BoxTreeUpdater::updateStyle(const RenderObject& renderer)
     auto newStyle = RenderStyle::clone(downcast<RenderElement>(renderer).style());
     adjustStyleIfNeeded(downcast<RenderElement>(renderer), newStyle, firstLineNewStyle.get());
     layoutBox->updateStyle(WTF::move(newStyle), WTF::move(firstLineNewStyle));
-    if (auto* listMarkerRenderer = dynamicDowncast<RenderListMarker>(renderer); listMarkerRenderer && is<Layout::ElementBox>(*layoutBox))
-        updateListMarkerAttributes(*listMarkerRenderer, downcast<Layout::ElementBox>(*layoutBox));
+    if (auto* listMarkerRenderer = dynamicDowncast<RenderListMarker>(renderer)) {
+        if (auto* elementBox = dynamicDowncast<Layout::ElementBox>(*layoutBox))
+            elementBox->setListMarkerAttributes(calculateListMarkerAttribute(*listMarkerRenderer));
+    }
 }
 
 void BoxTreeUpdater::updateContent(const RenderText& textRenderer)
