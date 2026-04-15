@@ -32,19 +32,8 @@
 (define (lockdown-mode)
     (signing-identifier "com.apple.WebKit.WebContent.CaptivePortal"))
 
-#define TRUE #t
-#define FALSE #f
-
 (define webcontent_gpu_sandbox_extensions_blocking?
 #if PLATFORM(MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED >= 140400 && defined(RC_XBS) && RC_XBS == 1
-    TRUE
-#else
-    FALSE
-#endif
-)
-
-(define have_message_filtering?
-#if PLATFORM(MAC) && USE(APPLE_INTERNAL_SDK)
     TRUE
 #else
     FALSE
