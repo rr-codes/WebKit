@@ -912,6 +912,7 @@ css/CSSFontFaceRule.cpp
 css/CSSFontFaceSet.cpp
 css/CSSFontFaceSource.cpp
 css/CSSFontFaceSrcValue.cpp
+css/CSSFontFamilyNameValue.cpp
 css/CSSFontFeatureValue.cpp
 css/CSSFontFeatureValuesRule.cpp
 css/CSSFontPaletteValuesRule.cpp
@@ -974,6 +975,7 @@ css/CSSSegmentedFontFace.cpp
 css/CSSSelector.cpp
 css/CSSSelectorList.cpp
 css/CSSStartingStyleRule.cpp
+css/CSSStringValue.cpp
 css/CSSStyleDeclaration.cpp
 css/CSSStyleProperties.cpp
 css/CSSStyleRule.cpp
@@ -1176,6 +1178,7 @@ css/values/color/CSSKeywordColor.cpp
 css/values/color/CSSLightDarkColor.cpp
 css/values/color/CSSPlatformColorResolutionState.cpp
 css/values/color/CSSResolvedColor.cpp
+css/values/fonts/CSSFontFamilyName.cpp
 css/values/grid/CSSGridNamedAreaMap.cpp
 css/values/images/CSSGradient.cpp
 css/values/motion/CSSRayFunction.cpp
@@ -1189,6 +1192,7 @@ css/values/primitives/CSSPrimitiveNumericTypes+SymbolReplacement.cpp
 css/values/primitives/CSSPrimitiveNumericUnits.cpp
 css/values/primitives/CSSPropertyIdentifier.cpp
 css/values/primitives/CSSRatio.cpp
+css/values/primitives/CSSString.cpp
 css/values/primitives/CSSSymbol.cpp
 css/values/primitives/CSSURL.cpp
 css/values/primitives/CSSURLModifiers.cpp
@@ -3387,6 +3391,7 @@ style/values/primitives/StylePosition.cpp
 style/values/primitives/StylePrimitiveNumericTypes+Conversions.cpp
 style/values/primitives/StylePropertyIdentifier.cpp
 style/values/primitives/StyleRatio.cpp
+style/values/primitives/StyleString.cpp
 style/values/primitives/StyleURL.cpp
 style/values/primitives/StyleUnevaluatedCalculation.cpp
 style/values/rhythm/StyleBlockStepSize.cpp

@@ -92,7 +92,7 @@ public:
     void addStyleSheetCandidateNode(Node&, bool createdByParser);
     void removeStyleSheetCandidateNode(Node&);
 
-    void setPreferredStylesheetSetName(const String&);
+    void setPreferredStylesheetSetName(const WTF::String&);
     void establishPreferredStylesheetSetName(const Element&, const CSSStyleSheet&);
 
     void addPendingSheet(const Element&);
@@ -262,7 +262,7 @@ private:
 
     WeakListHashSet<Node, WeakPtrImplWithEventTargetData> m_styleSheetCandidateNodes;
 
-    String m_preferredStylesheetSetName;
+    WTF::String m_preferredStylesheetSetName;
 
     std::optional<UpdateType> m_pendingUpdate;
 

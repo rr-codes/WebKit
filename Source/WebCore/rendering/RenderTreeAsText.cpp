@@ -486,7 +486,7 @@ static inline void writeTextRuns(TextStream& ts, auto& textRenderer)
         ts << ": "_s
             << quoteAndEscapeNonPrintables(textRun.originalText());
         if (textRun.hasHyphen())
-            ts << " + hyphen string "_s << quoteAndEscapeNonPrintables(textRenderer.style().hyphenString().string());
+            ts << " + hyphen string "_s << quoteAndEscapeNonPrintables(textRenderer.style().hyphenString());
         ts << '\n';
     };
 

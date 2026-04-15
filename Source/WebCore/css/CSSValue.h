@@ -93,6 +93,7 @@ public:
     bool isFilterValue() const { return m_classType == ClassType::Filter; }
     bool isFontFaceSrcLocalValue() const { return m_classType == ClassType::FontFaceSrcLocal; }
     bool isFontFaceSrcResourceValue() const { return m_classType == ClassType::FontFaceSrcResource; }
+    bool isFontFamilyNameValue() const { return m_classType == ClassType::FontFamilyName; }
     bool isFontFeatureValue() const { return m_classType == ClassType::FontFeature; }
     bool isFontStyleRangeValue() const { return m_classType == ClassType::FontStyleRange; }
     bool isFontStyleWithAngleValue() const { return m_classType == ClassType::FontStyleWithAngle; }
@@ -124,6 +125,7 @@ public:
     bool isRect() const { return m_classType == ClassType::Rect; }
     bool isReflectValue() const { return m_classType == ClassType::Reflect; }
     bool isScrollValue() const { return m_classType == ClassType::Scroll; }
+    bool isStringValue() const { return m_classType == ClassType::String; }
     bool isSubgridValue() const { return m_classType == ClassType::Subgrid; }
     bool isTextShadowPropertyValue() const { return m_classType == ClassType::TextShadowProperty; }
     bool isTransformListValue() const { return m_classType == ClassType::TransformList; }
@@ -173,9 +175,6 @@ public:
 
     static constexpr size_t ValueSeparatorBits = 2;
     enum ValueSeparator : uint8_t { SpaceSeparator, CommaSeparator, SlashSeparator };
-
-    inline bool isString() const;
-    inline String string() const;
 
     inline bool isInteger() const;
     inline int integer(const CSSToLengthConversionData&) const;
@@ -234,6 +233,7 @@ protected:
         Font,
         FontFaceSrcLocal,
         FontFaceSrcResource,
+        FontFamilyName,
         FontFeature,
         FontStyleRange,
         FontStyleWithAngle,
@@ -258,6 +258,7 @@ protected:
         URL,
         UnicodeRange,
         ValuePair,
+        String,
         Substitution,
         View,
 

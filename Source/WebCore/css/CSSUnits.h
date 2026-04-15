@@ -76,9 +76,6 @@ enum class CSSUnitType : uint8_t {
     CSS_HZ,
     CSS_KHZ,
     CSS_DIMENSION,
-    CSS_STRING,
-    CSS_IDENT,
-    CSS_ATTR,
 
     CSS_VW,
     CSS_VH,
@@ -136,8 +133,6 @@ enum class CSSUnitType : uint8_t {
     CSS_CALC,
     CSS_CALC_PERCENTAGE_WITH_ANGLE,
     CSS_CALC_PERCENTAGE_WITH_LENGTH,
-
-    CSS_FONT_FAMILY,
 
     CSS_VALUE_ID,
     

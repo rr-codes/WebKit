@@ -1183,7 +1183,7 @@ void RenderText::computePreferredLogicalWidths(float leadWidth, bool forcedMinMa
 static inline float hyphenWidth(RenderText& renderer, const FontCascade& font)
 {
     const RenderStyle& style = renderer.style();
-    auto textRun = RenderBlock::constructTextRun(style.hyphenString().string(), style);
+    auto textRun = RenderBlock::constructTextRun(style.hyphenString(), style);
     return font.width(textRun);
 }
 

@@ -152,7 +152,6 @@ css/CSSFontFace.cpp
 css/CSSFontFaceRule.cpp
 css/CSSFontValue.cpp
 css/CSSGroupingRule.cpp
-css/CSSImageSetOptionValue.cpp
 css/CSSImageValue.h
 css/CSSKeyframeRule.cpp
 css/CSSKeyframesRule.cpp

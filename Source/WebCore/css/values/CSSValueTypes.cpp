@@ -26,7 +26,6 @@
 #include "CSSValueTypes.h"
 
 #include "CSSFunctionValue.h"
-#include "CSSMarkup.h"
 #include "CSSPrimitiveValue.h"
 #include "CSSQuadValue.h"
 #include "CSSValueList.h"
@@ -36,27 +35,7 @@
 namespace WebCore {
 namespace CSS {
 
-void serializationForCSSString(StringBuilder& builder, const SerializationContext&, const WTF::AtomString& value)
-{
-    WebCore::serializeString(builder, value);
-}
-
-void serializationForCSSString(StringBuilder& builder, const SerializationContext&, const WTF::String& value)
-{
-    WebCore::serializeString(builder, value);
-}
-
 Ref<CSSValue> makePrimitiveCSSValue(CSSValueID value)
-{
-    return CSSPrimitiveValue::create(value);
-}
-
-Ref<CSSValue> makePrimitiveCSSValue(const WTF::AtomString& value)
-{
-    return CSSPrimitiveValue::create(value);
-}
-
-Ref<CSSValue> makePrimitiveCSSValue(const WTF::String& value)
 {
     return CSSPrimitiveValue::create(value);
 }

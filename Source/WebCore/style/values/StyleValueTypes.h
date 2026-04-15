@@ -106,13 +106,6 @@ template<typename> struct ToStyle;
 // Specialize `TreatAsNonConverting` for `Constant<C>`, to indicate that its type does not change from the CSS representation.
 template<CSSValueID C> inline constexpr bool TreatAsNonConverting<Constant<C>> = true;
 
-// Specialize `TreatAsNonConverting` for `WTF::AtomString`, to indicate that its type does not change from the CSS representation.
-template<> inline constexpr bool TreatAsNonConverting<WTF::AtomString> = true;
-
-// Specialize `TreatAsNonConverting` for `WTF::String`, to indicate that its type does not change from the CSS representation.
-template<> inline constexpr bool TreatAsNonConverting<WTF::String> = true;
-
-
 // MARK: - Conversion from "Style to "CSS"
 
 struct ToCSSInvoker {
@@ -571,7 +564,7 @@ struct SerializeInvoker {
         Serialize<StyleType>{}(builder, context, style, value, std::forward<Rest>(rest)...);
     }
 
-    template<typename StyleType, typename... Rest> [[nodiscard]] String operator()(const CSS::SerializationContext& context, const RenderStyle& style, const StyleType& value, Rest&&... rest) const
+    template<typename StyleType, typename... Rest> [[nodiscard]] WTF::String operator()(const CSS::SerializationContext& context, const RenderStyle& style, const StyleType& value, Rest&&... rest) const
     {
         StringBuilder builder;
         this->operator()(builder, context, style, value, std::forward<Rest>(rest)...);

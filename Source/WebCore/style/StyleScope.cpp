@@ -263,7 +263,7 @@ const Scope* Scope::forOrdinal(const Element& element, ScopeOrdinal ordinal)
     return forOrdinal(const_cast<Element&>(element), ordinal);
 }
 
-void Scope::setPreferredStylesheetSetName(const String& name)
+void Scope::setPreferredStylesheetSetName(const WTF::String& name)
 {
     if (m_preferredStylesheetSetName == name)
         return;

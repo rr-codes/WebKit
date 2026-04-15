@@ -102,7 +102,7 @@ std::optional<TextList> tryConsumeUnorderedDashTextList(StringParsingBuffer<Char
 
     if (WTF::skipExactly(input, WTF::Unicode::hyphenMinus)) {
         if (input.atEnd())
-            return { { Style::ListStyleType { AtomString { std::span { marker } } }, 0, false } };
+            return { { Style::ListStyleType { Style::String { WTF::String { std::span { marker } } } }, 0, false } };
 
         skipToEnd(input);
     }

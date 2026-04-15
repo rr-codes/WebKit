@@ -56,7 +56,7 @@ void FontFace::setErrorState()
     m_backing->setErrorState();
 }
 
-Ref<FontFace> FontFace::create(ScriptExecutionContext& context, const String& family, Source&& source, const Descriptors& descriptors)
+Ref<FontFace> FontFace::create(ScriptExecutionContext& context, const AtomString& family, Source&& source, const Descriptors& descriptors)
 {
     ASSERT(context.cssFontSelector());
     auto result = adoptRef(*new FontFace(*context.cssFontSelector()));
@@ -69,7 +69,7 @@ Ref<FontFace> FontFace::create(ScriptExecutionContext& context, const String& fa
 #endif
     bool dataRequiresAsynchronousLoading = true;
 
-    auto setFamilyResult = result->setFamily(family);
+    auto setFamilyResult = result->setFamily(context, family);
     if (setFamilyResult.hasException()) {
         result->setErrorState();
         return result;
@@ -183,11 +183,11 @@ FontFace::~FontFace()
     m_backing->removeClient(*this);
 }
 
-ExceptionOr<void> FontFace::setFamily(const String& family)
+ExceptionOr<void> FontFace::setFamily(ScriptExecutionContext& context, const AtomString& family)
 {
     if (family.isEmpty())
         return Exception { ExceptionCode::SyntaxError };
-    m_backing->setFamily(CSSPrimitiveValue::createFontFamily(family));
+    m_backing->setFamily(context.cssValuePool().createFontFamilyNameValue(family));
     return { };
 }
 
@@ -254,7 +254,7 @@ ExceptionOr<void> FontFace::setSizeAdjust(ScriptExecutionContext& context, const
     return Exception { ExceptionCode::SyntaxError };
 }
 
-String FontFace::family() const
+AtomString FontFace::family() const
 {
     if (auto value = m_backing->family(); !value.isNull())
         return value;

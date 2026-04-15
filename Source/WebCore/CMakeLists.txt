@@ -110,6 +110,7 @@ set(WebCore_PRIVATE_INCLUDE_DIRECTORIES
     "${WEBCORE_DIR}/css/values/counter-styles"
     "${WEBCORE_DIR}/css/values/easing"
     "${WEBCORE_DIR}/css/values/filter-effects"
+    "${WEBCORE_DIR}/css/values/fonts"
     "${WEBCORE_DIR}/css/values/grid"
     "${WEBCORE_DIR}/css/values/images"
     "${WEBCORE_DIR}/css/values/motion"

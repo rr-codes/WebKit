@@ -50,6 +50,7 @@
 #include "CSSFilterImageValue.h"
 #include "CSSFilterValue.h"
 #include "CSSFontFaceSrcValue.h"
+#include "CSSFontFamilyNameValue.h"
 #include "CSSFontFeatureValue.h"
 #include "CSSFontStyleRangeValue.h"
 #include "CSSFontStyleWithAngleValue.h"
@@ -81,6 +82,7 @@
 #include "CSSScrollValue.h"
 #include "CSSSerializationContext.h"
 #include "CSSShorthandSubstitutionValue.h"
+#include "CSSStringValue.h"
 #include "CSSSubgridValue.h"
 #include "CSSSubstitutionValue.h"
 #include "CSSTextShadowPropertyValue.h"
@@ -158,6 +160,8 @@ template<typename Visitor> constexpr decltype(auto) CSSValue::visitDerived(Visit
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSFontFaceSrcLocalValue>(*this));
     case FontFaceSrcResource:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSFontFaceSrcResourceValue>(*this));
+    case FontFamilyName:
+        return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSFontFamilyNameValue>(*this));
     case FontFeature:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSFontFeatureValue>(*this));
     case FontStyleWithAngle:
@@ -216,6 +220,8 @@ template<typename Visitor> constexpr decltype(auto) CSSValue::visitDerived(Visit
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSReflectValue>(*this));
     case Scroll:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSScrollValue>(*this));
+    case String:
+        return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSStringValue>(*this));
     case Subgrid:
         return std::invoke(std::forward<Visitor>(visitor), uncheckedDowncast<CSSSubgridValue>(*this));
     case TextShadowProperty:
@@ -378,10 +384,12 @@ Ref<DeprecatedCSSOMValue> CSSValue::createDeprecatedCSSOMWrapper(CSSStyleDeclara
     case Color:
     case Counter:
     case CustomIdent:
+    case FontFamilyName:
     case PropertyIdentifier:
     case Quad:
     case Rect:
     case URL:
+    case String:
     case ValuePair:
         return DeprecatedCSSOMPrimitiveValue::create(*this, styleDeclaration);
     case ValueList:

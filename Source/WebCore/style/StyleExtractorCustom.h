@@ -2442,23 +2442,23 @@ inline void ExtractorCustom::extractOutlineOffsetSerialization(ExtractorState& s
 inline Ref<CSSValue> convertSingleAnimation(ExtractorState& state, const Animation& animation, const Animations& animations)
 {
     static NeverDestroyed<EasingFunction> initialTimingFunction(Animation::initialTimingFunction());
-    static NeverDestroyed<String> alternate { "alternate"_s };
-    static NeverDestroyed<String> alternateReverse { "alternate-reverse"_s };
-    static NeverDestroyed<String> backwards { "backwards"_s };
-    static NeverDestroyed<String> both { "both"_s };
-    static NeverDestroyed<String> ease { "ease"_s };
-    static NeverDestroyed<String> easeIn { "ease-in"_s };
-    static NeverDestroyed<String> easeInOut { "ease-in-out"_s };
-    static NeverDestroyed<String> easeOut { "ease-out"_s };
-    static NeverDestroyed<String> forwards { "forwards"_s };
-    static NeverDestroyed<String> infinite { "infinite"_s };
-    static NeverDestroyed<String> linear { "linear"_s };
-    static NeverDestroyed<String> normal { "normal"_s };
-    static NeverDestroyed<String> paused { "paused"_s };
-    static NeverDestroyed<String> reverse { "reverse"_s };
-    static NeverDestroyed<String> running { "running"_s };
-    static NeverDestroyed<String> stepEnd { "step-end"_s };
-    static NeverDestroyed<String> stepStart { "step-start"_s };
+    static NeverDestroyed<WTF::String> alternate { "alternate"_s };
+    static NeverDestroyed<WTF::String> alternateReverse { "alternate-reverse"_s };
+    static NeverDestroyed<WTF::String> backwards { "backwards"_s };
+    static NeverDestroyed<WTF::String> both { "both"_s };
+    static NeverDestroyed<WTF::String> ease { "ease"_s };
+    static NeverDestroyed<WTF::String> easeIn { "ease-in"_s };
+    static NeverDestroyed<WTF::String> easeInOut { "ease-in-out"_s };
+    static NeverDestroyed<WTF::String> easeOut { "ease-out"_s };
+    static NeverDestroyed<WTF::String> forwards { "forwards"_s };
+    static NeverDestroyed<WTF::String> infinite { "infinite"_s };
+    static NeverDestroyed<WTF::String> linear { "linear"_s };
+    static NeverDestroyed<WTF::String> normal { "normal"_s };
+    static NeverDestroyed<WTF::String> paused { "paused"_s };
+    static NeverDestroyed<WTF::String> reverse { "reverse"_s };
+    static NeverDestroyed<WTF::String> running { "running"_s };
+    static NeverDestroyed<WTF::String> stepEnd { "step-end"_s };
+    static NeverDestroyed<WTF::String> stepStart { "step-start"_s };
 
     // If we have an animation-delay but no animation-duration set, we must serialize
     // the animation-duration because they're both <time> values and animation-delay
@@ -2466,7 +2466,7 @@ inline Ref<CSSValue> convertSingleAnimation(ExtractorState& state, const Animati
     auto showsDelay = animation.delay() != Animation::initialDelay();
     auto showsDuration = showsDelay || animation.duration() != Animation::initialDuration();
 
-    auto name = [&] -> String {
+    auto name = [&] -> WTF::String {
         if (auto keyframesName = animation.name().tryKeyframesName())
             return keyframesName->name;
         return nullString();

@@ -1060,7 +1060,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     crypto/parameters/CryptoAlgorithmRsaPssParamsInit.h
     crypto/parameters/CryptoAlgorithmX25519ParamsInit.h
 
-    css/CSSAttrValue.h
     css/CSSColorValue.h
     css/CSSComputedStyleDeclaration.h
     css/CSSConditionRule.h
@@ -1202,6 +1201,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     css/values/primitives/CSSPrimitiveNumericTypes.h
     css/values/primitives/CSSPrimitiveNumericUnits.h
     css/values/primitives/CSSRatio.h
+    css/values/primitives/CSSString.h
     css/values/primitives/CSSSymbol.h
     css/values/primitives/CSSURL.h
     css/values/primitives/CSSURLModifiers.h
@@ -3365,6 +3365,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     style/values/primitives/StylePrimitiveNumericTypes.h
     style/values/primitives/StylePropertyIdentifier.h
     style/values/primitives/StyleRatio.h
+    style/values/primitives/StyleString.h
     style/values/primitives/StyleURL.h
     style/values/primitives/StyleUnevaluatedCalculation.h
 

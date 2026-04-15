@@ -702,7 +702,7 @@ const RefPtr<const StyleRulePositionTry> RuleSet::positionTryRuleForName(const A
     return m_positionTryRules.get(name);
 }
 
-String RuleSet::selectorsForDebugging() const
+WTF::String RuleSet::selectorsForDebugging() const
 {
     TextStream ts;
     ts << "RuleSet size " << ruleCount();

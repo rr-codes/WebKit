@@ -54,7 +54,7 @@ struct SerializeInvoker {
         Serialize<CSSType>{}(builder, context, value, std::forward<Rest>(rest)...);
    }
 
-    template<typename CSSType, typename... Rest> [[nodiscard]] String operator()(const SerializationContext& context, const CSSType& value, Rest&&... rest) const
+    template<typename CSSType, typename... Rest> [[nodiscard]] WTF::String operator()(const SerializationContext& context, const CSSType& value, Rest&&... rest) const
     {
         StringBuilder builder;
         this->operator()(builder, context, value, std::forward<Rest>(rest)...);
@@ -62,9 +62,6 @@ struct SerializeInvoker {
     }
 };
 inline constexpr SerializeInvoker serializationForCSS{};
-
-void serializationForCSSString(StringBuilder&, const SerializationContext&, const WTF::AtomString&);
-void serializationForCSSString(StringBuilder&, const SerializationContext&, const WTF::String&);
 
 template<typename CSSType, typename... Rest> void serializationForCSSOnOptionalLike(StringBuilder& builder, const SerializationContext& context, const CSSType& value, Rest&&... rest)
 {
@@ -181,22 +178,6 @@ template<CSSValueID C> struct Serialize<Constant<C>> {
     }
 };
 
-// Specialization for `WTF::AtomString`.
-template<> struct Serialize<WTF::AtomString> {
-    template<typename... Rest> void operator()(StringBuilder& builder, const SerializationContext& context, const WTF::AtomString& value, Rest&&...)
-    {
-        serializationForCSSString(builder, context, value);
-    }
-};
-
-// Specialization for `WTF::String`.
-template<> struct Serialize<WTF::String> {
-    template<typename... Rest> void operator()(StringBuilder& builder, const SerializationContext& context, const WTF::String& value, Rest&&...)
-    {
-        serializationForCSSString(builder, context, value);
-    }
-};
-
 // Specialization for `FunctionNotation`.
 template<CSSValueID Name, typename CSSType> struct Serialize<FunctionNotation<Name, CSSType>> {
     template<typename... Rest> void operator()(StringBuilder& builder, const SerializationContext& context, const FunctionNotation<Name, CSSType>& value, Rest&&... rest)
@@ -305,21 +286,6 @@ template<CSSValueID C> struct ComputedStyleDependenciesCollector<Constant<C>> {
     }
 };
 
-// Specialization for `WTF::AtomString`.
-template<> struct ComputedStyleDependenciesCollector<WTF::AtomString> {
-    constexpr void operator()(ComputedStyleDependencies&, const WTF::AtomString&)
-    {
-        // Nothing to do.
-    }
-};
-
-// Specialization for `WTF::String`.
-template<> struct ComputedStyleDependenciesCollector<WTF::String> {
-    constexpr void operator()(ComputedStyleDependencies&, const WTF::String&)
-    {
-        // Nothing to do.
-    }
-};
 
 // Specialization for `WTF::URL`.
 template<> struct ComputedStyleDependenciesCollector<WTF::URL> {
@@ -430,22 +396,6 @@ template<CSSValueID C> struct CSSValueChildrenVisitor<Constant<C>> {
     }
 };
 
-// Specialization for `WTF::AtomString`.
-template<> struct CSSValueChildrenVisitor<WTF::AtomString> {
-    constexpr IterationStatus operator()(NOESCAPE const Function<IterationStatus(CSSValue&)>&, const WTF::AtomString&)
-    {
-        return IterationStatus::Continue;
-    }
-};
-
-// Specialization for `WTF::String`.
-template<> struct CSSValueChildrenVisitor<WTF::String> {
-    constexpr IterationStatus operator()(NOESCAPE const Function<IterationStatus(CSSValue&)>&, const WTF::String&)
-    {
-        return IterationStatus::Continue;
-    }
-};
-
 // Specialization for `WTF::URL`.
 template<> struct CSSValueChildrenVisitor<WTF::URL> {
     constexpr IterationStatus operator()(NOESCAPE const Function<IterationStatus(CSSValue&)>&, const WTF::URL&)
@@ -467,8 +417,6 @@ struct CSSValueCreationInvoker {
 inline constexpr CSSValueCreationInvoker createCSSValue{};
 
 Ref<CSSValue> NODELETE makePrimitiveCSSValue(CSSValueID);
-Ref<CSSValue> makePrimitiveCSSValue(const WTF::AtomString&);
-Ref<CSSValue> makePrimitiveCSSValue(const WTF::String&);
 Ref<CSSValue> makeFunctionCSSValue(CSSValueID, Ref<CSSValue>&&);
 
 template<SerializationSeparatorType> Ref<CSSValue> NODELETE makeCoalescingPairCSSValue(Ref<CSSValue>&&, Ref<CSSValue>&&);
@@ -537,22 +485,6 @@ template<CSSValueID Id> struct CSSValueCreation<Constant<Id>> {
     template<typename... Rest> Ref<CSSValue> operator()(CSSValuePool&, const Constant<Id>&, Rest&&...)
     {
         return makePrimitiveCSSValue(Id);
-    }
-};
-
-// Specialization for `WTF::AtomString`.
-template<> struct CSSValueCreation<WTF::AtomString> {
-    template<typename... Rest> Ref<CSSValue> operator()(CSSValuePool&, const WTF::AtomString& string, Rest&&...)
-    {
-        return makePrimitiveCSSValue(string);
-    }
-};
-
-// Specialization for `WTF::String`.
-template<> struct CSSValueCreation<WTF::String> {
-    template<typename... Rest> Ref<CSSValue> operator()(CSSValuePool&, const WTF::String& string, Rest&&...)
-    {
-        return makePrimitiveCSSValue(string);
     }
 };
 

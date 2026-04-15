@@ -415,11 +415,11 @@ void RenderListMarker::updateContent()
                 .textDirection = TextDirection::LTR,
             };
         },
-        [&](const AtomString& identifier) {
+        [&](const Style::String& identifier) {
             m_textContent = {
-                .textWithSuffix = identifier,
-                .textWithoutSuffixLength = identifier.length(),
-                .textDirection = contentTextDirection(StringView { identifier }),
+                .textWithSuffix = identifier.value,
+                .textWithoutSuffixLength = identifier.value.length(),
+                .textDirection = contentTextDirection(StringView { identifier.value }),
             };
         },
         [&](const Style::CounterStyle&) {

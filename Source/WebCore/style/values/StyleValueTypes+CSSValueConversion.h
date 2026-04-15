@@ -32,44 +32,6 @@
 namespace WebCore {
 namespace Style {
 
-// Specialization for `String`.
-template<> struct CSSValueConversion<String> {
-    String operator()(BuilderState& state, const CSSPrimitiveValue& value)
-    {
-        if (!value.isString()) [[unlikely]] {
-            state.setCurrentPropertyInvalidAtComputedValueTime();
-            return emptyString();
-        }
-        return value.string();
-    }
-    String operator()(BuilderState& state, const CSSValue& value)
-    {
-        RefPtr primitiveValue = requiredDowncast<CSSPrimitiveValue>(state, value);
-        if (!primitiveValue) [[unlikely]]
-            return emptyString();
-        return this->operator()(state, *primitiveValue);
-    }
-};
-
-// Specialization for `AtomString`.
-template<> struct CSSValueConversion<AtomString> {
-    AtomString operator()(BuilderState& state, const CSSPrimitiveValue& value)
-    {
-        if (!value.isString()) [[unlikely]] {
-            state.setCurrentPropertyInvalidAtComputedValueTime();
-            return emptyAtom();
-        }
-        return AtomString { value.string() };
-    }
-    AtomString operator()(BuilderState& state, const CSSValue& value)
-    {
-        RefPtr primitiveValue = requiredDowncast<CSSPrimitiveValue>(state, value);
-        if (!primitiveValue) [[unlikely]]
-            return emptyAtom();
-        return this->operator()(state, *primitiveValue);
-    }
-};
-
 // Specialization for `TupleLike` (wrapper).
 template<TupleLike StyleType>
     requires(std::tuple_size_v<StyleType> == 1)
