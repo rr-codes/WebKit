@@ -291,7 +291,7 @@ void QueryHandler::handleLibrariesRead(StringView packet)
         // Only mark modules notified and signal debugger-ready on the final chunk ('l' prefix).
         if (response[0] == 'l') {
             m_debugServer.m_isDebuggerReady.store(true, std::memory_order_release);
-            m_debugServer.moduleManager().markAllModulesAsNotified();
+            m_debugServer.moduleManager().notifyLibraryRequeryComplete();
         }
     } else {
         dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Failed to generate library list chunk");

@@ -825,17 +825,27 @@ void ExecutionHandler::sendStopReplyForThread(AbstractLocker& locker, uint64_t t
     reply.append("00:"_s, toNativeEndianHex(getStopPC(*state)), ';');
     reply.append("reason:"_s, stopInfo.reasonSuffix, ';');
 
-    // For new module load stops, append library:; to prompt LLDB to re-query qXfer:libraries:read,
-    // which causes LLDB to load debug info for the new module and resolve any pending breakpoints
-    // that target symbols in it. Also append a description so LLDB can display a human-readable
-    // stop reason in the UI.
-    if (state->isNewModuleLoad) {
-        RELEASE_ASSERT(state->isStoppedAtSystemCall());
+    // Append library:; to prompt LLDB to re-query qXfer:libraries:read when there are pending
+    // library changes: (1) new-module-load stop, (2) piggybacked on any natural stop when a module
+    // was loaded but no dedicated stop fired yet, (3) module removal via unregisterModule().
+    if (m_moduleManager.needsLibraryRequery()) {
         reply.append("library:;"_s);
-        reply.append("description:"_s);
-        for (UChar c : StringView("new wasm module loaded"_s).codeUnits())
-            reply.append(hex(static_cast<uint8_t>(c), 2, Lowercase));
-        reply.append(';');
+        // Include a human-readable description only for dedicated new-module-load stops.
+        if (state->isNewModuleLoad) {
+            RELEASE_ASSERT(state->isStoppedAtSystemCall());
+            reply.append("description:"_s);
+            StringBuilder description;
+            description.append("loaded new wasm module with ids: "_s);
+            auto ids = m_moduleManager.unnotifiedModuleIds();
+            for (size_t i = 0; i < ids.size(); ++i) {
+                if (i)
+                    description.append(", "_s);
+                description.append(ids[i]);
+            }
+            for (UChar c : StringView(description.toString()).codeUnits())
+                reply.append(hex(static_cast<uint8_t>(c), 2, Lowercase));
+            reply.append(';');
+        }
     }
 
     // For trap stops, include a hex-encoded description so LLDB can display the trap reason.
