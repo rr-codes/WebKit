@@ -619,7 +619,7 @@ void RenderTable::layout()
             computedLogicalHeight = convertStyleLogicalHeightToComputedHeight(logicalHeightLength);
 
         if (auto overridingLogicalHeight = this->overridingBorderBoxLogicalHeight())
-            computedLogicalHeight = std::max(computedLogicalHeight, *overridingLogicalHeight - borderAndPaddingAfter - sumCaptionsLogicalHeight());
+            computedLogicalHeight = std::max(computedLogicalHeight, *overridingLogicalHeight - (borderAndPaddingBefore + borderAndPaddingAfter) - sumCaptionsLogicalHeight());
 
         if (!shouldIgnoreLogicalMinMaxHeightSizes()) {
             auto& logicalMaxHeightLength = style().logicalMaxHeight();
