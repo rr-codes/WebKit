@@ -98,8 +98,6 @@ WKRetainPtr<WKStringRef> toWK(const char* utf8String);
 
 #endif // WK_HAVE_C_SPI
 
-#if !PLATFORM(COCOA) || !__has_feature(modules)
-
 template<typename T, typename U>
 static inline ::testing::AssertionResult assertWKStringEqual(const char* expected_expression, const char* actual_expression, T expected, U actual)
 {
@@ -108,8 +106,6 @@ static inline ::testing::AssertionResult assertWKStringEqual(const char* expecte
 
 #define EXPECT_WK_STREQ(expected, actual) \
     EXPECT_PRED_FORMAT2(TestWebKitAPI::Util::assertWKStringEqual, expected, actual)
-
-#endif // !PLATFORM(COCOA) || !__has_feature(modules)
 
 #if PLATFORM(MAC)
 using PlatformImage = NSImage;
