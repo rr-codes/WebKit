@@ -6272,11 +6272,23 @@ void WebPageProxy::accessibilitySettingsDidChange()
 void WebPageProxy::setAccessibilityMode(WebCore::AccessibilityMode mode)
 {
     if (std::optional resolvedMode = WebCore::resolveAccessibilityModeTransition(m_accessibilityMode, mode)) {
+        bool modeWasOff = WebCore::isAccessibilityModeOff(m_accessibilityMode);
         m_accessibilityMode = *resolvedMode;
+        bool modeIsOn = !WebCore::isAccessibilityModeOff(m_accessibilityMode);
 
         forEachWebContentProcess([&](auto& webProcess, auto pageID) {
             webProcess.send(Messages::WebPage::InheritAccessibilityMode(m_accessibilityMode), pageID);
         });
+
+#if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
+        // When transitioning from off to any on state, eagerly compute frame
+        // geometry so it's available as soon as accessibility clients need it.
+        if (modeWasOff && modeIsOn)
+            scheduleAccessibilityFrameGeometryUpdate();
+#else
+        UNUSED_VARIABLE(modeWasOff);
+        UNUSED_VARIABLE(modeIsOn);
+#endif
     }
 }
 
