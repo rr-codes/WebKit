@@ -541,8 +541,7 @@ void ExecutionHandler::setStepIntoBreakpointForCall(VM& callerVM, CalleeBits box
         dataLogLnIf(Options::verboseWasmDebugger(), "[Code][StepIntoEvent] Start for call");
         RELEASE_ASSERT(m_debuggerState == DebuggerState::StepRequested);
 
-        if (!calleeInstance)
-            return;
+        RELEASE_ASSERT(calleeInstance);
         if (!boxedCallee.isNativeCallee())
             return;
         RefPtr wasmCallee = downcast<Wasm::Callee>(boxedCallee.asNativeCallee());
