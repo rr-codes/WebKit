@@ -1,15 +1,10 @@
-list(APPEND ImageDiff_SOURCES
-    cg/PlatformImageCG.cpp
-)
+find_package(Apple REQUIRED COMPONENTS CoreFoundation CoreGraphics CoreServices CoreText ImageIO)
 
-# FIXME: CoreGraphics.cmake's FindApple.cmake targets don't resolve native macOS framework
-# headers -- use -framework directly. https://bugs.webkit.org/show_bug.cgi?id=312069
+include(CoreGraphics.cmake)
+
+# CoreServices provides kUTTypePNG on macOS (guarded by __APPLE__ in PlatformImageCG.cpp).
 list(APPEND ImageDiff_LIBRARIES
-    "-framework CoreFoundation"
-    "-framework CoreGraphics"
-    "-framework CoreServices"  # kUTTypePNG
-    "-framework CoreText"
-    "-framework ImageIO"
+    Apple::CoreServices
 )
 
 # kUTTypePNG deprecated in 12.0; our deployment target is 26.2.
