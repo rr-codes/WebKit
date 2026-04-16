@@ -67,6 +67,7 @@ HTMLMediaElementDestructor, "HTMLMediaElement::~HTMLMediaElement(%" PRIX64 ")", 
 HTMLMediaElementDidMoveToNewDocument, "HTMLMediaElement::didMoveToNewDocument(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementFinishSeek, "HTMLMediaElement::finishSeek(%" PRIX64 ") current time = %f, pending seek = %d", (uint64_t, double, int), DEFAULT, Media
 HTMLMediaElementInsertionSteps, "HTMLMediaElement::insertionSteps(%" PRIX64 ")", (uint64_t), DEFAULT, Media
+HTMLMediaElementLoadNextSourceChild, "HTMLMediaElement::loadNextSourceChild(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementMediaEngineWasUpdated, "HTMLMediaElement::mediaEngineWasUpdated(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementMediaPlayerCharacteristicsChanged, "HTMLMediaElement::mediaPlayerCharacteristicChanged(%" PRIX64 ") %" PUBLIC_LOG_STRING "", (uint64_t, CString), DEFAULT, Media
 HTMLMediaElementMediaPlayerCharacteristicsChangedNoMediaSession, "HTMLMediaElement::mediaPlayerCharacteristicChanged(%" PRIX64 ") no media session", (uint64_t), DEFAULT, Media

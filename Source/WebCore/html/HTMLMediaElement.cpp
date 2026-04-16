@@ -1864,7 +1864,7 @@ void HTMLMediaElement::selectMediaResource()
 
 void HTMLMediaElement::loadNextSourceChild()
 {
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(LoadNextSourceChild);
 
     ContentType contentType;
     auto mediaURL = selectNextSourceChild(&contentType, InvalidURLAction::Complain);
