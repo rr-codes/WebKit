@@ -72,6 +72,9 @@ list(APPEND TestWebKit_LIBRARIES
 # NSWindow.autodisplay is deprecated since 10.14 but still used in OffscreenWindow.mm.
 WEBKIT_ADD_TARGET_CXX_FLAGS(TestWebKit -Wno-deprecated-declarations)
 
+# run-api-tests expects the binary to be named TestWebKitAPI.
+set_target_properties(TestWebKit PROPERTIES OUTPUT_NAME TestWebKitAPI)
+
 # Common framework header directories needed by config.h (<wtf/Platform.h>, <WebKit/WebKit2_C.h>, etc.)
 set(_testapi_framework_headers
     ${WTF_FRAMEWORK_HEADERS_DIR}
