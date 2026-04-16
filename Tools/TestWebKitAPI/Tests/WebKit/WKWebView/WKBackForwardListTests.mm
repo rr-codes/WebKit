@@ -1109,6 +1109,318 @@ TEST(WKBackForwardList, NoPageCacheGoBackAfterNavigatingSameSiteIframe)
     runGoBackAfterNavigatingSameSiteIframe(ShouldEnablePageCache::No);
 }
 
+TEST(WKBackForwardList, RemoveAllItems)
+{
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL2]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL3]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    WKBackForwardList *list = [webView backForwardList];
+    EXPECT_EQ(list.backList.count, (NSUInteger)2);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)0);
+
+    [list _removeAllItems];
+
+    EXPECT_EQ(list.backList.count, (NSUInteger)0);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)0);
+    EXPECT_EQ(list.currentItem, nil);
+}
+
+TEST(WKBackForwardList, ClearKeepsCurrentItem)
+{
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL2]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL3]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView goBack];
+    [webView _test_waitForDidFinishNavigation];
+
+    // entries = [A, B(current), C]
+    WKBackForwardList *list = [webView backForwardList];
+    EXPECT_EQ(list.backList.count, (NSUInteger)1);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)1);
+    EXPECT_STREQ([[list.currentItem URL] absoluteString].UTF8String, loadableURL2.UTF8String);
+
+    [list _clear];
+
+    // Only the current item should remain.
+    EXPECT_EQ(list.backList.count, (NSUInteger)0);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)0);
+    EXPECT_STREQ([[list.currentItem URL] absoluteString].UTF8String, loadableURL2.UTF8String);
+}
+
+TEST(WKBackForwardList, ClearWithSingleItemDoesNothing)
+{
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    WKBackForwardList *list = [webView backForwardList];
+    EXPECT_EQ(list.backList.count, (NSUInteger)0);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)0);
+
+    [list _clear];
+
+    // A single-item list should be unchanged.
+    EXPECT_EQ(list.backList.count, (NSUInteger)0);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)0);
+    EXPECT_STREQ([[list.currentItem URL] absoluteString].UTF8String, loadableURL1.UTF8String);
+}
+
+TEST(WKBackForwardList, LoggingString)
+{
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL2]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    NSString *description = [[webView backForwardList] _loggingStringForTesting];
+    EXPECT_GT(description.length, 0U);
+    EXPECT_TRUE([description containsString:@"no%20error"]);
+}
+
+TEST(WKBackForwardList, PageClosed)
+{
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL1]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:loadableURL2]]];
+    [webView _test_waitForDidFinishNavigation];
+
+    EXPECT_EQ([webView backForwardList].backList.count, (NSUInteger)1);
+
+    [webView _close];
+
+    EXPECT_EQ([webView backForwardList].backList.count, (NSUInteger)0);
+    EXPECT_EQ([webView backForwardList].currentItem, nil);
+
+    webView = nil;
+    // If the deinit assertion fires this test will crash.
+}
+
+TEST(WKBackForwardList, RestoreFromStateAndSetItemsAsRestoredFromSession)
+{
+    // Exercise restoreFromState and setItemsAsRestoredFromSession (without filter)
+    // by restoring session state via _restoreSessionState:andNavigate:YES.
+    RetainPtr url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+    RetainPtr url2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
+    RetainPtr url3 = [NSBundle.test_resourcesBundle URLForResource:@"simple3" withExtension:@"html"];
+
+    RetainPtr source = adoptNS([[WKWebView alloc] init]);
+    [source loadRequest:[NSURLRequest requestWithURL:url1.get()]];
+    [source _test_waitForDidFinishNavigation];
+    [source loadRequest:[NSURLRequest requestWithURL:url2.get()]];
+    [source _test_waitForDidFinishNavigation];
+    [source loadRequest:[NSURLRequest requestWithURL:url3.get()]];
+    [source _test_waitForDidFinishNavigation];
+
+    _WKSessionState *sessionState = [source _sessionState];
+
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    [webView _restoreSessionState:sessionState andNavigate:YES];
+    [webView _test_waitForDidFinishNavigation];
+
+    WKBackForwardList *list = [webView backForwardList];
+    EXPECT_EQ(list.backList.count, (NSUInteger)2);
+    EXPECT_EQ(list.forwardList.count, (NSUInteger)0);
+    EXPECT_STREQ([[list.currentItem URL] absoluteString].UTF8String, [url3 absoluteString].UTF8String);
+}
+
+TEST(WKBackForwardList, BackwardSkipIteratesThroughConsecutiveJSItems)
+{
+    // Covers the while-loop in itemSkippingBackForwardItemsAddedByJSWithoutUserGesture
+    // for the backward direction, plus the backward post-loop step.
+    //
+    // State: url1 -> url2 -> url2#a(JS) -> url2#b(JS, current)
+    //
+    // goBack: current is JS, item at -1 (url2#a) is also JS, so the while loop
+    // iterates past it to url2 (non-JS). The backward post-loop then steps one
+    // further to url1, which is the final navigation target.
+    //
+    // goForward from url1: url2 is immediately forward and is non-JS (main while
+    // skipped), but url2#a and url2#b beyond it are JS, so the forward inner while
+    // advances to url2#b.
+
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    webView.get().navigationDelegate = navigationDelegate.get();
+
+    RetainPtr url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+    RetainPtr url2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:url1.get()]];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:url2.get()]];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#a');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#b');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_EQ([webView backForwardList].backList.count, 3U);
+
+    [webView goBack];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, [url1 absoluteString].UTF8String);
+    EXPECT_EQ([webView backForwardList].backList.count, 0U);
+    EXPECT_EQ([webView backForwardList].forwardList.count, 3U);
+
+    [webView goForward];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    RetainPtr expectedURL = makeString(String([url2 absoluteString]), "#b"_s).createNSString();
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, expectedURL.get().UTF8String);
+    EXPECT_EQ([webView backForwardList].backList.count, 3U);
+    EXPECT_EQ([webView backForwardList].forwardList.count, 0U);
+}
+
+TEST(WKBackForwardList, ForwardSkipIteratesThroughLeadingConsecutiveJSItems)
+{
+    // Covers the while-loop in itemSkippingBackForwardItemsAddedByJSWithoutUserGesture
+    // for the forward direction when the immediately-forward item is JS.
+    //
+    // State: url1 -> url1#a(JS) -> url1#b(JS) -> url2
+    //
+    // Navigate directly to url1, then goForward: item at +1 is url1#a (JS), so the
+    // main while iterates past url1#a and url1#b, reaching url2 (non-JS). Nothing
+    // follows url2, so the inner while is skipped and we land on url2.
+
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    webView.get().navigationDelegate = navigationDelegate.get();
+
+    RetainPtr url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+    RetainPtr url2 = [NSBundle.test_resourcesBundle URLForResource:@"simple2" withExtension:@"html"];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:url1.get()]];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#a');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#b');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:url2.get()]];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    // backList is ordered oldest-first; firstObject is url1 (the original loadRequest item).
+    WKBackForwardListItem *url1Item = [webView backForwardList].backList.firstObject;
+    [webView goToBackForwardListItem:url1Item];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, [url1 absoluteString].UTF8String);
+
+    [webView goForward];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, [url2 absoluteString].UTF8String);
+    EXPECT_EQ([webView backForwardList].backList.count, 3U);
+    EXPECT_EQ([webView backForwardList].forwardList.count, 0U);
+}
+
+TEST(WKBackForwardList, BackwardSkipReturnsNonJSItemWhenNothingFurtherBack)
+{
+    // Covers the guard in the backward post-loop of
+    // itemSkippingBackForwardItemsAddedByJSWithoutUserGesture (line 660-662).
+    //
+    // State: url1 -> url1#a(JS, current)
+    //
+    // goBack: current is JS so we don't early-return. Item at -1 is url1 (non-JS)
+    // so the main while is skipped. The backward post-loop tries to step one further
+    // back (itemAtIndex(-2)) which is nil, so it returns originalItem (url1).
+
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    webView.get().navigationDelegate = navigationDelegate.get();
+
+    RetainPtr url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:url1.get()]];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#a');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_TRUE([webView backForwardList].currentItem._wasCreatedByJSWithoutUserInteraction);
+
+    [webView goBack];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, [url1 absoluteString].UTF8String);
+    EXPECT_EQ([webView backForwardList].backList.count, 0U);
+    EXPECT_EQ([webView backForwardList].forwardList.count, 1U);
+}
+
+TEST(WKBackForwardList, ForwardSkipReturnsFirstJSItemWhenAllForwardItemsAreJS)
+{
+    // Covers the guard in the main while-loop of
+    // itemSkippingBackForwardItemsAddedByJSWithoutUserGesture for the forward
+    // direction (line 643): runs out of items before finding a non-JS item.
+    //
+    // State: url1 -> url1#a(JS) -> url1#b(JS) -> url1#c(JS)
+    //
+    // Navigate to url1, then goForward: all forward items are JS. The while loop
+    // iterates through them all and runs out, returning originalItem (url1#a).
+
+    RetainPtr webView = adoptNS([[WKWebView alloc] init]);
+    RetainPtr navigationDelegate = adoptNS([WKBackForwardNavigationDelegate new]);
+    webView.get().navigationDelegate = navigationDelegate.get();
+
+    RetainPtr url1 = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:url1.get()]];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#a');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#b');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    [webView _evaluateJavaScriptWithoutUserGesture:@"history.pushState(null, '', '#c');" completionHandler:nil];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    // backList is ordered oldest-first; firstObject is url1 (the original loadRequest item).
+    WKBackForwardListItem *url1Item = [webView backForwardList].backList.firstObject;
+    [webView goToBackForwardListItem:url1Item];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, [url1 absoluteString].UTF8String);
+
+    [webView goForward];
+    [navigationDelegate waitForDidFinishNavigationOrDidSameDocumentNavigation];
+
+    RetainPtr expectedURL = makeString(String([url1 absoluteString]), "#a"_s).createNSString();
+    EXPECT_STREQ([webView URL].absoluteString.UTF8String, expectedURL.get().UTF8String);
+    EXPECT_EQ([webView backForwardList].backList.count, 1U);
+    EXPECT_EQ([webView backForwardList].forwardList.count, 2U);
+}
+
 static void runGoBackAfterNavigatingSameSiteIframe2(ShouldEnablePageCache shouldEnablePageCache)
 {
     TestWebKitAPI::HTTPServer server({
