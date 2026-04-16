@@ -405,7 +405,7 @@ void WebModelPlayer::sizeDidChange(WebCore::LayoutSize size)
         protectedThis->m_renderTextureIndex = 0;
         protectedThis->m_displayTextureIndex = 0;
         if (protectedThis->m_contentsDisplayDelegate)
-            RefPtr { protectedThis->m_contentsDisplayDelegate }->setDisplayBuffer(*protectedThis->displayBuffer());
+            protect(protectedThis->m_contentsDisplayDelegate)->setDisplayBuffer(*protectedThis->displayBuffer());
         protectedThis->startUpdateLoopIfNeeded();
     });
 
@@ -682,7 +682,7 @@ bool WebModelPlayer::render()
 
             protectedThis->m_displayTextureIndex = textureIndex;
             if (auto* machSendRight = protectedThis->displayBuffer(); machSendRight && protectedThis->contentsDisplayDelegate())
-                RefPtr { protectedThis->m_contentsDisplayDelegate }->setDisplayBuffer(*machSendRight);
+                protect(protectedThis->m_contentsDisplayDelegate)->setDisplayBuffer(*machSendRight);
 
             protectedThis->scheduleDisplayUpdate();
         });
