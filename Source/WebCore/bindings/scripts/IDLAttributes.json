@@ -379,9 +379,6 @@
             },
             "unsupported": true
         },
-        "LegacyNativeDictionaryRequiredInterfaceNullability": {
-            "contextsAllowed": ["dictionary"]
-        },
         "LegacyNoInterfaceObject": {
             "contextsAllowed": ["interface"],
             "standard": {
