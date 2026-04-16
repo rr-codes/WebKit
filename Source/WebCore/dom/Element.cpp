@@ -2855,7 +2855,7 @@ bool Element::isEventHandlerAttribute(const Attribute& attribute) const
 
 bool Element::attributeContainsJavaScriptURL(const Attribute& attribute) const
 {
-    return isURLAttribute(attribute) && WTF::protocolIsJavaScript(attribute.value());
+    return isURLAttribute(attribute) && WTF::isValidJavaScriptURL(attribute.value());
 }
 
 void Element::stripScriptingAttributes(Vector<Attribute>& attributeVector) const

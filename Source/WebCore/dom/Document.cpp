@@ -4894,9 +4894,12 @@ void Document::processBaseElement()
     if (!href.isNull())
         baseElementURL = completeURL(href, fallbackBaseURL());
     if (m_baseElementURL != baseElementURL) {
-        if (!protect(contentSecurityPolicy())->allowBaseURI(baseElementURL))
+        if (settings().shouldRestrictBaseURLSchemes() && !baseElementURL.isEmpty() && !baseElementURL.isValid()) {
             m_baseElementURL = { };
-        else if (settings().shouldRestrictBaseURLSchemes() && !SecurityPolicy::isBaseURLSchemeAllowed(baseElementURL)) {
+            addConsoleMessage(MessageSource::Security, MessageLevel::Error, makeString("Blocked setting "_s, baseElementURL.stringCenterEllipsizedToLength(), " as the base URL because it is not a valid URL."_s));
+        } else if (!protect(contentSecurityPolicy())->allowBaseURI(baseElementURL))
+            m_baseElementURL = { };
+        else if (settings().shouldRestrictBaseURLSchemes() && !baseElementURL.isEmpty() && !SecurityPolicy::isBaseURLSchemeAllowed(baseElementURL)) {
             m_baseElementURL = { };
             addConsoleMessage(MessageSource::Security, MessageLevel::Error, makeString("Blocked setting "_s, baseElementURL.stringCenterEllipsizedToLength(), " as the base URL because it does not have an allowed scheme."_s));
         } else
