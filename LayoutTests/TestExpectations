@@ -8338,6 +8338,3 @@ imported/w3c/web-platform-tests/svg/text/reftests/textpath-side-005.svg [ ImageO
 
 webkit.org/b/312264 imported/w3c/web-platform-tests/css/cssom-view/interrupt-hidden-smooth-scroll.html [ Pass Failure ]
 
-webkit.org/b/312304 imported/w3c/web-platform-tests/html/semantics/popovers/popover-events.html [ Skip ] # crash
-webkit.org/b/312304 imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-blur-crash.html [ Skip ] # crash
-webkit.org/b/312304 imported/w3c/web-platform-tests/html/semantics/popovers/popover-remove-attribute-during-focusing-steps.html [ Skip ] # crash
