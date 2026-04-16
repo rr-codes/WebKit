@@ -84,7 +84,12 @@ TEST(WKWebViewSuspendAllMediaPlayback, AfterLoading)
     TestWebKitAPI::Util::run(&isPlaying);
 }
 
+// FIXME when rdar://169658576 is resolved.
+#if PLATFORM(MAC)
+TEST(WKWebViewSuspendAllMediaPlayback, DISABLED_PauseWhenResume)
+#else
 TEST(WKWebViewSuspendAllMediaPlayback, PauseWhenResume)
+#endif
 {
     RetainPtr configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
     configuration.get().mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
