@@ -827,7 +827,9 @@ void ExecutionHandler::sendStopReplyForThread(AbstractLocker& locker, uint64_t t
     // Append library:; to prompt LLDB to re-query qXfer:libraries:read when there are pending
     // library changes: (1) new-module-load stop, (2) piggybacked on any natural stop when a module
     // was loaded but no dedicated stop fired yet, (3) module removal via unregisterModule().
-    if (m_moduleManager.needsLibraryRequery()) {
+    // Gated on isDebuggerReady() to avoid sending library:; in the ? reply before the initial
+    // qXfer:libraries:read handshake completes.
+    if (m_moduleManager.needsLibraryRequery() && m_debugServer.isDebuggerReady()) {
         reply.append("library:;"_s);
         // Include a human-readable description only for dedicated new-module-load stops.
         if (state->isNewModuleLoad) {
