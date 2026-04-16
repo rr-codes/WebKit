@@ -303,17 +303,17 @@ endif ()
 add_link_options(-Wl,-dead_strip)
 add_link_options(-Wl,-dead_strip_dylibs)
 
-# Thin archives (ar crsT): store paths to .o files instead of copying contents.
-# Apple's ar supports T but OptionsCommon.cmake only auto-detects GNU ar.
 if (CMAKE_GENERATOR STREQUAL "Ninja")
-    set(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> crsT <TARGET> <OBJECTS>")
-    set(CMAKE_C_ARCHIVE_CREATE "<CMAKE_AR> crsT <TARGET> <OBJECTS>")
-    set(CMAKE_CXX_ARCHIVE_APPEND "<CMAKE_AR> rsT <TARGET> <OBJECTS>")
-    set(CMAKE_C_ARCHIVE_APPEND "<CMAKE_AR> rsT <TARGET> <OBJECTS>")
-    # Thin archives can't be ranlib'd (they have no symbol table to update); make it a no-op.
+    set(CMAKE_CXX_ARCHIVE_CREATE "xcrun libtool -static -no_warning_for_no_symbols -o <TARGET> <OBJECTS>")
+    set(CMAKE_C_ARCHIVE_CREATE "xcrun libtool -static -no_warning_for_no_symbols -o <TARGET> <OBJECTS>")
+    set(CMAKE_CXX_ARCHIVE_APPEND "xcrun libtool -static -no_warning_for_no_symbols -o <TARGET> <TARGET> <OBJECTS>")
+    set(CMAKE_C_ARCHIVE_APPEND "xcrun libtool -static -no_warning_for_no_symbols -o <TARGET> <TARGET> <OBJECTS>")
     set(CMAKE_CXX_ARCHIVE_FINISH true)
     set(CMAKE_C_ARCHIVE_FINISH true)
 endif ()
+
+# Suppress "has no symbols" warnings from Swift's internal libtool invocation (e.g. PAL).
+set(CMAKE_STATIC_LINKER_FLAGS "-no_warning_for_no_symbols")
 
 # Apple Silicon handles more concurrent links than the default pool size.
 if (CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL "arm64" AND NOT DEFINED ENV{WEBKIT_NINJA_LINK_MAX})

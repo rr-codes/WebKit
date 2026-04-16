@@ -7,6 +7,10 @@ enable_language(ASM)
 
 add_definitions(-DLIBYUV_DISABLE_SME)
 add_definitions(-DLIBYUV_DISABLE_SVE)
+add_definitions(-DWEBRTC_WEBKIT_BUILD=1)
+
+# Suppress all warnings for third-party libwebrtc code.
+add_compile_options(-w)
 
 if (NOT APPLE)
     find_package(LibEvent)
@@ -2273,7 +2277,6 @@ add_library(webrtc STATIC ${webrtc_SOURCES})
 target_compile_options(webrtc PRIVATE
     "$<$<COMPILE_LANGUAGE:CXX>:-std=c++2b>"
     "-UHAVE_CONFIG_H"
-    "-w"
 )
 
 set_target_properties(webrtc PROPERTIES CXX_VISIBILITY_PRESET hidden)
@@ -2321,7 +2324,6 @@ target_compile_definitions(webrtc PRIVATE
   WEBRTC_USE_H265=1
   RTC_ENABLE_H265
   DISABLE_RTC_AV1
-  WEBRTC_WEBKIT_BUILD=1
   WTF_USE_DYNAMIC_ANNOTATIONS=1
   _GNU_SOURCE
   HWAES
@@ -2420,10 +2422,6 @@ set(libsrtp_SOURCES
 )
 
 add_library(libsrtp OBJECT ${libsrtp_SOURCES})
-
-target_compile_options(libsrtp PRIVATE
-    "-w"
-)
 
 target_compile_definitions(libsrtp PRIVATE
     GCM
@@ -3247,4 +3245,3 @@ endif ()
 
 target_include_directories(vpx PRIVATE ${vpx_INCLUDE_DIRECTORIES})
 target_compile_options(vpx PRIVATE -Wno-cast-align -Wno-incompatible-pointer-types)
-target_compile_definitions(vpx PRIVATE WEBRTC_WEBKIT_BUILD=1)
