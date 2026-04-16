@@ -35,6 +35,7 @@
 #include "HTMLInputElement.h"
 #include "HTMLTextAreaElement.h"
 #include "HitTestLocation.h"
+#include "InlineContentCache.h"
 #include "InlineIteratorBoxInlines.h"
 #include "InlineIteratorInlineBox.h"
 #include "InlineIteratorLineBoxInlines.h"
@@ -106,6 +107,19 @@ RenderBlockFlowRareData::RenderBlockFlowRareData(const RenderBlockFlow& block)
 }
 
 RenderBlockFlowRareData::~RenderBlockFlowRareData() = default;
+
+Layout::InlineContentCache& RenderBlockFlow::ensureInlineContentCache()
+{
+    if (!m_inlineContentCache)
+        m_inlineContentCache = makeUnique<Layout::InlineContentCache>();
+    return *m_inlineContentCache;
+}
+
+void RenderBlockFlow::resetInlineContentCache()
+{
+    ASSERT(m_inlineContentCache);
+    m_inlineContentCache = nullptr;
+}
 
 // Our MarginInfo state used when laying out block children.
 RenderBlockFlow::MarginInfo::MarginInfo(const RenderBlockFlow& block, IgnoreScrollbarForAfterMargin ignoreScrollbarForAfterMargin)

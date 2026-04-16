@@ -229,7 +229,7 @@ LineLayout::~LineLayout()
         rootRenderer->view().frameView().layoutContext().detachInlineContent(WTF::move(m_inlineContent));
     };
     prepareAndDetachInlineContent();
-    layoutState().destroyInlineContentCache(rootLayoutBox());
+    rootRenderer->resetInlineContentCache();
     layoutState().destroyBlockFormattingState(rootLayoutBox());
     m_boxGeometryUpdater.clear();
     m_lineDamage = { };
