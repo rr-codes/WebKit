@@ -256,6 +256,7 @@
 #include <WebCore/MIMETypeRegistry.h>
 #include <WebCore/MediaDeviceHashSalts.h>
 #include <WebCore/MediaStreamRequest.h>
+#include <WebCore/MixedContentChecker.h>
 #include <WebCore/ModalContainerTypes.h>
 #include <WebCore/NotImplemented.h>
 #include <WebCore/OrganizationStorageAccessPromptQuirk.h>
@@ -17871,16 +17872,8 @@ void WebPageProxy::reportMixedContentViolation(FrameIdentifier frameID, bool blo
     if (!frame)
         return;
 
-    auto isUpgradingLocalhostDisabled = !protect(preferences())->iPAddressAndLocalhostMixedContentUpgradeTestingEnabled() && shouldTreatAsPotentiallyTrustworthy(target);
-    ASCIILiteral errorString = [&] {
-        if (blocked)
-            return "blocked and must"_s;
-        if (isUpgradingLocalhostDisabled)
-            return "not upgraded to HTTPS and must be served from the local host."_s;
-        return "automatically upgraded and should"_s;
-    }();
+    auto message = MixedContentChecker::mixedContentViolationMessage(protect(preferences())->iPAddressAndLocalhostMixedContentUpgradeTestingEnabled(), blocked, frame->url(), target);
 
-    auto message = makeString((!blocked ? ""_s : "[blocked] "_s), "The page at "_s, frame->url().stringCenterEllipsizedToLength(), " requested insecure content from "_s, target.stringCenterEllipsizedToLength(), ". This content was "_s, errorString, !isUpgradingLocalhostDisabled ? " be served over HTTPS.\n"_s : "\n"_s);
     addConsoleMessage(frameID, MessageSource::Security, MessageLevel::Warning, message);
 }
 
