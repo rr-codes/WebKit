@@ -110,7 +110,7 @@ Resolver& Scope::resolver()
         else
             createDocumentResolver();
         
-        if (m_resolver->ruleSets().features().usesHasPseudoClass())
+        if (m_resolver->ruleSets().features().usesHasPseudoClass)
             m_usesHasPseudoClass = true;
     }
     return *m_resolver;
@@ -633,7 +633,7 @@ void Scope::updateActiveStyleSheets(UpdateType updateType)
             m_usesStyleBasedEditability = true;
     }
 
-    if (m_resolver && m_resolver->ruleSets().features().usesHasPseudoClass())
+    if (m_resolver && m_resolver->ruleSets().features().usesHasPseudoClass)
         m_usesHasPseudoClass = true;
 
     invalidateStyleAfterStyleSheetChange(styleSheetChange);
