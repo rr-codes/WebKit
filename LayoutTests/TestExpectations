@@ -3439,7 +3439,6 @@ webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/tra
 webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/trailing-ogham-002.html [ ImageOnlyFailure ]
 webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/trailing-ogham-003.html [ ImageOnlyFailure ]
 webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/trailing-space-and-text-alignment-rtl-004.html [ ImageOnlyFailure ]
-webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/white-space-pre-wrap-justify-003.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-032.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-062.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-ethiopic.html [ ImageOnlyFailure ]
