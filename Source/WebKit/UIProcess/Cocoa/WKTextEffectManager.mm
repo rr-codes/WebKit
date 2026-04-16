@@ -186,20 +186,18 @@ static RetainPtr<NSArray<_WTTextPreview *>> textPreviewsFromIndicator(const RefP
         }
 
 #if PLATFORM(IOS_FAMILY)
-        CocoaView *rootView = webView->_contentView.get();
+        RetainPtr rootView = webView->_contentView.get();
 #else
-        CocoaView *rootView = webView.get();
+        RetainPtr rootView = webView.get();
 #endif
-        CocoaView *containerView = webView.get();
-
-        RetainPtr textPreviews = textPreviewsFromIndicator(textIndicator, rootView, containerView);
+        RetainPtr textPreviews = textPreviewsFromIndicator(textIndicator, rootView, webView);
         if (!textPreviews) {
             completionHandler(nil, nil);
             return;
         }
 
-        [webView _page]->decorationIndicatorForTextEffectID(textEffectUUID, [textPreviews = WTF::move(textPreviews), rootView = retainPtr(rootView), containerView = retainPtr(containerView), completionHandler](RefPtr<WebCore::TextIndicator> decorationIndicator) {
-            auto underlinePreviews = textPreviewsFromIndicator(decorationIndicator, rootView.get(), containerView.get());
+        [webView _page]->decorationIndicatorForTextEffectID(textEffectUUID, [textPreviews = WTF::move(textPreviews), rootView, webView, completionHandler](RefPtr<WebCore::TextIndicator> decorationIndicator) {
+            auto underlinePreviews = textPreviewsFromIndicator(decorationIndicator, rootView.get(), webView.get());
             completionHandler(textPreviews.get(), underlinePreviews.get());
         });
     });
