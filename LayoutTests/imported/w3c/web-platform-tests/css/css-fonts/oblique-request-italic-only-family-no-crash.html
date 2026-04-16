@@ -6,9 +6,6 @@
 <link rel="help" href="https://drafts.csswg.org/css-fonts-4/#font-style-matching">
 <meta name="assert" content="Requesting oblique when the font family has only an italic face must not crash; the italic face is used as a last resort">
 
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-
 <style>
 /* Only face in the family is italic (faceAxis=ital, slope=[14,14]).
    An oblique request triggers the last-resort penalty path; the fix ensures
@@ -21,15 +18,6 @@
 }
 </style>
 
-<div id="target" style="font-family: testFont; font-style: oblique 75deg;">
+<div style="font-family: testFont; font-style: oblique 75deg;">
     This text triggers oblique selection against an italic-only font family.
 </div>
-
-<script>
-test(() => {
-    // Force style resolution and layout. If the font selection algorithm
-    // crashes, this line is never reached and the test fails with a crash.
-    assert_greater_than(document.getElementById("target").offsetHeight, 0,
-        "element rendered without crash");
-}, "Requesting oblique 75deg with an italic-only @font-face family does not crash");
-</script>
