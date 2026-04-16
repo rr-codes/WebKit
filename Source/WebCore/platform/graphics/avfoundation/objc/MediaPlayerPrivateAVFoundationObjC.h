@@ -524,7 +524,7 @@ private:
     bool m_muted { false };
     bool m_preservesPitch { true };
     bool m_shouldObserveTimeControlStatus { false };
-    bool m_isinFullscreenOrPictureInPicture { false };
+    bool m_isInFullscreenOrPictureInPicture { false };
     mutable std::optional<bool> m_tracksArePlayable;
     bool m_automaticallyWaitsToMinimizeStalling { false };
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
