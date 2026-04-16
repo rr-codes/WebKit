@@ -8627,6 +8627,9 @@ webgl/2.0.y/conformance/textures/image_bitmap_from_image_bitmap/tex-2d-rgba-rgba
 
 webkit.org/b/311222 [ Release ] imported/w3c/web-platform-tests/navigation-api/navigate-event/signal-abort-window-stop-after-intercept.html [ Skip ]
 
+# rdar://173890240 ([iOS] imported/w3c/web-platform-tests/css/css-images/gradient/gradient-analogous-missing-components-003.html has 2 component pixel difference)
+imported/w3c/web-platform-tests/css/css-images/gradient/gradient-analogous-missing-components-003.html [ Pass ImageOnlyFailure ]
+
 # webkit.org/b/312385 NEW TEST (311246@main): [iOS] 7 tests in imported/w3c/web-platform-tests/html/semantics/popovers/ are failing
 imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-inside-slot.html [ Skip ]
 imported/w3c/web-platform-tests/html/semantics/popovers/popover-focus-overflow-visible.html [ Skip ]
