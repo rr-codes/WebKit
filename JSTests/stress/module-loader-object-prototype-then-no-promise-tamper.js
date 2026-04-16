@@ -1,3 +1,5 @@
+//@ runDefault
+
 // Test that module loading works correctly when Object.prototype.then is set
 // to a callable function. Module records have null prototype and JSSourceCode
 // is a JSCell (not JSObject), so Object.prototype.then should not interfere
@@ -14,10 +16,13 @@ Object.prototype.then = function (resolve, reject) {
 
 import("./resources/module-loader-promise-then-tampered-target.js").then(
     function (ns) {
-        if (ns.value !== 42)
-            throw new Error("Expected ns.value to be 42, got " + ns.value);
+        if (ns.value !== 42) {
+            print("Expected ns.value to be 42, got " + ns.value);
+            $vm.abort();
+        }
     },
     function (e) {
-        throw new Error("Module loading should not have failed: " + e);
+        print("Module loading should not have failed: " + e);
+        $vm.abort();
     }
 );

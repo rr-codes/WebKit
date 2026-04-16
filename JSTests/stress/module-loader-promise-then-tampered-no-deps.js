@@ -1,3 +1,5 @@
+//@ runDefault
+
 // Test that module loading works for a module with NO dependencies even when
 // Promise.prototype.then is completely replaced. The initial module goes
 // through loadModule's first overload which chains on the already-fulfilled

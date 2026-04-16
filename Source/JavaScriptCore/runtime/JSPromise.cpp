@@ -322,6 +322,8 @@ bool isDefinitelyNonThenable(JSObject* object, JSGlobalObject* globalObject)
     while (structure) {
         if (structure->hasSpecialProperties())
             return false;
+        if (structure->typeInfo().getOwnPropertySlotIsImpureForPropertyAbsence())
+            return false;
         if (structure->typeInfo().overridesGetPrototype())
             return false;
         if (!structure->hasMonoProto())
