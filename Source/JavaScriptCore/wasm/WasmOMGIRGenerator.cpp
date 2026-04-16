@@ -87,6 +87,7 @@
 #include "WasmTypeDefinitionInlines.h"
 #include "WebAssemblyFunctionBase.h"
 #include <limits>
+#include <wtf/CheckedArithmetic.h>
 #include <wtf/FastMalloc.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
@@ -733,8 +734,8 @@ public:
     [[nodiscard]] PartialResult setGlobal(uint32_t index, ExpressionType value);
 
     // Memory
-    [[nodiscard]] PartialResult load(LoadOpType, ExpressionType pointer, ExpressionType& result, uint32_t offset, uint8_t memoryIndex);
-    [[nodiscard]] PartialResult store(StoreOpType, ExpressionType pointer, ExpressionType value, uint32_t offset, uint8_t memoryIndex);
+    [[nodiscard]] PartialResult load(LoadOpType, ExpressionType pointer, ExpressionType& result, uint64_t offset, uint8_t memoryIndex);
+    [[nodiscard]] PartialResult store(StoreOpType, ExpressionType pointer, ExpressionType value, uint64_t offset, uint8_t memoryIndex);
     [[nodiscard]] PartialResult addGrowMemory(ExpressionType delta, ExpressionType& result, uint8_t memoryIndex);
     [[nodiscard]] PartialResult addCurrentMemory(ExpressionType& result, uint8_t memoryIndex);
     [[nodiscard]] PartialResult addMemoryFill(ExpressionType dstAddress, ExpressionType targetValue, ExpressionType count, uint8_t memoryIndex);
@@ -917,7 +918,7 @@ private:
 
     void emitWriteBarrierForJSWrapper();
     void emitWriteBarrier(Value* cell);
-    Value* emitCheckAndPreparePointer(Value* pointer, uint32_t offset, uint32_t sizeOfOp, uint8_t memoryIndex);
+    Value* emitCheckAndPreparePointer(Value* pointer, uint64_t offset, uint32_t sizeOfOp, uint8_t memoryIndex);
     B3::Kind memoryKind(B3::Opcode memoryOp);
     Value* emitLoadOp(LoadOpType, Value* pointer, uint32_t offset);
     void emitStoreOp(StoreOpType, Value* pointer, Value*, uint32_t offset);
@@ -2425,7 +2426,7 @@ inline void OMGIRGenerator::emitWriteBarrier(Value* cell)
     m_currentBlock = continuation;
 }
 
-inline Value* OMGIRGenerator::emitCheckAndPreparePointer(Value* pointer, uint32_t offset, uint32_t sizeOfOperation, uint8_t memoryIndex)
+inline Value* OMGIRGenerator::emitCheckAndPreparePointer(Value* pointer, uint64_t offset, uint32_t sizeOfOperation, uint8_t memoryIndex)
 {
     static_assert(GPRInfo::wasmBaseMemoryPointer != InvalidGPRReg);
 
@@ -2436,13 +2437,21 @@ inline Value* OMGIRGenerator::emitCheckAndPreparePointer(Value* pointer, uint32_
             // We're not using signal handling only when the memory is not shared.
             // Regardless of signaling, we must check that no memory access exceeds the current memory size.
             static_assert(GPRInfo::wasmBoundsCheckingSizeRegister != InvalidGPRReg);
-            uint64_t lastLoadedOffset = static_cast<uint64_t>(offset);
+            if (WTF::sumOverflows<uint64_t>(offset, sizeOfOperation)) {
+                B3::PatchpointValue* throwException = m_currentBlock->appendNew<B3::PatchpointValue>(m_proc, B3::Void, origin());
+                throwException->setGenerator([this, origin = this->origin()](CCallHelpers& jit, const B3::StackmapGenerationParams&) {
+                    this->emitExceptionCheck(jit, origin, ExceptionType::OutOfBoundsMemoryAccess);
+                });
+                break;
+            }
+            uint64_t lastLoadedOffset = offset;
             lastLoadedOffset += static_cast<uint64_t>(sizeOfOperation - 1);
             m_currentBlock->appendNew<WasmBoundsCheckValue>(m_proc, origin(), GPRInfo::wasmBoundsCheckingSizeRegister, pointer, lastLoadedOffset);
             break;
         }
 
         case MemoryMode::Signaling: {
+            RELEASE_ASSERT(!m_info.memory(memoryIndex).isMemory64());
             // We've virtually mapped 4GiB+redzone for this memory. Only the user-allocated pages are addressable, contiguously in range [0, current],
             // and everything above is mapped PROT_NONE. We don't need to perform any explicit bounds check in the 4GiB range because WebAssembly register
             // memory accesses are 32-bit. However WebAssembly register + offset accesses perform the addition in 64-bit which can push an access above
@@ -2463,13 +2472,18 @@ inline Value* OMGIRGenerator::emitCheckAndPreparePointer(Value* pointer, uint32_
         }
         }
 
-        pointer = m_currentBlock->appendNew<Value>(m_proc, ZExt32, origin(), pointer);
+        if (!m_info.memory(memoryIndex).isMemory64())
+            pointer = m_currentBlock->appendNew<Value>(m_proc, ZExt32, origin(), pointer);
         return m_currentBlock->appendNew<WasmAddressValue>(m_proc, origin(), pointer, GPRInfo::wasmBaseMemoryPointer);
     }
 
     // if memoryIndex != 0, force bounds checking
 
-    if (sumOverflows<uint32_t>(offset, sizeOfOperation)) {
+    bool offsetAndSizeOverflows = m_info.memory(memoryIndex).isMemory64()
+        ? sumOverflows<uint64_t>(offset, sizeOfOperation)
+        : sumOverflows<uint32_t>(offset, sizeOfOperation);
+
+    if (offsetAndSizeOverflows) [[unlikely]] {
         B3::PatchpointValue* throwException = m_currentBlock->appendNew<B3::PatchpointValue>(m_proc, B3::Void, origin());
         throwException->setGenerator([this, origin = this->origin()](CCallHelpers& jit, const B3::StackmapGenerationParams&) {
             this->emitExceptionCheck(jit, origin, ExceptionType::OutOfBoundsMemoryAccess);
@@ -2485,9 +2499,22 @@ inline Value* OMGIRGenerator::emitCheckAndPreparePointer(Value* pointer, uint32_
     uint64_t lastLoadedOffset = static_cast<uint64_t>(offset);
     lastLoadedOffset += static_cast<uint64_t>(sizeOfOperation - 1);
     auto boundsCheckOffset = constant(Int64, lastLoadedOffset);
-    pointer = m_currentBlock->appendNew<Value>(m_proc, ZExt32, origin(), pointer);
-    Value* outOfBounds = m_currentBlock->appendNew<Value>(m_proc, AboveEqual, origin(), m_currentBlock->appendNew<Value>(m_proc, Add, origin(), pointer, boundsCheckOffset), memorySize);
-    // FIXME: this should probably use a CheckAdd once memory64 is supported
+    if (!m_info.memory(memoryIndex).isMemory64())
+        pointer = m_currentBlock->appendNew<Value>(m_proc, ZExt32, origin(), pointer);
+
+    Value* sum;
+    if (m_info.memory(memoryIndex).isMemory64() && lastLoadedOffset) {
+        // FIXME: We should have an optional ResultCondition for CheckAdd (and friends)
+        sum = m_currentBlock->appendNew<Value>(m_proc, Add, origin(), pointer, boundsCheckOffset);
+        Value* overflowed = m_currentBlock->appendNew<Value>(m_proc, Below, origin(), sum, pointer);
+        CheckValue* overflowCheck = m_currentBlock->appendNew<CheckValue>(m_proc, Check, origin(), overflowed);
+        overflowCheck->setGenerator([=, this, origin = this->origin()](CCallHelpers& jit, const B3::StackmapGenerationParams&) {
+            this->emitExceptionCheck(jit, origin, ExceptionType::OutOfBoundsMemoryAccess);
+        });
+    } else
+        sum = m_currentBlock->appendNew<Value>(m_proc, Add, origin(), pointer, boundsCheckOffset);
+
+    Value* outOfBounds = m_currentBlock->appendNew<Value>(m_proc, AboveEqual, origin(), sum, memorySize);
     CheckValue* check = m_currentBlock->appendNew<CheckValue>(m_proc, Check, origin(), outOfBounds);
     check->setGenerator([=, this, origin = this->origin()](CCallHelpers& jit, const B3::StackmapGenerationParams&) {
         this->emitExceptionCheck(jit, origin, ExceptionType::OutOfBoundsMemoryAccess);
@@ -2623,12 +2650,15 @@ inline Value* OMGIRGenerator::emitLoadOp(LoadOpType op, Value* pointer, uint32_t
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-auto OMGIRGenerator::load(LoadOpType op, ExpressionType pointerVar, ExpressionType& result, uint32_t offset, uint8_t memoryIndex) -> PartialResult
+auto OMGIRGenerator::load(LoadOpType op, ExpressionType pointerVar, ExpressionType& result, uint64_t offset, uint8_t memoryIndex) -> PartialResult
 {
     Value* pointer = get(pointerVar);
-    ASSERT(pointer->type() == Int32);
 
-    if (sumOverflows<uint32_t>(offset, sizeOfLoadOp(op))) [[unlikely]] {
+    bool offsetAndSizeOverflows = m_info.memory(memoryIndex).isMemory64()
+        ? sumOverflows<uint64_t>(offset, sizeOfLoadOp(op))
+        : sumOverflows<uint32_t>(offset, sizeOfLoadOp(op));
+
+    if (offsetAndSizeOverflows) [[unlikely]] {
         // FIXME: Even though this is provably out of bounds, it's not a validation error, so we have to handle it
         // as a runtime exception. However, this may change: https://bugs.webkit.org/show_bug.cgi?id=166435
         B3::PatchpointValue* throwException = m_currentBlock->appendNew<B3::PatchpointValue>(m_proc, B3::Void, origin());
@@ -2729,13 +2759,16 @@ inline void OMGIRGenerator::emitStoreOp(StoreOpType op, Value* pointer, Value* v
     RELEASE_ASSERT_NOT_REACHED();
 }
 
-auto OMGIRGenerator::store(StoreOpType op, ExpressionType pointerVar, ExpressionType valueVar, uint32_t offset, uint8_t memoryIndex) -> PartialResult
+auto OMGIRGenerator::store(StoreOpType op, ExpressionType pointerVar, ExpressionType valueVar, uint64_t offset, uint8_t memoryIndex) -> PartialResult
 {
     Value* pointer = get(pointerVar);
     Value* value = get(valueVar);
-    ASSERT(pointer->type() == Int32);
+    ASSERT(pointer->type() == m_info.memory(memoryIndex).addressType());
+    bool offsetAndSizeOverflows = m_info.memory(memoryIndex).isMemory64()
+        ? sumOverflows<uint64_t>(offset, sizeOfStoreOp(op))
+        : sumOverflows<uint32_t>(offset, sizeOfStoreOp(op));
 
-    if (sumOverflows<uint32_t>(offset, sizeOfStoreOp(op))) [[unlikely]] {
+    if (offsetAndSizeOverflows) [[unlikely]] {
         // FIXME: Even though this is provably out of bounds, it's not a validation error, so we have to handle it
         // as a runtime exception. However, this may change: https://bugs.webkit.org/show_bug.cgi?id=166435
         B3::PatchpointValue* throwException = m_currentBlock->appendNew<B3::PatchpointValue>(m_proc, B3::Void, origin());

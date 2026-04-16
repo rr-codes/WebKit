@@ -841,7 +841,7 @@ public:
             case WasmBoundsCheck:
                 VALIDATE(!value->kind().hasExtraBits(), ("At ", *value));
                 VALIDATE(value->numChildren() == 1, ("At ", *value));
-                VALIDATE(value->child(0)->type() == Int32, ("At ", *value));
+                VALIDATE(value->child(0)->type() == Int32 || value->child(0)->type() == Int64, ("At ", *value));
                 switch (value->as<WasmBoundsCheckValue>()->boundsType()) {
                 case WasmBoundsCheckValue::Type::Pinned:
                     VALIDATE(m_procedure.code().isPinned(value->as<WasmBoundsCheckValue>()->bounds().pinnedSize), ("At ", *value));
