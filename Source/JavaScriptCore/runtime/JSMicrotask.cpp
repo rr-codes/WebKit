@@ -390,46 +390,6 @@ static void promiseAllResolveJob(JSGlobalObject* globalObject, VM& vm, JSPromise
     }
 }
 
-// This is similar to promiseAllResolveJob but uses fulfill instead of resolve.
-// This is used for InternalPromise.internalAll to avoid looking up the then property
-// which could have user-observable side effects.
-static void internalPromiseAllResolveJob(JSGlobalObject* globalObject, VM& vm, JSPromise* promise, JSValue resolution, JSPromiseCombinatorsContext* context, JSPromise::Status status)
-{
-    auto scope = DECLARE_THROW_SCOPE(vm);
-
-    auto* globalContext = jsCast<JSPromiseCombinatorsGlobalContext*>(context->globalContext());
-    switch (status) {
-    case JSPromise::Status::Pending: {
-        RELEASE_ASSERT_NOT_REACHED();
-        break;
-    }
-    case JSPromise::Status::Fulfilled: {
-        auto* values = jsCast<JSArray*>(globalContext->values());
-        uint64_t index = context->index();
-
-        values->putDirectIndex(globalObject, index, resolution);
-        RETURN_IF_EXCEPTION(scope, void());
-
-        uint64_t count = globalContext->remainingElementsCount().toIndex(globalObject, "count exceeds size"_s);
-        RETURN_IF_EXCEPTION(scope, void());
-
-        --count;
-        globalContext->setRemainingElementsCount(vm, jsNumber(count));
-        if (!count) {
-            scope.release();
-            // Use fulfill instead of resolve to avoid looking up the then property.
-            promise->fulfill(vm, globalObject, values);
-        }
-        break;
-    }
-    case JSPromise::Status::Rejected: {
-        scope.release();
-        promise->reject(vm, globalObject, resolution);
-        break;
-    }
-    }
-}
-
 static void promiseAllSettledResolveJob(JSGlobalObject* globalObject, VM& vm, JSPromise* promise, JSValue resolution, JSPromiseCombinatorsContext* context, JSPromise::Status status)
 {
     auto scope = DECLARE_THROW_SCOPE(vm);
@@ -1441,9 +1401,6 @@ void runInternalMicrotask(JSGlobalObject* globalObject, VM& vm, InternalMicrotas
 
     case InternalMicrotask::PromiseAnyResolveJob:
         RELEASE_AND_RETURN(scope, promiseAnyResolveJob(globalObject, vm, jsCast<JSPromise*>(arguments[0]), arguments[1], jsCast<JSPromiseCombinatorsContext*>(arguments[2]), static_cast<JSPromise::Status>(payload)));
-
-    case InternalMicrotask::InternalPromiseAllResolveJob:
-        RELEASE_AND_RETURN(scope, internalPromiseAllResolveJob(globalObject, vm, jsCast<JSPromise*>(arguments[0]), arguments[1], jsCast<JSPromiseCombinatorsContext*>(arguments[2]), static_cast<JSPromise::Status>(payload)));
 
     case InternalMicrotask::PromiseReactionJob: {
         JSValue promiseOrCapability = arguments[0];

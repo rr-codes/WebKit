@@ -47,7 +47,6 @@ namespace JSC {
 class AbstractModuleRecord;
 class CallFrame;
 class JSGlobalObject;
-class JSInternalPromise;
 
 namespace Bindings {
 class Instance;

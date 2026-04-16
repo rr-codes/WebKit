@@ -154,9 +154,6 @@
 #include "JSGlobalObjectFunctions.h"
 #include "JSGlobalObjectInlines.h"
 #include "JSGlobalProxyInlines.h"
-#include "JSInternalPromise.h"
-#include "JSInternalPromiseConstructor.h"
-#include "JSInternalPromisePrototype.h"
 #include "JSIterator.h"
 #include "JSIteratorConstructor.h"
 #include "JSIteratorHelper.h"
@@ -1451,10 +1448,8 @@ capitalName ## Constructor* lowerName ## Constructor = featureFlag ? capitalName
 #undef CREATE_CONSTRUCTOR_FOR_SIMPLE_TYPE
 
     m_promiseConstructor.set(vm, this, promiseConstructor);
-    m_internalPromiseConstructor.set(vm, this, internalPromiseConstructor);
     m_stringConstructor.set(vm, this, stringConstructor);
     m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::Promise)].set(vm, this, promiseConstructor);
-    m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::InternalPromise)].set(vm, this, internalPromiseConstructor);
     m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::String)].set(vm, this, stringConstructor);
 
     m_evalErrorStructure.initLater(
@@ -2915,7 +2910,6 @@ void JSGlobalObject::visitChildrenImpl(JSCell* cell, Visitor& visitor)
     visitor.append(thisObject->m_functionConstructor);
     visitor.append(thisObject->m_iteratorConstructor);
     visitor.append(thisObject->m_promiseConstructor);
-    visitor.append(thisObject->m_internalPromiseConstructor);
     visitor.append(thisObject->m_stringConstructor);
 
     thisObject->m_defaultCollator.visit(visitor);

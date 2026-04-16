@@ -33,7 +33,6 @@
 #include "Interpreter.h"
 #include "IntlDateTimeFormat.h"
 #include "JSCInlines.h"
-#include "JSInternalPromise.h"
 #include "JSModuleLoader.h"
 #include "JSPromise.h"
 #include "JSSet.h"

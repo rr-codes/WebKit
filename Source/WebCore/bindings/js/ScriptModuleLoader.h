@@ -39,7 +39,6 @@ namespace JSC {
 
 class CallFrame;
 class JSGlobalObject;
-class JSInternalPromise;
 class JSModuleLoader;
 class JSModuleRecord;
 class SourceOrigin;

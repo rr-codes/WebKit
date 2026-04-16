@@ -33,9 +33,6 @@
 #include "JSCInlines.h"
 #include "JSFunctionWithFields.h"
 #include "JSInternalFieldObjectImplInlines.h"
-#include "JSInternalPromise.h"
-#include "JSInternalPromiseConstructor.h"
-#include "JSInternalPromisePrototype.h"
 #include "JSMicrotask.h"
 #include "JSPromiseCombinatorsContext.h"
 #include "JSPromiseCombinatorsGlobalContext.h"
@@ -115,12 +112,6 @@ std::tuple<JSObject*, JSObject*, JSObject*> JSPromise::newPromiseCapability(JSGl
 
     if (constructor == globalObject->promiseConstructor()) {
         auto* promise = JSPromise::create(vm, globalObject->promiseStructure());
-        auto [resolve, reject] = promise->createFirstResolvingFunctions(vm, globalObject);
-        return { promise, resolve, reject };
-    }
-
-    if (constructor == globalObject->internalPromiseConstructor()) {
-        auto* promise = JSInternalPromise::create(vm, globalObject->internalPromiseStructure());
         auto [resolve, reject] = promise->createFirstResolvingFunctions(vm, globalObject);
         return { promise, resolve, reject };
     }
@@ -636,7 +627,7 @@ void JSPromise::resolveWithInternalMicrotaskForAsyncAwait(JSGlobalObject* global
             return;
         }
 
-        if (constructor == globalObject->promiseConstructor() || constructor == globalObject->internalPromiseConstructor())
+        if (constructor == globalObject->promiseConstructor())
             return promise->performPromiseThenWithInternalMicrotask(vm, globalObject, task, jsUndefined(), context);
     }
 
@@ -692,16 +683,10 @@ bool JSPromise::isThenFastAndNonObservable()
 {
     JSGlobalObject* globalObject = this->realm();
     Structure* structure = this->structure();
-    if (!globalObject->promiseThenWatchpointSet().isStillValid()) [[unlikely]] {
-        if (inherits<JSInternalPromise>())
-            return true;
+    if (!globalObject->promiseThenWatchpointSet().isStillValid()) [[unlikely]]
         return false;
-    }
 
     if (structure == globalObject->promiseStructure())
-        return true;
-
-    if (inherits<JSInternalPromise>())
         return true;
 
     if (getPrototypeDirect() != globalObject->promisePrototype())
@@ -769,10 +754,7 @@ JSObject* JSPromise::then(JSGlobalObject* globalObject, JSValue onFulfilled, JSV
     JSObject* resultPromise;
     JSValue resultPromiseCapability;
     if (promiseSpeciesWatchpointIsValid(vm, this)) [[likely]] {
-        if (inherits<JSInternalPromise>())
-            resultPromise = JSInternalPromise::create(vm, globalObject->internalPromiseStructure());
-        else
-            resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
+        resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
         resultPromiseCapability = resultPromise;
     } else {
         auto* constructor = promiseSpeciesConstructor(globalObject, this);

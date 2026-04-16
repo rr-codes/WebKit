@@ -87,10 +87,10 @@
 #include "JSCellButterfly.h"
 #include "JSGenerator.h"
 #include "JSGeneratorFunction.h"
-#include "JSInternalPromise.h"
 #include "JSIteratorHelper.h"
 #include "JSLexicalEnvironment.h"
 #include "JSMapIterator.h"
+#include "JSPromise.h"
 #include "JSPromiseReaction.h"
 #include "JSRegExpStringIterator.h"
 #include "JSSetIterator.h"
@@ -9563,12 +9563,8 @@ IGNORE_CLANG_WARNINGS_END
             compileNewInternalFieldObjectImpl<JSAsyncGenerator>(operationNewAsyncGenerator);
             break;
         case JSPromiseType:
-            if (m_node->structure()->classInfoForCells() == JSInternalPromise::info())
-                compileNewInternalFieldObjectImpl<JSInternalPromise>(operationNewInternalPromise);
-            else {
-                ASSERT(m_node->structure()->classInfoForCells() == JSPromise::info());
-                compileNewInternalFieldObjectImpl<JSPromise>(operationNewPromise);
-            }
+            ASSERT(m_node->structure()->classInfoForCells() == JSPromise::info());
+            compileNewInternalFieldObjectImpl<JSPromise>(operationNewPromise);
             break;
         default:
             DFG_CRASH(m_graph, m_node, "Bad structure");
@@ -9997,8 +9993,8 @@ IGNORE_CLANG_WARNINGS_END
         LBasicBlock slowCase = m_out.newBlock();
         LBasicBlock continuation = m_out.newBlock();
 
-        ValueFromBlock promiseStructure = m_out.anchor(weakStructure(m_graph.registerStructure(m_node->isInternalPromise() ? globalObject->internalPromiseStructure() : globalObject->promiseStructure())));
-        m_out.branch(m_out.equal(callee, weakPointer(m_node->isInternalPromise() ? globalObject->internalPromiseConstructor() : globalObject->promiseConstructor())), unsure(fastAllocationCase), unsure(derivedCase));
+        ValueFromBlock promiseStructure = m_out.anchor(weakStructure(m_graph.registerStructure(globalObject->promiseStructure())));
+        m_out.branch(m_out.equal(callee, weakPointer(globalObject->promiseConstructor())), unsure(fastAllocationCase), unsure(derivedCase));
 
         LBasicBlock lastNext = m_out.appendTo(derivedCase, isFunctionBlock);
         m_out.branch(isFunction(callee, provenType(m_node->child1())), usually(isFunctionBlock), rarely(slowCase));
@@ -10014,18 +10010,14 @@ IGNORE_CLANG_WARNINGS_END
 
         m_out.appendTo(hasStructure, checkGlobalObjectCase);
         LValue structure = decodeNonNullStructure(structureID);
-        m_out.branch(m_out.equal(m_out.loadPtr(structure, m_heaps.Structure_classInfo), m_out.constIntPtr(m_node->isInternalPromise() ? JSInternalPromise::info() : JSPromise::info())), usually(checkGlobalObjectCase), rarely(slowCase));
+        m_out.branch(m_out.equal(m_out.loadPtr(structure, m_heaps.Structure_classInfo), m_out.constIntPtr(JSPromise::info())), usually(checkGlobalObjectCase), rarely(slowCase));
 
         m_out.appendTo(checkGlobalObjectCase, fastAllocationCase);
         ValueFromBlock derivedStructure = m_out.anchor(structure);
         m_out.branch(m_out.equal(m_out.loadPtr(structure, m_heaps.Structure_realm), weakPointer(globalObject)), usually(fastAllocationCase), rarely(slowCase));
 
         m_out.appendTo(fastAllocationCase, slowCase);
-        LValue promise;
-        if (m_node->isInternalPromise())
-            promise = allocateObject<JSInternalPromise>(m_out.phi(pointerType(), promiseStructure, derivedStructure), m_out.intPtrZero, slowCase);
-        else
-            promise = allocateObject<JSPromise>(m_out.phi(pointerType(), promiseStructure, derivedStructure), m_out.intPtrZero, slowCase);
+        LValue promise = allocateObject<JSPromise>(m_out.phi(pointerType(), promiseStructure, derivedStructure), m_out.intPtrZero, slowCase);
         m_out.store64(m_out.constInt64(JSValue::encode(jsNumber(static_cast<int32_t>(JSPromise::Status::Pending)))), promise, m_heaps.JSInternalFieldObjectImpl_internalFields[static_cast<unsigned>(JSPromise::Field::Flags)]);
         m_out.store64(m_out.constInt64(JSValue::encode(JSValue())), promise, m_heaps.JSInternalFieldObjectImpl_internalFields[static_cast<unsigned>(JSPromise::Field::ReactionsOrResult)]);
         mutatorFence();
@@ -10033,7 +10025,7 @@ IGNORE_CLANG_WARNINGS_END
         m_out.jump(continuation);
 
         m_out.appendTo(slowCase, continuation);
-        ValueFromBlock slowResult = m_out.anchor(vmCall(Int64, m_node->isInternalPromise() ? operationCreateInternalPromise : operationCreatePromise, weakPointer(globalObject), callee));
+        ValueFromBlock slowResult = m_out.anchor(vmCall(Int64, operationCreatePromise, weakPointer(globalObject), callee));
         m_out.jump(continuation);
 
         m_out.appendTo(continuation, lastNext);
@@ -18331,12 +18323,8 @@ IGNORE_CLANG_WARNINGS_END
             compileMaterializeNewInternalFieldObjectImpl<JSAsyncGenerator>(operationNewAsyncGenerator);
             break;
         case JSPromiseType:
-            if (m_node->structure()->classInfoForCells() == JSInternalPromise::info())
-                compileMaterializeNewInternalFieldObjectImpl<JSInternalPromise>(operationNewInternalPromise);
-            else {
-                ASSERT(m_node->structure()->classInfoForCells() == JSPromise::info());
-                compileMaterializeNewInternalFieldObjectImpl<JSPromise>(operationNewPromise);
-            }
+            ASSERT(m_node->structure()->classInfoForCells() == JSPromise::info());
+            compileMaterializeNewInternalFieldObjectImpl<JSPromise>(operationNewPromise);
             break;
         default:
             DFG_CRASH(m_graph, m_node, "Bad structure");

@@ -30,7 +30,6 @@
 #include "CallData.h"
 #include "JSCInlines.h"
 #include "JSFunctionWithFields.h"
-#include "JSInternalPromise.h"
 #include "JSPromise.h"
 #include "JSPromiseCombinatorsGlobalContext.h"
 
@@ -95,16 +94,10 @@ bool promiseSpeciesWatchpointIsValid(VM& vm, JSPromise* thisObject)
 {
     auto* structure = thisObject->structure();
     JSGlobalObject* globalObject = structure->realm();
-    if (globalObject->promiseSpeciesWatchpointSet().state() != IsWatched) [[unlikely]] {
-        if (structure->classInfoForCells() == JSInternalPromise::info())
-            return true;
+    if (globalObject->promiseSpeciesWatchpointSet().state() != IsWatched) [[unlikely]]
         return false;
-    }
 
     if (structure == globalObject->promiseStructure())
-        return true;
-
-    if (structure->classInfoForCells() == JSInternalPromise::info())
         return true;
 
     ASSERT(globalObject->promiseSpeciesWatchpointSet().state() != ClearWatchpoint);

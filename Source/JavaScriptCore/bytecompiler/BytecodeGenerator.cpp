@@ -838,10 +838,7 @@ IGNORE_GCC_WARNINGS_END
         if (willEmitToThis)
             emitToThis();
 
-        bool isInternalPromise = false;
-        if (m_isBuiltinFunction)
-            isInternalPromise = !functionNode->ident().string().startsWith("defaultAsync"_s);
-        emitNewPromise(promiseRegister(), isInternalPromise);
+        emitNewPromise(promiseRegister());
 
         if (!isAsyncFunctionWithoutAwait) {
             emitNewGenerator(m_generatorRegister);
@@ -3167,15 +3164,15 @@ RegisterID* BytecodeGenerator::emitCreateThis(RegisterID* dst)
     return dst;
 }
 
-RegisterID* BytecodeGenerator::emitCreatePromise(RegisterID* dst, RegisterID* newTarget, bool isInternalPromise)
+RegisterID* BytecodeGenerator::emitCreatePromise(RegisterID* dst, RegisterID* newTarget)
 {
-    OpCreatePromise::emit(this, dst, newTarget, isInternalPromise);
+    OpCreatePromise::emit(this, dst, newTarget);
     return dst;
 }
 
-RegisterID* BytecodeGenerator::emitNewPromise(RegisterID* dst, bool isInternalPromise)
+RegisterID* BytecodeGenerator::emitNewPromise(RegisterID* dst)
 {
-    OpNewPromise::emit(this, dst, isInternalPromise);
+    OpNewPromise::emit(this, dst);
     return dst;
 }
 

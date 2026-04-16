@@ -32,7 +32,6 @@ namespace JSC {
 
 class Identifier;
 class JSGlobalObject;
-class JSInternalPromise;
 class JSModuleLoader;
 class JSModuleRecord;
 class JSObject;

@@ -58,7 +58,6 @@
 #include <JavaScriptCore/GCActivityCallback.h>
 #include <JavaScriptCore/JSCJSValueInlines.h>
 #include <JavaScriptCore/JSGlobalProxyInlines.h>
-#include <JavaScriptCore/JSInternalPromise.h>
 #include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/JSModuleRecord.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>

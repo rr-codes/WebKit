@@ -90,7 +90,6 @@ set(JavaScriptCore_OBJECT_LUT_SOURCES
     runtime/IntlSegmentsPrototype.cpp
     runtime/JSDataViewPrototype.cpp
     runtime/JSGlobalObject.cpp
-    runtime/JSInternalPromiseConstructor.cpp
     runtime/JSIterator.cpp
     runtime/JSIteratorConstructor.cpp
     runtime/JSIteratorHelperPrototype.cpp
@@ -1210,8 +1209,6 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/JSInt32Array.h
     runtime/JSInt8Array.h
     runtime/JSInternalFieldObjectImpl.h
-    runtime/JSInternalPromise.h
-    runtime/JSInternalPromiseConstructor.h
     runtime/JSIteratorPrototype.h
     runtime/JSLexicalEnvironment.h
     runtime/JSLock.h

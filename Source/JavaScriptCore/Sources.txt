@@ -938,9 +938,6 @@ runtime/JSGlobalObjectFunctions.cpp
 runtime/JSGlobalProxy.cpp
 runtime/JSCellButterfly.cpp
 runtime/JSHeapInt32.cpp
-runtime/JSInternalPromise.cpp
-runtime/JSInternalPromiseConstructor.cpp
-runtime/JSInternalPromisePrototype.cpp
 runtime/JSIterator.cpp
 runtime/JSIteratorConstructor.cpp
 runtime/JSIteratorHelper.cpp

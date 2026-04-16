@@ -2044,9 +2044,6 @@
 		E33B33362B9BA14E0011E80F /* SharedJITStubSet.h in Headers */ = {isa = PBXBuildFile; fileRef = E33B33342B9BA14E0011E80F /* SharedJITStubSet.h */; };
 		E33BBE0925BFA0410053690F /* WasmStreamingCompiler.h in Headers */ = {isa = PBXBuildFile; fileRef = E33BBE0825BFA03C0053690F /* WasmStreamingCompiler.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E33E8D1D1B9013C300346B52 /* JSNativeStdFunction.h in Headers */ = {isa = PBXBuildFile; fileRef = E33E8D1B1B9013C300346B52 /* JSNativeStdFunction.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		E33F50751B8421C000413856 /* JSInternalPromisePrototype.h in Headers */ = {isa = PBXBuildFile; fileRef = E33F50731B8421C000413856 /* JSInternalPromisePrototype.h */; };
-		E33F50791B84225700413856 /* JSInternalPromiseConstructor.h in Headers */ = {isa = PBXBuildFile; fileRef = E33F50771B84225700413856 /* JSInternalPromiseConstructor.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		E33F50811B8429A400413856 /* JSInternalPromise.h in Headers */ = {isa = PBXBuildFile; fileRef = E33F507F1B8429A400413856 /* JSInternalPromise.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E3400EC122A1CC7B009DED54 /* FunctionExecutableInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = E3400EC022A1CC78009DED54 /* FunctionExecutableInlines.h */; };
 		E3443E3128E9711700C0020C /* ArrayPrototypeInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = E3443E3028E9711700C0020C /* ArrayPrototypeInlines.h */; };
 		E348876228F516C600527E5E /* ObjectPrototypeInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = E348876128F516C600527E5E /* ObjectPrototypeInlines.h */; };
@@ -5950,13 +5947,6 @@
 		E33BBE0825BFA03C0053690F /* WasmStreamingCompiler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WasmStreamingCompiler.h; sourceTree = "<group>"; };
 		E33E8D1A1B9013C300346B52 /* JSNativeStdFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSNativeStdFunction.cpp; sourceTree = "<group>"; };
 		E33E8D1B1B9013C300346B52 /* JSNativeStdFunction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSNativeStdFunction.h; sourceTree = "<group>"; };
-		E33F50721B8421C000413856 /* JSInternalPromisePrototype.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSInternalPromisePrototype.cpp; sourceTree = "<group>"; };
-		E33F50731B8421C000413856 /* JSInternalPromisePrototype.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSInternalPromisePrototype.h; sourceTree = "<group>"; };
-		E33F50761B84225700413856 /* JSInternalPromiseConstructor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSInternalPromiseConstructor.cpp; sourceTree = "<group>"; };
-		E33F50771B84225700413856 /* JSInternalPromiseConstructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSInternalPromiseConstructor.h; sourceTree = "<group>"; };
-		E33F507E1B8429A400413856 /* JSInternalPromise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSInternalPromise.cpp; sourceTree = "<group>"; };
-		E33F507F1B8429A400413856 /* JSInternalPromise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSInternalPromise.h; sourceTree = "<group>"; };
-		E33F50861B8449EF00413856 /* JSInternalPromiseConstructor.lut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSInternalPromiseConstructor.lut.h; sourceTree = "<group>"; };
 		E3400EC022A1CC78009DED54 /* FunctionExecutableInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FunctionExecutableInlines.h; sourceTree = "<group>"; };
 		E3443E3028E9711700C0020C /* ArrayPrototypeInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArrayPrototypeInlines.h; sourceTree = "<group>"; };
 		E348876128F516C600527E5E /* ObjectPrototypeInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectPrototypeInlines.h; sourceTree = "<group>"; };
@@ -8173,7 +8163,6 @@
 				A7D801A71880D6A80026C39B /* JSCBuiltins.h */,
 				996B730A1BD9FA2C00331B84 /* JSDataViewPrototype.lut.h */,
 				996B730B1BD9FA2C00331B84 /* JSGlobalObject.lut.h */,
-				E33F50861B8449EF00413856 /* JSInternalPromiseConstructor.lut.h */,
 				BC87CDB810712ACA000614CF /* JSONObject.lut.h */,
 				7C184E2417BFFA36007CB63A /* JSPromiseConstructor.lut.h */,
 				7C184E2517BFFA36007CB63A /* JSPromisePrototype.lut.h */,
@@ -8977,12 +8966,6 @@
 				0F2B66C917B6B5AB00A7AE3F /* JSInt8Array.h */,
 				E33095DC23210A1400EB7856 /* JSInternalFieldObjectImpl.h */,
 				E339700423210E0A00B0AE21 /* JSInternalFieldObjectImplInlines.h */,
-				E33F507E1B8429A400413856 /* JSInternalPromise.cpp */,
-				E33F507F1B8429A400413856 /* JSInternalPromise.h */,
-				E33F50761B84225700413856 /* JSInternalPromiseConstructor.cpp */,
-				E33F50771B84225700413856 /* JSInternalPromiseConstructor.h */,
-				E33F50721B8421C000413856 /* JSInternalPromisePrototype.cpp */,
-				E33F50731B8421C000413856 /* JSInternalPromisePrototype.h */,
 				05517C9F2C74004600ED0CD5 /* JSIterator.cpp */,
 				05517CA12C74004700ED0CD5 /* JSIterator.h */,
 				05517CA22C74004700ED0CD5 /* JSIteratorConstructor.cpp */,
@@ -11995,9 +11978,6 @@
 				A76C51761182748D00715B05 /* JSInterfaceJIT.h in Headers */,
 				E33095DD23210A1B00EB7856 /* JSInternalFieldObjectImpl.h in Headers */,
 				E339700523210E0B00B0AE21 /* JSInternalFieldObjectImplInlines.h in Headers */,
-				E33F50811B8429A400413856 /* JSInternalPromise.h in Headers */,
-				E33F50791B84225700413856 /* JSInternalPromiseConstructor.h in Headers */,
-				E33F50751B8421C000413856 /* JSInternalPromisePrototype.h in Headers */,
 				8AF85BDD2C9CE0E3005E28DA /* JSIteratorHelper.h in Headers */,
 				8AF85BE22CA4EE90005E28DA /* JSIteratorHelperPrototype.h in Headers */,
 				8AF85BE32CA4EE90005E28DA /* JSIteratorHelperPrototypeInlines.h in Headers */,

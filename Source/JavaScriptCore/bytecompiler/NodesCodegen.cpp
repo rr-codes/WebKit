@@ -2408,19 +2408,16 @@ RegisterID* BytecodeIntrinsicNode::emit_intrinsic_createPromise(JSC::BytecodeGen
 {
     ArgumentListNode* node = m_args->m_listNode;
     RefPtr<RegisterID> newTarget = generator.emitNode(node);
-    node = node->m_next;
-    bool isInternalPromise = static_cast<BooleanNode*>(node->m_expr)->value();
     ASSERT(!node->m_next);
 
-    return generator.emitCreatePromise(generator.finalDestination(dst), newTarget.get(), isInternalPromise);
+    return generator.emitCreatePromise(generator.finalDestination(dst), newTarget.get());
 }
 
 RegisterID* BytecodeIntrinsicNode::emit_intrinsic_newPromise(JSC::BytecodeGenerator& generator, JSC::RegisterID* dst)
 {
     ASSERT(!m_args->m_listNode);
     RefPtr<RegisterID> finalDestination = generator.finalDestination(dst);
-    bool isInternalPromise = false;
-    generator.emitNewPromise(finalDestination.get(), isInternalPromise);
+    generator.emitNewPromise(finalDestination.get());
     return finalDestination.unsafeGet();
 }
 

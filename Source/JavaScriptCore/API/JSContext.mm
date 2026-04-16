@@ -35,7 +35,6 @@
 #import "JSContextPrivate.h"
 #import "JSContextRefInternal.h"
 #import "JSGlobalObject.h"
-#import "JSInternalPromise.h"
 #import "JSModuleLoader.h"
 #import "JSRetainPtr.h"
 #import "JSScriptInternal.h"

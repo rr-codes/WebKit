@@ -72,7 +72,6 @@
 #include <JavaScriptCore/ImportMap.h>
 #include <JavaScriptCore/InitializeThreading.h>
 #include <JavaScriptCore/JSFunction.h>
-#include <JavaScriptCore/JSInternalPromise.h>
 #include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/JSModuleRecord.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>
