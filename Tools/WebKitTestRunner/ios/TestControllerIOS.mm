@@ -494,7 +494,7 @@ void TestController::platformConfigureViewForTest(const TestInvocation& test)
         // the default iPad device used for layout testing.
         // We add the status bar in here because it is subtracted back out in viewRectForWindowRect.
         static constexpr CGSize defaultTestingiPadViewSize = { 810, 1060 };
-        sceneBounds = CGRectMake(0, 0, defaultTestingiPadViewSize.width, defaultTestingiPadViewSize.height + CGRectGetHeight(UIApplication.sharedApplication.statusBarFrame));
+        sceneBounds = CGRectMake(0, 0, defaultTestingiPadViewSize.width, defaultTestingiPadViewSize.height + CGRectGetHeight(scene.statusBarManager.statusBarFrame));
         scene.sizeRestrictions.minimumSize = sceneBounds.size;
         scene.sizeRestrictions.maximumSize = sceneBounds.size;
     }
