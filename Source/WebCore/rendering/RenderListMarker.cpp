@@ -255,7 +255,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, const LayoutPoint& paintOffse
 
     if (isImage()) {
         if (RefPtr markerImage = m_image->image(this, markerRect.size(), context))
-            context.drawImage(*markerImage, markerRect);
+            context.drawImage(*markerImage, markerRect, { imageOrientation() });
         if (selectionState() != HighlightState::None) {
             LayoutRect selectionRect = localSelectionRect();
             selectionRect.moveBy(boxOrigin);
