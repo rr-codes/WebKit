@@ -263,7 +263,7 @@ double Value::doubleValue(NoConversionDataRequiredToken, const CSSCalcSymbolTabl
 double Value::doubleValueDeprecated() const
 {
     if (m_tree.requiresConversionData)
-        WTF_ALWAYS_LOG("ERROR: The value returned from Value::doubleValueDeprecated is likely incorrect as the calculation tree has unresolved units that require CSSToLengthConversionData to interpret. Update caller to use non-deprecated variant of this function.");
+        ALWAYS_LOG_WITH_STREAM(stream << "ERROR: The value returned from Value::doubleValueDeprecated is likely incorrect as the calculation tree has unresolved units that require CSSToLengthConversionData to interpret. Update caller to use non-deprecated variant of this function.");
 
     return doubleValue(NoConversionDataRequiredToken { });
 }

@@ -397,7 +397,7 @@ RefPtr<CSSValue> CSSUnitValue::toCSSValueWithProperty(CSSPropertyID propertyID) 
         auto category = calculationCategoryForProperty(propertyID, m_unit);
 
         if (!type.matches(category)) {
-            WTF_ALWAYS_LOG("calc() type '" << type << "' is not valid for category '" << category << "'");
+            ALWAYS_LOG_WITH_STREAM(stream << "calc() type '" << type << "' is not valid for category '" << category << "'");
             return nullptr;
         }
 

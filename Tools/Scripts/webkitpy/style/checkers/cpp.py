@@ -3137,7 +3137,7 @@ def check_log(clean_lines, line_number, file_state, error):
 
     line = clean_lines.elided[line_number]  # Get rid of comments and strings.
 
-    using_always_log = search(r'\b(WTF_ALWAYS_LOG|WTFLogAlways)\s*\(', line)
+    using_always_log = search(r'\b(WTF_ALWAYS_LOG|ALWAYS_LOG_WITH_STREAM|WTFLogAlways)\s*\(', line)
     if not using_always_log:
         return
 
