@@ -709,9 +709,9 @@ public:
     bool NODELETE hasFlagsChangedEventMonitor();
 
     void mouseMoved(NSEvent *);
-    void mouseDown(NSEvent *, WebMouseEventInputSource);
-    void mouseUp(NSEvent *, WebMouseEventInputSource);
-    void mouseDragged(NSEvent *, WebMouseEventInputSource);
+    void mouseDown(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
+    void mouseUp(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
+    void mouseDragged(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
     void mouseEntered(NSEvent *);
     void mouseExited(NSEvent *);
     void otherMouseDown(NSEvent *);
@@ -945,15 +945,15 @@ private:
     Vector<WebCore::KeypressCommand> collectKeyboardLayoutCommandsForEvent(NSEvent *);
     void interpretKeyEvent(NSEvent *, void(^completionHandler)(BOOL handled, const Vector<WebCore::KeypressCommand>&));
 
-    void nativeMouseEventHandler(NSEvent *, WebMouseEventInputSource);
-    void nativeMouseEventHandlerInternal(NSEvent *, WebMouseEventInputSource);
+    void nativeMouseEventHandler(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
+    void nativeMouseEventHandlerInternal(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
 
     void scheduleMouseDidMoveOverElement(NSEvent *);
 
     void mouseMovedInternal(NSEvent *);
-    void mouseDownInternal(NSEvent *, WebMouseEventInputSource);
-    void mouseUpInternal(NSEvent *, WebMouseEventInputSource);
-    void mouseDraggedInternal(NSEvent *, WebMouseEventInputSource);
+    void mouseDownInternal(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
+    void mouseUpInternal(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
+    void mouseDraggedInternal(NSEvent *, WebMouseEventInputSource, WebCore::PlatformMouseEvent::CanInitiateDrag = WebCore::PlatformMouseEvent::CanInitiateDrag::Yes);
 
     void handleProcessSwapOrExit();
 
