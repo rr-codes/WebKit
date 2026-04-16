@@ -319,6 +319,10 @@ struct EventTrackingRegions;
 struct SystemPreviewInfo;
 #endif
 
+#if ENABLE(VIDEO)
+class LazyLoadVideoObserver;
+#endif
+
 #if ENABLE(WEB_RTC)
 class RTCPeerConnection;
 #endif
@@ -1977,6 +1981,9 @@ public:
 #if ENABLE(MODEL_ELEMENT)
     LazyLoadModelObserver& lazyLoadModelObserver();
 #endif
+#if ENABLE(VIDEO)
+    LazyLoadVideoObserver& lazyLoadVideoObserver();
+#endif
 
     ContentVisibilityDocumentState& contentVisibilityDocumentState();
 
@@ -2353,6 +2360,9 @@ private:
     std::unique_ptr<LazyLoadImageObserver> m_lazyLoadImageObserver;
 #if ENABLE(MODEL_ELEMENT)
     std::unique_ptr<LazyLoadModelObserver> m_lazyLoadModelObserver;
+#endif
+#if ENABLE(VIDEO)
+    std::unique_ptr<LazyLoadVideoObserver> m_lazyLoadVideoObserver;
 #endif
 
     std::unique_ptr<ContentVisibilityDocumentState> m_contentVisibilityDocumentState;

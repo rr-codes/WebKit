@@ -443,6 +443,7 @@
 
 #if ENABLE(VIDEO)
 #include "CaptionUserPreferences.h"
+#include "LazyLoadVideoObserver.h"
 #endif
 
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
@@ -11482,6 +11483,15 @@ LazyLoadModelObserver& Document::lazyLoadModelObserver()
     if (!m_lazyLoadModelObserver)
         m_lazyLoadModelObserver = makeUnique<LazyLoadModelObserver>();
     return *m_lazyLoadModelObserver;
+}
+#endif
+
+#if ENABLE(VIDEO)
+LazyLoadVideoObserver& Document::lazyLoadVideoObserver()
+{
+    if (!m_lazyLoadVideoObserver)
+        m_lazyLoadVideoObserver = makeUnique<LazyLoadVideoObserver>();
+    return *m_lazyLoadVideoObserver;
 }
 #endif
 

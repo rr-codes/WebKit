@@ -5420,7 +5420,7 @@ bool Internals::elementIsBlockingDisplaySleep(const HTMLMediaElement& element) c
 bool Internals::isPlayerVisibleInViewport(const HTMLMediaElement& element) const
 {
     auto* player = element.player();
-    return player && player->isVisibleInViewport();
+    return player && player->viewportVisibility() == HTMLMediaElement::ViewportVisibility::VisibleInViewport;
 }
 
 bool Internals::isPlayerMuted(const HTMLMediaElement& element) const

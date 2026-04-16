@@ -608,6 +608,8 @@ public:
 
     void resetPlaybackSessionState();
     WEBCORE_EXPORT bool NODELETE isVisibleInViewport() const;
+    virtual bool isIntersectingViewport() const { return false; }
+    WEBCORE_EXPORT ViewportVisibility viewportVisibility() const;
     bool NODELETE hasEverNotifiedAboutPlaying() const;
     void setShouldDelayLoadEvent(bool);
 

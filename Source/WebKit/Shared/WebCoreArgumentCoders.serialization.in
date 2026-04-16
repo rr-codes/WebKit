@@ -4283,6 +4283,12 @@ enum class WebCore::MediaPlayerSoundStageSize : uint8_t {
     Large,
 };
 
+enum class WebCore::MediaPlayerViewportVisibility : uint8_t {
+    NotVisible,
+    IntersectingViewport,
+    VisibleInViewport,
+};
+
 class WebCore::GeolocationPositionData {
     double timestamp;
     double latitude;

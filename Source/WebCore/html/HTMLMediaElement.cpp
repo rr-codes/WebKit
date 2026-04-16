@@ -8246,7 +8246,7 @@ void HTMLMediaElement::createMediaPlayer() WTF_IGNORES_THREAD_SAFETY_ANALYSIS
     player->setMuted(effectiveMuted());
     RefPtr page = document().page();
     player->setPageIsVisible(!m_elementIsHidden);
-    player->setVisibleInViewport(isVisibleInViewport());
+    player->setViewportVisibility(viewportVisibility());
     player->setInFullscreenOrPictureInPicture(isInFullscreenOrPictureInPicture());
 
     schedulePlaybackControlsManagerUpdate();
@@ -9682,7 +9682,7 @@ bool HTMLMediaElement::isVideoTooSmallForInlinePlayback()
 void HTMLMediaElement::isVisibleInViewportChanged()
 {
     if (RefPtr player = m_player)
-        player->setVisibleInViewport(isVisibleInViewport());
+        player->setViewportVisibility(viewportVisibility());
 
     queueTaskKeepingObjectAlive(*this, TaskSource::MediaElement, [](auto& element) {
         if (element.isContextStopped())
@@ -9764,6 +9764,15 @@ bool HTMLMediaElement::isVisibleInViewport() const
 {
     auto renderer = this->renderer();
     return renderer && renderer->visibleInViewportState() == VisibleInViewportState::Yes;
+}
+
+WEBCORE_EXPORT auto HTMLMediaElement::viewportVisibility() const -> ViewportVisibility
+{
+    if (isVisibleInViewport())
+        return ViewportVisibility::VisibleInViewport;
+    if (isIntersectingViewport())
+        return ViewportVisibility::IntersectingViewport;
+    return ViewportVisibility::NotVisible;
 }
 
 void HTMLMediaElement::schedulePlaybackControlsManagerUpdate()
@@ -9992,7 +10001,7 @@ void HTMLMediaElement::updateMediaPlayer(IntSize presentationSize, bool shouldMa
     RefPtr player = m_player;
     player->setPresentationSize(presentationSize);
     visibilityStateChanged();
-    player->setVisibleInViewport(isVisibleInViewport());
+    player->setViewportVisibility(viewportVisibility());
 
     if (protect(document())->quirks().needsVideoShouldMaintainAspectRatioQuirk())
         shouldMaintainAspectRatio = true;
