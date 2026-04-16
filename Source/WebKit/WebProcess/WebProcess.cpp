@@ -1595,10 +1595,10 @@ ModelProcessConnection& WebProcess::ensureModelProcessConnection()
 
     // If we've lost our connection to the model process (e.g. it crashed) try to re-establish it.
     if (!m_modelProcessConnection) {
-        m_modelProcessConnection = ModelProcessConnection::create(Ref { *parentProcessConnection() });
+        m_modelProcessConnection = ModelProcessConnection::create(protect(*parentProcessConnection()));
 
         for (auto& page : m_pageMap.values())
-            page->modelProcessConnectionDidBecomeAvailable(Ref { *m_modelProcessConnection });
+            page->modelProcessConnectionDidBecomeAvailable(protect(*m_modelProcessConnection));
     }
 
     return *m_modelProcessConnection;
