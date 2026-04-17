@@ -1347,7 +1347,6 @@ webkit.org/b/229389 imported/w3c/web-platform-tests/css/css-text/white-space/con
 webkit.org/b/229389 imported/w3c/web-platform-tests/css/css-text/white-space/control-chars-09F.html [ ImageOnlyFailure ]
 
 webkit.org/b/257149 imported/w3c/web-platform-tests/css/css-text/white-space/seg-break-transformation-001.tentative.html [ Failure ]
-webkit.org/b/257149 imported/w3c/web-platform-tests/css/css-text/white-space/seg-break-transformation-004.tentative.html [ Failure ]
 webkit.org/b/257149 imported/w3c/web-platform-tests/css/css-text/white-space/seg-break-transformation-016.tentative.html [ Failure ]
 webkit.org/b/257149 imported/w3c/web-platform-tests/css/css-text/white-space/seg-break-transformation-017.tentative.html [ Failure ]
 
@@ -1487,6 +1486,8 @@ webkit.org/b/286128 [ Release ] editing/inserting/insert-list-user-select-none-c
 
 webkit.org/b/179261 editing/selection/drag-to-contenteditable-iframe.html [ Timeout ]
 [ Debug ] editing/execCommand/delete-non-editable-range-crash.html [ Timeout ]
+
+webkit.org/b/312533 editing/selection/first-letter-selection-painting.html [ ImageOnlyFailure Pass ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of Editing-related bugs
@@ -1871,7 +1872,7 @@ webkit.org/b/312138 http/wpt/mediasession/setCaptureState.html [ Pass Failure ]
 webkit.org/b/312138 fast/mediastream/MediaStream-add-remove-tracks.html [ Pass Timeout ]
 webkit.org/b/312138 fast/mediastream/MediaStreamTrack-kind.html [ Pass Timeout ]
 webkit.org/b/312138 fast/mediastream/mediastreamtrack-video-frameRate-clone-decreasing.html [ Failure ]
-webkit.org/b/312138 imported/w3c/web-platform-tests/webrtc/protocol/candidate-exchange.https.html?interop-2026 [ Failure ]
+webkit.org/b/312138 imported/w3c/web-platform-tests/webrtc/protocol/candidate-exchange.https.html?interop-2026 [ Failure Pass ]
 webkit.org/b/312138 [ Debug ] media/media-preload-no-delay-loadevent.html [ Failure Pass ]
 webkit.org/b/312138 [ Debug ] media/track/webvtt-parser-does-not-leak.html [ Failure Pass ]
 webkit.org/b/312138 [ Debug ] http/wpt/webcodecs/videoFrame-video-element-compressed.html [ Failure ]
@@ -1888,8 +1889,8 @@ webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-v
 webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_overline.html [ ImageOnlyFailure ]
 webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_overline_underline_line-through.html [ ImageOnlyFailure ]
 webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_underline.html [ ImageOnlyFailure ]
-webkit.org/b/312157 fast/mediastream/error.html [ Crash ]
-webkit.org/b/312157 imported/w3c/web-platform-tests/permissions-policy/reporting/report-to-single-endpoint.https.sub.html [ Crash ]
+webkit.org/b/312157 fast/mediastream/error.html [ Crash Pass ]
+webkit.org/b/312157 imported/w3c/web-platform-tests/permissions-policy/reporting/report-to-single-endpoint.https.sub.html [ Crash Pass ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of GStreamer-related bugs
@@ -2318,7 +2319,6 @@ imported/w3c/web-platform-tests/css/css-images/gradient/gradient-longer-hue-lch-
 imported/w3c/web-platform-tests/css/css-images/image-orientation/image-orientation-list-style-image.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-images/image-orientation/image-orientation-exif-png-2.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-images/image-orientation/image-orientation-exif-png.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-images/image-orientation/image-orientation-background-image.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-images/image-orientation/image-orientation-background-position.html [ ImageOnlyFailure ]
 webkit.org/b/273396 imported/w3c/web-platform-tests/css/css-masking/clip-path/clip-path-rect-003.html [ ImageOnlyFailure ]
 webkit.org/b/273396 imported/w3c/web-platform-tests/css/css-masking/clip-path/clip-path-round-zero-size.html [ ImageOnlyFailure ]
@@ -2942,7 +2942,7 @@ webkit.org/b/235885 webrtc/audio-samplerate-change.html [ Pass Timeout ]
 webkit.org/b/235885 webrtc/audio-video-element-playing.html [ Failure ]
 webkit.org/b/235885 webrtc/canvas-to-peer-connection-2d.html [ Failure Pass Crash Timeout ]
 webkit.org/b/235885 webrtc/datachannel/bufferedAmountLowThreshold-default.html [ Failure Pass ]
-webkit.org/b/235885 webrtc/ephemeral-certificates-and-cnames.html [ Failure ]
+webkit.org/b/235885 webrtc/ephemeral-certificates-and-cnames.html [ Failure Timeout ]
 webkit.org/b/235885 webrtc/filtering-ice-candidate-after-reload.html [ Failure ]
 webkit.org/b/235885 webrtc/multi-video.html [ Failure Pass ]
 webkit.org/b/235885 webrtc/negotiatedneeded-event-addStream.html [ Failure Pass ]
@@ -3020,7 +3020,7 @@ imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-createAnswer.html [ Pas
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-createDataChannel.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-description-attributes-timing.https.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-generateCertificate.html [ Failure ]
-imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats.https.html?rest [ Failure ]
+imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats.https.html?rest [ Failure Pass Timeout ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats-timestamp.https.html [ Pass Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getTransceivers.html [ Pass Failure Timeout ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-helper-test.html [ Pass ]
@@ -3839,6 +3839,8 @@ fast/shadow-dom/focus-ring-on-shadow-host-focuswithin.html [ Skip ]
 fast/shadow-dom/focus-ring-on-shadow-host-sibling.html [ Skip ]
 imported/w3c/web-platform-tests/shadow-dom/dragleave-related-target.html [ Skip ]
 imported/w3c/web-platform-tests/shadow-dom/focus-navigation/tentative/focus-navigation-scroller-interactive-child.html [ Skip ]
+
+webkit.org/b/312499 imported/w3c/web-platform-tests/shadow-dom/reference-target/tentative/form.html [ Pass Failure ]
 
 # HLS media playback support is disabled in the GStreamer ports.
 http/tests/media/clearkey/clear-key-hls-aes128.html [ Skip ]

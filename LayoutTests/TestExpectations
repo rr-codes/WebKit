@@ -3440,7 +3440,6 @@ webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/tra
 webkit.org/b/257049 imported/w3c/web-platform-tests/css/css-text/white-space/trailing-space-and-text-alignment-rtl-004.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-032.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-062.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-ethiopic.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-break-all-inline-007.tentative.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-keep-all-063.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-manual-001.html [ ImageOnlyFailure ]
@@ -3513,7 +3512,6 @@ imported/w3c/web-platform-tests/css/css-text/white-space/text-wrap-balance-line-
 imported/w3c/web-platform-tests/css/css-text/white-space/text-wrap-balance-line-clamp-006.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/white-space/text-wrap-balance-line-clamp-007.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/white-space/textarea-always-preserves-spaces-001.tentative.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-text/word-break/word-break-keep-all-011.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/word-break/word-break-keep-all-u002d.html [ ImageOnlyFailure ]
 # css-text end
 
@@ -5228,7 +5226,6 @@ webkit.org/b/212046 imported/w3c/web-platform-tests/css/css-flexbox/percentage-h
 webkit.org/b/212046 imported/w3c/web-platform-tests/css/css-flexbox/scrollbars-auto.html [ ImageOnlyFailure ]
 webkit.org/b/212046 imported/w3c/web-platform-tests/css/css-flexbox/scrollbars.html [ ImageOnlyFailure ]
 
-imported/w3c/web-platform-tests/css/css-flexbox/dynamic-orthogonal-flex-item.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/gap-019.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/inline-flexbox-vertical-rl-image-flexitem-crash-print.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/intrinsic-size/col-wrap-013.html [ ImageOnlyFailure ]
@@ -8178,7 +8175,6 @@ imported/w3c/web-platform-tests/css/CSS2/normal-flow/max-width-applies-to-015.xh
 imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-height-applies-to-009.xht [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-height-applies-to-012.xht [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-height-applies-to-015.xht [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-height-separates-margin.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-width-058.xht [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-width-applies-to-005.xht [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/normal-flow/min-width-applies-to-006.xht [ ImageOnlyFailure ]
