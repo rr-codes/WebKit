@@ -7689,7 +7689,7 @@ TEST(ProcessSwap, ResizeWebViewDuringCrossSiteProvisionalNavigation)
     [handler addMappingFromURLString:@"pson://www.apple.com/main.html" toData:responsivePageBytes];
     [webViewConfiguration setURLSchemeHandler:handler.get() forURLScheme:@"pson"];
 
-    RetainPtr webView = adoptNS([[WKWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 800) configuration:webViewConfiguration.get()]);
+    RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 800) configuration:webViewConfiguration.get()]);
     RetainPtr delegate = adoptNS([[PSONNavigationDelegate alloc] init]);
     [webView setNavigationDelegate:delegate.get()];
 
@@ -7721,14 +7721,14 @@ TEST(ProcessSwap, ResizeWebViewDuringCrossSiteProvisionalNavigation)
     TestWebKitAPI::Util::run(&done);
     done = false;
 
-    [webView _doAfterNextPresentationUpdate:^{
-        [webView evaluateJavaScript:@"window.innerWidth" completionHandler:^(id result, NSError *error) {
-            NSNumber *width = (NSNumber *)result;
-            EXPECT_EQ(200, [width intValue]);
-            finishedRunningScript = true;
-        }];
-        TestWebKitAPI::Util::run(&finishedRunningScript);
+    [webView waitForNextPresentationUpdate];
+
+    [webView evaluateJavaScript:@"window.innerWidth" completionHandler:^(id result, NSError *error) {
+        NSNumber *width = (NSNumber *)result;
+        EXPECT_EQ(200, [width intValue]);
+        finishedRunningScript = true;
     }];
+    TestWebKitAPI::Util::run(&finishedRunningScript);
 }
 
 TEST(WebProcessCache, ClearWhenEnteringCache)
