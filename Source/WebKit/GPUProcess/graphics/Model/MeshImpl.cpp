@@ -103,6 +103,16 @@ void MeshImpl::setEnvironmentMap(const WebModel::ImageAsset& imageAsset)
     m_backing->setEnvironmentMap(imageAsset);
 }
 
+void MeshImpl::updateContentsHeadroom(float headroom)
+{
+#if HAVE(SUPPORT_HDR_DISPLAY) && PLATFORM(COCOA)
+    for (auto& renderBuffer : m_renderBuffers)
+        renderBuffer->setContentEDRHeadroom(headroom);
+#else
+    UNUSED_PARAM(headroom);
+#endif
+}
+
 #if PLATFORM(COCOA)
 Vector<MachSendRight> MeshImpl::ioSurfaceHandles()
 {

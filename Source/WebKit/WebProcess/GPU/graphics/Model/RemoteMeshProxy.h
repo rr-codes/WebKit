@@ -115,6 +115,7 @@ private:
     void setRotation(float yaw, float pitch, float roll) final;
 #endif
     void setEnvironmentMap(const WebModel::ImageAsset&) final;
+    void updateContentsHeadroom(float) final;
 
     const WebModelIdentifier m_backing;
     const Ref<ModelConvertToBackingContext> m_convertToBackingContext;

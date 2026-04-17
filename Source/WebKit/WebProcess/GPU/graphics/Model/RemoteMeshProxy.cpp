@@ -234,6 +234,16 @@ void RemoteMeshProxy::setEnvironmentMap(const WebModel::ImageAsset& imageAsset)
 #endif
 }
 
+void RemoteMeshProxy::updateContentsHeadroom(float headroom)
+{
+#if ENABLE(GPU_PROCESS_MODEL)
+    auto sendResult = send(Messages::RemoteMesh::UpdateContentsHeadroom(headroom));
+    UNUSED_PARAM(sendResult);
+#else
+    UNUSED_PARAM(headroom);
+#endif
+}
+
 #if PLATFORM(COCOA)
 void RemoteMeshProxy::sizeDidChange(unsigned width, unsigned height, CompletionHandler<void(Vector<MachSendRight>&&)>&& callback)
 {

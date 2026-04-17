@@ -132,6 +132,15 @@ void RemoteMesh::setEnvironmentMap(const WebModel::ImageAsset& imageAsset)
     m_backing->setEnvironmentMap(imageAsset);
 }
 
+void RemoteMesh::updateContentsHeadroom(float headroom)
+{
+#if HAVE(SUPPORT_HDR_DISPLAY)
+    m_backing->updateContentsHeadroom(headroom);
+#else
+    UNUSED_PARAM(headroom);
+#endif
+}
+
 void RemoteMesh::updateRenderBuffers(unsigned width, unsigned height, CompletionHandler<void(Vector<MachSendRight>&&)>&& completionHandler)
 {
     auto gpuProcessConnection = m_gpuConnectionToWebProcess.get();
