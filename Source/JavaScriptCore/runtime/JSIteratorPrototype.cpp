@@ -45,6 +45,7 @@
 #include <cstdint>
 #include <optional>
 #include <wtf/Assertions.h>
+#include <wtf/MathExtras.h>
 
 namespace JSC {
 
@@ -243,28 +244,20 @@ JSC_DEFINE_HOST_FUNCTION(iteratorProtoFuncIncludes, (JSGlobalObject* globalObjec
             toSkip = skippedAsInt32;
         } else if (skippedElementsArg.isDouble()) {
             double skippedAsDouble = skippedElementsArg.asDouble();
-            if (isInteger(skippedAsDouble)) {
-                if (skippedAsDouble < 0) {
-                    iteratorClose(globalObject, thisValue);
-                    TRY_CLEAR_EXCEPTION(scope, { });
-                    return throwVMRangeError(globalObject, scope, errorMessage);
-                }
-
-                toSkip = static_cast<uint64_t>(skippedAsDouble);
-            } else if (std::isinf(skippedAsDouble)) {
-                // check -Infinity
-                if (skippedAsDouble < 0) {
-                    iteratorClose(globalObject, thisValue);
-                    TRY_CLEAR_EXCEPTION(scope, { });
-                    return throwVMRangeError(globalObject, scope, errorMessage);
-                }
-
-                // if the 2nd argument is +Infinity, we should consume the iterator to the end.
+            uint64_t skippedAsUInt = truncateDoubleToUint64(skippedAsDouble);
+            if (skippedAsUInt == skippedAsDouble && skippedAsUInt < maxSafeIntegerAsUInt64())
+                toSkip = skippedAsUInt;
+            else if (!isInteger(skippedAsDouble) && !std::isinf(skippedAsDouble)) {
+                iteratorClose(globalObject, thisValue);
+                TRY_CLEAR_EXCEPTION(scope, { });
+                return throwVMTypeError(globalObject, scope, errorMessage);                
+            } else if (skippedAsDouble > 0) {
+                // if the 2nd argument is +Infinity or too big, we should consume the iterator to the end.
                 toSkip = std::numeric_limits<uint64_t>::max();
             } else {
                 iteratorClose(globalObject, thisValue);
                 TRY_CLEAR_EXCEPTION(scope, { });
-                return throwVMTypeError(globalObject, scope, errorMessage);
+                return throwVMRangeError(globalObject, scope, errorMessage);
             }
         } else {
             iteratorClose(globalObject, thisValue);
