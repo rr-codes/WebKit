@@ -2094,9 +2094,12 @@ void DocumentLoader::addPlugInStreamLoader(ResourceLoader& loader)
 void DocumentLoader::removePlugInStreamLoader(ResourceLoader& loader)
 {
     ASSERT(m_plugInStreamLoaders.contains(&loader));
-
     m_plugInStreamLoaders.remove(&loader);
-    checkLoadComplete();
+    if (m_frame && m_frame->document()) {
+        protect(m_frame->document())->eventLoop().queueTask(TaskSource::Networking, [protectedThis = Ref { *this }]() {
+            protectedThis->checkLoadComplete();
+        });
+    }
 }
 
 bool DocumentLoader::isMultipartReplacingLoad() const
