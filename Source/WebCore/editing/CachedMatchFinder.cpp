@@ -353,6 +353,7 @@ CachedMatchFinder::TextRunCache& CachedMatchFinder::bufferForOptions(FindOptions
 }
 
 auto CachedMatchFinder::textForScope(ContainerNode& scope, FindOptions options) -> std::pair<String, Vector<TextRun>> {
+    protect(scope.document())->updateLayoutIgnorePendingStylesheets({ LayoutOptions::TreatContentVisibilityAutoAsVisible, LayoutOptions::TreatRevealedWhenFoundAsVisible });
     SimpleRange range = makeRangeSelectingNodeContents(scope);
     TextIterator it(range, findIteratorOptions(options));
 

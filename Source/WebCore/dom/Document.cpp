@@ -3021,7 +3021,9 @@ auto Document::updateLayout(OptionSet<LayoutOptions> layoutOptions, const Elemen
             if (m_hasNodesWithMissingStyle)
                 scheduleFullStyleRebuild();
         }
-        if (updateRelevancyOfContentVisibilityElements(UpdateLayoutIfContentVisibilityChanged::No) == DidUpdateAnyContentRelevancy::Yes) {
+
+        if (!layoutOptions.containsAny({ LayoutOptions::TreatContentVisibilityAutoAsVisible, LayoutOptions::TreatRevealedWhenFoundAsVisible })
+            && updateRelevancyOfContentVisibilityElements(UpdateLayoutIfContentVisibilityChanged::No) == DidUpdateAnyContentRelevancy::Yes) {
             m_ignorePendingStylesheets = oldIgnore;
             return updateLayout(layoutOptions, context);
         }
