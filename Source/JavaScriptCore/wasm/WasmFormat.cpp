@@ -46,7 +46,7 @@ bool WasmCallableFunction::isJS() const
     return boxedCallee == CalleeBits { &WasmToJSCallee::singleton() };
 }
 
-std::unique_ptr<Segment> Segment::tryCreate(std::optional<I32InitExpr> offset, uint32_t sizeInBytes, Kind kind)
+std::unique_ptr<Segment> Segment::tryCreate(std::optional<I32InitExpr> offset, uint32_t sizeInBytes, Kind kind, uint32_t memoryIndex)
 {
     auto result = tryFastZeroedMalloc(allocationSize(sizeInBytes));
     void* memory;
@@ -54,7 +54,7 @@ std::unique_ptr<Segment> Segment::tryCreate(std::optional<I32InitExpr> offset, u
         return nullptr;
 
     ASSERT(kind == Kind::Passive || !!offset);
-    return std::unique_ptr<Segment>(new (memory) Segment(sizeInBytes, kind, WTF::move(offset)));
+    return std::unique_ptr<Segment>(new (memory) Segment(sizeInBytes, kind, WTF::move(offset), memoryIndex));
 }
 
 String makeString(const Name& characters)

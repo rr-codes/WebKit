@@ -895,13 +895,14 @@ JSValue WebAssemblyModuleRecord::evaluate(JSGlobalObject* globalObject)
     };
 
     auto forEachActiveDataSegment = [&] (auto fn) {
-        auto& wasmMemory = m_instance->memory()->memory();
-        uint8_t* memory = static_cast<uint8_t*>(wasmMemory.basePointer());
-        uint64_t sizeInBytes = wasmMemory.size();
-
         for (const auto& segment : data) {
             if (!segment->isActive())
                 continue;
+
+            auto& wasmMemory = m_instance->memory(segment->memoryIndex())->memory();
+            uint8_t* memory = static_cast<uint8_t*>(wasmMemory.basePointer());
+            uint64_t sizeInBytes = wasmMemory.size();
+
             uint32_t offset = 0;
             if (segment->offsetIfActive()->isGlobalImport())
                 offset = static_cast<uint32_t>(m_instance->loadI32Global(segment->offsetIfActive()->globalImportIndex()));
