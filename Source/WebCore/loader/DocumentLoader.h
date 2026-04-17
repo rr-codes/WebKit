@@ -828,6 +828,7 @@ private:
 #endif
 
     bool m_canUseServiceWorkers { true };
+    bool m_prefetchResponseFailed { false };
 
 #if ASSERT_ENABLED
     bool m_hasEverBeenAttached { false };

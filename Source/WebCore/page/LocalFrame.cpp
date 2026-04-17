@@ -45,6 +45,7 @@
 #include "DiagnosticLoggingKeys.h"
 #include "DocumentLoader.h"
 #include "FrameInlines.h"
+#include "DocumentPrefetcher.h"
 #include "DocumentQuirks.h"
 #include "DocumentResourceLoader.h"
 #include "DocumentSecurityPolicy.h"
@@ -249,7 +250,11 @@ LocalFrame::~LocalFrame()
 
     m_inspectorController->inspectedFrameDestroyed();
 
+    // Clear prefetched resources before the FrameLoader is torn down. In-flight
+    // prefetch loads trigger a cancel chain (allClientsRemoved -> cancelLoad ->
+    // activeDocumentLoader) that requires a fully valid FrameLoader.
     Ref loader = this->loader();
+    loader->documentPrefetcher().clear();
     if (!loader->isComplete())
         loader->closeURL();
 
