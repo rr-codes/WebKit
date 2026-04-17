@@ -3613,6 +3613,18 @@ template<typename SizeType> std::optional<LayoutUnit> RenderBox::computeSizingKe
                     BoxSizing::ContentBox
                 );
             }
+            auto heightFromCrossAxisOverrideAndAspectRatio = [&]() -> std::optional<LayoutUnit> {
+                // When the width comes from a flex cross-axis override (e.g. stretch in a
+                // column flex container), use it to compute the min-content height through
+                // the aspect ratio.
+                if (!isFlexItem() || downcast<RenderFlexibleBox>(parent())->isHorizontalFlow())
+                    return { };
+                if (auto overridingWidth = overridingBorderBoxLogicalWidth(); overridingWidth && !renderImage->intrinsicRatio().isEmpty())
+                    return resolveHeightForRatio(borderAndPaddingLogicalWidth(), borderAndPaddingLogicalHeight(), contentBoxLogicalWidth(*overridingWidth), renderImage->intrinsicRatio().transposedSize().aspectRatio(), BoxSizing::ContentBox);
+                return { };
+            };
+            if (auto height = heightFromCrossAxisOverrideAndAspectRatio())
+                return height;
         }
         return intrinsic();
     };
