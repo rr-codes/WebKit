@@ -250,12 +250,6 @@ if (COMPILER_IS_GCC_OR_CLANG)
         # https://bugs.webkit.org/show_bug.cgi?id=229867
         WEBKIT_PREPEND_GLOBAL_CXX_FLAGS(-Wno-odr)
 
-        # GCC does not preserve #pragma GCC diagnostic state across precompiled
-        # header boundaries (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64117).
-        # StdLibExtras.h uses a file-level pragma to suppress this warning but
-        # with PCH enabled the pragma is lost when the PCH is loaded.
-        WEBKIT_PREPEND_GLOBAL_CXX_FLAGS(-Wno-invalid-offsetof)
-
         # Match Clang's behavor and exit after emitting 20 errors.
         # https://bugs.webkit.org/show_bug.cgi?id=244621
         WEBKIT_PREPEND_GLOBAL_COMPILER_FLAGS(-fmax-errors=20)
@@ -568,3 +562,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND WTF_CPU_MIPS)
     # (see comment #28 in the link above).
     WEBKIT_PREPEND_GLOBAL_COMPILER_FLAGS(-mno-lxc1-sxc1)
 endif ()
+
+# FIXME: Enable pre-compiled headers for all ports <https://webkit.org/b/139438>
+set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)

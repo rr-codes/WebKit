@@ -31,8 +31,8 @@
 #import <Foundation/Foundation.h>
 #endif
 
-#include <wtf/Platform.h>
 #include <WebKit/WebKit2_C.h>
+#include <wtf/Platform.h>
 
 /* When C++ exceptions are disabled, the C++ library defines |try| and |catch|
 * to allow C++ code that expects exceptions to build. These definitions

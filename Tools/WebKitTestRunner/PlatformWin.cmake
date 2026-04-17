@@ -22,6 +22,8 @@ list(APPEND WebKitTestRunner_LIBRARIES
     Oleacc
 )
 
+target_precompile_headers(WebKitTestRunner PRIVATE WebKitTestRunnerPrefix.h)
+
 list(APPEND TestRunnerInjectedBundle_SOURCES
     InjectedBundle/win/AccessibilityControllerWin.cpp
     InjectedBundle/win/AccessibilityUIElementWin.cpp
