@@ -148,68 +148,70 @@ void CyclicModuleRecord::initializeEnvironment(JSGlobalObject* globalObject, JSV
     });
 
     // 7. For each ImportEntry Record in of module.[[ImportEntries]], do
-    for (const auto& [key, in] : importEntries()) {
-        // 7.a. Let importedModule be GetImportedModule(module, in.[[ModuleRequest]]).
-        AbstractModuleRecord* importedModule = hostResolveImportedModule(globalObject, in.moduleRequest);
-        RETURN_IF_EXCEPTION(scope, void());
+    if (jsModule) {
+        for (const auto& [key, in] : importEntries()) {
+            // 7.a. Let importedModule be GetImportedModule(module, in.[[ModuleRequest]]).
+            AbstractModuleRecord* importedModule = hostResolveImportedModule(globalObject, in.moduleRequest);
+            RETURN_IF_EXCEPTION(scope, void());
 #if CPU(ADDRESS64)
-        // rdar://107531050: Speculative crash mitigation
-        if (importedModule == std::bit_cast<AbstractModuleRecord*>(encodedJSUndefined())) [[unlikely]] {
-            RELEASE_ASSERT(vm.exceptionForInspection(), vm.traps().maybeNeedHandling(), vm.exceptionForInspection(), importedModule);
-            RELEASE_ASSERT(vm.traps().maybeNeedHandling(), vm.traps().maybeNeedHandling(), vm.exceptionForInspection(), importedModule);
-            if (!vm.exceptionForInspection() || !vm.traps().maybeNeedHandling()) {
-                throwSyntaxError(globalObject, scope, makeString("Importing module '"_s, String(in.moduleRequest.impl()), "' is not found."_s));
-                return;
-            }
-        }
-#endif
-        // 7.b. If in.[[ImportName]] is NAMESPACE-OBJECT, then
-        if (in.type == ImportEntryType::Namespace) {
-            // 7.b.i. Let namespace be GetModuleNamespace(importedModule).
-            JSModuleNamespaceObject* ns = importedModule->getModuleNamespace(globalObject);
-            RETURN_IF_EXCEPTION(scope, void());
-            // 7.b.ii. Perform ! env.CreateImmutableBinding(in.[[LocalName]], true).
-            // 7.b.iii. Perform ! env.InitializeBinding(in.[[LocalName]], namespace).
-            bool putResult = false;
-            symbolTablePutTouchWatchpointSet(env, globalObject, in.localName, ns, /* shouldThrowReadOnlyError */ false, /* ignoreReadOnlyErrors */ true, putResult);
-            RETURN_IF_EXCEPTION(scope, void());
-        // 7.c. Else,
-        } else {
-            ASSERT(in.type == ImportEntryType::Single);
-            // 7.c.i. Let resolution be importedModule.ResolveExport(in.[[ImportName]]).
-            Resolution resolution = importedModule->resolveExport(globalObject, in.importName);
-            RETURN_IF_EXCEPTION(scope, void());
-            switch (resolution.type) {
-            // 7.c.ii. If resolution is either null or AMBIGUOUS, throw a SyntaxError exception.
-            case Resolution::Type::NotFound:
-                throwSyntaxError(globalObject, scope, makeString("Importing binding name '"_s, StringView(in.importName.impl()), "' is not found."_s));
-                return;
-
-            case Resolution::Type::Ambiguous:
-                throwSyntaxError(globalObject, scope, makeString("Importing binding name '"_s, StringView(in.importName.impl()), "' cannot be resolved due to ambiguous multiple bindings."_s));
-                return;
-
-            case Resolution::Type::Error:
-                throwSyntaxError(globalObject, scope, "Importing binding name 'default' cannot be resolved by star export entries."_s);
-                return;
-
-            case Resolution::Type::Resolved:
-                // 7.c.iii. If resolution.[[BindingName]] is NAMESPACE, then
-                if (vm.propertyNames->starNamespacePrivateName == resolution.localName) {
-                    // 7.c.iii.1. Let namespace be GetModuleNamespace(resolution.[[Module]]).
-                    JSModuleNamespaceObject* ns = resolution.moduleRecord->getModuleNamespace(globalObject); // Force module namespace object materialization.
-                    RETURN_IF_EXCEPTION(scope, void());
-                    // 7.c.iii.2. Perform ! env.CreateImmutableBinding(in.[[LocalName]], true).
-                    // 7.c.iii.3. Perform ! env.InitializeBinding(in.[[LocalName]], namespace).
-                    bool putResult = false;
-                    symbolTablePutTouchWatchpointSet(env, globalObject, in.localName, ns, /* shouldThrowReadOnlyError */ false, /* ignoreReadOnlyErrors */ true, putResult);
-                    RETURN_IF_EXCEPTION(scope, void());
-                // 7.c.iv. Else,
-                } else {
-                    // 7.c.iv.1. Perform CreateImportBinding(env, in.[[LocalName]], resolution.[[Module]], resolution.[[BindingName]]).
-                    // (Already handled through lazy resolution.)
+            // rdar://107531050: Speculative crash mitigation
+            if (importedModule == std::bit_cast<AbstractModuleRecord*>(encodedJSUndefined())) [[unlikely]] {
+                RELEASE_ASSERT(vm.exceptionForInspection(), vm.traps().maybeNeedHandling(), vm.exceptionForInspection(), importedModule);
+                RELEASE_ASSERT(vm.traps().maybeNeedHandling(), vm.traps().maybeNeedHandling(), vm.exceptionForInspection(), importedModule);
+                if (!vm.exceptionForInspection() || !vm.traps().maybeNeedHandling()) {
+                    throwSyntaxError(globalObject, scope, makeString("Importing module '"_s, String(in.moduleRequest.impl()), "' is not found."_s));
+                    return;
                 }
-                break;
+            }
+#endif
+            // 7.b. If in.[[ImportName]] is NAMESPACE-OBJECT, then
+            if (in.type == ImportEntryType::Namespace) {
+                // 7.b.i. Let namespace be GetModuleNamespace(importedModule).
+                JSModuleNamespaceObject* ns = importedModule->getModuleNamespace(globalObject);
+                RETURN_IF_EXCEPTION(scope, void());
+                // 7.b.ii. Perform ! env.CreateImmutableBinding(in.[[LocalName]], true).
+                // 7.b.iii. Perform ! env.InitializeBinding(in.[[LocalName]], namespace).
+                bool putResult = false;
+                symbolTablePutTouchWatchpointSet(env, globalObject, in.localName, ns, /* shouldThrowReadOnlyError */ false, /* ignoreReadOnlyErrors */ true, putResult);
+                RETURN_IF_EXCEPTION(scope, void());
+            // 7.c. Else,
+            } else {
+                ASSERT(in.type == ImportEntryType::Single);
+                // 7.c.i. Let resolution be importedModule.ResolveExport(in.[[ImportName]]).
+                Resolution resolution = importedModule->resolveExport(globalObject, in.importName);
+                RETURN_IF_EXCEPTION(scope, void());
+                switch (resolution.type) {
+                // 7.c.ii. If resolution is either null or AMBIGUOUS, throw a SyntaxError exception.
+                case Resolution::Type::NotFound:
+                    throwSyntaxError(globalObject, scope, makeString("Importing binding name '"_s, StringView(in.importName.impl()), "' is not found."_s));
+                    return;
+
+                case Resolution::Type::Ambiguous:
+                    throwSyntaxError(globalObject, scope, makeString("Importing binding name '"_s, StringView(in.importName.impl()), "' cannot be resolved due to ambiguous multiple bindings."_s));
+                    return;
+
+                case Resolution::Type::Error:
+                    throwSyntaxError(globalObject, scope, "Importing binding name 'default' cannot be resolved by star export entries."_s);
+                    return;
+
+                case Resolution::Type::Resolved:
+                    // 7.c.iii. If resolution.[[BindingName]] is NAMESPACE, then
+                    if (vm.propertyNames->starNamespacePrivateName == resolution.localName) {
+                        // 7.c.iii.1. Let namespace be GetModuleNamespace(resolution.[[Module]]).
+                        JSModuleNamespaceObject* ns = resolution.moduleRecord->getModuleNamespace(globalObject); // Force module namespace object materialization.
+                        RETURN_IF_EXCEPTION(scope, void());
+                        // 7.c.iii.2. Perform ! env.CreateImmutableBinding(in.[[LocalName]], true).
+                        // 7.c.iii.3. Perform ! env.InitializeBinding(in.[[LocalName]], namespace).
+                        bool putResult = false;
+                        symbolTablePutTouchWatchpointSet(env, globalObject, in.localName, ns, /* shouldThrowReadOnlyError */ false, /* ignoreReadOnlyErrors */ true, putResult);
+                        RETURN_IF_EXCEPTION(scope, void());
+                    // 7.c.iv. Else,
+                    } else {
+                        // 7.c.iv.1. Perform CreateImportBinding(env, in.[[LocalName]], resolution.[[Module]], resolution.[[BindingName]]).
+                        // (Already handled through lazy resolution.)
+                    }
+                    break;
+                }
             }
         }
     }
