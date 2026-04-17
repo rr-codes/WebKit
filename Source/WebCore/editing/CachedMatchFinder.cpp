@@ -38,6 +38,12 @@
 
 namespace WebCore {
 
+static inline FindOptions matchAffectingOptions(FindOptions options)
+{
+    static constexpr OptionSet matchAffectingFlags { FindOption::CaseInsensitive, FindOption::AtWordStarts, FindOption::TreatMedialCapitalAsWordStart, FindOption::AtWordEnds, FindOption::DoNotTraverseFlatTree };
+    return options & matchAffectingFlags;
+}
+
 WTF_MAKE_TZONE_ALLOCATED_IMPL(CachedMatchFinder);
 
 CachedMatchFinder::CachedMatchFinder(Document& document)
@@ -233,7 +239,7 @@ Vector<SimpleRange> CachedMatchFinder::findMatches(const std::optional<SimpleRan
     m_countCache = results.size();
     m_searchResultCacheKeys.targetString = target;
     m_searchResultCacheKeys.limit = limit;
-    m_searchResultCacheKeys.options = options;
+    m_searchResultCacheKeys.options = matchAffectingOptions(options);
     return results;
 }
 
@@ -257,7 +263,7 @@ unsigned CachedMatchFinder::countMatches(const std::optional<SimpleRange>& searc
     m_countCache = count;
     m_searchResultCacheKeys.targetString = target;
     m_searchResultCacheKeys.limit = limit;
-    m_searchResultCacheKeys.options = options;
+    m_searchResultCacheKeys.options = matchAffectingOptions(options);
     return count;
 }
 
@@ -403,7 +409,7 @@ bool CachedMatchFinder::isSearchResultCacheValid(const String& target, FindOptio
     return m_searchResultCacheKeys.targetString
         && target == *m_searchResultCacheKeys.targetString
         && m_searchResultCacheKeys.limit == limit
-        && m_searchResultCacheKeys.options == options;
+        && m_searchResultCacheKeys.options == matchAffectingOptions(options);
 }
 
 } // namespace WebCore
