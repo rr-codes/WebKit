@@ -1667,6 +1667,37 @@ bool setterThatIgnoresPrototypeProperties(JSGlobalObject*, JSValue thisValue, JS
     static_assert(sizeof(DerivedClass) == sizeof(BaseClass)); \
     static_assert(DerivedClass::destroy == BaseClass::destroy);
 
+// Defined here rather than in JSCJSValue.h because they need JSObject to be complete.
+inline bool JSValue::put(JSGlobalObject* globalObject, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+{
+    if (!isCell()) [[unlikely]]
+        return putToPrimitive(globalObject, propertyName, value, slot);
+
+    return asCell()->methodTable()->put(asCell(), globalObject, propertyName, value, slot);
+}
+
+ALWAYS_INLINE bool JSValue::putInline(JSGlobalObject* globalObject, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
+{
+    if (!isCell()) [[unlikely]]
+        return putToPrimitive(globalObject, propertyName, value, slot);
+    return asCell()->putInline(globalObject, propertyName, value, slot);
+}
+
+inline bool JSValue::putByIndex(JSGlobalObject* globalObject, unsigned propertyName, JSValue value, bool shouldThrow)
+{
+    if (!isCell()) [[unlikely]]
+        return putToPrimitiveByIndex(globalObject, propertyName, value, shouldThrow);
+
+    return asCell()->methodTable()->putByIndex(asCell(), globalObject, propertyName, value, shouldThrow);
+}
+
+ALWAYS_INLINE JSValue JSValue::getPrototype(JSGlobalObject* globalObject) const
+{
+    if (isObject())
+        return asObject(asCell())->getPrototype(globalObject);
+    return synthesizePrototype(globalObject);
+}
+
 } // namespace JSC
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_END

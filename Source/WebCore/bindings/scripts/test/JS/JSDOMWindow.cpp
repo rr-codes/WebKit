@@ -49,6 +49,7 @@
 #include "WebCoreJSClientData.h"
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -180,6 +181,11 @@ static const std::array<HashTableValue, 1> JSDOMWindowPrototypeTableValues {
 static const HashTable JSDOMWindowPrototypeTable = { 1, 1, static_cast<uint8_t>(static_cast<unsigned>(PropertyAttribute::DontEnum)), JSDOMWindow::info(), JSDOMWindowPrototypeTableValues.data(), JSDOMWindowPrototypeTableIndex };
 const ClassInfo JSDOMWindowPrototype::s_info = { "DOMWindow"_s, &Base::s_info, &JSDOMWindowPrototypeTable, nullptr, CREATE_METHOD_TABLE(JSDOMWindowPrototype) };
 
+JSC::Structure* JSDOMWindowPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSDOMWindowPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -204,6 +210,13 @@ void JSDOMWindow::finishCreation(VM& vm, JSWindowProxy* proxy)
 
     if (((scriptExecutionContext && scriptExecutionContext->isSecureContext()) && TestEnabledForContext::enabledForContext(*jsCast<JSDOMGlobalObject*>(realm())->scriptExecutionContext())))
         putDirectCustomAccessor(vm, builtinNames(vm).TestEnabledForContextPublicName(), CustomGetterSetter::create(vm, jsDOMWindow_TestEnabledForContextConstructor, nullptr), attributesForStructure(static_cast<unsigned>(JSC::PropertyAttribute::DontEnum)));
+}
+
+JSDOMWindow* JSDOMWindow::create(JSC::VM& vm, JSC::Structure* structure, Ref<DOMWindow>&& impl, JSWindowProxy* proxy)
+{
+    JSDOMWindow* ptr = new (NotNull, JSC::allocateCell<JSDOMWindow>(vm)) JSDOMWindow(vm, structure, WTF::move(impl), proxy);
+    ptr->finishCreation(vm, proxy);
+    return ptr;
 }
 
 JSC::Structure* JSDOMWindow::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)

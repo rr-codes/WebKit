@@ -1171,8 +1171,11 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/JSCellInlines.h
     runtime/JSCInlines.h
     runtime/JSCJSValue.h
-    runtime/JSCJSValueCellInlines.h
+    runtime/JSCJSValueBigInt.h
+    runtime/JSCJSValueCell.h
+    runtime/JSCJSValueStructure.h
     runtime/JSCJSValueInlines.h
+    runtime/JSCJSValuePropertyInlines.h
     runtime/JSPIContext.h
     runtime/JSPIContextInlines.h
     runtime/JSCPtrTag.h
@@ -1301,6 +1304,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/ObjectInitializationScope.h
     runtime/ObjectPrototype.h
     runtime/Operations.h
+    runtime/OperationsInlines.h
     runtime/Options.h
     runtime/OptionsList.h
     runtime/OrderedHashTable.h
@@ -1370,8 +1374,10 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/StringReplaceCache.h
     runtime/StringSplitCache.h
     runtime/Structure.h
+    runtime/StructureArrayStorageInlines.h
     runtime/StructureCache.h
     runtime/StructureChain.h
+    runtime/StructureCreateInlines.h
     runtime/StructureID.h
     runtime/StructureInlines.h
     runtime/StructureRareData.h

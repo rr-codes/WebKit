@@ -33,7 +33,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include <JavaScriptCore/Integrity.h>
 #include <JavaScriptCore/JSAPIValueWrapper.h>
 #include <JavaScriptCore/JSCJSValue.h>
-#include <JavaScriptCore/JSCJSValueInlines.h>
+#include <JavaScriptCore/JSGlobalObject.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 

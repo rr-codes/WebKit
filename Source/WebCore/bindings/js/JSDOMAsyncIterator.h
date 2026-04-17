@@ -34,6 +34,7 @@
 #include <JavaScriptCore/JSBoundFunction.h>
 #include <JavaScriptCore/JSPromiseConstructor.h>
 #include <JavaScriptCore/PropertySlot.h>
+#include <JavaScriptCore/StructureCreateInlines.h>
 #include <type_traits>
 #include <wtf/CompletionHandler.h>
 

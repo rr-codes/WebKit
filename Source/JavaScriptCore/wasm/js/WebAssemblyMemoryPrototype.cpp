@@ -35,7 +35,7 @@
 #include "JSObjectInlines.h"
 #include "JSWebAssemblyHelpers.h"
 #include "JSWebAssemblyMemory.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 
 namespace JSC {
 static JSC_DECLARE_HOST_FUNCTION(webAssemblyMemoryProtoFuncGrow);

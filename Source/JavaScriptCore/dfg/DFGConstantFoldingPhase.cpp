@@ -38,10 +38,31 @@
 #include "DFGPhase.h"
 #include "GetByStatus.h"
 #include "JSCInlines.h"
+#include "JSCJSValueBigInt.h"
 #include "PutByStatus.h"
 #include "StructureCache.h"
 
 namespace JSC { namespace DFG {
+
+static bool isZeroBigInt(JSValue& value)
+{
+#if USE(BIGINT32)
+    if (value.isBigInt32())
+        return !value.bigInt32AsInt32();
+#endif
+    ASSERT(value.isHeapBigInt());
+    return value.asHeapBigInt()->isZero();
+}
+
+static bool isNegativeBigInt(JSValue& value)
+{
+#if USE(BIGINT32)
+    if (value.isBigInt32())
+        return value.bigInt32AsInt32() < 0;
+#endif
+    ASSERT(value.isHeapBigInt());
+    return value.asHeapBigInt()->sign();
+}
 
 class ConstantFoldingPhase : public Phase {
 public:
@@ -1549,7 +1570,7 @@ private:
                 bool isBigIntBinaryUsedKind = node->isBinaryUseKind(HeapBigIntUse) || node->isBinaryUseKind(AnyBigIntUse) || node->isBinaryUseKind(BigInt32Use);
                 if (node->mustGenerate() && isBigIntBinaryUsedKind) {
                     JSValue right = m_state.forNode(node->child2()).value();
-                    if (right && right.isBigInt() && !right.isNegativeBigInt()) {
+                    if (right && right.isBigInt() && !isNegativeBigInt(right)) {
                         node->clearFlags(NodeMustGenerate);
                         changed = true;
                     }
@@ -1562,7 +1583,7 @@ private:
                 bool isBigIntBinaryUsedKind = node->isBinaryUseKind(HeapBigIntUse) || node->isBinaryUseKind(AnyBigIntUse) || node->isBinaryUseKind(BigInt32Use);
                 if (node->mustGenerate() && isBigIntBinaryUsedKind) {
                     JSValue right = m_state.forNode(node->child2()).value();
-                    if (right && right.isBigInt() && !right.isZeroBigInt()) {
+                    if (right && right.isBigInt() && !isZeroBigInt(right)) {
                         node->clearFlags(NodeMustGenerate);
                         changed = true;
                     }

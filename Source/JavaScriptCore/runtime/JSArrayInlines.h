@@ -26,8 +26,10 @@
 #include <JavaScriptCore/Error.h>
 #include <JavaScriptCore/JSArray.h>
 #include <JavaScriptCore/JSCellInlines.h>
+#include <JavaScriptCore/JSObjectInlines.h>
 #include <JavaScriptCore/ScopedArguments.h>
 #include <JavaScriptCore/Structure.h>
+#include <JavaScriptCore/StructureArrayStorageInlines.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 

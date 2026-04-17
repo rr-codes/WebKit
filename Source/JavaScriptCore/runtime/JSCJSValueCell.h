@@ -143,28 +143,8 @@ inline TriState JSValue::isConstructorWithConcurrency() const
     return asCell()->isConstructorWithConcurrency<concurrency>();
 }
 
-// this method is here to be after the inline declaration of JSCell::inherits
-inline bool JSValue::inherits(const ClassInfo* classInfo) const
-{
-    return isCell() && asCell()->inherits(classInfo);
-}
+// JSValue::inherits, classInfoOrNull, and structureOrNull need
+// JSCell::inherits/classInfo which are defined in Structure.h.
+// They remain in JSCJSValueStructure.h for now.
 
-template<typename Target>
-inline bool JSValue::inherits() const
-{
-    return isCell() && asCell()->inherits<Target>();
-}
-
-inline const ClassInfo* JSValue::classInfoOrNull() const
-{
-    return isCell() ? asCell()->classInfo() : nullptr;
-}
-
-inline Structure* JSValue::structureOrNull() const
-{
-    if (isCell())
-        return asCell()->structure();
-    return nullptr;
-}
-
-}
+} // namespace JSC

@@ -41,6 +41,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -87,10 +88,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestMapLikePrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestMapLikePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -139,6 +137,11 @@ static const std::array<HashTableValue, 11> JSTestMapLikePrototypeTableValues {
 
 const ClassInfo JSTestMapLikePrototype::s_info = { "TestMapLike"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestMapLikePrototype) };
 
+JSC::Structure* JSTestMapLikePrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestMapLikePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -155,6 +158,14 @@ JSTestMapLike::JSTestMapLike(Structure* structure, JSDOMGlobalObject& globalObje
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestMapLike>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestMapLike* JSTestMapLike::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestMapLike>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestMapLike* ptr = new (NotNull, JSC::allocateCell<JSTestMapLike>(vm)) JSTestMapLike(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestMapLike::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

@@ -74,7 +74,7 @@
 #include "SideDataRepository.h"
 #include "SimpleTypedArrayController.h"
 #include "StackVisitor.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "SuperSampler.h"
 #include "TestRunnerUtils.h"
 #include "TopExceptionScope.h"

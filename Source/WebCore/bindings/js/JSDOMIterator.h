@@ -28,6 +28,7 @@
 
 #include <JavaScriptCore/JSIteratorPrototype.h>
 #include <JavaScriptCore/PropertySlot.h>
+#include <JavaScriptCore/StructureCreateInlines.h>
 #include <WebCore/JSDOMConvert.h>
 #include <WebCore/ScriptExecutionContext.h>
 #include <type_traits>

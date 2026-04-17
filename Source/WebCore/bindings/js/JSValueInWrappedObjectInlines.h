@@ -25,7 +25,7 @@
 #pragma once
 
 #include <JavaScriptCore/HeapCellInlines.h>
-#include <JavaScriptCore/JSCJSValueCellInlines.h>
+#include <JavaScriptCore/JSCJSValueStructure.h>
 #include <JavaScriptCore/SlotVisitorInlines.h>
 #include <JavaScriptCore/WeakInlines.h>
 #include <WebCore/DOMWrapperWorld.h>

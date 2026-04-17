@@ -38,6 +38,7 @@
 #include "WebCoreJSClientData.h"
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -106,6 +107,11 @@ static const std::array<HashTableValue, 1> JSSharedWorkerGlobalScopePrototypeTab
 static const HashTable JSSharedWorkerGlobalScopePrototypeTable = { 1, 1, static_cast<uint8_t>(static_cast<unsigned>(PropertyAttribute::DontEnum)), JSSharedWorkerGlobalScope::info(), JSSharedWorkerGlobalScopePrototypeTableValues.data(), JSSharedWorkerGlobalScopePrototypeTableIndex };
 const ClassInfo JSSharedWorkerGlobalScopePrototype::s_info = { "SharedWorkerGlobalScope"_s, &Base::s_info, &JSSharedWorkerGlobalScopePrototypeTable, nullptr, CREATE_METHOD_TABLE(JSSharedWorkerGlobalScopePrototype) };
 
+JSC::Structure* JSSharedWorkerGlobalScopePrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSSharedWorkerGlobalScopePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -129,6 +135,13 @@ void JSSharedWorkerGlobalScope::finishCreation(VM& vm, JSGlobalProxy* proxy)
 
 }
 #endif
+
+JSSharedWorkerGlobalScope* JSSharedWorkerGlobalScope::create(JSC::VM& vm, JSC::Structure* structure, Ref<SharedWorkerGlobalScope>&& impl, JSC::JSGlobalProxy* proxy)
+{
+    JSSharedWorkerGlobalScope* ptr = new (NotNull, JSC::allocateCell<JSSharedWorkerGlobalScope>(vm)) JSSharedWorkerGlobalScope(vm, structure, WTF::move(impl));
+    ptr->finishCreation(vm, proxy);
+    return ptr;
+}
 
 JSC::Structure* JSSharedWorkerGlobalScope::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

@@ -34,6 +34,7 @@
 #include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/HeapInlines.h>
 #include <JavaScriptCore/IdentifierInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSObjectInlines.h>
 #include <JavaScriptCore/TopExceptionScope.h>
 #include <wtf/TZoneMalloc.h>

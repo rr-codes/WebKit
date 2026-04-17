@@ -40,6 +40,7 @@
 #import "WebProcess.h"
 #import "_WKFrameHandleInternal.h"
 #import <JavaScriptCore/APICast.h>
+#import <JavaScriptCore/JSCellInlines.h>
 #import <JavaScriptCore/JSGlobalObject.h>
 #import <JavaScriptCore/JSValue.h>
 #import <WebCore/CertificateInfo.h>

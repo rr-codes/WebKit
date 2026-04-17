@@ -30,6 +30,7 @@
 #include "TemporalObject.h"
 #include <wtf/Int128.h>
 #include <wtf/TZoneMalloc.h>
+#include <wtf/text/StringBuilder.h>
 
 namespace JSC {
 namespace ISO8601 {

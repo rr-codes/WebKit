@@ -60,7 +60,6 @@
 #include "JSGenericTypedArrayViewPrototypeInlines.h"
 #include "JSStringJoiner.h"
 #include "StableSort.h"
-#include "StructureInlines.h"
 #include "TypedArrayAdaptors.h"
 #include "TypedArrayController.h"
 #include "VMEntryScopeInlines.h"

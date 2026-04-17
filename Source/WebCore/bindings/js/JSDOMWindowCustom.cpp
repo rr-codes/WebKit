@@ -55,6 +55,7 @@
 #include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/InternalFunction.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSFunction.h>
 #include <JavaScriptCore/Lookup.h>
 #include <JavaScriptCore/Structure.h>

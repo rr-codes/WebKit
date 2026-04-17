@@ -46,7 +46,7 @@
 #include "ObjectConstructor.h"
 #include "Options.h"
 #include "StrongInlines.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "ThrowScope.h"
 #include "TopExceptionScope.h"
 #include "WebAssemblyCompileOptions.h"

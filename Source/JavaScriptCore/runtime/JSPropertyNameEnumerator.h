@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <JavaScriptCore/ExceptionHelpers.h>
 #include <JavaScriptCore/JSCast.h>
 #include <JavaScriptCore/Operations.h>
 #include <JavaScriptCore/PropertyNameArray.h>

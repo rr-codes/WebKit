@@ -29,7 +29,7 @@
 
 #include "DateConstructor.h"
 #include "JSObjectInlines.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "TemporalDuration.h"
 #include "TemporalPlainDate.h"
 #include "TemporalPlainDateTime.h"

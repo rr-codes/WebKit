@@ -39,6 +39,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -86,10 +87,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestOperationConditionalPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestOperationConditionalPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -138,6 +136,11 @@ static const std::array<HashTableValue, 3> JSTestOperationConditionalPrototypeTa
 
 const ClassInfo JSTestOperationConditionalPrototype::s_info = { "TestOperationConditional"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestOperationConditionalPrototype) };
 
+JSC::Structure* JSTestOperationConditionalPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestOperationConditionalPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -153,6 +156,14 @@ JSTestOperationConditional::JSTestOperationConditional(Structure* structure, JSD
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestOperationConditional>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestOperationConditional* JSTestOperationConditional::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestOperationConditional>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestOperationConditional* ptr = new (NotNull, JSC::allocateCell<JSTestOperationConditional>(vm)) JSTestOperationConditional(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestOperationConditional::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

@@ -43,6 +43,7 @@
 #include "WebCoreJSClientData.h"
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -90,10 +91,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestLegacyNoInterfaceObjectPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestLegacyNoInterfaceObjectPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -120,6 +118,11 @@ static const std::array<HashTableValue, 8> JSTestLegacyNoInterfaceObjectPrototyp
 
 const ClassInfo JSTestLegacyNoInterfaceObjectPrototype::s_info = { "TestLegacyNoInterfaceObject"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestLegacyNoInterfaceObjectPrototype) };
 
+JSC::Structure* JSTestLegacyNoInterfaceObjectPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestLegacyNoInterfaceObjectPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -135,6 +138,14 @@ JSTestLegacyNoInterfaceObject::JSTestLegacyNoInterfaceObject(Structure* structur
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestLegacyNoInterfaceObject>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestLegacyNoInterfaceObject* JSTestLegacyNoInterfaceObject::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestLegacyNoInterfaceObject>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestLegacyNoInterfaceObject* ptr = new (NotNull, JSC::allocateCell<JSTestLegacyNoInterfaceObject>(vm)) JSTestLegacyNoInterfaceObject(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestLegacyNoInterfaceObject::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

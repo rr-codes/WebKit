@@ -26,7 +26,7 @@
 #pragma once
 
 #include <JavaScriptCore/JSBigInt.h>
-#include <JavaScriptCore/JSCJSValueInlines.h>
+#include <JavaScriptCore/JSCJSValueBigInt.h>
 
 namespace JSC {
 

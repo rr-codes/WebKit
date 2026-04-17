@@ -34,7 +34,7 @@
 #include "JSObjectInlines.h"
 #include "JSWebAssemblyHelpers.h"
 #include "JSWebAssemblyTable.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "WasmTypeDefinition.h"
 
 namespace JSC {

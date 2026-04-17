@@ -599,18 +599,6 @@ inline bool JSObject::mayBePrototype() const
     return structure()->mayBePrototype();
 }
 
-inline void JSObject::didBecomePrototype(VM& vm)
-{
-    Structure* oldStructure = structure();
-    if (!oldStructure->mayBePrototype()) [[unlikely]] {
-        DeferredStructureTransitionWatchpointFire deferred(vm, oldStructure);
-        setStructure(vm, Structure::becomePrototypeTransition(vm, oldStructure, &deferred));
-    }
-
-    if (type() == GlobalProxyType) [[unlikely]]
-        jsCast<JSGlobalProxy*>(this)->target()->didBecomePrototype(vm);
-}
-
 inline bool JSObject::canGetIndexQuicklyForTypedArray(unsigned i) const
 {
     switch (type()) {

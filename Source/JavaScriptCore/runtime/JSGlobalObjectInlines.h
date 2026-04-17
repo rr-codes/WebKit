@@ -28,6 +28,7 @@
 #include <JavaScriptCore/ArrayAllocationProfile.h>
 #include <JavaScriptCore/ArrayConstructor.h>
 #include <JavaScriptCore/ArrayPrototype.h>
+#include <JavaScriptCore/JSArrayInlines.h>
 #include <JavaScriptCore/JSClassRef.h>
 #include <JavaScriptCore/JSCustomGetterFunction.h>
 #include <JavaScriptCore/JSCustomSetterFunction.h>
@@ -40,7 +41,7 @@
 #include <JavaScriptCore/ObjectPrototype.h>
 #include <JavaScriptCore/ParserModes.h>
 #include <JavaScriptCore/StrongInlines.h>
-#include <JavaScriptCore/StructureInlines.h>
+#include <JavaScriptCore/StructureCreateInlines.h>
 #include <wtf/Hasher.h>
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

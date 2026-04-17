@@ -29,6 +29,7 @@
 #include <JavaScriptCore/CPU.h>
 #include <JavaScriptCore/Error.h>
 #include <JavaScriptCore/ExceptionHelpers.h>
+#include <JavaScriptCore/JSCJSValueCell.h>
 #include <JavaScriptCore/JSObject.h>
 #include <JavaScriptCore/MathCommon.h>
 #include <wtf/CagedUniquePtr.h>
@@ -43,6 +44,18 @@ namespace JSC {
 
 class Int32BigIntImpl;
 class HeapBigIntImpl;
+
+enum class JSBigIntComparisonMode : uint8_t {
+    LessThan,
+    LessThanOrEqual
+};
+
+enum class JSBigIntComparisonResult : uint8_t {
+    Equal,
+    Undefined,
+    GreaterThan,
+    LessThan
+};
 
 class JSBigInt final : public JSCell {
 public:
@@ -146,17 +159,9 @@ public:
 
     String toString(JSGlobalObject*, unsigned radix);
     
-    enum class ComparisonMode {
-        LessThan,
-        LessThanOrEqual
-    };
+    using ComparisonMode = JSBigIntComparisonMode;
 
-    enum class ComparisonResult {
-        Equal,
-        Undefined,
-        GreaterThan,
-        LessThan
-    };
+    using ComparisonResult = JSBigIntComparisonResult;
 
     JS_EXPORT_PRIVATE static bool NODELETE equals(JSBigInt*, JSBigInt*);
     bool NODELETE equalsToNumber(JSValue);

@@ -34,9 +34,11 @@
 #import <JavaScriptCore/APICast.h>
 #import <JavaScriptCore/ArrayBuffer.h>
 #import <JavaScriptCore/JSArrayBuffer.h>
+#import <JavaScriptCore/JSCJSValueInlines.h>
 #import <JavaScriptCore/JSContextRef.h>
 #import <JavaScriptCore/JSObjectRef.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <JavaScriptCore/OpaqueJSString.h>
 #import <objc/runtime.h>
 #import <wtf/cocoa/SpanCocoa.h>
 

@@ -32,7 +32,7 @@
 #include "JSCInlines.h"
 #include "JSGenericTypedArrayViewPrototypeFunctions.h"
 #include "JSTypedArrayConstructors.h"
-#include "Operations.h"
+#include "OperationsInlines.h"
 #include "VMTrapsInlines.h"
 
 namespace JSC {

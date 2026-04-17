@@ -46,13 +46,14 @@
 
 #include "config.h"
 #include "JSBigInt.h"
+#include "JSCJSValueBigInt.h"
 
 #include "BigIntObject.h"
 #include "JSCJSValueInlines.h"
 #include "JSObjectInlines.h"
 #include "MathCommon.h"
 #include "ParseInt.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include <algorithm>
 #include <wtf/Hasher.h>
 #include <wtf/Int128.h>

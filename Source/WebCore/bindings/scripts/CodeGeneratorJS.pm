@@ -3264,48 +3264,19 @@ sub GenerateHeader
     push(@headerContent, "    using DOMWrapped = $implType;\n") if $hasParent;
 
     if ($interfaceName eq "DOMWindow") {
-        push(@headerContent, "    static $className* create(JSC::VM& vm, JSC::Structure* structure, Ref<$implType>&& impl, JSWindowProxy* proxy)\n");
-        push(@headerContent, "    {\n");
-        push(@headerContent, "        $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) ${className}(vm, structure, WTF::move(impl), proxy);\n");
-        push(@headerContent, "        ptr->finishCreation(vm, proxy);\n");
-        push(@headerContent, "        return ptr;\n");
-        push(@headerContent, "    }\n\n");
+        push(@headerContent, "    static $className* create(JSC::VM&, JSC::Structure*, Ref<$implType>&&, JSWindowProxy*);\n\n");
     } elsif (ShouldCreateWithJSGlobalProxy($codeGenerator, $interface)) {
-        push(@headerContent, "    static $className* create(JSC::VM& vm, JSC::Structure* structure, Ref<$implType>&& impl, JSC::JSGlobalProxy* proxy)\n");
-        push(@headerContent, "    {\n");
-        push(@headerContent, "        $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) ${className}(vm, structure, WTF::move(impl));\n");
-        push(@headerContent, "        ptr->finishCreation(vm, proxy);\n");
-        push(@headerContent, "        return ptr;\n");
-        push(@headerContent, "    }\n\n");
+        push(@headerContent, "    static $className* create(JSC::VM&, JSC::Structure*, Ref<$implType>&&, JSC::JSGlobalProxy*);\n\n");
     } elsif ($interface->extendedAttributes->{MasqueradesAsUndefined}) {
         AddIncludesForImplementationTypeInHeader($implType);
-        push(@headerContent, "    static $className* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<$implType>&& impl)\n");
-        push(@headerContent, "    {\n");
-        push(@headerContent, "        SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();\n");
-        push(@headerContent, "        globalObject->masqueradesAsUndefinedWatchpointSet().fireAll(vm, \"Allocated masquerading object\");\n");
-        push(@headerContent, "        $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) $className(structure, *globalObject, WTF::move(impl));\n");
-        push(@headerContent, "        ptr->finishCreation(vm);\n");
-        push(@headerContent, "        return ptr;\n");
-        push(@headerContent, "    }\n\n");
+        push(@headerContent, "    static $className* create(JSC::Structure*, JSDOMGlobalObject*, Ref<$implType>&&);\n\n");
     } elsif (!NeedsImplementationClass($interface)) {
-        push(@headerContent, "    static $className* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject)\n");
-        push(@headerContent, "    {\n");
-        push(@headerContent, "        SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();\n");
-        push(@headerContent, "        $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) $className(structure, *globalObject);\n");
-        push(@headerContent, "        ptr->finishCreation(vm);\n");
-        push(@headerContent, "        return ptr;\n");
-        push(@headerContent, "    }\n\n");  
+        push(@headerContent, "    static $className* create(JSC::Structure*, JSDOMGlobalObject*);\n\n");
     } else {
         if (!$codeGenerator->IsSVGAnimatedType($interface->type) && !$codeGenerator->IsSVGPathSegType($interface->type)) {
             AddIncludesForImplementationTypeInHeader($implType);
         }
-        push(@headerContent, "    static $className* create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<$implType>&& impl)\n");
-        push(@headerContent, "    {\n");
-        push(@headerContent, "        SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();\n");
-        push(@headerContent, "        $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) $className(structure, *globalObject, WTF::move(impl));\n");
-        push(@headerContent, "        ptr->finishCreation(vm);\n");
-        push(@headerContent, "        return ptr;\n");
-        push(@headerContent, "    }\n\n");
+        push(@headerContent, "    static $className* create(JSC::Structure*, JSDOMGlobalObject*, Ref<$implType>&&);\n\n");
     }
 
     $structureFlags{"JSC::HasStaticPropertyTable"} = 1 if InstancePropertyCount($interface) > 0;
@@ -4986,6 +4957,11 @@ sub GenerateImplementation
         my $prototypeHashTable = $justGenerateValueArray ? "nullptr" : "&${className}PrototypeTable";
         push(@implContent, "const ClassInfo ${className}Prototype::s_info = { \"${visibleInterfaceName}\"_s, &Base::s_info, ${prototypeHashTable}, nullptr, CREATE_METHOD_TABLE(${className}Prototype) };\n\n");
 
+        push(@implContent, "JSC::Structure* ${className}Prototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)\n");
+        push(@implContent, "{\n");
+        push(@implContent, "    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());\n");
+        push(@implContent, "}\n\n");
+
         push(@implContent, "void ${className}Prototype::finishCreation(VM& vm)\n");
         push(@implContent, "{\n");
         push(@implContent, "    Base::finishCreation(vm);\n");
@@ -5261,6 +5237,48 @@ sub GenerateImplementation
         push(@implContent, @finishCreation);
         push(@implContent, "#endif\n") if !$hasNonTrivialFinishCreation;
         push(@implContent, "\n");
+    }
+
+    AddToImplIncludes("<JavaScriptCore/JSCellInlines.h>");
+    if ($interfaceName eq "DOMWindow") {
+        push(@implContent, "$className* $className\::create(JSC::VM& vm, JSC::Structure* structure, Ref<$implType>&& impl, JSWindowProxy* proxy)\n");
+        push(@implContent, "{\n");
+        push(@implContent, "    $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) ${className}(vm, structure, WTF::move(impl), proxy);\n");
+        push(@implContent, "    ptr->finishCreation(vm, proxy);\n");
+        push(@implContent, "    return ptr;\n");
+        push(@implContent, "}\n\n");
+    } elsif (ShouldCreateWithJSGlobalProxy($codeGenerator, $interface)) {
+        push(@implContent, "$className* $className\::create(JSC::VM& vm, JSC::Structure* structure, Ref<$implType>&& impl, JSC::JSGlobalProxy* proxy)\n");
+        push(@implContent, "{\n");
+        push(@implContent, "    $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) ${className}(vm, structure, WTF::move(impl));\n");
+        push(@implContent, "    ptr->finishCreation(vm, proxy);\n");
+        push(@implContent, "    return ptr;\n");
+        push(@implContent, "}\n\n");
+    } elsif ($interface->extendedAttributes->{MasqueradesAsUndefined}) {
+        push(@implContent, "$className* $className\::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<$implType>&& impl)\n");
+        push(@implContent, "{\n");
+        push(@implContent, "    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();\n");
+        push(@implContent, "    globalObject->masqueradesAsUndefinedWatchpointSet().fireAll(vm, \"Allocated masquerading object\");\n");
+        push(@implContent, "    $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) $className(structure, *globalObject, WTF::move(impl));\n");
+        push(@implContent, "    ptr->finishCreation(vm);\n");
+        push(@implContent, "    return ptr;\n");
+        push(@implContent, "}\n\n");
+    } elsif (!NeedsImplementationClass($interface)) {
+        push(@implContent, "$className* $className\::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject)\n");
+        push(@implContent, "{\n");
+        push(@implContent, "    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();\n");
+        push(@implContent, "    $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) $className(structure, *globalObject);\n");
+        push(@implContent, "    ptr->finishCreation(vm);\n");
+        push(@implContent, "    return ptr;\n");
+        push(@implContent, "}\n\n");
+    } else {
+        push(@implContent, "$className* $className\::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<$implType>&& impl)\n");
+        push(@implContent, "{\n");
+        push(@implContent, "    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();\n");
+        push(@implContent, "    $className* ptr = new (NotNull, JSC::allocateCell<$className>(vm)) $className(structure, *globalObject, WTF::move(impl));\n");
+        push(@implContent, "    ptr->finishCreation(vm);\n");
+        push(@implContent, "    return ptr;\n");
+        push(@implContent, "}\n\n");
     }
 
     AddToImplIncludes("<JavaScriptCore/StructureInlines.h>");
@@ -8530,10 +8548,7 @@ sub GeneratePrototypeDeclaration
     push(@$outputArray, "        return &vm.plainObjectSpace();\n");
     push(@$outputArray, "    }\n");
 
-    push(@$outputArray, "    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)\n");
-    push(@$outputArray, "    {\n");
-    push(@$outputArray, "        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());\n");
-    push(@$outputArray, "    }\n");
+    push(@$outputArray, "    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);\n");
 
     push(@$outputArray, "\nprivate:\n");
     push(@$outputArray, "    ${prototypeClassName}(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)\n");

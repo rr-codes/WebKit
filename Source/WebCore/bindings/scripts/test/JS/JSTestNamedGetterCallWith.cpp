@@ -38,6 +38,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -71,10 +72,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestNamedGetterCallWithPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestNamedGetterCallWithPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -113,6 +111,11 @@ static const std::array<HashTableValue, 1> JSTestNamedGetterCallWithPrototypeTab
 
 const ClassInfo JSTestNamedGetterCallWithPrototype::s_info = { "TestNamedGetterCallWith"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestNamedGetterCallWithPrototype) };
 
+JSC::Structure* JSTestNamedGetterCallWithPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestNamedGetterCallWithPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -128,6 +131,14 @@ JSTestNamedGetterCallWith::JSTestNamedGetterCallWith(Structure* structure, JSDOM
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestNamedGetterCallWith>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestNamedGetterCallWith* JSTestNamedGetterCallWith::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestNamedGetterCallWith>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestNamedGetterCallWith* ptr = new (NotNull, JSC::allocateCell<JSTestNamedGetterCallWith>(vm)) JSTestNamedGetterCallWith(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestNamedGetterCallWith::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

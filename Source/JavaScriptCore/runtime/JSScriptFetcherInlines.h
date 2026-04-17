@@ -27,7 +27,7 @@
 #pragma once
 
 #include "JSScriptFetcher.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 
 namespace JSC {
 

@@ -33,7 +33,7 @@
 #include "JSObjectInlines.h"
 #include "JSWebAssemblyHelpers.h"
 #include "JSWebAssemblyTable.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "WebAssemblyTablePrototype.h"
 
 namespace JSC {

@@ -57,6 +57,7 @@
 #include <JavaScriptCore/Completion.h>
 #include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/ImportMap.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>
 #include <JavaScriptCore/JSPromise.h>
 #include <JavaScriptCore/JSScriptFetchParameters.h>

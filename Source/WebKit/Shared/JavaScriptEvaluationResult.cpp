@@ -36,6 +36,8 @@
 #include "Logging.h"
 #include "WKSharedAPICast.h"
 #include "WebFrame.h"
+#include <JavaScriptCore/JSCJSValuePropertyInlines.h>
+#include <JavaScriptCore/OpaqueJSString.h>
 #include <WebCore/DOMWrapperWorld.h>
 #include <WebCore/Document.h>
 #include <WebCore/ExceptionDetails.h>

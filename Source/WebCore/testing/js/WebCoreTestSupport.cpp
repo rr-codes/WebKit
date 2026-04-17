@@ -53,7 +53,9 @@
 #include <JavaScriptCore/CallFrame.h>
 #include <JavaScriptCore/IdentifierInlines.h>
 #include <JavaScriptCore/JITOperationList.h>
+#include <JavaScriptCore/JSObjectRef.h>
 #include <JavaScriptCore/JSValueRef.h>
+#include <JavaScriptCore/TopExceptionScope.h>
 #include <wtf/URLParser.h>
 
 #if PLATFORM(COCOA)

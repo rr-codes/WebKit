@@ -55,13 +55,7 @@ public:
         RetainPromiseOnResolve
     };
 
-    static RefPtr<DeferredPromise> create(JSDOMGlobalObject& globalObject, Mode mode = Mode::ClearPromiseOnResolve)
-    {
-        JSC::VM& vm = JSC::getVM(&globalObject);
-        auto* promise = JSC::JSPromise::create(vm, globalObject.promiseStructure());
-        ASSERT(promise);
-        return adoptRef(new DeferredPromise(globalObject, *promise, mode));
-    }
+    static RefPtr<DeferredPromise> create(JSDOMGlobalObject&, Mode = Mode::ClearPromiseOnResolve);
 
     static Ref<DeferredPromise> create(JSDOMGlobalObject& globalObject, JSC::JSPromise& deferred, Mode mode = Mode::ClearPromiseOnResolve)
     {

@@ -524,6 +524,8 @@
 		0FD0E5F01E46BF250006AB08 /* RegisterState.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD0E5EF1E46BF230006AB08 /* RegisterState.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		0FD0E5F21E46C8AF0006AB08 /* CollectingScope.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD0E5F11E46C8AD0006AB08 /* CollectingScope.h */; };
 		0FD2C92416D01EE900C7803F /* StructureInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD2C92316D01EE900C7803F /* StructureInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		0FD2C92616D01EE900C7803F /* StructureCreateInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD2C92516D01EE900C7803F /* StructureCreateInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		0FD2C92816D01EE900C7803F /* StructureArrayStorageInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD2C92716D01EE900C7803F /* StructureArrayStorageInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		0FD2FD9420B52BDE00F09441 /* CompleteSubspaceInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD2FD9320B52BDD00F09441 /* CompleteSubspaceInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		0FD2FD9520B52BE200F09441 /* IsoSubspaceInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD2FD9220B52BDC00F09441 /* IsoSubspaceInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		0FD3C82814115D4F00FD81CB /* DFGDriver.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FD3C82214115D0E00FD81CB /* DFGDriver.h */; };
@@ -1920,7 +1922,11 @@
 		CD1F9B49270CFDCC00617EB6 /* HandleForward.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1F9B48270CFDCC00617EB6 /* HandleForward.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		CD1F9B4B270CFE0F00617EB6 /* StrongForward.h in Headers */ = {isa = PBXBuildFile; fileRef = CD1F9B4A270CFE0F00617EB6 /* StrongForward.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		CDBF70752EBC872F00F6D00B /* JSBigIntInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBF70742EBC872F00F6D00B /* JSBigIntInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		CDBF70772EBCFE6D00F6D00B /* JSCJSValueCellInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBF70762EBCFE6D00F6D00B /* JSCJSValueCellInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		CDBF70772EBCFE6D00F6D00B /* JSCJSValueStructure.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBF70762EBCFE6D00F6D00B /* JSCJSValueStructure.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		CDBF70792EBCFE6D00F6D00B /* JSCJSValuePropertyInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBF70782EBCFE6D00F6D00B /* JSCJSValuePropertyInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		CDBF707C2EBCFE6D00F6D00B /* JSCJSValueBigInt.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBF707D2EBCFE6D00F6D00B /* JSCJSValueBigInt.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		CDBF707A2EBCFE6D00F6D00B /* JSCJSValueCell.h in Headers */ = {isa = PBXBuildFile; fileRef = CDBF707B2EBCFE6D00F6D00B /* JSCJSValueCell.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		BC18C44A0E16F5CD00B34460 /* OperationsInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = BC18C4490E16F5CD00B34460 /* OperationsInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		CE20BD05237D3E230046E520 /* FileBasedFuzzerAgentBase.h in Headers */ = {isa = PBXBuildFile; fileRef = CE20BD03237D3AD40046E520 /* FileBasedFuzzerAgentBase.h */; };
 		CE20BD07237D3E480046E520 /* PredictionFileCreatingFuzzerAgent.h in Headers */ = {isa = PBXBuildFile; fileRef = CE20BD01237D3AD40046E520 /* PredictionFileCreatingFuzzerAgent.h */; };
 		CEAE7D7B889B477BA93ABA6C /* ScriptFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 8852151A9C3842389B3215B7 /* ScriptFetcher.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -3506,6 +3512,8 @@
 		0FD0E5EF1E46BF230006AB08 /* RegisterState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterState.h; sourceTree = "<group>"; };
 		0FD0E5F11E46C8AD0006AB08 /* CollectingScope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CollectingScope.h; sourceTree = "<group>"; };
 		0FD2C92316D01EE900C7803F /* StructureInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StructureInlines.h; sourceTree = "<group>"; };
+		0FD2C92516D01EE900C7803F /* StructureCreateInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StructureCreateInlines.h; sourceTree = "<group>"; };
+		0FD2C92716D01EE900C7803F /* StructureArrayStorageInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StructureArrayStorageInlines.h; sourceTree = "<group>"; };
 		0FD2FD9220B52BDC00F09441 /* IsoSubspaceInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IsoSubspaceInlines.h; sourceTree = "<group>"; };
 		0FD2FD9320B52BDD00F09441 /* CompleteSubspaceInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompleteSubspaceInlines.h; sourceTree = "<group>"; };
 		0FD3C82014115CF800FD81CB /* DFGDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DFGDriver.cpp; path = dfg/DFGDriver.cpp; sourceTree = "<group>"; };
@@ -5773,7 +5781,11 @@
 		CD1F9B48270CFDCC00617EB6 /* HandleForward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HandleForward.h; sourceTree = "<group>"; };
 		CD1F9B4A270CFE0F00617EB6 /* StrongForward.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StrongForward.h; sourceTree = "<group>"; };
 		CDBF70742EBC872F00F6D00B /* JSBigIntInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSBigIntInlines.h; sourceTree = "<group>"; };
-		CDBF70762EBCFE6D00F6D00B /* JSCJSValueCellInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCJSValueCellInlines.h; sourceTree = "<group>"; };
+		CDBF70762EBCFE6D00F6D00B /* JSCJSValueStructure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCJSValueStructure.h; sourceTree = "<group>"; };
+		CDBF70782EBCFE6D00F6D00B /* JSCJSValuePropertyInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCJSValuePropertyInlines.h; sourceTree = "<group>"; };
+		CDBF707D2EBCFE6D00F6D00B /* JSCJSValueBigInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCJSValueBigInt.h; sourceTree = "<group>"; };
+		CDBF707B2EBCFE6D00F6D00B /* JSCJSValueCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JSCJSValueCell.h; sourceTree = "<group>"; };
+		BC18C4490E16F5CD00B34460 /* OperationsInlines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OperationsInlines.h; sourceTree = "<group>"; };
 		CE20BD01237D3AD40046E520 /* PredictionFileCreatingFuzzerAgent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PredictionFileCreatingFuzzerAgent.h; sourceTree = "<group>"; };
 		CE20BD02237D3AD40046E520 /* PredictionFileCreatingFuzzerAgent.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PredictionFileCreatingFuzzerAgent.cpp; sourceTree = "<group>"; };
 		CE20BD03237D3AD40046E520 /* FileBasedFuzzerAgentBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileBasedFuzzerAgentBase.h; sourceTree = "<group>"; };
@@ -8897,8 +8909,11 @@
 				0F1DD84918A945BE0026F3FA /* JSCInlines.h */,
 				F692A8870255597D01FF60F7 /* JSCJSValue.cpp */,
 				14ABB36E099C076400E2A24F /* JSCJSValue.h */,
-				CDBF70762EBCFE6D00F6D00B /* JSCJSValueCellInlines.h */,
+				CDBF707D2EBCFE6D00F6D00B /* JSCJSValueBigInt.h */,
+				CDBF707B2EBCFE6D00F6D00B /* JSCJSValueCell.h */,
 				865A30F0135007E100CDB49E /* JSCJSValueInlines.h */,
+				CDBF70782EBCFE6D00F6D00B /* JSCJSValuePropertyInlines.h */,
+				CDBF70762EBCFE6D00F6D00B /* JSCJSValueStructure.h */,
 				FE1E2C3C2240C1EF00F6B729 /* JSCPtrTag.cpp */,
 				FE7497E5209001B00003565B /* JSCPtrTag.h */,
 				84323E7D25D5EC6A00F97776 /* JSCustomGetterFunction.cpp */,
@@ -9213,6 +9228,7 @@
 				E348876128F516C600527E5E /* ObjectPrototypeInlines.h */,
 				F692A8770255597D01FF60F7 /* Operations.cpp */,
 				F692A8780255597D01FF60F7 /* Operations.h */,
+				BC18C4490E16F5CD00B34460 /* OperationsInlines.h */,
 				0FE228EA1436AB2300196C48 /* Options.cpp */,
 				0FE228EB1436AB2300196C48 /* Options.h */,
 				FE3842312324D51B009DD445 /* OptionsList.h */,
@@ -9374,11 +9390,13 @@
 				E36706282A2705DB00CF892F /* StringSplitCacheInlines.h */,
 				BCDE3AB00E6C82CF001453A7 /* Structure.cpp */,
 				BCDE3AB10E6C82CF001453A7 /* Structure.h */,
+				0FD2C92716D01EE900C7803F /* StructureArrayStorageInlines.h */,
 				798694391F8C0AC7009232AE /* StructureCache.cpp */,
 				7986943A1F8C0AC8009232AE /* StructureCache.h */,
 				7E4EE70E0EBB7A5B005934AA /* StructureChain.cpp */,
 				7E4EE7080EBB7963005934AA /* StructureChain.h */,
 				276B386E2A71D0F900252F4E /* StructureChainInlines.h */,
+				0FD2C92516D01EE900C7803F /* StructureCreateInlines.h */,
 				537FEEC82742BDA300C9EFEE /* StructureID.h */,
 				0FD2C92316D01EE900C7803F /* StructureInlines.h */,
 				C2F0F2D016BAEEE900187C19 /* StructureRareData.cpp */,
@@ -11910,8 +11928,11 @@
 				0F9749711687ADE400A4FF6A /* JSCellInlines.h in Headers */,
 				0F1DD84A18A945BE0026F3FA /* JSCInlines.h in Headers */,
 				BC18C42B0E16F5CD00B34460 /* JSCJSValue.h in Headers */,
-				CDBF70772EBCFE6D00F6D00B /* JSCJSValueCellInlines.h in Headers */,
+				CDBF707C2EBCFE6D00F6D00B /* JSCJSValueBigInt.h in Headers */,
+				CDBF707A2EBCFE6D00F6D00B /* JSCJSValueCell.h in Headers */,
 				865A30F1135007E100CDB49E /* JSCJSValueInlines.h in Headers */,
+				CDBF70792EBCFE6D00F6D00B /* JSCJSValuePropertyInlines.h in Headers */,
+				CDBF70772EBCFE6D00F6D00B /* JSCJSValueStructure.h in Headers */,
 				BC18C41D0E16F5CD00B34460 /* JSClassRef.h in Headers */,
 				86E3C613167BABD7006D760A /* JSContext.h in Headers */,
 				86E3C617167BABEE006D760A /* JSContextInternal.h in Headers */,
@@ -12254,6 +12275,8 @@
 				A70447EA17A0BD4600F5898E /* OperandsInlines.h in Headers */,
 				535EC0972BCEF71900CCC5F7 /* OperationResult.h in Headers */,
 				BC18C4480E16F5CD00B34460 /* Operations.h in Headers */,
+				BC18C44A0E16F5CD00B34460 /* OperationsInlines.h in Headers */,
+				BC18C44A0E16F5CD00B34460 /* OperationsInlines.h in Headers */,
 				0FE228ED1436AB2700196C48 /* Options.h in Headers */,
 				FE3842332324D51B009DD445 /* OptionsList.h in Headers */,
 				FFCC9A412BDD7C4700C75345 /* OrderedHashTable.h in Headers */,
@@ -12484,9 +12507,11 @@
 				145722861437E140005FDE26 /* StrongInlines.h in Headers */,
 				BCDE3AB80E6C82F5001453A7 /* Structure.h in Headers */,
 				537FEED02742BDE100C9EFEE /* StructureAlignedMemoryAllocator.h in Headers */,
+				0FD2C92816D01EE900C7803F /* StructureArrayStorageInlines.h in Headers */,
 				7986943B1F8C0ACC009232AE /* StructureCache.h in Headers */,
 				7E4EE7090EBB7963005934AA /* StructureChain.h in Headers */,
 				276B38732A71D0FA00252F4E /* StructureChainInlines.h in Headers */,
+				0FD2C92616D01EE900C7803F /* StructureCreateInlines.h in Headers */,
 				537FEEC92742BDA300C9EFEE /* StructureID.h in Headers */,
 				0FD2C92416D01EE900C7803F /* StructureInlines.h in Headers */,
 				C2FE18A416BAEC4000AF3061 /* StructureRareData.h in Headers */,

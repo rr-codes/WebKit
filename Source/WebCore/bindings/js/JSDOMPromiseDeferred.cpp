@@ -51,6 +51,14 @@
 namespace WebCore {
 using namespace JSC;
 
+RefPtr<DeferredPromise> DeferredPromise::create(JSDOMGlobalObject& globalObject, Mode mode)
+{
+    JSC::VM& vm = JSC::getVM(&globalObject);
+    auto* promise = JSC::JSPromise::create(vm, globalObject.promiseStructure());
+    ASSERT(promise);
+    return adoptRef(new DeferredPromise(globalObject, *promise, mode));
+}
+
 JSC::JSValue DeferredPromise::promise() const
 {
     if (isEmpty())

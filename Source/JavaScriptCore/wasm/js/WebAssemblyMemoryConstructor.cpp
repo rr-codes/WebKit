@@ -34,7 +34,7 @@
 #include "JSWebAssemblyHelpers.h"
 #include "JSWebAssemblyMemory.h"
 #include "PageCount.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "WasmAddressType.h"
 #include "WasmMemory.h"
 #include "WebAssemblyMemoryPrototype.h"

@@ -37,6 +37,23 @@ STATIC_ASSERT_IS_TRIVIALLY_DESTRUCTIBLE(ClonedArguments);
 
 const ClassInfo ClonedArguments::s_info = { "Arguments"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(ClonedArguments) };
 
+uint64_t ClonedArguments::length(JSGlobalObject* globalObject) const
+{
+    VM& vm = getVM(globalObject);
+    auto scope = DECLARE_THROW_SCOPE(vm);
+
+    JSValue lengthValue;
+    if (!structure()->didTransition()) [[likely]] {
+        lengthValue = getDirect(clonedArgumentsLengthPropertyOffset);
+        if (lengthValue.isInt32()) [[likely]]
+            return std::max(lengthValue.asInt32(), 0);
+    } else {
+        lengthValue = get(globalObject, vm.propertyNames->length);
+        RETURN_IF_EXCEPTION(scope, 0);
+    }
+    RELEASE_AND_RETURN(scope, lengthValue.toLength(globalObject));
+}
+
 ClonedArguments::ClonedArguments(VM& vm, Structure* structure, Butterfly* butterfly)
     : Base(vm, structure, butterfly)
 {

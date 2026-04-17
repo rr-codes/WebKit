@@ -81,6 +81,11 @@ using namespace JSC;
 
 const ClassInfo JSDOMWindowBase::s_info = { "Window"_s, &JSDOMGlobalObject::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSDOMWindowBase) };
 
+JSC::Structure* JSDOMWindowBase::createStructure(JSC::VM& vm, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, 0, prototype, JSC::TypeInfo(JSC::GlobalObjectType, StructureFlags), info());
+}
+
 const GlobalObjectMethodTable* JSDOMWindowBase::globalObjectMethodTable()
 {
     static constexpr GlobalObjectMethodTable table = {

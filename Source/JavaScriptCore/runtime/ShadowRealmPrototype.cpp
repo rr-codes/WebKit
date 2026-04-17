@@ -35,7 +35,6 @@
 #include "JSObjectInlines.h"
 #include "JSPromise.h"
 #include "ShadowRealmObject.h"
-#include "StructureInlines.h"
 
 #include "ShadowRealmPrototype.lut.h"
 

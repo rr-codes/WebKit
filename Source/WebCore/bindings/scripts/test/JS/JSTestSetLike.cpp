@@ -41,6 +41,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -86,10 +87,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestSetLikePrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestSetLikePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -137,6 +135,11 @@ static const std::array<HashTableValue, 10> JSTestSetLikePrototypeTableValues {
 
 const ClassInfo JSTestSetLikePrototype::s_info = { "TestSetLike"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestSetLikePrototype) };
 
+JSC::Structure* JSTestSetLikePrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestSetLikePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -153,6 +156,14 @@ JSTestSetLike::JSTestSetLike(Structure* structure, JSDOMGlobalObject& globalObje
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestSetLike>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestSetLike* JSTestSetLike::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestSetLike>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestSetLike* ptr = new (NotNull, JSC::allocateCell<JSTestSetLike>(vm)) JSTestSetLike(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestSetLike::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

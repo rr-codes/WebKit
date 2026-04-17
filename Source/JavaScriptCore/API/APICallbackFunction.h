@@ -27,6 +27,7 @@
 #define APICallbackFunction_h
 
 #include "APICast.h"
+#include "CommonIdentifiers.h"
 #include "Error.h"
 #include "Integrity.h"
 #include "JSCallbackConstructor.h"

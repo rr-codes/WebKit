@@ -38,7 +38,6 @@
 #include "JSObjectInlines.h"
 #include "StackVisitor.h"
 #include "StrongInlines.h"
-#include "StructureInlines.h"
 #include "Watchdog.h"
 #include <wtf/text/StringBuilder.h>
 

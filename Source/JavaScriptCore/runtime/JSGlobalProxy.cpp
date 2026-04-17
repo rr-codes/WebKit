@@ -27,7 +27,6 @@
 #include "JSGlobalProxy.h"
 
 #include "JSGlobalObject.h"
-#include "StructureInlines.h"
 
 namespace JSC {
 

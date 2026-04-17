@@ -32,6 +32,7 @@
 #include "TestNamespaceConst.h"
 #include "WebCoreJSClientData.h"
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/ObjectPrototype.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
@@ -76,6 +77,14 @@ JSTestNamespaceConst::JSTestNamespaceConst(Structure* structure, JSDOMGlobalObje
     : JSDOMObject(structure, globalObject) { }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestNamespaceConst>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestNamespaceConst* JSTestNamespaceConst::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestNamespaceConst* ptr = new (NotNull, JSC::allocateCell<JSTestNamespaceConst>(vm)) JSTestNamespaceConst(structure, *globalObject);
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestNamespaceConst::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

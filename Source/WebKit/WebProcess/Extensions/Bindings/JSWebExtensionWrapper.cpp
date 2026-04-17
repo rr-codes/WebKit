@@ -33,6 +33,7 @@
 #include "WebFrame.h"
 #include "WebPage.h"
 #include <JavaScriptCore/APICast.h>
+#include <JavaScriptCore/JSCJSValuePropertyInlines.h>
 #include <JavaScriptCore/JSClassRef.h>
 #include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/JSObjectRef.h>

@@ -35,6 +35,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -68,10 +69,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestReportExtraMemoryCostPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestReportExtraMemoryCostPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -110,6 +108,11 @@ static const std::array<HashTableValue, 1> JSTestReportExtraMemoryCostPrototypeT
 
 const ClassInfo JSTestReportExtraMemoryCostPrototype::s_info = { "TestReportExtraMemoryCost"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestReportExtraMemoryCostPrototype) };
 
+JSC::Structure* JSTestReportExtraMemoryCostPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestReportExtraMemoryCostPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -132,6 +135,14 @@ void JSTestReportExtraMemoryCost::finishCreation(VM& vm)
     ASSERT(inherits(info()));
 
     vm.heap.reportExtraMemoryAllocated(this, wrapped().memoryCost());
+}
+
+JSTestReportExtraMemoryCost* JSTestReportExtraMemoryCost::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestReportExtraMemoryCost>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestReportExtraMemoryCost* ptr = new (NotNull, JSC::allocateCell<JSTestReportExtraMemoryCost>(vm)) JSTestReportExtraMemoryCost(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
 }
 
 JSC::Structure* JSTestReportExtraMemoryCost::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)

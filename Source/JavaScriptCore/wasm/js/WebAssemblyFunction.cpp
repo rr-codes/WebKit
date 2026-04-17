@@ -42,7 +42,7 @@
 #include "NativeExecutable.h"
 #include "ProtoCallFrameInlines.h"
 #include "SlotVisitorInlines.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "WasmCallee.h"
 #include "WasmCallingConvention.h"
 #include "WasmContext.h"

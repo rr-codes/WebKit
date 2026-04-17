@@ -35,7 +35,7 @@
 #include "JSGlobalObject.h"
 #include "JSObjectInlines.h"
 #include "MathCommon.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "TemporalDuration.h"
 #include "TemporalObject.h"
 #include "TemporalTimeZone.h"

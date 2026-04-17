@@ -39,6 +39,7 @@
 #include <wtf/CompilationThread.h>
 #include <wtf/StringPrintStream.h>
 #include <wtf/SystemTracing.h>
+#include <wtf/text/MakeString.h>
 #include <wtf/text/StringConcatenate.h>
 
 namespace JSC {

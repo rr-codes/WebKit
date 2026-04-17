@@ -29,7 +29,6 @@
 
 #include "AuxiliaryBarrierInlines.h"
 #include "SlotVisitorInlines.h"
-#include "StructureInlines.h"
 #include "WeakMapImplInlines.h"
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

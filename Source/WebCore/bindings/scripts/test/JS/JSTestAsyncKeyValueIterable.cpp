@@ -41,6 +41,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -80,10 +81,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestAsyncKeyValueIterablePrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestAsyncKeyValueIterablePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -125,6 +123,11 @@ static const std::array<HashTableValue, 4> JSTestAsyncKeyValueIterablePrototypeT
 
 const ClassInfo JSTestAsyncKeyValueIterablePrototype::s_info = { "TestAsyncKeyValueIterable"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestAsyncKeyValueIterablePrototype) };
 
+JSC::Structure* JSTestAsyncKeyValueIterablePrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestAsyncKeyValueIterablePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -141,6 +144,14 @@ JSTestAsyncKeyValueIterable::JSTestAsyncKeyValueIterable(Structure* structure, J
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestAsyncKeyValueIterable>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestAsyncKeyValueIterable* JSTestAsyncKeyValueIterable::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestAsyncKeyValueIterable>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestAsyncKeyValueIterable* ptr = new (NotNull, JSC::allocateCell<JSTestAsyncKeyValueIterable>(vm)) JSTestAsyncKeyValueIterable(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestAsyncKeyValueIterable::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

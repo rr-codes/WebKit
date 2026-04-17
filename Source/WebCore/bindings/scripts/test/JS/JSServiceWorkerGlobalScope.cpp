@@ -38,6 +38,7 @@
 #include "WebCoreJSClientData.h"
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -105,6 +106,11 @@ static const std::array<HashTableValue, 1> JSServiceWorkerGlobalScopePrototypeTa
 static const HashTable JSServiceWorkerGlobalScopePrototypeTable = { 1, 1, static_cast<uint8_t>(static_cast<unsigned>(PropertyAttribute::DontEnum)), JSServiceWorkerGlobalScope::info(), JSServiceWorkerGlobalScopePrototypeTableValues.data(), JSServiceWorkerGlobalScopePrototypeTableIndex };
 const ClassInfo JSServiceWorkerGlobalScopePrototype::s_info = { "ServiceWorkerGlobalScope"_s, &Base::s_info, &JSServiceWorkerGlobalScopePrototypeTable, nullptr, CREATE_METHOD_TABLE(JSServiceWorkerGlobalScopePrototype) };
 
+JSC::Structure* JSServiceWorkerGlobalScopePrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSServiceWorkerGlobalScopePrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -128,6 +134,13 @@ void JSServiceWorkerGlobalScope::finishCreation(VM& vm, JSGlobalProxy* proxy)
 
 }
 #endif
+
+JSServiceWorkerGlobalScope* JSServiceWorkerGlobalScope::create(JSC::VM& vm, JSC::Structure* structure, Ref<ServiceWorkerGlobalScope>&& impl, JSC::JSGlobalProxy* proxy)
+{
+    JSServiceWorkerGlobalScope* ptr = new (NotNull, JSC::allocateCell<JSServiceWorkerGlobalScope>(vm)) JSServiceWorkerGlobalScope(vm, structure, WTF::move(impl));
+    ptr->finishCreation(vm, proxy);
+    return ptr;
+}
 
 JSC::Structure* JSServiceWorkerGlobalScope::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

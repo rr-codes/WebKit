@@ -26,7 +26,7 @@
 #include "IntegrityInlines.h"
 #include "IntlNumberFormat.h"
 #include "JSCInlines.h"
-#include "Operations.h"
+#include "OperationsInlines.h"
 #include "ParseInt.h"
 #include "Uint16WithFraction.h"
 #include <wtf/Assertions.h>

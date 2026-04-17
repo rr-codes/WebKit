@@ -58,6 +58,7 @@
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSArray.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -122,10 +123,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestTypedefsPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestTypedefsPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -237,6 +235,11 @@ static const std::array<HashTableValue, 21> JSTestTypedefsPrototypeTableValues {
 
 const ClassInfo JSTestTypedefsPrototype::s_info = { "TestTypedefs"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestTypedefsPrototype) };
 
+JSC::Structure* JSTestTypedefsPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestTypedefsPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -252,6 +255,14 @@ JSTestTypedefs::JSTestTypedefs(Structure* structure, JSDOMGlobalObject& globalOb
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestTypedefs>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestTypedefs* JSTestTypedefs::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestTypedefs>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestTypedefs* ptr = new (NotNull, JSC::allocateCell<JSTestTypedefs>(vm)) JSTestTypedefs(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestTypedefs::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

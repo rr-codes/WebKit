@@ -27,6 +27,7 @@
 
 #include <JavaScriptCore/ArrayStorageInlines.h>
 #include <JavaScriptCore/Butterfly.h>
+#include <JavaScriptCore/HeapCellInlines.h>
 #include <JavaScriptCore/JSObject.h>
 #include <JavaScriptCore/Structure.h>
 #include <JavaScriptCore/VM.h>

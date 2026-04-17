@@ -45,6 +45,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -85,10 +86,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestDomainSecurityPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestDomainSecurityPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -143,6 +141,11 @@ static const std::array<HashTableValue, 4> JSTestDomainSecurityPrototypeTableVal
 
 const ClassInfo JSTestDomainSecurityPrototype::s_info = { "TestDomainSecurity"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestDomainSecurityPrototype) };
 
+JSC::Structure* JSTestDomainSecurityPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestDomainSecurityPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -158,6 +161,14 @@ JSTestDomainSecurity::JSTestDomainSecurity(Structure* structure, JSDOMGlobalObje
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestDomainSecurity>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestDomainSecurity* JSTestDomainSecurity::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestDomainSecurity>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestDomainSecurity* ptr = new (NotNull, JSC::allocateCell<JSTestDomainSecurity>(vm)) JSTestDomainSecurity(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestDomainSecurity::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

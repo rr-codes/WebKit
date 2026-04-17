@@ -27,7 +27,9 @@
 #pragma once
 
 #include "BuiltinNames.h"
+#include "ExceptionHelpers.h"
 #include "IntlObject.h"
+#include "JSArray.h"
 #include "JSBoundFunction.h"
 #include "JSObject.h"
 #include "ObjectConstructor.h"

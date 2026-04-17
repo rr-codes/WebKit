@@ -40,6 +40,7 @@
 #include <JavaScriptCore/FunctionPrototype.h>
 #include <JavaScriptCore/HeapAnalyzer.h>
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSDestructibleObjectHeapCellType.h>
 #include <JavaScriptCore/SlotVisitorMacros.h>
 #include <JavaScriptCore/StructureInlines.h>
@@ -77,10 +78,7 @@ public:
         STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(JSTestScheduledActionPrototype, Base);
         return &vm.plainObjectSpace();
     }
-    static JSC::Structure* createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
-    {
-        return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
-    }
+    static JSC::Structure* createStructure(JSC::VM&, JSC::JSGlobalObject*, JSC::JSValue);
 
 private:
     JSTestScheduledActionPrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure)
@@ -120,6 +118,11 @@ static const std::array<HashTableValue, 2> JSTestScheduledActionPrototypeTableVa
 
 const ClassInfo JSTestScheduledActionPrototype::s_info = { "TestScheduledActionReal"_s, &Base::s_info, nullptr, nullptr, CREATE_METHOD_TABLE(JSTestScheduledActionPrototype) };
 
+JSC::Structure* JSTestScheduledActionPrototype::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
+{
+    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info());
+}
+
 void JSTestScheduledActionPrototype::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
@@ -135,6 +138,14 @@ JSTestScheduledAction::JSTestScheduledAction(Structure* structure, JSDOMGlobalOb
 }
 
 static_assert(!std::is_base_of<ActiveDOMObject, TestScheduledAction>::value, "Interface is not marked as [ActiveDOMObject] even though implementation class subclasses ActiveDOMObject.");
+
+JSTestScheduledAction* JSTestScheduledAction::create(JSC::Structure* structure, JSDOMGlobalObject* globalObject, Ref<TestScheduledAction>&& impl)
+{
+    SUPPRESS_UNCOUNTED_LOCAL auto& vm = globalObject->vm();
+    JSTestScheduledAction* ptr = new (NotNull, JSC::allocateCell<JSTestScheduledAction>(vm)) JSTestScheduledAction(structure, *globalObject, WTF::move(impl));
+    ptr->finishCreation(vm);
+    return ptr;
+}
 
 JSC::Structure* JSTestScheduledAction::createStructure(JSC::VM& vm, JSC::JSGlobalObject* globalObject, JSC::JSValue prototype)
 {

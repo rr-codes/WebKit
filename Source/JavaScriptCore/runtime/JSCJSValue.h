@@ -258,10 +258,10 @@ public:
 
     // Querying the type.
     bool isEmpty() const;
-    inline bool isCallable() const; // Defined in JSCJSValueCellInlines.h
-    template<Concurrency> inline TriState isCallableWithConcurrency() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isConstructor() const; // Defined in JSCJSValueCellInlines.h
-    template<Concurrency> inline TriState isConstructorWithConcurrency() const; // Defined in JSCJSValueCellInlines.h
+    inline bool isCallable() const; // Defined in JSCJSValueCell.h
+    template<Concurrency> inline TriState isCallableWithConcurrency() const; // Defined in JSCJSValueCell.h
+    inline bool isConstructor() const; // Defined in JSCJSValueCell.h
+    template<Concurrency> inline TriState isConstructorWithConcurrency() const; // Defined in JSCJSValueCell.h
     bool isUndefined() const;
     bool isNull() const;
     bool isUndefinedOrNull() const;
@@ -270,20 +270,19 @@ public:
     bool isUInt32AsAnyInt() const;
     bool isInt32AsAnyInt() const;
     bool isNumber() const;
-    inline bool isString() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isBigInt() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isHeapBigInt() const; // Defined in JSCJSValueCellInlines.h
+    inline bool isString() const; // Defined in JSCJSValueCell.h
+    inline bool isBigInt() const; // Defined in JSCJSValueCell.h
+    inline bool isHeapBigInt() const; // Defined in JSCJSValueCell.h
+    JS_EXPORT_PRIVATE bool isHeapBigIntSlow() const;
     bool isBigInt32() const;
-    inline bool isZeroBigInt() const; // Defined in JSCJSValueInlines.h
-    inline bool isNegativeBigInt() const; // Defined in JSCJSValueInlines.h
-    inline bool isSymbol() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isPrimitive() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isGetterSetter() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isCustomGetterSetter() const; // Defined in JSCJSValueCellInlines.h
-    inline bool isObject() const; // Defined in JSCJSValueCellInlines.h
-    inline bool inherits(const ClassInfo*) const; // Defined in JSCJSValueCellInlines.h
-    template<typename Target> inline bool inherits() const; // Defined in JSCJSValueCellInlines.h
-    inline const ClassInfo* classInfoOrNull() const; // Defined in JSCJSValueCellInlines.h
+    inline bool isSymbol() const; // Defined in JSCJSValueCell.h
+    inline bool isPrimitive() const; // Defined in JSCJSValueCell.h
+    inline bool isGetterSetter() const; // Defined in JSCJSValueCell.h
+    inline bool isCustomGetterSetter() const; // Defined in JSCJSValueCell.h
+    inline bool isObject() const; // Defined in JSCJSValueCell.h
+    inline bool inherits(const ClassInfo*) const; // Defined in JSCJSValueStructure.h
+    template<typename Target> inline bool inherits() const; // Defined in JSCJSValueStructure.h
+    inline const ClassInfo* classInfoOrNull() const; // Defined in JSCJSValueStructure.h
 
     // Non-inline versions of above for use in header ASSERT macros:
     JS_EXPORT_PRIVATE bool NODELETE isGetterSetterSlow() const;
@@ -291,16 +290,16 @@ public:
     JS_EXPORT_PRIVATE bool NODELETE isStringSlow() const;
 
     // Extracting the value.
-    inline bool getString(JSGlobalObject*, WTF::String&) const; // Defined in JSCJSValueCellInlines.h
-    inline WTF::String getString(JSGlobalObject*) const; // null string if not a string. Defined in JSCJSValueCellInlines.h
-    inline JSObject* getObject() const; // 0 if not an object. Defined in JSCJSValueCellInlines.h
+    inline bool getString(JSGlobalObject*, WTF::String&) const; // Defined in JSCJSValueCell.h
+    inline WTF::String getString(JSGlobalObject*) const; // null string if not a string. Defined in JSCJSValueCell.h
+    inline JSObject* getObject() const; // 0 if not an object. Defined in JSCJSValueCell.h
 
     // Extracting integer values.
-    bool getUInt32(uint32_t&) const;
+    inline bool getUInt32(uint32_t&) const; // Defined below
         
     // Basic conversions.
-    inline JSValue toPrimitive(JSGlobalObject*, PreferredPrimitiveType = NoPreference) const; // Defined in JSCJSValueCellInlines.h
-    inline bool toBoolean(JSGlobalObject*) const; // Defined in JSCJSValueCellInlines.h
+    inline JSValue toPrimitive(JSGlobalObject*, PreferredPrimitiveType = NoPreference) const; // Defined in JSCJSValueCell.h
+    inline bool toBoolean(JSGlobalObject*) const; // Defined in JSCJSValueCell.h
     inline TriState pureToBoolean() const; // Defined in JSCJSValueInlines.h
 
     // toNumber conversion is expected to be side effect free if an exception has
@@ -309,18 +308,18 @@ public:
 
     JSValue toNumeric(JSGlobalObject*) const;
     JSValue toBigIntOrInt32(JSGlobalObject*) const;
-    JSBigInt* asHeapBigInt() const;
+    inline JSBigInt* asHeapBigInt() const; // Defined in JSCJSValueBigInt.h
 
     // toNumber conversion if it can be done without side effects.
     std::optional<double> NODELETE toNumberFromPrimitive() const;
 
-    inline JSString* toString(JSGlobalObject*) const; // On exception, this returns the empty string. Defined in JSCJSValueInlines.h
-    inline JSString* toStringOrNull(JSGlobalObject*) const; // On exception, this returns null, to make exception checks faster. Defined in JSCJSValueInlines.h
+    inline JSString* toString(JSGlobalObject*) const; // On exception, this returns the empty string. Defined in JSCJSValuePropertyInlines.h
+    inline JSString* toStringOrNull(JSGlobalObject*) const; // On exception, this returns null, to make exception checks faster. Defined in JSCJSValuePropertyInlines.h
     Identifier toPropertyKey(JSGlobalObject*) const;
     JSValue toPropertyKeyValue(JSGlobalObject*) const;
-    inline WTF::String toWTFString(JSGlobalObject*) const; // Defined in JSCJSValueInlines.h
+    inline WTF::String toWTFString(JSGlobalObject*) const; // Defined in JSCJSValuePropertyInlines.h
     JS_EXPORT_PRIVATE WTF::String toWTFStringForConsole(JSGlobalObject*) const;
-    inline JSObject* toObject(JSGlobalObject*) const; // Defined in JSCJSValueCellInlines.h
+    inline JSObject* toObject(JSGlobalObject*) const; // Defined in JSCJSValueCell.h
 
     // Integer conversions.
     JS_EXPORT_PRIVATE double toIntegerPreserveNaN(JSGlobalObject*) const;
@@ -328,7 +327,7 @@ public:
     double toIntegerOrInfinity(JSGlobalObject*) const;
     inline int32_t toInt32(JSGlobalObject*) const; // Defined in JSCJSValueInlines.h
     inline uint32_t toUInt32(JSGlobalObject*) const; // Defined in JSCJSValueInlines.h
-    inline uint64_t toIndex(JSGlobalObject*, ASCIILiteral errorName) const; // Defined in JSCJSValueInlines.h
+    inline uint64_t toIndex(JSGlobalObject*, ASCIILiteral errorName) const; // Defined in ExceptionHelpers.h
     uint64_t toLength(JSGlobalObject*) const;
 
     JS_EXPORT_PRIVATE JSValue toBigInt(JSGlobalObject*) const;
@@ -342,31 +341,31 @@ public:
     float toFloat(JSGlobalObject* globalObject) const { return static_cast<float>(toNumber(globalObject)); }
 
     // Object operations, with the toObject operation included.
-    JSValue get(JSGlobalObject*, PropertyName) const;
-    JSValue get(JSGlobalObject*, PropertyName, PropertySlot&) const;
-    JSValue get(JSGlobalObject*, unsigned propertyName) const;
-    JSValue get(JSGlobalObject*, unsigned propertyName, PropertySlot&) const;
-    JSValue get(JSGlobalObject*, uint64_t propertyName) const;
+    inline JSValue get(JSGlobalObject*, PropertyName) const; // Defined in JSCJSValuePropertyInlines.h
+    inline JSValue get(JSGlobalObject*, PropertyName, PropertySlot&) const; // Defined in JSCJSValuePropertyInlines.h
+    inline JSValue get(JSGlobalObject*, unsigned propertyName) const; // Defined in JSCJSValuePropertyInlines.h
+    inline JSValue get(JSGlobalObject*, unsigned propertyName, PropertySlot&) const; // Defined in JSCJSValuePropertyInlines.h
+    inline JSValue get(JSGlobalObject*, uint64_t propertyName) const; // Defined in JSCJSValuePropertyInlines.h
 
     template<typename T, typename PropertyNameType>
-    T getAs(JSGlobalObject*, PropertyNameType) const;
+    inline T getAs(JSGlobalObject*, PropertyNameType) const; // Defined in JSCJSValuePropertyInlines.h
 
-    bool getPropertySlot(JSGlobalObject*, PropertyName, PropertySlot&) const;
-    template<typename CallbackWhenNoException> typename std::invoke_result<CallbackWhenNoException, bool, PropertySlot&>::type getPropertySlot(JSGlobalObject*, PropertyName, CallbackWhenNoException) const;
-    template<typename CallbackWhenNoException> typename std::invoke_result<CallbackWhenNoException, bool, PropertySlot&>::type getPropertySlot(JSGlobalObject*, PropertyName, PropertySlot&, CallbackWhenNoException) const;
+    inline bool getPropertySlot(JSGlobalObject*, PropertyName, PropertySlot&) const; // Defined in JSCJSValuePropertyInlines.h
+    template<typename CallbackWhenNoException> inline typename std::invoke_result<CallbackWhenNoException, bool, PropertySlot&>::type getPropertySlot(JSGlobalObject*, PropertyName, CallbackWhenNoException) const; // Defined in JSCJSValuePropertyInlines.h
+    template<typename CallbackWhenNoException> inline typename std::invoke_result<CallbackWhenNoException, bool, PropertySlot&>::type getPropertySlot(JSGlobalObject*, PropertyName, PropertySlot&, CallbackWhenNoException) const; // Defined in JSCJSValuePropertyInlines.h
 
-    bool getOwnPropertySlot(JSGlobalObject*, PropertyName, PropertySlot&) const;
+    inline bool getOwnPropertySlot(JSGlobalObject*, PropertyName, PropertySlot&) const; // Defined in JSCJSValuePropertyInlines.h
 
-    inline bool put(JSGlobalObject*, PropertyName, JSValue, PutPropertySlot&); // Defined in JSCJSValueInlines.h
-    bool putInline(JSGlobalObject*, PropertyName, JSValue, PutPropertySlot&);
+    inline bool put(JSGlobalObject*, PropertyName, JSValue, PutPropertySlot&); // Defined in JSObject.h
+    inline bool putInline(JSGlobalObject*, PropertyName, JSValue, PutPropertySlot&); // Defined in JSObject.h
     JS_EXPORT_PRIVATE bool putToPrimitive(JSGlobalObject*, PropertyName, JSValue, PutPropertySlot&);
     JS_EXPORT_PRIVATE bool putToPrimitiveByIndex(JSGlobalObject*, unsigned propertyName, JSValue, bool shouldThrow);
-    inline bool putByIndex(JSGlobalObject*, unsigned propertyName, JSValue, bool shouldThrow); // Defined in JSCJSValueInlines.h
+    inline bool putByIndex(JSGlobalObject*, unsigned propertyName, JSValue, bool shouldThrow); // Defined in JSObject.h
 
-    JSValue getPrototype(JSGlobalObject*) const;
+    inline JSValue getPrototype(JSGlobalObject*) const; // Defined in JSObject.h
     JSValue toThis(JSGlobalObject*, ECMAMode) const;
 
-    inline static bool equal(JSGlobalObject*, JSValue v1, JSValue v2); // Defined in JSCJSValueInlines.h
+    inline static bool equal(JSGlobalObject*, JSValue v1, JSValue v2); // Defined below
     static bool equalSlowCase(JSGlobalObject*, JSValue v1, JSValue v2);
     inline static bool equalSlowCaseInline(JSGlobalObject*, JSValue v1, JSValue v2); // Defined in JSCJSValueInlines.h
     inline static bool strictEqual(JSGlobalObject*, JSValue v1, JSValue v2); // Defined in JSCJSValueInlines.h
@@ -376,7 +375,7 @@ public:
     bool isCell() const;
     JSCell* asCell() const;
 
-    inline Structure* structureOrNull() const; // Defined in JSCJSValueCellInlines.h
+    inline Structure* structureOrNull() const; // Defined in JSCJSValueStructure.h
 
     JS_EXPORT_PRIVATE void dump(PrintStream&) const;
     void dumpInContext(PrintStream&, DumpContext*) const;
@@ -384,7 +383,7 @@ public:
     void dumpForBacktrace(PrintStream&) const;
 
     JS_EXPORT_PRIVATE JSObject* synthesizePrototype(JSGlobalObject*) const;
-    inline bool requireObjectCoercible(JSGlobalObject*) const;
+    inline bool requireObjectCoercible(JSGlobalObject*) const; // Defined in ExceptionHelpers.h
 
     // Constants used for Int52. Int52 isn't part of JSValue right now, but JSValues may be
     // converted to Int52s and back again.
@@ -1304,7 +1303,7 @@ inline uint32_t JSValue::asUInt32AsAnyInt() const
     return static_cast<uint32_t>(asDouble());
 }
 
-inline bool isThisValueAltered(const PutPropertySlot&, JSObject* baseObject);
+inline bool isThisValueAltered(const PutPropertySlot&, JSObject* baseObject); // Defined in JSGlobalProxy.h
 
 // See section 7.2.9: https://tc39.github.io/ecma262/#sec-samevalue
 inline bool sameValue(JSGlobalObject*, JSValue, JSValue);
@@ -1409,5 +1408,29 @@ inline int32_t JSValue::bigInt32AsInt32() const
     return static_cast<int32_t>(u.asInt64 >> 16);
 }
 #endif // USE(BIGINT32)
+
+ALWAYS_INLINE bool JSValue::getUInt32(uint32_t& v) const
+{
+    if (isInt32()) {
+        int32_t i = asInt32();
+        v = static_cast<uint32_t>(i);
+        return i >= 0;
+    }
+    if (isDouble()) {
+        double d = asDouble();
+        v = static_cast<uint32_t>(d);
+        return v == d;
+    }
+    return false;
+}
+
+// ECMA 11.9.3
+inline bool JSValue::equal(JSGlobalObject* globalObject, JSValue v1, JSValue v2)
+{
+    if (v1.isInt32() && v2.isInt32())
+        return v1 == v2;
+
+    return equalSlowCase(globalObject, v1, v2);
+}
 
 } // namespace JSC

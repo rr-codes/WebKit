@@ -29,7 +29,7 @@
 #include "Interpreter.h"
 #include "JSCJSValueInlines.h"
 #include "JSObjectInlines.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "JSWebAssemblyException.h"
 #include "WasmTag.h"
 

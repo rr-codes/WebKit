@@ -30,7 +30,7 @@
 #include "JSCJSValueInlines.h"
 #include "JSObjectInlines.h"
 #include "PropertySlot.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include "TypeError.h"
 
 namespace JSC {

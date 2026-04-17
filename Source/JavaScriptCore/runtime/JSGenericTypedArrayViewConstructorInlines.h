@@ -36,7 +36,7 @@
 #include "JSGenericTypedArrayViewConstructor.h"
 #include "JSGlobalObject.h"
 #include "JSTypedArrays.h"
-#include "StructureInlines.h"
+#include "StructureCreateInlines.h"
 #include <wtf/text/ASCIILiteral.h>
 
 namespace JSC {

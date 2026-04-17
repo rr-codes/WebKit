@@ -24,6 +24,7 @@
 #include "JSDOMWrapperCache.h"
 #include <JavaScriptCore/ArgList.h>
 #include <JavaScriptCore/JSFunction.h>
+#include <JavaScriptCore/StructureCreateInlines.h>
 
 namespace WebCore {
 

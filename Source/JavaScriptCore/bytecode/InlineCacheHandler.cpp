@@ -38,7 +38,6 @@
 #include "ModuleNamespaceAccessCase.h"
 #include "PropertyInlineCache.h"
 #include "SharedJITStubSet.h"
-#include "StructureInlines.h"
 
 namespace JSC {
 
