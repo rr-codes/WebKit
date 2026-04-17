@@ -25,7 +25,8 @@
 
 #pragma once
 
-#include "ScrollTypes.h"
+#include <WebCore/ScrollTypes.h>
+
 #include <wtf/CheckedPtr.h>
 #include <wtf/OptionSet.h>
 
