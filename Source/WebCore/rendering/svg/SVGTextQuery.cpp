@@ -20,9 +20,9 @@
 
 #include "config.h"
 #include "SVGTextQuery.h"
-#include "FontCascadeInlines.h"
 
 #include "FloatConversion.h"
+#include "FontCascadeInlines.h"
 #include "LegacyInlineFlowBox.h"
 #include "RenderBlockFlow.h"
 #include "RenderElementInlines.h"

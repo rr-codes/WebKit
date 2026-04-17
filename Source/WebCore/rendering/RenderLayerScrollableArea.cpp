@@ -59,6 +59,7 @@
 #include "FocusController.h"
 #include "FrameInlines.h"
 #include "FrameSelection.h"
+#include "GraphicsLayer.h"
 #include "HTMLBodyElement.h"
 #include "HTMLHtmlElement.h"
 #include "HitTestResult.h"
