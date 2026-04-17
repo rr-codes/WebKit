@@ -2322,8 +2322,6 @@ webkit.org/b/310052 [ Tahoe Debug arm64 ] inspector/unit-tests/array-utilities.h
 
 webkit.org/b/305660 [ Debug ] http/tests/cache-storage/cache-clearing-all.https.html [ Pass Failure ]
 
-webkit.org/b/305671 fast/animation/css-animation-throttling.html [ Pass Failure ]
-
 webkit.org/b/310853 imported/w3c/web-platform-tests/trusted-types/navigate-to-javascript-url-csp-headers.html [ Pass Failure ]
 
 webkit.org/b/305673 [ Debug ] inspector/idl-extensions/CanvasRenderingContext2D/setPath.html [ Timeout ]
