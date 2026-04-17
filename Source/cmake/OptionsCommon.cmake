@@ -191,7 +191,7 @@ if (DEBUG_FISSION)
 endif ()
 
 option(CLANG_TIME_TRACE "Generate Clang time trace profiling output" OFF)
-if (CLANG_TIME_TRACE)
+if (CLANG_TIME_TRACE AND COMPILER_IS_CLANG)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ftime-trace")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftime-trace")
 endif ()
