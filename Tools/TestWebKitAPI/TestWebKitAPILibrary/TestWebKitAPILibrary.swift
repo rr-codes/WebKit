@@ -1,4 +1,4 @@
-// Copyright (C) 2024 Apple Inc. All rights reserved.
+// Copyright (C) 2025 Apple Inc. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions
@@ -21,29 +21,6 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 
-// FIXME: Remove !SWIFT_WEBKIT_TOOLCHAIN once Swift toolchain is fixed (see webkit.org/b/307344).
-#if canImport(Testing) && !SWIFT_WEBKIT_TOOLCHAIN
+// The Swift module shadows the Clang module and the Swift module therefore needs to publicly import and re-export the underlying Clang module.
 
-import Testing
-import WebKit
-
-@MainActor
-struct WKWebViewSwiftOverlayTests {
-    @Test
-    func evaluateJavaScriptYieldsExpectedResponse() async throws {
-        let webView = WKWebView()
-
-        let response = try await webView.evaluateJavaScript("1 + 2") as! Int
-        #expect(response == 3)
-    }
-
-    @Test(.bug("https://bugs.webkit.org/show_bug.cgi?id=282918"))
-    func evaluateJavaScriptWithNilResponse() async throws {
-        let webView = WKWebView()
-
-        let response: Any? = try await webView.evaluateJavaScript("console.log('hello')")
-        #expect(response == nil)
-    }
-}
-
-#endif
+@_exported public import TestWebKitAPILibrary

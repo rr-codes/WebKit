@@ -28,6 +28,7 @@ import Testing
 import WebKit
 import struct Swift.String
 import struct Foundation.URL
+private import TestWebKitAPILibrary
 
 struct TestURLSchemeHandler: URLSchemeHandler, Sendable {
     struct Failure: Error {

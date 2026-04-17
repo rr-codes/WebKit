@@ -27,11 +27,13 @@ import Foundation
 import WebKit
 import SwiftUI
 import struct Swift.String
+import Testing
+private import TestWebKitAPILibrary
 
-@objc
-@implementation
-extension AppKitGesturesSupport {
-    class func testClickingChangesSelection() async throws {
+@MainActor
+struct AppKitGesturesTests {
+    @Test
+    func clickingChangesSelection() async throws {
         let page = WebPage()
 
         let html = """
@@ -70,7 +72,7 @@ extension AppKitGesturesSupport {
             return range.getBoundingClientRect().toJSON();
             """
 
-        let crazyBoundsDictionary = try await Testing.require(page.callJavaScript(getSelectionBounds) as? [String: Int])
+        let crazyBoundsDictionary = try await #require(page.callJavaScript(getSelectionBounds) as? [String: Int])
         let crazyBoundsInViewportCoordinates = CGRect(
             x: crazyBoundsDictionary["x", default: 0],
             y: crazyBoundsDictionary["y", default: 0],
@@ -103,14 +105,14 @@ extension AppKitGesturesSupport {
 
         page.click(at: middleOfCrazy)
 
-        try await Testing.waitUntil {
+        try await waitUntil {
             let selection = try await page.callJavaScript("return window.getSelection().focusOffset") as? Int
             return selection != 0
         }
 
         let selection = try await page.callJavaScript("return window.getSelection().focusOffset") as? Int
         let expected = "Here's to the cra".count
-        try Testing.expect(selection, toEqual: expected)
+        #expect(selection == expected)
     }
 }
 
