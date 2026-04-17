@@ -514,29 +514,30 @@ String HTMLOptionElement::label() const
     return collectOptionInnerTextCollapsingWhitespace();
 }
 
-// Same as label() but ignores the label content attribute in quirks mode for compatibility with other browsers.
 String HTMLOptionElement::displayLabel() const
 {
-    if (document().inQuirksMode())
+    String label = attributeWithoutSynchronization(labelAttr);
+    if (label.isEmpty())
         return collectOptionInnerTextCollapsingWhitespace();
-    return label();
+    return label;
 }
 
 String HTMLOptionElement::textIndentedToRespectGroupLabel() const
 {
     if (!document().settings().htmlEnhancedSelectParsingEnabled()) {
         if (is<HTMLOptGroupElement>(parentNode()))
-            return makeString("    "_s, label());
-        return label();
+            return makeString("    "_s, displayLabel());
+        return displayLabel();
     }
 
     for (Ref ancestor : ancestorsOfType<HTMLElement>(*this)) {
         if (is<HTMLOptGroupElement>(ancestor))
-            return makeString("    "_s, label());
+            return makeString("    "_s, displayLabel());
+
         if (isAnyOf<HTMLDataListElement, HTMLSelectElement, HTMLOptionElement, HTMLHRElement>(ancestor))
-            return label();
+            return displayLabel();
     }
-    return label();
+    return displayLabel();
 }
 
 bool HTMLOptionElement::isDisabledFormControl() const
