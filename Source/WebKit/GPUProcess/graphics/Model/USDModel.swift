@@ -409,7 +409,6 @@ extension WKBridgeUSDConfiguration {
         get { appRenderer.renderTargetDescriptor }
     }
 
-    @objc
     init(device: any MTLDevice, memoryOwner: task_id_token_t) {
         self.device = device
         do {
@@ -580,7 +579,6 @@ extension WKBridgeReceiver {
         )
     }
 
-    @objc
     func commandBuffer() -> (any MTLCommandBuffer)? {
         // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
         // swift-format-ignore: NeverForceUnwrap
@@ -880,21 +878,17 @@ extension WKBridgeReceiver {
         modelTransform = transform
     }
 
-    @objc
     func setFOV(_ fovY: Float) {
         appRenderer.setFOV(fovY)
     }
 
-    @objc
     func setBackgroundColor(_ color: simd_float3) {
         appRenderer.setBackgroundColor(color)
     }
 
-    @objc
     func setPlaying(_ play: Bool) {
     }
 
-    @objc
     func setEnvironmentMap(_ imageAsset: WKBridgeImageAsset) {
         do {
             guard
@@ -2027,12 +2021,10 @@ extension WKBridgeModelLoader {
         self.materialUpdatedCallback = materialUpdatedCallback
     }
 
-    @objc
     func loadModel(from url: Foundation.URL) {
         self.loader?.loadModel(from: url)
     }
 
-    @objc
     func loadModel(_ data: Foundation.Data) {
         self.loader?.loadModel(data: data)
     }
@@ -2042,17 +2034,14 @@ extension WKBridgeModelLoader {
         await self.loader?.update(deltaTime: deltaTime)
     }
 
-    @objc
     func setLoop(_ loop: Bool) {
         self.loader?.loop = loop
     }
 
-    @objc
     func requestCompleted(_ request: NSObject) {
         retainedRequests.remove(request)
     }
 
-    @objc
     func duration() -> Double {
         guard let loader else {
             return 0.0
@@ -2060,7 +2049,6 @@ extension WKBridgeModelLoader {
         return loader.duration()
     }
 
-    @objc
     func currentTime() -> Double {
         guard let loader else {
             return 0.0
@@ -2068,7 +2056,6 @@ extension WKBridgeModelLoader {
         return loader.currentTime()
     }
 
-    @objc
     func setCurrentTime(_ newTime: Double) {
         loader?.setCurrentTime(newTime)
     }
@@ -2677,7 +2664,6 @@ extension WKBridgeReceiver {
     ) throws {
     }
 
-    @objc
     func commandBuffer() -> (any MTLCommandBuffer)? {
         nil
     }
@@ -2702,19 +2688,15 @@ extension WKBridgeReceiver {
     func setTransform(_ transform: simd_float4x4) {
     }
 
-    @objc
     func setFOV(_ fovY: Float) {
     }
 
-    @objc
     func setBackgroundColor(_ color: simd_float3) {
     }
 
-    @objc
     func setPlaying(_ play: Bool) {
     }
 
-    @objc
     func setEnvironmentMap(_ imageAsset: WKBridgeImageAsset) {
     }
 }
@@ -2738,37 +2720,29 @@ extension WKBridgeModelLoader {
     ) {
     }
 
-    @objc
     func loadModel(from url: Foundation.URL) {
     }
 
-    @objc
     func loadModel(_ data: Foundation.Data) {
     }
 
-    @objc
     func update(_ deltaTime: Double) async {
     }
 
-    @objc
     func setLoop(_ loop: Bool) {
     }
 
-    @objc
     func requestCompleted(_ request: NSObject) {
     }
 
-    @objc
     func duration() -> Double {
         0.0
     }
 
-    @objc
     func currentTime() -> Double {
         0.0
     }
 
-    @objc
     func setCurrentTime(_ newTime: Double) {
     }
 }
