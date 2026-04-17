@@ -296,7 +296,7 @@ String JSEventListener::functionName() const
     auto& vm = m_isolatedWorld->vm();
     JSC::JSLockHolder lock(vm);
 
-    auto* handlerFunction = JSC::jsDynamicCast<JSC::JSFunction*>(m_jsFunction.get());
+    auto* handlerFunction = dynamicDowncast<JSC::JSFunction>(m_jsFunction.get());
     if (!handlerFunction)
         return { };
 

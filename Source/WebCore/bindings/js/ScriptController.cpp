@@ -357,7 +357,7 @@ void ScriptController::initScriptForWindowProxy(JSWindowProxy& windowProxy)
 static Identifier jsValueToModuleKey(JSGlobalObject* lexicalGlobalObject, JSValue value)
 {
     if (value.isSymbol())
-        return Identifier::fromUid(jsCast<Symbol*>(value)->privateName());
+        return Identifier::fromUid(uncheckedDowncast<Symbol>(value)->privateName());
     ASSERT(value.isString());
     return asString(value)->toIdentifier(lexicalGlobalObject);
 }

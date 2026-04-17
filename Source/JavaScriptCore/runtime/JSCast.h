@@ -26,6 +26,7 @@
 #pragma once
 
 #include <JavaScriptCore/JSCell.h>
+#include <wtf/TypeCasts.h>
 
 namespace JSC {
 
@@ -191,48 +192,48 @@ namespace JSCastingHelpers {
 
 template<bool isFinal>
 struct FinalTypeDispatcher {
-    template<typename Target, typename From>
+    template<typename To, typename From>
     static inline bool inheritsGeneric(From* from)
     {
-        static_assert(!std::is_same<JSObject*, Target*>::value, "This ensures our overloads work");
-        static_assert(std::is_base_of<JSCell, Target>::value && std::is_base_of<JSCell, typename std::remove_pointer<From>::type>::value, "JS casting expects that the types you are casting to/from are subclasses of JSCell");
-        // Do not use inherits<Target>() since inherits<T> depends on this function.
-        return from->JSCell::inherits(Target::info());
+        static_assert(!std::same_as<JSObject*, To*>, "This ensures our overloads work");
+        static_assert(std::derived_from<To, JSCell> && std::derived_from<std::remove_pointer_t<From>, JSCell>, "JS casting expects that the types you are casting to/from are subclasses of JSCell");
+        // Do not use inherits<To>() since inherits<T> depends on this function.
+        return from->JSCell::inherits(To::info());
     }
 };
 
 template<>
 struct FinalTypeDispatcher</* isFinal */ true> {
-    template<typename Target, typename From>
+    template<typename To, typename From>
     static inline bool inheritsGeneric(From* from)
     {
-        static_assert(!std::is_same<JSObject*, Target*>::value, "This ensures our overloads work");
-        static_assert(std::is_base_of<JSCell, Target>::value && std::is_base_of<JSCell, typename std::remove_pointer<From>::type>::value, "JS casting expects that the types you are casting to/from are subclasses of JSCell");
-        static_assert(std::is_final<Target>::value, "Target is a final type");
-        bool canCast = from->JSCell::classInfo() == Target::info();
-        // Do not use inherits<Target>() since inherits<T> depends on this function.
-        ASSERT(canCast == from->JSCell::inheritsSlow(Target::info()));
+        static_assert(!std::same_as<JSObject*, To*>, "This ensures our overloads work");
+        static_assert(std::derived_from<To, JSCell> && std::derived_from<std::remove_pointer_t<From>, JSCell>, "JS casting expects that the types you are casting to/from are subclasses of JSCell");
+        static_assert(std::is_final<To>::value, "To is a final type");
+        bool canCast = from->JSCell::classInfo() == To::info();
+        // Do not use inherits<To>() since inherits<T> depends on this function.
+        ASSERT(canCast == from->JSCell::inheritsSlow(To::info()));
         return canCast;
     }
 };
 
-template<typename Target, typename From>
+template<typename To, typename From>
 inline bool inheritsJSTypeImpl(From* from, JSTypeRange range)
 {
-    static_assert(std::is_base_of<JSCell, Target>::value && std::is_base_of<JSCell, typename std::remove_pointer<From>::type>::value, "JS casting expects that the types you are casting to/from are subclasses of JSCell");
+    static_assert(std::derived_from<To, JSCell> && std::derived_from<std::remove_pointer_t<From>, JSCell>, "JS casting expects that the types you are casting to/from are subclasses of JSCell");
     bool canCast = range.contains(from->type());
-    // Do not use inherits<Target>() since inherits<T> depends on this function.
-    ASSERT(canCast == from->JSCell::inheritsSlow(Target::info()));
+    // Do not use inherits<To>() since inherits<T> depends on this function.
+    ASSERT(canCast == from->JSCell::inheritsSlow(To::info()));
     return canCast;
 }
 
 // C++ has bad syntax so we need to use this struct because C++ doesn't have a
 // way to say that we are overloading just the first type in a template list...
-template<typename Target>
+template<typename To>
 struct InheritsTraits {
     static constexpr std::optional<JSTypeRange> typeRange { std::nullopt };
     template<typename From>
-    static inline bool inherits(From* from) { return FinalTypeDispatcher<std::is_final<Target>::value>::template inheritsGeneric<Target>(from); }
+    static inline bool inherits(From* from) { return FinalTypeDispatcher<std::is_final<To>::value>::template inheritsGeneric<To>(from); }
 };
 
 #define DEFINE_TRAITS_FOR_JS_TYPE_OVERLOAD(className, firstJSType, lastJSType) \
@@ -248,10 +249,10 @@ FOR_EACH_JS_DYNAMIC_CAST_JS_TYPE_OVERLOAD(DEFINE_TRAITS_FOR_JS_TYPE_OVERLOAD)
 #undef DEFINE_TRAITS_FOR_JS_TYPE_OVERLOAD
 
 
-template<typename Target, typename From>
+template<typename To, typename From>
 bool inherits(From* from)
 {
-    using Dispatcher = InheritsTraits<Target>;
+    using Dispatcher = InheritsTraits<To>;
     return Dispatcher::template inherits<>(from);
 }
 
@@ -282,4 +283,144 @@ To jsSecureCast(From from)
     return result;
 }
 
+} // namespace JSC
+
+// Concept that identifies JSCell subclasses without requiring complete types.
+// Uses T::info() as a marker instead of std::derived_from (which is UB with incomplete types).
+template<typename T>
+concept IsJSCellType = requires { T::info(); };
+
+// TypeCastTraits specializations for JSCell subclasses.
+// This allows using is<>(), dynamicDowncast<>(), downcast<>(), and uncheckedDowncast<>() with JS types.
+
+// Per-type specializations preserve the optimized JSType range checking.
+#define JSC_SPECIALIZE_TYPE_CAST_TRAITS(className, firstJSType, lastJSType) \
+SPECIALIZE_TYPE_TRAITS_BEGIN(JSC::className) \
+    static bool isType(const JSC::JSCell& cell) \
+    { \
+        return JSC::JSCastingHelpers::InheritsTraits<JSC::className>::inherits(&cell); \
+    } \
+SPECIALIZE_TYPE_TRAITS_END()
+
+FOR_EACH_JS_DYNAMIC_CAST_JS_TYPE_OVERLOAD(JSC_SPECIALIZE_TYPE_CAST_TRAITS)
+#undef JSC_SPECIALIZE_TYPE_CAST_TRAITS
+
+// Generic fallback for JSCell subclasses not in the overload list (e.g. WebCore binding types).
+// Uses IsJSCellType concept which is SFINAE-friendly with incomplete types.
+namespace WTF {
+template<typename To, typename From>
+    requires (IsJSCellType<std::remove_const_t<To>> && IsJSCellType<std::remove_const_t<From>>)
+struct TypeCastTraits<To, From, false> {
+    static bool isOfType(From& source)
+    {
+        return JSC::JSCastingHelpers::InheritsTraits<std::remove_const_t<To>>::inherits(&source);
+    }
+};
+
+template<typename To, typename From>
+    requires (IsJSCellType<To> && IsJSCellType<From>)
+inline match_constness_t<From, To>& uncheckedDowncast(From& source)
+{
+    static_assert(!std::same_as<From, To>, "Unnecessary cast to same type");
+    static_assert(std::derived_from<To, From>, "Should be a downcast");
+#if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
+    if (!is<To>(source)) [[unlikely]]
+        JSC::reportZappedCellAndCrash(&source);
+#else
+    ASSERT_WITH_SECURITY_IMPLICATION(is<To>(source));
+#endif
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<match_constness_t<From, To>&>(source);
 }
+
+template<typename To, typename From>
+    requires (IsJSCellType<To> && IsJSCellType<From>)
+inline match_constness_t<From, To>* uncheckedDowncast(From* source)
+{
+    static_assert(!std::same_as<From, To>, "Unnecessary cast to same type");
+    static_assert(std::derived_from<To, From>, "Should be a downcast");
+#if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
+    if (source && !is<To>(*source)) [[unlikely]]
+        JSC::reportZappedCellAndCrash(source);
+#else
+    ASSERT_WITH_SECURITY_IMPLICATION(!source || is<To>(*source));
+#endif
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<match_constness_t<From, To>*>(source);
+}
+
+// JSValue overloads for dynamicDowncast, downcast, and uncheckedDowncast.
+// Uses explicit JSC::JSValue& parameter type which is more specialized than the
+// deduced From& in WTF's overloads, so these win in partial ordering.
+
+template<typename To>
+    requires IsJSCellType<To>
+inline To* dynamicDowncast(JSC::JSValue& value)
+{
+    if (!value.isCell()) [[unlikely]]
+        return nullptr;
+    return dynamicDowncast<To>(value.asCell());
+}
+
+template<typename To>
+    requires IsJSCellType<To>
+inline To* dynamicDowncast(const JSC::JSValue& value)
+{
+    if (!value.isCell()) [[unlikely]]
+        return nullptr;
+    return dynamicDowncast<To>(value.asCell());
+}
+
+template<typename To>
+    requires IsJSCellType<To>
+inline To* downcast(JSC::JSValue& value)
+{
+    RELEASE_ASSERT(value.isCell());
+    return downcast<To>(value.asCell());
+}
+
+template<typename To>
+    requires IsJSCellType<To>
+inline To* downcast(const JSC::JSValue& value)
+{
+    RELEASE_ASSERT(value.isCell());
+    return downcast<To>(value.asCell());
+}
+
+template<typename To>
+    requires IsJSCellType<To>
+inline To* uncheckedDowncast(JSC::JSValue& value)
+{
+#if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
+    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell());
+    JSC::JSCell* cell = value.asCell();
+    if (!is<To>(*cell)) [[unlikely]]
+        JSC::reportZappedCellAndCrash(cell);
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
+#else
+    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell() && is<To>(*value.asCell()));
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(value.asCell());
+#endif
+}
+
+template<typename To>
+    requires IsJSCellType<To>
+inline To* uncheckedDowncast(const JSC::JSValue& value)
+{
+#if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
+    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell());
+    JSC::JSCell* cell = value.asCell();
+    if (!is<To>(*cell)) [[unlikely]]
+        JSC::reportZappedCellAndCrash(cell);
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
+#else
+    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell() && is<To>(*value.asCell()));
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(value.asCell());
+#endif
+}
+
+} // namespace WTF
+
+// Re-export the JSValue overloads so unqualified lookup finds them.
+// The using declarations in TypeCasts.h only see overloads declared before that point.
+using WTF::dynamicDowncast;
+using WTF::downcast;
+using WTF::uncheckedDowncast;

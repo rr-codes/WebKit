@@ -218,7 +218,7 @@ static RefPtr<IDBKey> createIDBKeyFromValue(JSGlobalObject& lexicalGlobalObject,
 
     if (value.isObject()) {
         JSObject* object = asObject(value);
-        if (auto* array = jsDynamicCast<JSArray*>(object)) {
+        if (auto* array = dynamicDowncast<JSArray>(*object)) {
             size_t length = array->length();
 
             if (stack.contains(array))
@@ -245,10 +245,10 @@ static RefPtr<IDBKey> createIDBKeyFromValue(JSGlobalObject& lexicalGlobalObject,
             return IDBKey::createArray(WTF::move(subkeys));
         }
 
-        if (auto* arrayBuffer = jsDynamicCast<JSArrayBuffer*>(value))
+        if (auto* arrayBuffer = dynamicDowncast<JSArrayBuffer>(value))
             return IDBKey::createBinary(*arrayBuffer);
 
-        if (auto* arrayBufferView = jsDynamicCast<JSArrayBufferView*>(value))
+        if (auto* arrayBufferView = dynamicDowncast<JSArrayBufferView>(value))
             return IDBKey::createBinary(*arrayBufferView);
     }
     return nullptr;
