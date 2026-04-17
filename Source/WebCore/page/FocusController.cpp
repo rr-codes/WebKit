@@ -1144,8 +1144,15 @@ bool FocusController::setFocusedElement(Element* element, Frame* newFocusedFrame
     RefPtr oldFocusedElement = oldDocument ? oldDocument->focusedElement() : nullptr;
     Ref page = m_page.get();
     if (oldFocusedElement == element) {
-        if (element)
+        if (element) {
             page->chrome().client().elementDidRefocus(*element, options);
+            return true;
+        }
+        if (newFocusedLocalFrame) {
+            RefPtr newFocusedDocument = newFocusedLocalFrame->document();
+            if (newFocusedDocument && newFocusedDocument != oldDocument)
+                newFocusedDocument->setFocusedElement(nullptr, broadcast);
+        }
         return true;
     }
 
@@ -1159,6 +1166,11 @@ bool FocusController::setFocusedElement(Element* element, Frame* newFocusedFrame
     if (!element) {
         if (oldDocument)
             oldDocument->setFocusedElement(nullptr, broadcast);
+        if (newFocusedLocalFrame) {
+            RefPtr newFocusedDocument = newFocusedLocalFrame->document();
+            if (newFocusedDocument && newFocusedDocument != oldDocument)
+                newFocusedDocument->setFocusedElement(nullptr, broadcast);
+        }
         page->editorClient().setInputMethodState(nullptr);
         return true;
     }
