@@ -150,8 +150,8 @@ PASS <fieldset> contents preserved ("<div><fieldset>abc")
 PASS <fieldset> <legend> contents preserved ("<div><fieldset><legend>abc")
 PASS <input> contents ignored ("<div><input type='text' value='abc'>")
 PASS <textarea> contents ignored ("<div><textarea>abc")
-FAIL <select size='1'> contents of options preserved ("<div><select size='1'><option>abc</option><option>def") assert_equals: innerText expected "abc\ndef" but got ""
-FAIL <select size='2'> contents of options preserved ("<div><select size='2'><option>abc</option><option>def") assert_equals: innerText expected "abc\ndef" but got ""
+PASS <select size='1'> contents of options preserved ("<div><select size='1'><option>abc</option><option>def")
+PASS <select size='2'> contents of options preserved ("<div><select size='2'><option>abc</option><option>def")
 PASS <iframe> contents ignored ("<div><iframe>abc")
 PASS  <iframe> subdocument ignored ("<div><iframe src='data:text/html,abc'>")
 PASS <audio> contents ignored ("<div><audio>abc")
