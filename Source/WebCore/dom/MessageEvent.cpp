@@ -36,6 +36,8 @@
 #include <JavaScriptCore/JSCInlines.h>
 #include <wtf/TZoneMallocInlines.h>
 
+template class mpark::variant<WTF::Ref<WebCore::WindowProxy>, WTF::Ref<WebCore::MessagePort>, WTF::Ref<WebCore::ServiceWorker>>;
+
 namespace WebCore {
 
 using namespace JSC;

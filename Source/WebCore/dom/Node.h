@@ -915,3 +915,5 @@ void showNodePath(const WebCore::Node*);
 SPECIALIZE_TYPE_TRAITS_BEGIN(WebCore::Node)
     static bool isType(const WebCore::EventTarget& target) { return target.isNode(); }
 SPECIALIZE_TYPE_TRAITS_END()
+
+extern template class mpark::variant<WTF::Ref<WebCore::Node>, WTF::String>;

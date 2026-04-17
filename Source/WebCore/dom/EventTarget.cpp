@@ -57,6 +57,9 @@
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
 
+template class mpark::variant<WebCore::AddEventListenerOptions, bool>;
+template class mpark::variant<WebCore::EventListenerOptions, bool>;
+
 namespace WebCore {
 
 WTF_MAKE_TZONE_ALLOCATED_IMPL(EventTargetData);
