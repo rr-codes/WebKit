@@ -607,6 +607,36 @@ LayoutUnit RenderFlexibleBox::resolveFlexibleLengthsForLineItems(FlexLayoutItems
     return remainingFreeSpace;
 }
 
+void RenderFlexibleBox::distributeMainAxisFreeSpaceForMultilineColumnIfNeeded(FlexLineStates& lineStates, LayoutUnit gapBetweenItems)
+{
+    // In multi-line column flex, the container's main size (height) is only known
+    // after all lines are laid out. Lines whose items had flex-grow may not have
+    // received enough space because the container height wasn't final during the
+    // per-line pass. Re-resolve and relayout those lines now.
+    if (!isMultiline() || !isColumnFlow())
+        return;
+
+    auto containerMainInnerSize = contentBoxLogicalHeight();
+    for (auto& flexLine : lineStates) {
+        auto lineMainSize = LayoutUnit { };
+        for (auto& flexItem : flexLine.flexLayoutItems)
+            lineMainSize += flexItem.flexedMarginBoxSize();
+        lineMainSize += (flexLine.flexLayoutItems.size() - 1) * gapBetweenItems;
+        if (lineMainSize >= containerMainInnerSize)
+            continue;
+
+        resolveFlexibleLengthsForLineItems(flexLine.flexLayoutItems, containerMainInnerSize, gapBetweenItems);
+
+        auto remainingFreeSpace = containerMainInnerSize;
+        for (auto& flexItem : flexLine.flexLayoutItems)
+            remainingFreeSpace -= flexItem.flexedMarginBoxSize();
+        remainingFreeSpace -= (flexLine.flexLayoutItems.size() - 1) * gapBetweenItems;
+
+        auto crossAxisOffset = flexLine.crossAxisOffset;
+        layoutAndPlaceFlexItems(crossAxisOffset, flexLine.flexLayoutItems, remainingFreeSpace, RelayoutChildren::No, gapBetweenItems);
+    }
+}
+
 void RenderFlexibleBox::repositionLogicalHeightDependentFlexItems(FlexLineStates& lineStates, LayoutUnit gapBetweenLines)
 {
     LayoutUnit crossAxisStartEdge = lineStates.isEmpty() ? 0_lu : lineStates[0].crossAxisOffset;
@@ -1579,6 +1609,7 @@ void RenderFlexibleBox::performFlexLayout(RelayoutChildren relayoutChildren)
         setLogicalHeight(logicalHeight() + computeGap(GapType::BetweenLines) * (numLines - 1));
 
     updateLogicalHeight();
+    distributeMainAxisFreeSpaceForMultilineColumnIfNeeded(lineStates, gapBetweenItems);
     repositionLogicalHeightDependentFlexItems(lineStates, gapBetweenLines);
 }
 
