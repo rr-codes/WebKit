@@ -14888,7 +14888,6 @@ IGNORE_CLANG_WARNINGS_END
     {
         LBasicBlock notInt32 = m_out.newBlock();
         LBasicBlock doubleCase = m_out.newBlock();
-        LBasicBlock doubleNotNanOrInf = m_out.newBlock();
         LBasicBlock continuation = m_out.newBlock();
 
         LValue input = lowJSValue(m_node->child1());
@@ -14902,32 +14901,18 @@ IGNORE_CLANG_WARNINGS_END
         m_out.branch(
             isNotNumber(input, provenType(m_node->child1())), unsure(continuation), unsure(doubleCase));
 
-        m_out.appendTo(doubleCase, doubleNotNanOrInf);
-        LValue doubleAsInt;
-        LValue asDouble = unboxDouble(input, &doubleAsInt);
-        LValue expBits = m_out.bitAnd(m_out.lShr(doubleAsInt, m_out.constInt32(52)), m_out.constInt64(0x7ff));
-        m_out.branch(
-            m_out.equal(expBits, m_out.constInt64(0x7ff)),
-            unsure(continuation), unsure(doubleNotNanOrInf));
-
-        m_out.appendTo(doubleNotNanOrInf, continuation);
-        PatchpointValue* patchpoint = m_out.patchpoint(Int32);
-        patchpoint->appendSomeRegister(asDouble);
-        patchpoint->numFPScratchRegisters = 1;
-        patchpoint->effects = Effects::none();
-        patchpoint->setGenerator([=] (CCallHelpers& jit, const StackmapGenerationParams& params) {
-            JIT_COMMENT(jit, "NumberIsInteger");
-            GPRReg result = params[0].gpr();
-            FPRReg input = params[1].fpr();
-            FPRReg temp = params.fpScratch(0);
-            jit.roundTowardZeroDouble(input, temp);
-            jit.compareDouble(MacroAssembler::DoubleEqualAndOrdered, input, temp, result);
-        });
-        ValueFromBlock patchpointResult = m_out.anchor(patchpoint);
+        // Use value - trunc(value) == 0.0 which rejects NaN and Infinity
+        // without an explicit check since NaN - NaN and Inf - Inf both
+        // produce NaN.
+        m_out.appendTo(doubleCase, continuation);
+        LValue asDouble = unboxDouble(input);
+        LValue diff = m_out.doubleSub(asDouble, m_out.doubleTrunc(asDouble));
+        LValue isInt = m_out.doubleEqual(diff, m_out.constDouble(0.0));
+        ValueFromBlock doubleResult = m_out.anchor(isInt);
         m_out.jump(continuation);
 
         m_out.appendTo(continuation, lastNext);
-        setBoolean(m_out.phi(Int32, trueResult, falseResult, patchpointResult));
+        setBoolean(m_out.phi(Int32, trueResult, falseResult, doubleResult));
     }
 
     void compileGlobalIsNaN()
@@ -15065,10 +15050,6 @@ IGNORE_CLANG_WARNINGS_END
         case DoubleRepUse: {
             LValue argument = lowDouble(m_node->child1());
 
-            // check if the value is finite
-            LValue diff = m_out.doubleSub(argument, argument);
-            LValue isFinite = m_out.doubleEqual(diff, diff);
-
             // check if the value is an integer
             LValue isInteger = m_out.doubleEqual(argument, m_out.doubleTrunc(argument));
 
@@ -15076,8 +15057,7 @@ IGNORE_CLANG_WARNINGS_END
             LValue limit = m_out.constDouble(maxSafeInteger());
             LValue isInRange = m_out.doubleLessThanOrEqual(m_out.doubleAbs(argument), limit);
 
-            LValue isValid = m_out.bitAnd(isFinite, isInteger);
-            LValue result = m_out.bitAnd(isValid, isInRange);
+            LValue result = m_out.bitAnd(isInteger, isInRange);
 
             setBoolean(result);
             break;

@@ -17846,11 +17846,6 @@ void SpeculativeJIT::compileNumberIsSafeInteger(Node* node)
             compareDouble(DoubleEqualAndOrdered, argumentFPR, tempFPR, isValidGPR);
         }
 
-        // check if the value is finite
-        subDouble(argumentFPR, argumentFPR, tempFPR);
-        compareDouble(DoubleEqualAndOrdered, tempFPR, tempFPR, scratchGPR);
-        and32(scratchGPR, isValidGPR);
-
         // check if the value is in the range
         absDouble(argumentFPR, tempFPR);
         move64ToDouble(TrustedImm64(std::bit_cast<uint64_t>(maxSafeInteger())), limitFPR);
