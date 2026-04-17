@@ -1592,8 +1592,8 @@ LayoutUnit RenderBlockFlow::collapseMarginsWithChildInfo(RenderBox* child, Margi
     if (marginInfo.quirkContainer() && marginInfo.atBeforeSideOfBlock() && (posTop - negTop))
         marginInfo.setHasMarginBeforeQuirk(beforeQuirk);
 
-    LayoutUnit beforeCollapseLogicalTop = logicalHeight();
-    LayoutUnit logicalTop = beforeCollapseLogicalTop;
+    LayoutUnit logicalTopBeforeMarginCollapse = logicalHeight();
+    LayoutUnit logicalTopAfterMarginCollapse = logicalTopBeforeMarginCollapse;
     // If the child's previous sibling is a self-collapsing block that cleared a float then its top border edge has been set at the bottom border edge
     // of the float. Since we want to collapse the child's top margin with the self-collapsing block's top and bottom margins we need to adjust our parent's height to match the 
     // margin top of the self-collapsing block. If the resulting collapsed margin leaves the child still intruding into the float then we will want to clear it.
@@ -1620,7 +1620,7 @@ LayoutUnit RenderBlockFlow::collapseMarginsWithChildInfo(RenderBox* child, Margi
             // is correct, since it could have overflowing content
             // that needs to be positioned correctly (e.g., a block that
             // had a specified height of 0 but that actually had subcontent).
-            logicalTop = logicalHeight() + collapsedBeforePos - collapsedBeforeNeg;
+            logicalTopAfterMarginCollapse = logicalHeight() + collapsedBeforePos - collapsedBeforeNeg;
         }
     } else {
         if (!marginInfo.atBeforeSideOfBlock() || (!marginInfo.canCollapseMarginBeforeWithChildren()
@@ -1628,7 +1628,7 @@ LayoutUnit RenderBlockFlow::collapseMarginsWithChildInfo(RenderBox* child, Margi
             // We're collapsing with a previous sibling's margins and not
             // with the top of the block.
             setLogicalHeight(logicalHeight() + std::max(marginInfo.positiveMargin(), posTop) - std::max(marginInfo.negativeMargin(), negTop));
-            logicalTop = logicalHeight();
+            logicalTopAfterMarginCollapse = logicalHeight();
         }
 
         marginInfo.setPositiveMargin(childMargins.positiveMarginAfter());
@@ -1641,14 +1641,14 @@ LayoutUnit RenderBlockFlow::collapseMarginsWithChildInfo(RenderBox* child, Margi
     // If margins would pull us past the top of the next page, then we need to pull back and pretend like the margins
     // collapsed into the page edge.
     auto* layoutState = view().frameView().layoutContext().layoutState();
-    if (layoutState->isPaginated() && layoutState->pageLogicalHeight() && logicalTop > beforeCollapseLogicalTop
-        && hasNextPage(beforeCollapseLogicalTop)) {
-        LayoutUnit oldLogicalTop = logicalTop;
-        logicalTop = std::min(logicalTop, nextPageLogicalTop(beforeCollapseLogicalTop));
-        setLogicalHeight(logicalHeight() + (logicalTop - oldLogicalTop));
+    if (layoutState->isPaginated() && layoutState->pageLogicalHeight() && logicalTopAfterMarginCollapse > logicalTopBeforeMarginCollapse
+        && hasNextPage(logicalTopBeforeMarginCollapse)) {
+        LayoutUnit logicalTopBeforePagination = logicalTopAfterMarginCollapse;
+        logicalTopAfterMarginCollapse = std::min(logicalTopAfterMarginCollapse, nextPageLogicalTop(logicalTopBeforeMarginCollapse));
+        setLogicalHeight(logicalHeight() + (logicalTopAfterMarginCollapse - logicalTopBeforePagination));
     }
 
-    return logicalTop;
+    return logicalTopAfterMarginCollapse;
 }
 
 bool RenderBlockFlow::isChildEligibleForMarginTrim(Style::MarginTrimSide marginTrimSide, const RenderBox& child) const
