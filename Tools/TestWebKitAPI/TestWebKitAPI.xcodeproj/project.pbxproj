@@ -578,6 +578,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WebKit/WebPage/AppKitGesturesTests.swift,
+				WebKit/WebPage/URLSchemeHandlerTests.swift,
+				WebKit/WebPage/WebPageNavigationTests.swift,
+				WebKit/WebPage/WebPageTests.swift,
+				WebKit/WebPage/WebPageTransferableTests.swift,
 				WebKit/WKWebView/WKWebViewSwiftOverlayTests.swift,
 			);
 			target = 8DD76F960486AA7600D96B5E /* TestWebKitAPI */;
