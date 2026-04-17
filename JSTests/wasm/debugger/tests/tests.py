@@ -2158,3 +2158,25 @@ class StreamingModuleLoadTestCase(BaseTestCase):
         self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped", "->  0x4000000000000023: end"])
 
         self.send_lldb_command_or_raise("br del -f", patterns=["All breakpoints removed. (1 breakpoint)"])
+
+
+class SwiftWasmFatalErrorTestCase(BaseTestCase):
+
+    def __init__(self, build_config: str = None, port: int = None):
+        super().__init__(build_config, port)
+
+    def execute(self):
+        self.setup_debugging_session_or_raise("resources/swift-wasm/fatal-error-test/main.js")
+
+        try:
+            for _ in range(1):
+                self.test()
+
+        except Exception as e:
+            raise Exception(f"Test failed: {e}")
+
+    def test(self):
+        for _ in range(10):
+            self.send_lldb_command_or_raise("c", patterns=["Process 1 stopped"])
+
+        self.send_lldb_command_or_raise("bt", patterns=["main.swift:4",])
