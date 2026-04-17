@@ -73,8 +73,8 @@ PASS Soft breaks ignored, text-transform applied ("<div style='width:1px; word-b
 PASS <br> returned as newline, following space collapsed ("<div style='width:1px; word-break:break-word'>Hello<br> Kitty</div>")
 PASS <br> returned as newline, preceding space collapsed ("<div style='width:1px; word-break:break-word'>Hello <br>Kitty</div>")
 PASS <br> returned as newline, adjacent spaces collapsed across element boundaries ("<div style='width:1px; word-break:break-word'><x>Hello </x> <br> <x> Kitty</x></div>")
-FAIL ::first-line styles applied ("<div class='first-line-uppercase'>abc") assert_equals: innerText expected "ABC" but got "abc"
-FAIL ::first-line styles applied ("<div class='first-line-uppercase' style='width:0'>abc def") assert_equals: innerText expected "ABC def" but got "abc def"
+PASS ::first-line styles applied ("<div class='first-line-uppercase'>abc")
+PASS ::first-line styles applied ("<div class='first-line-uppercase' style='width:0'>abc def")
 PASS ::first-letter styles applied ("<div class='first-letter-uppercase' style='width:0'>abc def")
 PASS ::first-letter float ignored ("<div class='first-letter-float' style='width:0'>abc def")
 PASS &nbsp; preserved ("<div>&nbsp;")
