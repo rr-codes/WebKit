@@ -576,6 +576,37 @@ void RenderFlexibleBox::paintChildren(PaintInfo& paintInfo, const LayoutPoint& p
     }
 }
 
+LayoutUnit RenderFlexibleBox::resolveFlexibleLengthsForLineItems(FlexLayoutItems& lineItems, LayoutUnit containerMainInnerSize, LayoutUnit gapBetweenItems)
+{
+    double totalFlexGrow = 0;
+    double totalFlexShrink = 0;
+    double totalWeightedFlexShrink = 0;
+    LayoutUnit sumFlexBaseSize;
+    LayoutUnit sumHypotheticalMainSize;
+    for (auto& flexLayoutItem : lineItems) {
+        flexLayoutItem.flexedContentSize = flexLayoutItem.flexBaseContentSize;
+        flexLayoutItem.frozen = false;
+        totalFlexGrow += flexLayoutItem.style().flexGrow().value;
+        totalFlexShrink += flexLayoutItem.style().flexShrink().value;
+        totalWeightedFlexShrink += flexLayoutItem.style().flexShrink().value * flexLayoutItem.flexBaseContentSize;
+        sumFlexBaseSize += flexLayoutItem.flexBaseMarginBoxSize();
+        sumHypotheticalMainSize += flexLayoutItem.hypotheticalMainAxisMarginBoxSize();
+    }
+    if (lineItems.size() > 1) {
+        auto totalGap = (lineItems.size() - 1) * gapBetweenItems;
+        sumFlexBaseSize += totalGap;
+        sumHypotheticalMainSize += totalGap;
+    }
+
+    auto remainingFreeSpace = containerMainInnerSize - sumFlexBaseSize;
+    auto flexSign = (sumHypotheticalMainSize < containerMainInnerSize) ? FlexSign::PositiveFlexibility : FlexSign::NegativeFlexibility;
+    freezeInflexibleItems(flexSign, lineItems, remainingFreeSpace, totalFlexGrow, totalFlexShrink, totalWeightedFlexShrink);
+    auto initialFreeSpace = remainingFreeSpace;
+    while (!resolveFlexibleLengths(flexSign, lineItems, initialFreeSpace, remainingFreeSpace, totalFlexGrow, totalFlexShrink, totalWeightedFlexShrink)) { }
+
+    return remainingFreeSpace;
+}
+
 void RenderFlexibleBox::repositionLogicalHeightDependentFlexItems(FlexLineStates& lineStates, LayoutUnit gapBetweenLines)
 {
     LayoutUnit crossAxisStartEdge = lineStates.isEmpty() ? 0_lu : lineStates[0].crossAxisOffset;
@@ -1508,21 +1539,8 @@ void RenderFlexibleBox::performFlexLayout(RelayoutChildren relayoutChildren)
             }
         }
         auto containerMainInnerSize = mainAxisContentExtent(lineData->sumHypotheticalMainSize);
-        // availableFreeSpace is the initial amount of free space in this flexbox.
-        // remainingFreeSpace starts out at the same value but as we place and lay
-        // out flex items we subtract from it. Note that both values can be
-        // negative.
-        auto remainingFreeSpace = containerMainInnerSize - lineData->sumFlexBaseSize;
-        auto flexSign = (lineData->sumHypotheticalMainSize < containerMainInnerSize) ? FlexSign::PositiveFlexibility : FlexSign::NegativeFlexibility;
-        freezeInflexibleItems(flexSign, lineItems, remainingFreeSpace, lineData->totalFlexGrow, lineData->totalFlexShrink, lineData->totalWeightedFlexShrink);
-        // The initial free space gets calculated after freezing inflexible items.
-        // https://drafts.csswg.org/css-flexbox/#resolve-flexible-lengths step 3
-        const LayoutUnit initialFreeSpace = remainingFreeSpace;
-        while (!resolveFlexibleLengths(flexSign, lineItems, initialFreeSpace, remainingFreeSpace, lineData->totalFlexGrow, lineData->totalFlexShrink, lineData->totalWeightedFlexShrink)) {
-            ASSERT(lineData->totalFlexGrow >= 0);
-            ASSERT(lineData->totalWeightedFlexShrink >= 0);
-        }
-        
+        auto remainingFreeSpace = resolveFlexibleLengthsForLineItems(lineItems, containerMainInnerSize, gapBetweenItems);
+
         // Recalculate the remaining free space. The adjustment for flex factors
         // between 0..1 means we can't just use remainingFreeSpace here.
         remainingFreeSpace = containerMainInnerSize;
@@ -1533,8 +1551,9 @@ void RenderFlexibleBox::performFlexLayout(RelayoutChildren relayoutChildren)
         }
         remainingFreeSpace -= (lineItems.size() - 1) * gapBetweenItems;
 
-        // This will WTF::move lineItems into a newly-created LineState.
-        layoutAndPlaceFlexItems(crossAxisOffset, lineItems, remainingFreeSpace, relayoutChildren, lineStates, gapBetweenItems);
+        auto lineResult = layoutAndPlaceFlexItems(crossAxisOffset, lineItems, remainingFreeSpace, relayoutChildren, gapBetweenItems);
+        lineStates.append(LineState(crossAxisOffset, lineResult.crossAxisExtent, lineResult.baselineAlignmentState, WTF::move(lineItems)));
+        crossAxisOffset = lineResult.crossAxisOffsetForNextLine;
     }
 
     if (!lineStates.isEmpty()) {
@@ -1596,7 +1615,7 @@ std::optional<RenderFlexibleBox::FlexingLineData> RenderFlexibleBox::computeNext
     ASSERT(lineData.lineItems.size() > 0 || nextIndex == allItems.size());
     // Trim main axis margin for item at the end of the flex line
     if (lineData.lineItems.size() && shouldTrimMainAxisMarginEnd()) {
-        auto lastItem = lineData.lineItems.last();
+        auto& lastItem = lineData.lineItems.last();
         removeMarginEndFromFlexSizes(lastItem, lineData.sumFlexBaseSize, lineData.sumHypotheticalMainSize);
         trimMainAxisMarginEnd(lastItem);
     }
@@ -2491,7 +2510,7 @@ static LayoutUnit NODELETE contentAlignmentStartOverflow(LayoutUnit availableFre
     }
 }
 
-void RenderFlexibleBox::layoutAndPlaceFlexItems(LayoutUnit& crossAxisOffset, FlexLayoutItems& flexLayoutItems, LayoutUnit availableFreeSpace, RelayoutChildren relayoutChildren, FlexLineStates& lineStates, LayoutUnit gapBetweenItems)
+RenderFlexibleBox::FlexLineResult RenderFlexibleBox::layoutAndPlaceFlexItems(LayoutUnit crossAxisOffset, FlexLayoutItems& flexLayoutItems, LayoutUnit availableFreeSpace, RelayoutChildren relayoutChildren, LayoutUnit gapBetweenItems)
 {
     LayoutUnit autoMarginOffset = autoMarginOffsetInMainAxis(flexLayoutItems, availableFreeSpace);
     LayoutUnit mainAxisOffset = flowAwareBorderStart() + flowAwarePaddingStart();
@@ -2620,8 +2639,7 @@ void RenderFlexibleBox::layoutAndPlaceFlexItems(LayoutUnit& crossAxisOffset, Fle
         layoutColumnReverse(flexLayoutItems, crossAxisOffset, availableFreeSpace, gapBetweenItems);
     }
 
-    lineStates.append(LineState(crossAxisOffset, maxFlexItemCrossAxisExtent, baselineAlignmentState, WTF::move(flexLayoutItems)));
-    crossAxisOffset += maxFlexItemCrossAxisExtent;
+    return { crossAxisOffset + maxFlexItemCrossAxisExtent, maxFlexItemCrossAxisExtent, baselineAlignmentState };
 }
 
 void RenderFlexibleBox::layoutColumnReverse(const FlexLayoutItems& flexLayoutItems, LayoutUnit crossAxisOffset, LayoutUnit availableFreeSpace, LayoutUnit gapBetweenItems)

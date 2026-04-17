@@ -2946,6 +2946,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     plugins/PluginViewBase.h
 
     rendering/AccessibilityRegionContext.h
+    rendering/BaselineAlignment.h
     rendering/BreakablePositions.h
     rendering/CSSFilterRenderer.h
     rendering/CSSValueKey.h

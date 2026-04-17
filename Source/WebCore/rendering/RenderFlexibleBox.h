@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include <WebCore/BaselineAlignment.h>
 #include <WebCore/OrderIterator.h>
 #include <WebCore/RenderBlock.h>
 #include <wtf/WeakHashSet.h>
@@ -250,6 +251,7 @@ private:
 
     bool NODELETE hasAutoMarginsInCrossAxis(const RenderBox& flexItem) const;
     bool NODELETE updateAutoMarginsInCrossAxis(RenderBox& flexItem, LayoutUnit availableAlignmentSpace);
+    LayoutUnit resolveFlexibleLengthsForLineItems(FlexLayoutItems&, LayoutUnit containerMainInnerSize, LayoutUnit gapBetweenItems);
     void repositionLogicalHeightDependentFlexItems(FlexLineStates&, LayoutUnit gapBetweenLines);
     
     LayoutUnit availableAlignmentSpaceForFlexItem(LayoutUnit lineCrossAxisExtent, const RenderBox& flexItem);
@@ -268,7 +270,13 @@ private:
     void resetAutoMarginsAndLogicalTopInCrossAxis(RenderBox& flexItem);
     void setOverridingMainSizeForFlexItem(RenderBox&, LayoutUnit);
     void prepareFlexItemForPositionedLayout(RenderBox& flexItem);
-    void layoutAndPlaceFlexItems(LayoutUnit& crossAxisOffset, FlexLayoutItems&, LayoutUnit availableFreeSpace, RelayoutChildren, FlexLineStates&, LayoutUnit gapBetweenItems);
+
+    struct FlexLineResult {
+        LayoutUnit crossAxisOffsetForNextLine;
+        LayoutUnit crossAxisExtent;
+        std::optional<BaselineAlignmentState> baselineAlignmentState;
+    };
+    FlexLineResult layoutAndPlaceFlexItems(LayoutUnit crossAxisOffset, FlexLayoutItems&, LayoutUnit availableFreeSpace, RelayoutChildren, LayoutUnit gapBetweenItems);
     void layoutColumnReverse(const FlexLayoutItems&, LayoutUnit crossAxisOffset, LayoutUnit availableFreeSpace, LayoutUnit gapBetweenItems);
     void alignFlexLines(FlexLineStates&, LayoutUnit gapBetweenLines);
     void alignFlexItems(FlexLineStates&);
