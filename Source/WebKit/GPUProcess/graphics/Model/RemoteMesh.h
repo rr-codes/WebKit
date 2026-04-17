@@ -99,6 +99,7 @@ private:
     void setBackgroundColor(const WebModel::Float3&);
     void play(bool);
     void setEnvironmentMap(const WebModel::ImageAsset&);
+    void updateContentsHeadroom(float);
     void updateRenderBuffers(unsigned, unsigned, CompletionHandler<void(Vector<MachSendRight>&&)>&&);
 
     void render(uint32_t textureIndex, CompletionHandler<void(bool)>&&);
