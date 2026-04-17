@@ -185,8 +185,6 @@ FontFace::~FontFace()
 
 ExceptionOr<void> FontFace::setFamily(ScriptExecutionContext& context, const AtomString& family)
 {
-    if (family.isEmpty())
-        return Exception { ExceptionCode::SyntaxError };
     m_backing->setFamily(context.cssValuePool().createFontFamilyNameValue(family));
     return { };
 }

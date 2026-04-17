@@ -32,6 +32,7 @@
 #include "CSSFontFeatureValue.h"
 #include "CSSFontSelector.h"
 #include "CSSFontStyleRangeValue.h"
+#include "CSSMarkup.h"
 #include "CSSPrimitiveValueMappings.h"
 #include "CSSUnicodeRangeValue.h"
 #include "CSSValue.h"
@@ -369,7 +370,7 @@ AtomString CSSFontFace::family() const
     RefPtr value = dynamicDowncast<CSSFontFamilyNameValue>(properties().getPropertyCSSValue(CSSPropertyFontFamily));
     if (!value)
         return { };
-    return value->fontFamilyName().value;
+    return AtomString(serializeFontFamily(value->fontFamilyName().value));
 }
 
 String CSSFontFace::style() const
