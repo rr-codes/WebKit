@@ -338,6 +338,9 @@ editing/spelling/spelling-markers-after-pasting-sentence.html [ WontFix ]
 editing/spelling/text-replacement-after-typing-to-word.html [ Skip ]
 editing/spelling/text-replacement-first-word-second-line.html [ Skip ]
 
+# Grammar correction panel is Mac-only (USE(AUTOCORRECTION_PANEL))
+editing/spelling/grammar-correction-shown-clicking-middle-of-word.html [ Skip ]
+
 # UIKit draws selection on iOS
 fast/selectors/input-with-selection-pseudo-element.html [ WontFix ]
 fast/selectors/selection-window-inactive.html [ WontFix ]

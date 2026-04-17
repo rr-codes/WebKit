@@ -376,6 +376,7 @@ webkit.org/b/130464 fast/canvas/canvas-path-addPath.html
 # Needs grammar checking implementation.
 Bug(GTK) editing/spelling/grammar.html [ Skip ]
 Bug(GTK) editing/spelling/grammar-and-spelling-error-styling.html [ Skip ]
+Bug(GTK) editing/spelling/grammar-correction-shown-clicking-middle-of-word.html [ Skip ]
 Bug(GTK) editing/spelling/grammar-edit-word.html [ Skip ]
 Bug(GTK) editing/spelling/grammar-markers.html [ Skip ]
 Bug(GTK) editing/spelling/grammar-markers-hidpi.html [ Skip ]

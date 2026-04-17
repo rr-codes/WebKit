@@ -498,6 +498,7 @@ public:
     }
     bool hasSpellingMarker(int from, int length);
     bool hasGrammarMarker(int from, int length);
+    bool isAlternativeTextUIActive() const;
     bool hasAutocorrectedMarker(int from, int length);
     bool hasDictationAlternativesMarker(int from, int length);
     bool hasCorrectionIndicatorMarker(int from, int length);

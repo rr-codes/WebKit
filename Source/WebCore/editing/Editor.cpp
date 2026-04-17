@@ -2054,6 +2054,11 @@ void Editor::toggleSmartLists()
 
 #endif // USE(AUTOMATIC_TEXT_REPLACEMENT)
 
+bool Editor::isAlternativeTextUIActive() const
+{
+    return m_alternativeTextController->isAlternativeTextUIActive();
+}
+
 #if PLATFORM(COCOA)
 bool Editor::isSmartListsEnabled()
 {

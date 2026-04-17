@@ -3041,6 +3041,14 @@ bool Internals::hasGrammarMarker(int from, int length)
     return hasMarkerFor(DocumentMarkerType::Grammar, from, length);
 }
 
+bool Internals::isAlternativeTextUIActive() const
+{
+    RefPtr document = contextDocument();
+    if (!document || !document->frame())
+        return false;
+    return document->frame()->editor().isAlternativeTextUIActive();
+}
+
 bool Internals::hasAutocorrectedMarker(int from, int length)
 {
     return hasMarkerFor(DocumentMarkerType::Autocorrected, from, length);
