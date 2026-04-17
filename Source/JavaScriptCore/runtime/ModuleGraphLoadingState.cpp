@@ -26,6 +26,7 @@
 #include "config.h"
 #include "ModuleGraphLoadingState.h"
 
+#include "JSCellInlines.h"
 #include "JSPromise.h"
 
 namespace JSC {

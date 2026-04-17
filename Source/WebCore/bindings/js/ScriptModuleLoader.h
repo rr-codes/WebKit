@@ -41,6 +41,7 @@ class CallFrame;
 class JSGlobalObject;
 class JSModuleLoader;
 class JSModuleRecord;
+class JSPromise;
 class SourceOrigin;
 
 }

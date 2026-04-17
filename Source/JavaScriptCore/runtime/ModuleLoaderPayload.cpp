@@ -26,6 +26,7 @@
 #include "config.h"
 #include "ModuleLoaderPayload.h"
 
+#include "JSCellInlines.h"
 #include "JSPromise.h"
 
 namespace JSC {
