@@ -656,11 +656,8 @@ inline int32_t tableSize(JSWebAssemblyInstance* instance, unsigned tableIndex)
     return instance->table(tableIndex)->length();
 }
 
-inline int32_t growMemory(JSWebAssemblyInstance* instance, int32_t delta, uint8_t memoryIndex)
+inline uint64_t growMemory(JSWebAssemblyInstance* instance, uint64_t delta, uint8_t memoryIndex)
 {
-    if (delta < 0)
-        return -1;
-
     auto grown = instance->memory(memoryIndex)->memory().grow(instance->vm(), PageCount(delta));
     if (!grown) {
         switch (grown.error()) {

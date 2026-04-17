@@ -2042,7 +2042,7 @@ auto OMGIRGenerator::emitIndirectCall(Value* calleeInstance, Value* calleeCode, 
 
 auto OMGIRGenerator::addGrowMemory(ExpressionType delta, ExpressionType& result, uint8_t memoryIndex) -> PartialResult
 {
-    result = push(callWasmOperation(m_currentBlock, Int32, operationGrowMemory,
+    result = push(callWasmOperation(m_currentBlock, m_info.memory(memoryIndex).addressType().asB3TypeKind(), operationGrowMemory,
         instanceValue(), get(delta), constant(Int32, memoryIndex)));
 
     restoreWebAssemblyGlobalState(m_info.memories, instanceValue(), m_currentBlock);
@@ -2062,9 +2062,12 @@ auto OMGIRGenerator::addCurrentMemory(ExpressionType& result, uint8_t memoryInde
         static_assert(PageCount::pageSize == 1ull << shiftValue, "This must hold for the code below to be correct.");
         Value* numPages = m_currentBlock->appendNew<Value>(m_proc, ZShr, origin(), size, constant(Int32, shiftValue));
 
-        result = push(int32OfPointer(numPages));
+        if (m_info.memory(memoryIndex).isMemory64())
+            result = push(numPages);
+        else
+            result = push(int32OfPointer(numPages));
     } else {
-        Value* resultValue = callWasmOperation(m_currentBlock, toB3Type(Types::I32), operationWasmMemorySizeInPages,
+        Value* resultValue = callWasmOperation(m_currentBlock, m_info.memory(memoryIndex).addressType().asB3TypeKind(), operationWasmMemorySizeInPages,
             instanceValue(), constant(Int32, memoryIndex));
         result = push(resultValue);
     }

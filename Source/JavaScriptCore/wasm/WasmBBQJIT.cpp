@@ -1102,7 +1102,7 @@ Address BBQJIT::materializePointer(Location pointerLocation, uint32_t uoffset)
 [[nodiscard]] PartialResult BBQJIT::addGrowMemory(Value delta, Value& result, uint8_t memoryIndex)
 {
     Vector<Value, 8> arguments = { instanceValue(), delta, Value::fromI32(memoryIndex) };
-    result = topValue(m_info.memory(memoryIndex).addressType().asTypeKind());
+    result = topValue(m_info.memory(memoryIndex).addressType().asWasmTypeKind());
     emitCCall(&operationGrowMemory, arguments, result);
     restoreWebAssemblyGlobalState();
 
@@ -1113,14 +1113,15 @@ Address BBQJIT::materializePointer(Location pointerLocation, uint32_t uoffset)
 
 [[nodiscard]] PartialResult BBQJIT::addCurrentMemory(Value& result, uint8_t memoryIndex)
 {
-    result = topValue(m_info.memory(memoryIndex).addressType().asTypeKind());
+    result = topValue(m_info.memory(memoryIndex).addressType().asWasmTypeKind());
     if (!memoryIndex) {
         Location resultLocation = allocate(result);
-        m_jit.loadPtr(Address(GPRInfo::wasmContextInstancePointer, JSWebAssemblyInstance::offsetOfCachedMemory0Size()), wasmScratchGPR);
         constexpr uint32_t shiftValue = 16;
         static_assert(PageCount::pageSize == 1ull << shiftValue, "This must hold for the code below to be correct.");
-        m_jit.urshiftPtr(Imm32(shiftValue), wasmScratchGPR);
-        m_jit.zeroExtend32ToWord(wasmScratchGPR, resultLocation.asGPR());
+        m_jit.loadPtr(Address(GPRInfo::wasmContextInstancePointer, JSWebAssemblyInstance::offsetOfCachedMemory0Size()), resultLocation.asGPR());
+        m_jit.urshiftPtr(TrustedImm32(shiftValue), resultLocation.asGPR());
+        if (!m_info.memory(memoryIndex).isMemory64())
+            m_jit.zeroExtend32ToWord(resultLocation.asGPR(), resultLocation.asGPR());
     } else {
         Vector<Value, 8> arguments = { instanceValue(), Value::fromI32(memoryIndex) };
         emitCCall(&operationWasmMemorySizeInPages, arguments, result);
