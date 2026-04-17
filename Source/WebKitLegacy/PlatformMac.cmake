@@ -638,4 +638,4 @@ list(APPEND WebKitLegacy_SOURCES
 
 set(WebKitLegacy_OUTPUT_NAME WebKitLegacy)
 
-set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "-compatibility_version 1 -current_version ${WEBKIT_MAC_VERSION} -framework SecurityInterface")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -compatibility_version 1 -current_version ${WEBKIT_MAC_VERSION} -framework SecurityInterface")

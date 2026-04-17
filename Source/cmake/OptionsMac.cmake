@@ -298,6 +298,22 @@ if (CMAKE_CXX_COMPILER_LAUNCHER OR CMAKE_C_COMPILER_LAUNCHER)
     string(APPEND CMAKE_CXX_FLAGS " -fno-record-command-line")
 endif ()
 
+# Mac-specific sanitizer flags — mirror Configurations/Sanitizers.xcconfig.
+if (ENABLE_SANITIZERS)
+    # Prevents wtf/Compiler.h macros like ALWAYS_INLINE from interfering with
+    # sanitizer instrumentation in optimized builds.
+    add_compile_definitions(RELEASE_WITHOUT_OPTIMIZATIONS)
+
+    # Disable ASan's "fake stack" (use-after-return detection) — it breaks JSC
+    # garbage collection by keeping stack frames alive that the GC expects to be
+    # dead. See Sanitizers.xcconfig.
+    string(FIND "${ENABLE_SANITIZERS}" "address" _asan_pos)
+    if (NOT _asan_pos EQUAL -1)
+        add_compile_options("$<$<NOT:$<COMPILE_LANGUAGE:Swift>>:-fsanitize-address-use-after-return=never>")
+        add_link_options("$<$<NOT:$<LINK_LANGUAGE:Swift>>:-fsanitize-address-use-after-return=never>")
+    endif ()
+endif ()
+
 # Dead-strip unused symbols and dylibs.
 add_link_options(-Wl,-dead_strip)
 add_link_options(-Wl,-dead_strip_dylibs)

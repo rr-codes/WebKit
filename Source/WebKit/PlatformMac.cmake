@@ -1031,7 +1031,7 @@ set(ObjCForwardingHeaders
     DOMXPathResult.h
 )
 
-set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "-compatibility_version 1 -current_version ${WEBKIT_MAC_VERSION}")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -compatibility_version 1 -current_version ${WEBKIT_MAC_VERSION}")
 target_link_options(WebKit PRIVATE -lsandbox -framework AuthKit)
 
 set(WebKit_OUTPUT_NAME WebKit)
