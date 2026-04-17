@@ -2299,6 +2299,7 @@ void Heap::finalize()
     }
     vm().keyAtomStringCache.clear();
     vm().stringSplitCache.clear();
+    vm().jsonAtomStringCache.clearJSStrings();
 
     m_possiblyAccessedStringsFromConcurrentThreads.clear();
 
