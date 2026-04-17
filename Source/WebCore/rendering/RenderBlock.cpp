@@ -54,6 +54,7 @@
 #include "PaintInfo.h"
 #include "PaintInfoInlines.h"
 #include "PositionedLayoutConstraints.h"
+#include "RelayoutScopeForScrollbarChange.h"
 #include "RenderBlockFlow.h"
 #include "RenderBlockInlines.h"
 #include "RenderBoxFragmentInfo.h"
@@ -81,6 +82,7 @@
 #include "RenderTreeBuilder.h"
 #include "RenderTreePosition.h"
 #include "RenderView.h"
+#include "ScrollbarUpdateScope.h"
 #include "Settings.h"
 #include "ShadowRoot.h"
 #include "ShapeOutsideInfo.h"
@@ -477,7 +479,7 @@ void RenderBlock::endAndCommitUpdateScrollInfoAfterLayoutTransaction()
         if (block->hasControlClip() && block->hasRenderOverflow())
             block->clearLayoutOverflow();
         if (block->hasNonVisibleOverflow())
-            block->layer()->updateScrollInfoAfterLayout();
+            RelayoutScopeForScrollbarChange relayoutScope { *block, InOverflowRelayout::No };
     }
 }
 
@@ -491,7 +493,7 @@ static inline bool NODELETE isDelayingUpdateScrollInfoAfterLayout(const RenderBl
     return transaction && transaction->nestedCount && !renderer.writingMode().isBlockFlipped();
 };
 
-void RenderBlock::updateScrollInfoAfterLayout()
+std::optional<ScrollbarUpdateScope> RenderBlock::updateScrollInfoAfterLayout()
 {
     auto hasNonVisibleOverflow = this->hasNonVisibleOverflow();
 
@@ -499,12 +501,14 @@ void RenderBlock::updateScrollInfoAfterLayout()
         auto shouldUpdate = hasNonVisibleOverflow || hasControlClip();
         if (shouldUpdate) {
             view().frameView().layoutContext().updateScrollInfoAfterLayoutTransactionIfExists()->blocks.add(*this);
-            return;
+            return { };
         }
     }
 
     if (hasNonVisibleOverflow && layer())
-        layer()->updateScrollInfoAfterLayout();
+        return layer()->updateScrollInfoAfterLayout();
+
+    return { };
 }
 
 void RenderBlock::layout()
@@ -735,8 +739,9 @@ bool RenderBlock::simplifiedLayout()
 
     updateLayerTransform();
 
-    updateScrollInfoAfterLayout();
-
+    {
+        RelayoutScopeForScrollbarChange relayoutScope { *this, InOverflowRelayout::No };
+    }
     clearNeedsLayout();
     return true;
 }

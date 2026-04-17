@@ -96,6 +96,10 @@
 #include <wtf/Language.h>
 #include <wtf/NeverDestroyed.h>
 
+#if PLATFORM(COCOA)
+#include <wtf/cocoa/RuntimeApplicationChecksCocoa.h>
+#endif
+
 #if ENABLE(SERVICE_CONTROLS)
 #include "ImageControlsMac.h"
 #endif

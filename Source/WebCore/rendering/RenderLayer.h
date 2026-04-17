@@ -510,7 +510,7 @@ public:
     bool isPointInResizeControl(IntPoint localPoint) const;
     IntSize offsetFromResizeCorner(const IntPoint& localPoint) const;
 
-    void updateScrollInfoAfterLayout();
+    std::optional<ScrollbarUpdateScope> updateScrollInfoAfterLayout();
     void updateScrollbarSteps();
 
     // Returns true if this RenderLayer is a candidate for scrolling during scrollIntoView operations.

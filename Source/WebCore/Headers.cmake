@@ -2980,6 +2980,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     rendering/PaintPhase.h
     rendering/PathOperation.h
     rendering/RegionContext.h
+    rendering/RelayoutScopeForScrollbarChange
     rendering/RenderAttachment.h
     rendering/RenderBlock.h
     rendering/RenderBlockFlow.h
@@ -3000,6 +3001,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     rendering/RenderImageResource.h
     rendering/RenderInline.h
     rendering/RenderLayer.h
+    rendering/ScrollbarUpdateScope.h
     rendering/RenderLayerBacking.h
     rendering/RenderLayerCompositor.h
     rendering/RenderLayerModelObject.h

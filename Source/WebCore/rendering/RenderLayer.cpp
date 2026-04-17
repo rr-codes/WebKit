@@ -144,6 +144,7 @@
 #include "ScrollSnapOffsetsInfo.h"
 #include "Scrollbar.h"
 #include "ScrollbarTheme.h"
+#include "ScrollbarUpdateScope.h"
 #include "ScrollingCoordinator.h"
 #include "Settings.h"
 #include "ShadowRoot.h"
@@ -3157,11 +3158,12 @@ int RenderLayer::scrollHeight() const
     return roundToInt(overflowRect.maxY() - overflowRect.y());
 }
 
-void RenderLayer::updateScrollInfoAfterLayout()
+std::optional<ScrollbarUpdateScope> RenderLayer::updateScrollInfoAfterLayout()
 {
     updateLayerScrollableArea();
     if (m_scrollableArea)
-        m_scrollableArea->updateScrollInfoAfterLayout();
+        return m_scrollableArea->updateScrollInfoAfterLayout();
+    return { };
 }
 
 void RenderLayer::updateScrollbarSteps()
