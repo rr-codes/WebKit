@@ -1161,7 +1161,7 @@ public:
         return shouldSetChildIndex;
     }
     unsigned indexInParent() const { return m_indexInParent; }
-#ifndef NDEBUG
+#if ASSERT_ENABLED
     virtual void verifyChildrenIndexInParent() const = 0;
     void verifyChildrenIndexInParent(const AccessibilityChildrenVector&) const;
 #endif

@@ -954,7 +954,7 @@ protected:
     bool allowsTextRanges() const;
     unsigned getLengthForTextRange() const;
 
-#ifndef NDEBUG
+#if ASSERT_ENABLED
     void verifyChildrenIndexInParent() const final { return AXCoreObject::verifyChildrenIndexInParent(m_children); }
 #endif
     void NODELETE resetChildrenIndexInParent() const;

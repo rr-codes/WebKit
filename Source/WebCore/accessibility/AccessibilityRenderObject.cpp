@@ -1007,7 +1007,7 @@ static bool webAreaIsPresentational(RenderObject* renderer)
 
 bool AccessibilityRenderObject::computeIsIgnored() const
 {
-#ifndef NDEBUG
+#if ASSERT_ENABLED
     AX_ASSERT(m_initialized);
 #endif
 
@@ -2865,7 +2865,7 @@ void AccessibilityRenderObject::addChildren()
         m_subtreeDirty = false;
         if (isNativeLabel())
             m_containsOnlyStaticTextDirty = true;
-#ifndef NDEBUG
+#if ASSERT_ENABLED
         verifyChildrenIndexInParent();
 #endif
     });

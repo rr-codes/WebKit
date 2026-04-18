@@ -308,7 +308,7 @@ const AXCoreObject::AccessibilityChildrenVector& AXIsolatedObject::children(bool
         // exist in tree().objectForID(), so we were never able to hydrate it into an object.
         AX_BROKEN_ASSERT(m_unresolvedChildrenIDs.isEmpty());
 
-#ifndef NDEBUG
+#if ASSERT_ENABLED
         verifyChildrenIndexInParent();
 #endif
     }

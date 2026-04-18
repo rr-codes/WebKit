@@ -606,7 +606,7 @@ private:
     String innerHTML() const final;
     String outerHTML() const final;
 
-#ifndef NDEBUG
+#if ASSERT_ENABLED
     void verifyChildrenIndexInParent() const final { return AXCoreObject::verifyChildrenIndexInParent(m_children); }
 #endif
 
