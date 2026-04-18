@@ -149,7 +149,7 @@ bool MediaPlayerPrivateWirelessPlayback::isCurrentPlaybackTargetWireless() const
 
 void MediaPlayerPrivateWirelessPlayback::setWirelessPlaybackTarget(Ref<MediaPlaybackTarget>&& playbackTarget)
 {
-    if (playbackTarget.ptr() == m_playbackTarget.get())
+    if (m_playbackTarget && *m_playbackTarget == playbackTarget.get())
         return;
 
     ALWAYS_LOG(LOGIDENTIFIER, playbackTarget->type());
