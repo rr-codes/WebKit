@@ -1831,6 +1831,7 @@ trim-all
 no-autospace
 ideograph-alpha
 ideograph-numeric
+insert
 
 // scrollbar-gutter
 // auto

@@ -1559,7 +1559,8 @@
                 "normal",
                 "no-autospace",
                 "ideograph-alpha",
-                "ideograph-numeric"
+                "ideograph-numeric",
+                "insert"
             ],
             "codegen-properties": {
                 "font-property": true,
@@ -1570,7 +1571,7 @@
                 "computed-style-storage-path": ["m_inheritedData", "fontData", "fontCascade"],
                 "computed-style-storage-kind": "value",
                 "computed-style-type": "Style::TextAutospace",
-                "parser-grammar": "normal | auto | no-autospace | [ ideograph-alpha || ideograph-numeric ]@(no-single-item-opt)",
+                "parser-grammar": "normal | auto | no-autospace | [ ideograph-alpha || ideograph-numeric || insert ]@(no-single-item-opt)",
                 "parser-grammar-comment": "Current spec grammar is 'normal | auto | no-autospace | [ [ ideograph-alpha || ideograph-numeric || punctuation ] || [ insert | replace ] ]'"
             },
             "specification": {
