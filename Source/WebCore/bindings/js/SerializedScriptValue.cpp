@@ -443,7 +443,7 @@ static constexpr bool NODELETE canBeAddedToObjectPool(SerializationTag tag)
 static bool NODELETE isTypeExposedToGlobalObject(JSC::JSGlobalObject& globalObject, SerializationTag tag)
 {
 #if ENABLE(WEB_AUDIO)
-    if (!jsDynamicCast<JSAudioWorkletGlobalScope*>(&globalObject))
+    if (!is<JSAudioWorkletGlobalScope>(globalObject))
         return true;
 
     // Only built-in JS types are exposed to audio worklets.
@@ -2054,12 +2054,12 @@ private:
 
         if (value.isObject()) {
             auto* obj = asObject(value);
-            if (auto* dateObject = jsDynamicCast<DateInstance*>(obj)) {
+            if (auto* dateObject = dynamicDowncast<DateInstance>(obj)) {
                 write(DateTag);
                 write(dateObject->internalNumber());
                 return true;
             }
-            if (auto* booleanObject = jsDynamicCast<BooleanObject*>(obj)) {
+            if (auto* booleanObject = dynamicDowncast<BooleanObject>(obj)) {
                 if (!addToObjectPoolIfNotDupe<TrueObjectTag, FalseObjectTag>(booleanObject))
                     return true;
                 auto tag = booleanObject->internalValue().toBoolean(m_lexicalGlobalObject) ? TrueObjectTag : FalseObjectTag;
@@ -2067,21 +2067,21 @@ private:
                 appendObjectPoolTag(tag);
                 return true;
             }
-            if (auto* stringObject = jsDynamicCast<StringObject*>(obj)) {
+            if (auto* stringObject = dynamicDowncast<StringObject>(obj)) {
                 if (!addToObjectPoolIfNotDupe<EmptyStringObjectTag, StringObjectTag>(stringObject))
                     return true;
                 auto str = asString(stringObject->internalValue())->value(m_lexicalGlobalObject);
                 dumpStringObject(str);
                 return true;
             }
-            if (auto* numberObject = jsDynamicCast<NumberObject*>(obj)) {
+            if (auto* numberObject = dynamicDowncast<NumberObject>(obj)) {
                 if (!addToObjectPoolIfNotDupe<NumberObjectTag>(numberObject))
                     return true;
                 write(NumberObjectTag);
                 write(numberObject->internalValue().asNumber());
                 return true;
             }
-            if (auto* bigIntObject = jsDynamicCast<BigIntObject*>(obj)) {
+            if (auto* bigIntObject = dynamicDowncast<BigIntObject>(obj)) {
                 if (!addToObjectPoolIfNotDupe<BigIntObjectTag>(bigIntObject))
                     return true;
                 write(BigIntObjectTag);
@@ -2134,13 +2134,13 @@ private:
                 write(data->colorSpace());
                 return true;
             }
-            if (auto* regExp = jsDynamicCast<RegExpObject*>(obj)) {
+            if (auto* regExp = dynamicDowncast<RegExpObject>(obj)) {
                 write(RegExpTag);
                 write(regExp->regExp()->pattern());
                 write(String::fromLatin1(JSC::Yarr::flagsString(regExp->regExp()->flags()).data()));
                 return true;
             }
-            if (auto* errorInstance = jsDynamicCast<ErrorInstance*>(obj)) {
+            if (auto* errorInstance = dynamicDowncast<ErrorInstance>(obj)) {
                 auto errorInformation = extractErrorInformationFromErrorInstance(m_lexicalGlobalObject, *errorInstance);
                 if (!errorInformation)
                     return false;
@@ -2260,7 +2260,7 @@ private:
             }
 #endif
 #if ENABLE(WEBASSEMBLY)
-            if (JSWebAssemblyModule* module = jsDynamicCast<JSWebAssemblyModule*>(obj)) {
+            if (JSWebAssemblyModule* module = dynamicDowncast<JSWebAssemblyModule>(obj)) {
                 if (m_context != SerializationContext::WorkerPostMessage && m_context != SerializationContext::WindowPostMessage)
                     return false;
 
@@ -2271,7 +2271,7 @@ private:
                 write(index);
                 return true;
             }
-            if (JSWebAssemblyMemory* memory = jsDynamicCast<JSWebAssemblyMemory*>(obj)) {
+            if (JSWebAssemblyMemory* memory = dynamicDowncast<JSWebAssemblyMemory>(obj)) {
                 if (!JSC::Options::useSharedArrayBuffer() || memory->memory().sharingMode() != JSC::MemorySharingMode::Shared) {
                     code = SerializationReturnCode::DataCloneError;
                     return true;
@@ -3105,7 +3105,7 @@ SerializationReturnCode CloneSerializer::serialize(JSValue in)
                 if (!iterator->nextKeyValue(m_lexicalGlobalObject, key, value)) {
                     mapIteratorStack.removeLast();
                     JSObject* object = inputObjectStack.last();
-                    ASSERT(jsDynamicCast<JSMap*>(object));
+                    ASSERT(is<JSMap>(*object));
                     propertyStack.append(PropertyNameArrayBuilder(vm, PropertyNameMode::Strings, PrivateSymbolMode::Exclude));
                     object->methodTable()->getOwnPropertyNames(object, m_lexicalGlobalObject, propertyStack.last(), DontEnumPropertiesMode::Exclude);
                     if (scope.exception()) [[unlikely]]
@@ -3151,7 +3151,7 @@ SerializationReturnCode CloneSerializer::serialize(JSValue in)
                 if (!iterator->next(m_lexicalGlobalObject, key)) {
                     setIteratorStack.removeLast();
                     JSObject* object = inputObjectStack.last();
-                    ASSERT(jsDynamicCast<JSSet*>(object));
+                    ASSERT(is<JSSet>(*object));
                     propertyStack.append(PropertyNameArrayBuilder(vm, PropertyNameMode::Strings, PrivateSymbolMode::Exclude));
                     object->methodTable()->getOwnPropertyNames(object, m_lexicalGlobalObject, propertyStack.last(), DontEnumPropertiesMode::Exclude);
                     if (scope.exception()) [[unlikely]]

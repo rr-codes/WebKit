@@ -307,9 +307,11 @@ FOR_EACH_JS_DYNAMIC_CAST_JS_TYPE_OVERLOAD(JSC_SPECIALIZE_TYPE_CAST_TRAITS)
 
 // Generic fallback for JSCell subclasses not in the overload list (e.g. WebCore binding types).
 // Uses IsJSCellType concept which is SFINAE-friendly with incomplete types.
+// The From type is allowed to be JSCell itself (which lacks info() so doesn't satisfy
+// IsJSCellType) since JSCell* is the common base pointer returned by JSValue::asCell().
 namespace WTF {
 template<typename To, typename From>
-    requires (IsJSCellType<std::remove_const_t<To>> && IsJSCellType<std::remove_const_t<From>>)
+    requires (IsJSCellType<std::remove_const_t<To>> && (IsJSCellType<std::remove_const_t<From>> || std::is_same_v<std::remove_const_t<From>, JSC::JSCell>))
 struct TypeCastTraits<To, From, false> {
     static bool isOfType(From& source)
     {
@@ -318,11 +320,10 @@ struct TypeCastTraits<To, From, false> {
 };
 
 template<typename To, typename From>
-    requires (IsJSCellType<To> && IsJSCellType<From>)
+    requires (IsJSCellType<To> && (IsJSCellType<From> || std::is_same_v<From, JSC::JSCell>))
 inline match_constness_t<From, To>& uncheckedDowncast(From& source)
 {
     static_assert(!std::same_as<From, To>, "Unnecessary cast to same type");
-    static_assert(std::derived_from<To, From>, "Should be a downcast");
 #if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
     if (!is<To>(source)) [[unlikely]]
         JSC::reportZappedCellAndCrash(&source);
@@ -333,11 +334,10 @@ inline match_constness_t<From, To>& uncheckedDowncast(From& source)
 }
 
 template<typename To, typename From>
-    requires (IsJSCellType<To> && IsJSCellType<From>)
+    requires (IsJSCellType<To> && (IsJSCellType<From> || std::is_same_v<From, JSC::JSCell>))
 inline match_constness_t<From, To>* uncheckedDowncast(From* source)
 {
     static_assert(!std::same_as<From, To>, "Unnecessary cast to same type");
-    static_assert(std::derived_from<To, From>, "Should be a downcast");
 #if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
     if (source && !is<To>(*source)) [[unlikely]]
         JSC::reportZappedCellAndCrash(source);
@@ -347,9 +347,26 @@ inline match_constness_t<From, To>* uncheckedDowncast(From* source)
     SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<match_constness_t<From, To>*>(source);
 }
 
-// JSValue overloads for dynamicDowncast, downcast, and uncheckedDowncast.
+// JSValue overloads for is, dynamicDowncast, downcast, and uncheckedDowncast.
 // Uses explicit JSC::JSValue& parameter type which is more specialized than the
 // deduced From& in WTF's overloads, so these win in partial ordering.
+// These use JSCastingHelpers directly rather than delegating to the WTF generic
+// versions, because JSCell doesn't satisfy IsJSCellType (it has no info()) so
+// TypeCastTraits<To, JSCell> would hit the default static_assert.
+
+template<typename To>
+    requires IsJSCellType<To>
+inline bool is(JSC::JSValue& value)
+{
+    return value.isCell() && JSC::JSCastingHelpers::InheritsTraits<To>::inherits(value.asCell());
+}
+
+template<typename To>
+    requires IsJSCellType<To>
+inline bool is(const JSC::JSValue& value)
+{
+    return value.isCell() && JSC::JSCastingHelpers::InheritsTraits<To>::inherits(value.asCell());
+}
 
 template<typename To>
     requires IsJSCellType<To>
@@ -357,7 +374,10 @@ inline To* dynamicDowncast(JSC::JSValue& value)
 {
     if (!value.isCell()) [[unlikely]]
         return nullptr;
-    return dynamicDowncast<To>(value.asCell());
+    JSC::JSCell* cell = value.asCell();
+    if (JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell)) [[likely]]
+        return static_cast<To*>(cell);
+    return nullptr;
 }
 
 template<typename To>
@@ -366,7 +386,10 @@ inline To* dynamicDowncast(const JSC::JSValue& value)
 {
     if (!value.isCell()) [[unlikely]]
         return nullptr;
-    return dynamicDowncast<To>(value.asCell());
+    JSC::JSCell* cell = value.asCell();
+    if (JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell)) [[likely]]
+        return static_cast<To*>(cell);
+    return nullptr;
 }
 
 template<typename To>
@@ -374,7 +397,9 @@ template<typename To>
 inline To* downcast(JSC::JSValue& value)
 {
     RELEASE_ASSERT(value.isCell());
-    return downcast<To>(value.asCell());
+    JSC::JSCell* cell = value.asCell();
+    RELEASE_ASSERT(JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell));
+    return static_cast<To*>(cell);
 }
 
 template<typename To>
@@ -382,45 +407,46 @@ template<typename To>
 inline To* downcast(const JSC::JSValue& value)
 {
     RELEASE_ASSERT(value.isCell());
-    return downcast<To>(value.asCell());
+    JSC::JSCell* cell = value.asCell();
+    RELEASE_ASSERT(JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell));
+    return static_cast<To*>(cell);
 }
 
 template<typename To>
     requires IsJSCellType<To>
 inline To* uncheckedDowncast(JSC::JSValue& value)
 {
+    JSC::JSCell* cell = value.asCell();
 #if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
     ASSERT_WITH_SECURITY_IMPLICATION(value.isCell());
-    JSC::JSCell* cell = value.asCell();
-    if (!is<To>(*cell)) [[unlikely]]
+    if (!JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell)) [[unlikely]]
         JSC::reportZappedCellAndCrash(cell);
-    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
 #else
-    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell() && is<To>(*value.asCell()));
-    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(value.asCell());
+    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell() && JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell));
 #endif
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
 }
 
 template<typename To>
     requires IsJSCellType<To>
 inline To* uncheckedDowncast(const JSC::JSValue& value)
 {
+    JSC::JSCell* cell = value.asCell();
 #if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
     ASSERT_WITH_SECURITY_IMPLICATION(value.isCell());
-    JSC::JSCell* cell = value.asCell();
-    if (!is<To>(*cell)) [[unlikely]]
+    if (!JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell)) [[unlikely]]
         JSC::reportZappedCellAndCrash(cell);
-    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
 #else
-    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell() && is<To>(*value.asCell()));
-    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(value.asCell());
+    ASSERT_WITH_SECURITY_IMPLICATION(value.isCell() && JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell));
 #endif
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
 }
 
 } // namespace WTF
 
 // Re-export the JSValue overloads so unqualified lookup finds them.
 // The using declarations in TypeCasts.h only see overloads declared before that point.
+using WTF::is;
 using WTF::dynamicDowncast;
 using WTF::downcast;
 using WTF::uncheckedDowncast;

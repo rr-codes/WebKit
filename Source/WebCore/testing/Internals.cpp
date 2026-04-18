@@ -2978,7 +2978,7 @@ String Internals::parserMetaData(JSC::JSValue code)
     String functionName;
     ASCIILiteral suffix = ""_s;
 
-    if (auto* functionExecutable = jsDynamicCast<FunctionExecutable*>(executable)) {
+    if (auto* functionExecutable = dynamicDowncast<FunctionExecutable>(executable)) {
         prefix = "function \""_s;
         functionName = functionExecutable->ecmaName().string();
         suffix = "\""_s;
@@ -8126,7 +8126,7 @@ JSC::JSValue Internals::dumpJSNodeStatistics()
         vm.heap.objectSpace().forEachLiveCell(iterationScope, [&](JSC::HeapCell* heapCell, JSC::HeapCell::Kind kind) {
             if (!isJSCellKind(kind))
                 return IterationStatus::Continue;
-            SUPPRESS_MEMORY_UNSAFE_CAST auto* jsNode = JSC::jsDynamicCast<JSNode*>(static_cast<JSC::JSCell*>(heapCell));
+            SUPPRESS_MEMORY_UNSAFE_CAST auto* jsNode = dynamicDowncast<JSNode>(static_cast<JSC::JSCell*>(heapCell));
             if (!jsNode)
                 return IterationStatus::Continue;
 

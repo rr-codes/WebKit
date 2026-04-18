@@ -426,7 +426,7 @@ JSC::JSValue toJS(JSC::JSGlobalObject* lexicalGlobalObject, JSDOMGlobalObject* g
 
 TestLegacyNoInterfaceObject* JSTestLegacyNoInterfaceObject::toWrapped(JSC::VM&, JSC::JSValue value)
 {
-    if (auto* wrapper = jsDynamicCast<JSTestLegacyNoInterfaceObject*>(value))
+    if (auto* wrapper = dynamicDowncast<JSTestLegacyNoInterfaceObject>(value))
         return &wrapper->wrapped();
     return nullptr;
 }

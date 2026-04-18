@@ -100,7 +100,7 @@ bool JSDOMWindowProperties::getOwnPropertySlot(JSObject* object, JSGlobalObject*
     if (proto->hasProperty(lexicalGlobalObject, propertyName))
         return false;
 
-    auto* jsWindow = jsDynamicCast<JSDOMWindowBase*>(thisObject->realm());
+    auto* jsWindow = dynamicDowncast<JSDOMWindowBase>(thisObject->realm());
     if (!jsWindow)
         return false;
 

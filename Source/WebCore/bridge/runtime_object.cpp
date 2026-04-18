@@ -222,7 +222,7 @@ JSC_DEFINE_HOST_FUNCTION(convertRuntimeObjectToPrimitive, (JSGlobalObject* lexic
 {
     auto scope = DECLARE_THROW_SCOPE(lexicalGlobalObject->vm());
 
-    auto* thisObject = jsDynamicCast<RuntimeObject*>(callFrame->thisValue());
+    auto* thisObject = dynamicDowncast<RuntimeObject>(callFrame->thisValue());
     if (!thisObject)
         return throwVMTypeError(lexicalGlobalObject, scope, "RuntimeObject[Symbol.toPrimitive] method called on incompatible |this| value."_s);
     RefPtr instance = thisObject->getInternalInstance();

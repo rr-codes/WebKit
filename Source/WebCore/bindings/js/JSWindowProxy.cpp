@@ -192,7 +192,7 @@ struct FrameInfo {
 
 static std::optional<FrameInfo> frameInfo(JSGlobalObject* globalObject)
 {
-    auto* domGlobalObject = jsDynamicCast<JSDOMGlobalObject*>(globalObject);
+    auto* domGlobalObject = dynamicDowncast<JSDOMGlobalObject>(globalObject);
     if (!domGlobalObject)
         return std::nullopt;
 

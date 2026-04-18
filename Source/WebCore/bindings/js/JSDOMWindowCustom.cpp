@@ -618,7 +618,7 @@ DOMWindow* NODELETE JSDOMWindow::toWrapped(VM&, JSValue value)
     if (object->inherits<JSDOMWindow>())
         return &jsCast<JSDOMWindow*>(object)->wrapped();
     if (object->inherits<JSWindowProxy>()) {
-        if (auto* jsDOMWindow = jsDynamicCast<JSDOMWindow*>(jsCast<JSWindowProxy*>(object)->window()))
+        if (auto* jsDOMWindow = dynamicDowncast<JSDOMWindow>(jsCast<JSWindowProxy*>(object)->window()))
             return &jsDOMWindow->wrapped();
     }
     return nullptr;

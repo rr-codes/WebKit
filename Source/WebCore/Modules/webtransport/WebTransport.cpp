@@ -490,7 +490,7 @@ void WebTransport::cleanup(Ref<DOMException>&& exception, std::optional<WebTrans
     if (!globalObject)
         return;
 
-    auto& jsDOMGlobalObject = *jsDynamicCast<JSDOMGlobalObject*>(globalObject);
+    auto& jsDOMGlobalObject = *dynamicDowncast<JSDOMGlobalObject>(globalObject);
 
     auto jsException = [&] {
         Locker<JSC::JSLock> locker(jsDOMGlobalObject.vm().apiLock());

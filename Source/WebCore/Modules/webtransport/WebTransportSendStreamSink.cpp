@@ -140,7 +140,7 @@ void WebTransportSendStreamSink::abort(JSDOMGlobalObject&, JSC::JSValue value, D
         return;
 
     std::optional<uint64_t> errorCode;
-    if (auto* jsWebTransportError = JSC::jsDynamicCast<JSWebTransportError*>(value)) {
+    if (auto* jsWebTransportError = dynamicDowncast<JSWebTransportError>(value)) {
         auto& webTransportError = jsWebTransportError->wrapped();
         if (auto webTransportErrorCode = webTransportError.streamErrorCode())
             errorCode = static_cast<uint64_t>(*webTransportErrorCode);

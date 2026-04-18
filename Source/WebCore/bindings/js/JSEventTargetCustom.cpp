@@ -64,7 +64,7 @@ EventTarget* NODELETE JSEventTarget::toWrapped(VM&, JSValue value)
 
 JSEventTargetWrapper jsEventTargetCast(VM& vm, JSValue thisValue)
 {
-    if (auto* target = jsDynamicCast<JSEventTarget*>(thisValue))
+    if (auto* target = dynamicDowncast<JSEventTarget>(thisValue))
         return { target->wrapped(), *target };
     if (auto* window = toJSDOMGlobalObject<JSDOMWindow>(vm, thisValue))
         return { window->wrapped(), *window };

@@ -198,7 +198,7 @@ static void rejectWithFetchError(ScriptExecutionContext& context, Ref<DeferredPr
 JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, JSC::JSValue parametersValue, JSC::JSValue scriptFetcher)
 {
     JSC::VM& vm = jsGlobalObject->vm();
-    ASSERT(JSC::jsDynamicCast<JSC::JSScriptFetcher*>(scriptFetcher));
+    ASSERT(is<JSC::JSScriptFetcher>(scriptFetcher));
 
     auto& globalObject = *JSC::jsCast<JSDOMGlobalObject*>(jsGlobalObject);
     auto* jsPromise = JSC::JSPromise::create(vm, globalObject.promiseStructure());
@@ -226,7 +226,7 @@ JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, J
     }
 
     RefPtr<JSC::ScriptFetchParameters> parameters;
-    if (auto* scriptFetchParameters = JSC::jsDynamicCast<JSC::JSScriptFetchParameters*>(parametersValue))
+    if (auto* scriptFetchParameters = dynamicDowncast<JSC::JSScriptFetchParameters>(parametersValue))
         parameters = scriptFetchParameters->parameters();
 
     if (m_ownerType == OwnerType::Document) {
@@ -295,7 +295,7 @@ JSC::JSValue ScriptModuleLoader::evaluate(JSC::JSGlobalObject* jsGlobalObject, J
     // FIXME: Currently, we only support JSModuleRecord and WebAssemblyModuleRecord.
     // Once the reflective part of the module loader is supported, we will handle arbitrary values.
     // https://whatwg.github.io/loader/#registry-prototype-provide
-    auto* moduleRecord = JSC::jsDynamicCast<JSC::AbstractModuleRecord*>(moduleRecordValue);
+    auto* moduleRecord = dynamicDowncast<JSC::AbstractModuleRecord>(moduleRecordValue);
     if (!moduleRecord)
         return JSC::jsUndefined();
 
@@ -450,7 +450,7 @@ JSC::JSObject* ScriptModuleLoader::createImportMetaProperties(JSC::JSGlobalObjec
         auto specifier = callFrame->argument(0).toWTFString(globalObject);
         RETURN_IF_EXCEPTION(scope, { });
 
-        auto* domGlobalObject = jsDynamicCast<JSDOMGlobalObject*>(globalObject);
+        auto* domGlobalObject = dynamicDowncast<JSDOMGlobalObject>(globalObject);
         if (!domGlobalObject) [[unlikely]]
             return JSC::throwVMTypeError(globalObject, scope);
 

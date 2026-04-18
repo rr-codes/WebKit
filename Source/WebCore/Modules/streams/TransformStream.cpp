@@ -167,7 +167,7 @@ ExceptionOr<CreateInternalTransformStreamResult> createInternalTransformStream(J
     auto results = resultsConversionResult.releaseReturnValue();
     ASSERT(results.size() == 3);
 
-    return CreateInternalTransformStreamResult { results[0].get(), JSC::jsDynamicCast<JSReadableStream*>(results[1].get())->wrapped(), JSC::jsDynamicCast<JSWritableStream*>(results[2].get())->wrapped() };
+    return CreateInternalTransformStreamResult { results[0].get(), dynamicDowncast<JSReadableStream>(results[1].get())->wrapped(), dynamicDowncast<JSWritableStream>(results[2].get())->wrapped() };
 }
 
 template<typename Visitor>

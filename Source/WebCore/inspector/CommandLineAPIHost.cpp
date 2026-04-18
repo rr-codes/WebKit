@@ -82,7 +82,7 @@ CommandLineAPIHost::CommandLineAPIHost()
 
 static InstrumentingAgents* instrumentingAgentsForGlobalObject(JSC::JSGlobalObject& globalObject)
 {
-    auto* domGlobalObject = jsDynamicCast<JSDOMGlobalObject*>(&globalObject);
+    auto* domGlobalObject = dynamicDowncast<JSDOMGlobalObject>(&globalObject);
     if (!domGlobalObject)
         return nullptr;
 

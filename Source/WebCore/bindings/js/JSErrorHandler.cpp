@@ -87,7 +87,7 @@ void JSErrorHandler::handleEvent(ScriptExecutionContext& scriptExecutionContext,
         Ref<JSErrorHandler> protectedThis(*this);
 
         RefPtr<Event> savedEvent;
-        auto* jsFunctionWindow = jsDynamicCast<JSDOMWindow*>(jsFunction->realm());
+        auto* jsFunctionWindow = dynamicDowncast<JSDOMWindow>(jsFunction->realm());
         if (jsFunctionWindow) {
             savedEvent = jsFunctionWindow->currentEvent();
 

@@ -181,7 +181,7 @@ JSC_DEFINE_CUSTOM_GETTER(jsTestDelegateToSharedSyntheticAttributeConstructor, (J
 {
     SUPPRESS_UNCOUNTED_LOCAL auto& vm = JSC::getVM(lexicalGlobalObject);
     auto throwScope = DECLARE_THROW_SCOPE(vm);
-    auto* prototype = jsDynamicCast<JSTestDelegateToSharedSyntheticAttributePrototype*>(JSValue::decode(thisValue));
+    auto* prototype = dynamicDowncast<JSTestDelegateToSharedSyntheticAttributePrototype>(JSValue::decode(thisValue));
     if (!prototype) [[unlikely]]
         return throwVMTypeError(lexicalGlobalObject, throwScope);
     return JSValue::encode(JSTestDelegateToSharedSyntheticAttribute::getConstructor(vm, prototype->realm()));
@@ -334,7 +334,7 @@ JSC::JSValue toJS(JSC::JSGlobalObject* lexicalGlobalObject, JSDOMGlobalObject* g
 
 TestDelegateToSharedSyntheticAttribute* JSTestDelegateToSharedSyntheticAttribute::toWrapped(JSC::VM&, JSC::JSValue value)
 {
-    if (auto* wrapper = jsDynamicCast<JSTestDelegateToSharedSyntheticAttribute*>(value))
+    if (auto* wrapper = dynamicDowncast<JSTestDelegateToSharedSyntheticAttribute>(value))
         return &wrapper->wrapped();
     return nullptr;
 }

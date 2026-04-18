@@ -942,7 +942,7 @@ void Navigation::abortOngoingNavigation(NavigateEvent& event)
     auto error = JSC::createError(globalObject, "Navigation aborted"_s);
 
     ErrorInformation errorInformation;
-    if (auto* errorInstance = jsDynamicCast<JSC::ErrorInstance*>(error)) {
+    if (auto* errorInstance = dynamicDowncast<JSC::ErrorInstance>(error)) {
         if (auto result = extractErrorInformationFromErrorInstance(globalObject, *errorInstance))
             errorInformation = WTF::move(*result);
         // Default to document url if extractErrorInformationFromErrorInstance was not able to determine sourceURL.
@@ -1176,7 +1176,7 @@ std::optional<Navigation::DispatchResult> Navigation::handleSameDocumentNavigati
 
                 ErrorInformation errorInformation;
                 String errorMessage;
-                if (auto* errorInstance = jsDynamicCast<JSC::ErrorInstance*>(result)) {
+                if (auto* errorInstance = dynamicDowncast<JSC::ErrorInstance>(result)) {
                     if (auto result = extractErrorInformationFromErrorInstance(protect(protectedThis->scriptExecutionContext())->globalObject(), *errorInstance)) {
                         errorInformation = WTF::move(*result);
                         errorMessage = makeString("Uncaught "_s, errorInformation.errorTypeString, ": "_s, errorInformation.message);

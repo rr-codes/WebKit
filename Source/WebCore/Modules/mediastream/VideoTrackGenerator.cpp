@@ -189,7 +189,7 @@ VideoTrackGenerator::Sink::Sink(Ref<Source>&& source)
 
 void VideoTrackGenerator::Sink::write(ScriptExecutionContext&, JSC::JSValue value, DOMPromiseDeferred<void>&& promise)
 {
-    auto* jsFrameObject = JSC::jsDynamicCast<JSWebCodecsVideoFrame*>(value);
+    auto* jsFrameObject = dynamicDowncast<JSWebCodecsVideoFrame>(value);
     RefPtr frameObject = jsFrameObject ? &jsFrameObject->wrapped() : nullptr;
     if (!frameObject) {
         promise.reject(Exception { ExceptionCode::TypeError, "Expected a VideoFrame object"_s });

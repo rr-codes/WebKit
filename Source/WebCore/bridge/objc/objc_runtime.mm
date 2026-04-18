@@ -260,7 +260,7 @@ JSC_DEFINE_HOST_FUNCTION(callObjCFallbackObject, (JSGlobalObject* lexicalGlobalO
     JSC::VM& vm = lexicalGlobalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto* runtimeObject = jsDynamicCast<ObjCRuntimeObject*>(callFrame->thisValue());
+    auto* runtimeObject = dynamicDowncast<ObjCRuntimeObject>(callFrame->thisValue());
     if (!runtimeObject)
         return throwVMTypeError(lexicalGlobalObject, scope);
 
@@ -314,7 +314,7 @@ JSC_DEFINE_HOST_FUNCTION(convertObjCFallbackObjectToPrimitive, (JSGlobalObject* 
     VM& vm = lexicalGlobalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto* thisObject = jsDynamicCast<ObjcFallbackObjectImp*>(callFrame->thisValue());
+    auto* thisObject = dynamicDowncast<ObjcFallbackObjectImp>(callFrame->thisValue());
     if (!thisObject)
         return throwVMTypeError(lexicalGlobalObject, scope, "ObjcFallbackObject[Symbol.toPrimitive] method called on incompatible |this| value."_s);
 
