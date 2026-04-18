@@ -59,7 +59,7 @@ ALWAYS_INLINE JSObject* createSegmentDataObject(JSGlobalObject* globalObject, JS
     if (granularity == IntlSegmenter::Granularity::Word) {
         int32_t ruleStatus = ubrk_getRuleStatus(&segmenter);
         result->putDirectOffset(vm, segmentDataObjectIsWordLikePropertyOffset,
-            jsBoolean(!(ruleStatus >= UBRK_WORD_NONE && ruleStatus <= UBRK_WORD_NONE_LIMIT)));
+            jsBoolean(!(ruleStatus >= UBRK_WORD_NONE && ruleStatus < UBRK_WORD_NONE_LIMIT)));
     }
 
     return result;
