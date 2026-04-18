@@ -414,7 +414,7 @@ WASM_IPINT_EXTERN_CPP_DECL(retrieve_and_clear_exception, CallFrame* callFrame, I
     if (stackPointer) {
         // We only have a stack pointer if we're doing a catch not a catch_all
         Exception* exception = throwScope.exception();
-        auto* wasmException = jsSecureCast<JSWebAssemblyException*>(exception->value());
+        auto* wasmException = downcast<JSWebAssemblyException>(exception->value());
         copyExceptionPayloadToStack(wasmException->tag().type(), wasmException->payload(), stackPointer);
     }
 
@@ -464,7 +464,7 @@ WASM_IPINT_EXTERN_CPP_DECL(retrieve_clear_and_push_exception_and_arguments, Call
     }
 
     Exception* exception = throwScope.exception();
-    auto* wasmException = jsSecureCast<JSWebAssemblyException*>(exception->value());
+    auto* wasmException = downcast<JSWebAssemblyException>(exception->value());
 
     ASSERT(wasmException->payload().size() == wasmException->tag().parameterBufferSize());
 
@@ -540,7 +540,7 @@ WASM_IPINT_EXTERN_CPP_DECL(throw_ref, CallFrame* callFrame, EncodedJSValue exnre
     VM& vm = globalObject->vm();
     auto throwScope = DECLARE_THROW_SCOPE(vm);
 
-    auto* exception = jsSecureCast<JSWebAssemblyException*>(JSValue::decode(exnref));
+    auto* exception = downcast<JSWebAssemblyException>(JSValue::decode(exnref));
     RELEASE_ASSERT(exception);
     throwException(globalObject, throwScope, exception);
 

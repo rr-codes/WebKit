@@ -2938,7 +2938,7 @@ JSC_DEFINE_JIT_OPERATION(operationEnumeratorInByVal, EncodedJSValue, (JSGlobalOb
     if (modeNumber == JSPropertyNameEnumerator::IndexedMode && base.isObject())
         OPERATION_RETURN(scope, JSValue::encode(jsBoolean(jsCast<JSObject*>(base)->hasProperty(globalObject, index))));
 
-    JSString* propertyName = jsSecureCast<JSString*>(JSValue::decode(propertyNameValue));
+    JSString* propertyName = downcast<JSString>(JSValue::decode(propertyNameValue));
     OPERATION_RETURN(scope, JSValue::encode(jsBoolean(CommonSlowPaths::opInByVal(globalObject, base, propertyName))));
 }
 
@@ -2953,7 +2953,7 @@ JSC_DEFINE_JIT_OPERATION(operationEnumeratorHasOwnProperty, EncodedJSValue, (JSG
     if (modeNumber == JSPropertyNameEnumerator::IndexedMode && base.isObject())
         OPERATION_RETURN(scope, JSValue::encode(jsBoolean(jsCast<JSObject*>(base)->hasOwnProperty(globalObject, index))));
 
-    JSString* propertyName = jsSecureCast<JSString*>(JSValue::decode(propertyNameValue));
+    JSString* propertyName = downcast<JSString>(JSValue::decode(propertyNameValue));
     auto identifier = propertyName->toIdentifier(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, encodedJSValue());
     JSObject* baseObject = base.toObject(globalObject);

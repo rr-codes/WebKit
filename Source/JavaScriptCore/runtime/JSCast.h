@@ -275,14 +275,6 @@ To jsDynamicCast(JSValue from)
     return jsDynamicCast<To>(from.asCell());
 }
 
-template<typename To, typename From>
-To jsSecureCast(From from)
-{
-    auto* result = jsDynamicCast<To>(from);
-    RELEASE_ASSERT_WITH_SECURITY_IMPLICATION(result);
-    return result;
-}
-
 } // namespace JSC
 
 // Concept that identifies JSCell subclasses without requiring complete types.
@@ -409,7 +401,7 @@ inline To* downcast(const JSC::JSValue& value)
     RELEASE_ASSERT(value.isCell());
     JSC::JSCell* cell = value.asCell();
     RELEASE_ASSERT(JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell));
-    return static_cast<To*>(cell);
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
 }
 
 template<typename To>

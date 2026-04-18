@@ -155,7 +155,7 @@ JSValue JSCell::toPrimitive(JSGlobalObject* globalObject, PreferredPrimitiveType
         return symbol->toPrimitive(globalObject, preferredType);
     if (const auto* bigInt = jsDynamicCast<const JSBigInt*>(this))
         return bigInt->toPrimitive(globalObject, preferredType);
-    return jsSecureCast<const JSObject*>(this)->toPrimitive(globalObject, preferredType);
+    return downcast<JSObject>(this)->toPrimitive(globalObject, preferredType);
 }
 
 double JSCell::toNumber(JSGlobalObject* globalObject) const
@@ -166,7 +166,7 @@ double JSCell::toNumber(JSGlobalObject* globalObject) const
         return symbol->toNumber(globalObject);
     if (const auto* bigInt = jsDynamicCast<const JSBigInt*>(this))
         return bigInt->toNumber(globalObject);
-    return jsSecureCast<const JSObject*>(this)->toNumber(globalObject);
+    return downcast<JSObject>(this)->toNumber(globalObject);
 }
 
 bool JSCell::isObjectSlow() const
@@ -193,7 +193,7 @@ JSObject* JSCell::toObjectSlow(JSGlobalObject* globalObject) const
         return string->toObject(globalObject);
     if (const auto* bigInt = jsDynamicCast<const JSBigInt*>(this))
         return bigInt->toObject(globalObject);
-    return jsSecureCast<const Symbol*>(this)->toObject(globalObject);
+    return downcast<Symbol>(this)->toObject(globalObject);
 }
 
 void NODELETE slowValidateCell(JSCell* cell)

@@ -551,7 +551,7 @@ void JSWebAssemblyInstance::initElementSegment(uint32_t tableIndex, const Elemen
                     // If we ever import a WebAssemblyWrapperFunction, we set the import as the unwrapped value.
                     // Because a WebAssemblyWrapperFunction can never wrap another WebAssemblyWrapperFunction,
                     // the only type this could be is WebAssemblyFunction.
-                    WebAssemblyFunction* wasmFunction = jsSecureCast<WebAssemblyFunction*>(functionImport);
+                    WebAssemblyFunction* wasmFunction = downcast<WebAssemblyFunction>(functionImport);
                     jsTable->set(dstIndex, wasmFunction);
                     continue;
                 }
