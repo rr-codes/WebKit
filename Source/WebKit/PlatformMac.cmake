@@ -1121,6 +1121,17 @@ function(WEBKIT_DEFINE_XPC_SERVICES)
     if (EXISTS "${CMAKE_BINARY_DIR}/generated-stubs/AppleFeatures/AppleFeatures.h")
         list(APPEND _sb_extra_includes "-isystem" "${CMAKE_BINARY_DIR}/generated-stubs")
     endif ()
+    # Sandbox profiles gate ASan-required syscalls (SYS_sigaltstack, ...) on
+    # #if ASAN_ENABLED, which wtf/Compiler.h derives from
+    # __has_feature(address_sanitizer). Pass -fsanitize so the preprocessor sees
+    # the same feature set the compiled code does -- mirrors $(SANITIZE_FLAGS) in
+    # DerivedSources.make. Without this the WebContent sandbox blocks
+    # sigaltstack() and ASan CHECK-fails inside __asan_handle_no_return.
+    if (ENABLE_SANITIZERS)
+        foreach (_san IN LISTS ENABLE_SANITIZERS)
+            list(APPEND _sb_extra_includes "-fsanitize=${_san}")
+        endforeach ()
+    endif ()
 
     add_custom_command(OUTPUT ${WebKit_RESOURCES_DIR}/com.apple.WebProcess.sb COMMAND
         grep -o "^[^;]*" ${WEBKIT_DIR}/WebProcess/com.apple.WebProcess.sb.in | clang -E -P -w -include wtf/Platform.h -I ${WTF_FRAMEWORK_HEADERS_DIR} -I ${bmalloc_FRAMEWORK_HEADERS_DIR} -I ${WEBKIT_DIR} ${_sb_extra_includes} - > ${WebKit_RESOURCES_DIR}/com.apple.WebProcess.sb
