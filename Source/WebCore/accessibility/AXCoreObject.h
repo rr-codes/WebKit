@@ -50,6 +50,7 @@
 #include <wtf/Platform.h>
 #include <wtf/ProcessID.h>
 #include <wtf/RefCounted.h>
+#include <wtf/ThreadSafeRefCounted.h>
 #include <wtf/ThreadSafeWeakPtr.h>
 #include <wtf/WallTime.h>
 #include <wtf/threads/BinarySemaphore.h>
@@ -1704,7 +1705,7 @@ template<typename U> inline void performFunctionOnMainThread(U&& lambda)
 }
 
 template<typename T = std::monostate>
-struct TimeoutSafeSemaphore : RefCounted<TimeoutSafeSemaphore<T>> {
+struct TimeoutSafeSemaphore : ThreadSafeRefCounted<TimeoutSafeSemaphore<T>> {
     // This struct is useful for passing in lambdas from one thread to another, as it is ref-counted,
     // meaning it won't be destroyed out from any thread involved even when a timeout happens
     // and one of the threads moves on (which would normally destroy the semaphore it had on
