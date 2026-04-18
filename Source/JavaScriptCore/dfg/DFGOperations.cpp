@@ -3473,10 +3473,15 @@ JSC_DEFINE_JIT_OPERATION(operationStringStartsWith, bool, (JSGlobalObject* globa
 
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto baseView = base->view(globalObject);
+    auto prefixView = prefix->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
-    auto prefixView = prefix->view(globalObject);
+    if (prefixView->length() == 1 && base->isRope() && base->length() >= JSString::minLengthForRopeWalk) {
+        if (auto character = base->tryGetCharAt(globalObject, 0))
+            OPERATION_RETURN(scope, *character == prefixView[0]);
+    }
+
+    auto baseView = base->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
     OPERATION_RETURN(scope, baseView->startsWith(prefixView));
@@ -3490,16 +3495,23 @@ JSC_DEFINE_JIT_OPERATION(operationStringStartsWithWithIndex, bool, (JSGlobalObje
 
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto baseView = base->view(globalObject);
-    OPERATION_RETURN_IF_EXCEPTION(scope, false);
-
     auto prefixView = prefix->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
-    int32_t length = baseView->length();
+    unsigned length = base->length();
     unsigned start = 0;
     if (position >= 0)
         start = std::min<uint32_t>(position, length);
+
+    if (prefixView->length() == 1 && base->isRope() && length >= JSString::minLengthForRopeWalk) {
+        if (start >= length)
+            OPERATION_RETURN(scope, false);
+        if (auto character = base->tryGetCharAt(globalObject, start))
+            OPERATION_RETURN(scope, *character == prefixView[0]);
+    }
+
+    auto baseView = base->view(globalObject);
+    OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
     OPERATION_RETURN(scope, baseView->hasInfixStartingAt(prefixView, start));
 }
@@ -3512,10 +3524,15 @@ JSC_DEFINE_JIT_OPERATION(operationStringEndsWith, bool, (JSGlobalObject* globalO
 
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto baseView = base->view(globalObject);
+    auto suffixView = suffix->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
-    auto suffixView = suffix->view(globalObject);
+    if (suffixView->length() == 1 && base->isRope() && base->length() >= JSString::minLengthForRopeWalk) {
+        if (auto character = base->tryGetCharAt(globalObject, base->length() - 1))
+            OPERATION_RETURN(scope, *character == suffixView[0]);
+    }
+
+    auto baseView = base->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
     OPERATION_RETURN(scope, baseView->endsWith(suffixView));
@@ -3529,10 +3546,19 @@ JSC_DEFINE_JIT_OPERATION(operationStringEndsWithWithEndPosition, bool, (JSGlobal
 
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto baseView = base->view(globalObject);
+    auto suffixView = suffix->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
-    auto suffixView = suffix->view(globalObject);
+    if (suffixView->length() == 1 && base->isRope() && base->length() >= JSString::minLengthForRopeWalk) {
+        unsigned length = base->length();
+        unsigned end = endPosition >= 0 ? std::min<uint32_t>(endPosition, length) : 0;
+        if (!end)
+            OPERATION_RETURN(scope, false);
+        if (auto character = base->tryGetCharAt(globalObject, end - 1))
+            OPERATION_RETURN(scope, *character == suffixView[0]);
+    }
+
+    auto baseView = base->view(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope, false);
 
     int32_t length = baseView->length();

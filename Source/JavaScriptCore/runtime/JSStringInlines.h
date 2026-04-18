@@ -221,6 +221,41 @@ std::optional<size_t> JSString::tryFindOneChar(JSGlobalObject*, char16_t charact
     return WTF::notFound;
 }
 
+ALWAYS_INLINE std::optional<char16_t> JSString::tryGetCharAt(JSGlobalObject*, unsigned index) const
+{
+    ASSERT(isRope());
+    ASSERT(index < length());
+
+    if (isSubstring()) {
+        const JSRopeString* substringRope = static_cast<const JSRopeString*>(this);
+        return StringView(substringRope->substringBase()->valueInternal())[substringRope->substringOffset() + index];
+    }
+
+    const JSRopeString* rope = static_cast<const JSRopeString*>(this);
+    unsigned offset = 0;
+    for (unsigned i = 0; i < JSRopeString::s_maxInternalRopeLength; ++i) {
+        JSString* fiber = rope->fiber(i);
+        ASSERT(fiber);
+        unsigned fiberLength = fiber->length();
+        if (index >= offset + fiberLength) {
+            offset += fiberLength;
+            continue;
+        }
+
+        unsigned localIndex = index - offset;
+        if (!fiber->isRope())
+            return StringView(fiber->valueInternal())[localIndex];
+        if (fiber->isSubstring()) {
+            const JSRopeString* substringFiber = static_cast<const JSRopeString*>(fiber);
+            return StringView(substringFiber->substringBase()->valueInternal())[substringFiber->substringOffset() + localIndex];
+        }
+        return std::nullopt;
+    }
+
+    RELEASE_ASSERT_NOT_REACHED();
+    return std::nullopt;
+}
+
 template<typename StringType>
 inline JSValue jsMakeNontrivialString(VM& vm, StringType&& string)
 {
