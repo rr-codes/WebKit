@@ -295,12 +295,15 @@ void DebugServer::closeSocket(SocketType& socket)
 void DebugServer::reset()
 {
     // Reset to the init state without stopping the debug server.
-    m_executionHandler->reset();
     m_isDebuggerReady.store(false, std::memory_order_release);
     m_hasContinued.store(false, std::memory_order_release);
     closeSocket(m_clientSocket);
     m_noAckMode = false;
     m_packetParser.reset();
+    // Gate VM threads out before touching ExecutionHandler: close the socket so
+    // hasDebugger() returns false, and clear isDebuggerReady so no new traps enter
+    // the debugger path.
+    m_executionHandler->reset();
 }
 
 static void dumpReceivedBytes(std::span<const uint8_t> buffer)

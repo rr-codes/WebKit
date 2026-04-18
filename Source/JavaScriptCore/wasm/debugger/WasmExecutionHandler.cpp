@@ -902,10 +902,13 @@ void ExecutionHandler::reset()
     Locker locker { m_lock };
     dataLogLnIf(Options::verboseWasmDebugger(), "[Debugger] Handling client disconnection in ExecutionHandler");
 
+    // Clear before resuming: resumeImpl() transiently releases m_lock, and the
+    // VM must not re-hit a breakpoint in that window.
+    m_breakpointManager->clearAllBreakpoints();
+
     if (m_debuggee && debuggeeState()->isStopped)
         resumeImpl(locker);
 
-    m_breakpointManager->clearAllBreakpoints();
     m_debuggerState = DebuggerState::Replied;
     takeAwaitingResumeNotification();
     m_debuggee = nullptr;
