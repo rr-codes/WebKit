@@ -418,7 +418,7 @@ void RemoteRenderingBackend::nativeImageBitmap(RenderingResourceIdentifier image
 
 void RemoteRenderingBackend::cacheNativeImage(ShareableBitmap::Handle&& handle, RenderingResourceIdentifier imageIdentifier)
 {
-    ASSERT(!RunLoop::isMain());
+    assertIsCurrent(workQueue());
 
     auto bitmap = ShareableBitmap::create(WTF::move(handle));
     if (!bitmap)
@@ -450,7 +450,7 @@ void RemoteRenderingBackend::releaseNativeImage(RenderingResourceIdentifier iden
 
 void RemoteRenderingBackend::cacheFont(const Font::Attributes& fontAttributes, FontPlatformDataAttributes platformData, std::optional<RenderingResourceIdentifier> fontCustomPlatformDataIdentifier)
 {
-    ASSERT(!RunLoop::isMain());
+    assertIsCurrent(workQueue());
 
     RefPtr<FontCustomPlatformData> customPlatformData = nullptr;
     if (fontCustomPlatformDataIdentifier) {
@@ -475,7 +475,7 @@ void RemoteRenderingBackend::releaseFont(WebCore::RenderingResourceIdentifier id
 
 void RemoteRenderingBackend::cacheFontCustomPlatformData(WebCore::FontCustomPlatformSerializedData&& fontCustomPlatformSerializedData)
 {
-    ASSERT(!RunLoop::isMain());
+    assertIsCurrent(workQueue());
 
     auto customPlatformData = FontCustomPlatformData::tryMakeFromSerializationData(WTF::move(fontCustomPlatformSerializedData), shouldUseLockdownFontParser());
     MESSAGE_CHECK(customPlatformData.has_value(), "cacheFontCustomPlatformData couldn't deserialize FontCustomPlatformData");
@@ -561,7 +561,7 @@ void RemoteRenderingBackend::releaseDisplayList(RemoteDisplayListIdentifier iden
 
 void RemoteRenderingBackend::releaseMemory()
 {
-    ASSERT(!RunLoop::isMain());
+    assertIsCurrent(workQueue());
     m_remoteResourceCache.releaseMemory();
 }
 
