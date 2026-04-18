@@ -284,7 +284,7 @@ void NetworkResourceLoader::startContentFiltering(ResourceRequest&& request, Com
 #if HAVE(BROWSERENGINEKIT_WEBCONTENTFILTER) && !HAVE(WEBCONTENTRESTRICTIONS_PATH_SPI)
     WebParentalControlsURLFilter::setSharedParentalControlsURLFilterIfNecessary();
 #endif
-    m_contentFilter = ContentFilter::create(*this);
+    m_contentFilter = ContentFilter::create(*this, isMainFrameLoad());
     RefPtr contentFilter = m_contentFilter;
 #if HAVE(AUDIT_TOKEN)
     contentFilter->setHostProcessAuditToken(connectionToWebProcess().networkProcess().sourceApplicationAuditToken());

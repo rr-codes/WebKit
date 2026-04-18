@@ -70,16 +70,20 @@ Vector<ContentFilter::Type>& ContentFilter::types()
     return types;
 }
 
-RefPtr<ContentFilter> ContentFilter::create(ContentFilterClient& client)
+RefPtr<ContentFilter> ContentFilter::create(ContentFilterClient& client, bool isMainFrameLoad)
 {
-    PlatformContentFilter::FilterParameters params {
+    PlatformContentFilter::FilterParameters params;
 #if HAVE(WEBCONTENTRESTRICTIONS)
+    params = PlatformContentFilter::FilterParameters {
 #if HAVE(WEBCONTENTRESTRICTIONS_PATH_SPI)
         client.webContentRestrictionsConfigurationPath(),
 #endif
-        client.mainDocumentURL(),
-#endif
+        // If we load a mainframe, the filter implementation expects the mainDocumentURL to be null.
+        isMainFrameLoad ? URL { } : client.mainDocumentURL(),
     };
+#else
+    UNUSED_PARAM(isMainFrameLoad);
+#endif
     auto filters = types().map([params](auto& type) {
         return type.create(params);
     });
