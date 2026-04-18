@@ -162,7 +162,7 @@ JSObject* JSTestClassWithJSBuiltinConstructor::prototype(VM& vm, JSDOMGlobalObje
 
 JSValue JSTestClassWithJSBuiltinConstructor::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestClassWithJSBuiltinConstructorDOMConstructor, DOMConstructorID::TestClassWithJSBuiltinConstructor>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestClassWithJSBuiltinConstructorDOMConstructor, DOMConstructorID::TestClassWithJSBuiltinConstructor>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestClassWithJSBuiltinConstructor::destroy(JSC::JSCell* cell)
@@ -193,7 +193,7 @@ JSC::GCClient::IsoSubspace* JSTestClassWithJSBuiltinConstructor::subspaceForImpl
 
 void JSTestClassWithJSBuiltinConstructor::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestClassWithJSBuiltinConstructor*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestClassWithJSBuiltinConstructor>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

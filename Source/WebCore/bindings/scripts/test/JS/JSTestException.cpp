@@ -160,7 +160,7 @@ JSObject* JSTestException::prototype(VM& vm, JSDOMGlobalObject& globalObject)
 
 JSValue JSTestException::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestExceptionDOMConstructor, DOMConstructorID::TestException>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestExceptionDOMConstructor, DOMConstructorID::TestException>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestException::destroy(JSC::JSCell* cell)
@@ -204,7 +204,7 @@ JSC::GCClient::IsoSubspace* JSTestException::subspaceForImpl(JSC::VM& vm)
 
 void JSTestException::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestException*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestException>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

@@ -168,7 +168,7 @@ JSObject* JSTestDelegateToSharedSyntheticAttribute::prototype(VM& vm, JSDOMGloba
 
 JSValue JSTestDelegateToSharedSyntheticAttribute::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestDelegateToSharedSyntheticAttributeDOMConstructor, DOMConstructorID::TestDelegateToSharedSyntheticAttribute>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestDelegateToSharedSyntheticAttributeDOMConstructor, DOMConstructorID::TestDelegateToSharedSyntheticAttribute>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestDelegateToSharedSyntheticAttribute::destroy(JSC::JSCell* cell)
@@ -267,7 +267,7 @@ JSC::GCClient::IsoSubspace* JSTestDelegateToSharedSyntheticAttribute::subspaceFo
 
 void JSTestDelegateToSharedSyntheticAttribute::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestDelegateToSharedSyntheticAttribute*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestDelegateToSharedSyntheticAttribute>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

@@ -85,7 +85,7 @@ template<> struct JSConverter<IDLBufferSource> {
 
     static JSC::JSValue convert(JSC::JSGlobalObject& lexicalGlobalObject, const BufferSource& bufferSource)
     {
-        auto* jsDOMGlobalObject = JSC::jsCast<JSDOMGlobalObject*>(&lexicalGlobalObject);
+        auto* jsDOMGlobalObject = uncheckedDowncast<JSDOMGlobalObject>(&lexicalGlobalObject);
 
         return WTF::switchOn(bufferSource.variant(),
             [&](const Ref<JSC::ArrayBufferView>& buffer) {

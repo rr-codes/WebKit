@@ -359,7 +359,7 @@ JSC::GCClient::IsoSubspace* JSTestLegacyNoInterfaceObject::subspaceForImpl(JSC::
 
 void JSTestLegacyNoInterfaceObject::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestLegacyNoInterfaceObject*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestLegacyNoInterfaceObject>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

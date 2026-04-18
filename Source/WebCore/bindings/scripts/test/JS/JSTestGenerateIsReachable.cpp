@@ -123,7 +123,7 @@ void JSTestGenerateIsReachablePrototype::finishCreation(VM& vm)
     Base::finishCreation(vm);
     reifyStaticProperties(vm, JSTestGenerateIsReachable::info(), JSTestGenerateIsReachablePrototypeTableValues, *this);
     bool hasDisabledRuntimeProperties = false;
-    if (!jsCast<JSDOMGlobalObject*>(realm())->scriptExecutionContext()->isSecureContext()) {
+    if (!uncheckedDowncast<JSDOMGlobalObject>(realm())->scriptExecutionContext()->isSecureContext()) {
         hasDisabledRuntimeProperties = true;
         auto propertyName = Identifier::fromString(vm, "aSecretAttribute"_s);
         VM::DeletePropertyModeScope scope(vm, VM::DeletePropertyMode::IgnoreConfigurable);
@@ -171,7 +171,7 @@ JSObject* JSTestGenerateIsReachable::prototype(VM& vm, JSDOMGlobalObject& global
 
 JSValue JSTestGenerateIsReachable::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestGenerateIsReachableDOMConstructor, DOMConstructorID::TestGenerateIsReachable>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestGenerateIsReachableDOMConstructor, DOMConstructorID::TestGenerateIsReachable>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestGenerateIsReachable::destroy(JSC::JSCell* cell)
@@ -215,7 +215,7 @@ JSC::GCClient::IsoSubspace* JSTestGenerateIsReachable::subspaceForImpl(JSC::VM& 
 
 void JSTestGenerateIsReachable::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestGenerateIsReachable*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestGenerateIsReachable>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));
@@ -224,7 +224,7 @@ void JSTestGenerateIsReachable::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer
 
 bool JSTestGenerateIsReachableOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, AbstractSlotVisitor& visitor, ASCIILiteral* reason)
 {
-    auto* jsTestGenerateIsReachable = jsCast<JSTestGenerateIsReachable*>(handle.slot()->asCell());
+    auto* jsTestGenerateIsReachable = uncheckedDowncast<JSTestGenerateIsReachable>(handle.slot()->asCell());
     TestGenerateIsReachable* owner = &jsTestGenerateIsReachable->wrapped();
     if (reason) [[unlikely]]
         *reason = "Reachable from TestGenerateIsReachable"_s;

@@ -180,7 +180,7 @@ JSObject* JSTestReadOnlyMapLike::prototype(VM& vm, JSDOMGlobalObject& globalObje
 
 JSValue JSTestReadOnlyMapLike::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestReadOnlyMapLikeDOMConstructor, DOMConstructorID::TestReadOnlyMapLike>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestReadOnlyMapLikeDOMConstructor, DOMConstructorID::TestReadOnlyMapLike>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestReadOnlyMapLike::destroy(JSC::JSCell* cell)
@@ -325,7 +325,7 @@ JSC::GCClient::IsoSubspace* JSTestReadOnlyMapLike::subspaceForImpl(JSC::VM& vm)
 
 void JSTestReadOnlyMapLike::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestReadOnlyMapLike*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestReadOnlyMapLike>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

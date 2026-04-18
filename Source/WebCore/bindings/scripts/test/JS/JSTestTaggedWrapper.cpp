@@ -156,7 +156,7 @@ JSObject* JSTestTaggedWrapper::prototype(VM& vm, JSDOMGlobalObject& globalObject
 
 JSValue JSTestTaggedWrapper::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestTaggedWrapperDOMConstructor, DOMConstructorID::TestTaggedWrapper>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestTaggedWrapperDOMConstructor, DOMConstructorID::TestTaggedWrapper>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestTaggedWrapper::destroy(JSC::JSCell* cell)
@@ -187,7 +187,7 @@ JSC::GCClient::IsoSubspace* JSTestTaggedWrapper::subspaceForImpl(JSC::VM& vm)
 
 void JSTestTaggedWrapper::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestTaggedWrapper*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestTaggedWrapper>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

@@ -155,7 +155,7 @@ void JSEventListener::handleEvent(ScriptExecutionContext& scriptExecutionContext
         return;
 
     if (scriptExecutionContext.isDocument()) {
-        auto* window = jsCast<JSDOMWindow*>(globalObject);
+        auto* window = uncheckedDowncast<JSDOMWindow>(globalObject);
         RefPtr localDOMWindow = dynamicDowncast<LocalDOMWindow>(window->wrapped());
         if (!localDOMWindow || !localDOMWindow->isCurrentlyDisplayedInFrame())
             return;

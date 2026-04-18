@@ -166,7 +166,7 @@ JSObject* JSTestJSBuiltinConstructor::prototype(VM& vm, JSDOMGlobalObject& globa
 
 JSValue JSTestJSBuiltinConstructor::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestJSBuiltinConstructorDOMConstructor, DOMConstructorID::TestJSBuiltinConstructor>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestJSBuiltinConstructorDOMConstructor, DOMConstructorID::TestJSBuiltinConstructor>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestJSBuiltinConstructor::destroy(JSC::JSCell* cell)

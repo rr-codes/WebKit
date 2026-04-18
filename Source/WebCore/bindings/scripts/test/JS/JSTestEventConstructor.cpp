@@ -204,7 +204,7 @@ template<> EncodedJSValue JSC_HOST_CALL_ATTRIBUTES JSTestEventConstructorDOMCons
 {
     SUPPRESS_UNCOUNTED_LOCAL auto& vm = lexicalGlobalObject->vm();
     auto throwScope = DECLARE_THROW_SCOPE(vm);
-    auto* castedThis = jsCast<JSTestEventConstructorDOMConstructor*>(callFrame->jsCallee());
+    auto* castedThis = uncheckedDowncast<JSTestEventConstructorDOMConstructor>(callFrame->jsCallee());
     ASSERT(castedThis);
     if (callFrame->argumentCount() < 1) [[unlikely]]
         return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));
@@ -308,7 +308,7 @@ JSObject* JSTestEventConstructor::prototype(VM& vm, JSDOMGlobalObject& globalObj
 
 JSValue JSTestEventConstructor::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestEventConstructorDOMConstructor, DOMConstructorID::TestEventConstructor>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestEventConstructorDOMConstructor, DOMConstructorID::TestEventConstructor>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 JSC_DEFINE_CUSTOM_GETTER(jsTestEventConstructorConstructor, (JSGlobalObject* lexicalGlobalObject, EncodedJSValue thisValue, PropertyName))
@@ -375,7 +375,7 @@ JSC::GCClient::IsoSubspace* JSTestEventConstructor::subspaceForImpl(JSC::VM& vm)
 
 void JSTestEventConstructor::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestEventConstructor*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestEventConstructor>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

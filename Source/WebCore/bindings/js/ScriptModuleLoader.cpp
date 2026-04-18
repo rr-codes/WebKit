@@ -187,7 +187,7 @@ static void rejectWithFetchError(ScriptExecutionContext& context, Ref<DeferredPr
     context.eventLoop().queueTask(TaskSource::Networking, [deferred = WTF::move(deferred), ec, message = WTF::move(message)]() {
         deferred->rejectWithCallback([&] (JSDOMGlobalObject& jsGlobalObject) {
             JSC::VM& vm = jsGlobalObject.vm();
-            JSC::JSObject* error = JSC::jsCast<JSC::JSObject*>(createDOMException(&jsGlobalObject, ec, message));
+            JSC::JSObject* error = uncheckedDowncast<JSC::JSObject>(createDOMException(&jsGlobalObject, ec, message));
             ASSERT(error);
             error->putDirect(vm, vm.propertyNames->builtinNames().moduleFetchFailureKindPrivateName(), JSC::jsNumber(std::to_underlying(ModuleFetchFailureKind::WasFetchError)));
             return error;
@@ -200,7 +200,7 @@ JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, J
     JSC::VM& vm = jsGlobalObject->vm();
     ASSERT(is<JSC::JSScriptFetcher>(scriptFetcher));
 
-    auto& globalObject = *JSC::jsCast<JSDOMGlobalObject*>(jsGlobalObject);
+    auto& globalObject = *uncheckedDowncast<JSDOMGlobalObject>(jsGlobalObject);
     auto* jsPromise = JSC::JSPromise::create(vm, globalObject.promiseStructure());
     RELEASE_ASSERT(jsPromise);
     if (!m_context)
@@ -230,7 +230,7 @@ JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, J
         parameters = scriptFetchParameters->parameters();
 
     if (m_ownerType == OwnerType::Document) {
-        Ref loader = CachedModuleScriptLoader::create(*this, deferred.get(), *downcast<CachedScriptFetcher>(JSC::jsCast<JSC::JSScriptFetcher*>(scriptFetcher)->fetcher()), WTF::move(parameters));
+        Ref loader = CachedModuleScriptLoader::create(*this, deferred.get(), *downcast<CachedScriptFetcher>(uncheckedDowncast<JSC::JSScriptFetcher>(scriptFetcher)->fetcher()), WTF::move(parameters));
         m_loaders.add(loader.copyRef());
 
         // Prevent non-normal worlds from loading with a service worker.
@@ -243,7 +243,7 @@ JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, J
             return jsPromise;
         }
     } else {
-        Ref loader = WorkerModuleScriptLoader::create(*this, deferred.get(), *downcast<WorkerScriptFetcher>(JSC::jsCast<JSC::JSScriptFetcher*>(scriptFetcher)->fetcher()), WTF::move(parameters));
+        Ref loader = WorkerModuleScriptLoader::create(*this, deferred.get(), *downcast<WorkerScriptFetcher>(uncheckedDowncast<JSC::JSScriptFetcher>(scriptFetcher)->fetcher()), WTF::move(parameters));
         m_loaders.add(loader.copyRef());
         loader->load(*m_context, WTF::move(completedURL));
     }
@@ -330,7 +330,7 @@ JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalOb
 {
     JSC::VM& vm = jsGlobalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
-    auto& globalObject = *JSC::jsCast<JSDOMGlobalObject*>(jsGlobalObject);
+    auto& globalObject = *uncheckedDowncast<JSDOMGlobalObject>(jsGlobalObject);
 
     if (!m_context)
         return nullptr;

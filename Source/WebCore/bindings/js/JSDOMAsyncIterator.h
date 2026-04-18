@@ -316,7 +316,7 @@ template<typename JSWrapper, typename IteratorTraits>
 template<IsAsyncIteratorNextReturningPromise Iterator>
 JSC::JSPromise* JSDOMAsyncIteratorBase<JSWrapper, IteratorTraits>::getNextIterationResult(JSC::JSGlobalObject& globalObject)
 {
-    Ref promise = Ref { *m_iterator }->next(*JSC::jsCast<JSDOMGlobalObject*>(&globalObject));
+    Ref promise = Ref { *m_iterator }->next(uncheckedDowncast<JSDOMGlobalObject>(globalObject));
     promise->whenSettled([weakIterator = WeakPtr { *m_iterator }, weakIsFinished = WeakPtr(m_isFinished)] {
         auto* isFinished = weakIsFinished.get();
         if (!isFinished)
@@ -485,7 +485,7 @@ JSC::JSPromise* JSDOMAsyncIteratorBase<JSWrapper, IteratorTraits>::getReturnResu
 {
     ASSERT(m_iterator);
     auto iterator = std::exchange(m_iterator, { });
-    return iterator->returnSteps(*JSC::jsCast<JSDOMGlobalObject*>(&globalObject), value)->promise();
+    return iterator->returnSteps(uncheckedDowncast<JSDOMGlobalObject>(globalObject), value)->promise();
 }
 
 template<typename JSWrapper, typename IteratorTraits>
@@ -547,7 +547,7 @@ JSC::EncodedJSValue JSDOMAsyncIteratorPrototype<JSWrapper, IteratorTraits>::retu
         auto* promise = dynamicDowncast<JSC::JSPromise>(returnPromiseCapability.get(globalObject, vm.propertyNames->promise));
         RETURN_IF_EXCEPTION(scope, { });
 
-        auto deferred = DeferredPromise::create(*JSC::jsCast<JSDOMGlobalObject*>(globalObject), *promise);
+        auto deferred = DeferredPromise::create(*uncheckedDowncast<JSDOMGlobalObject>(globalObject), *promise);
         rejectPromiseWithThisTypeError(deferred, JSWrapper::info()->className, "return");
         return JSC::JSValue::encode(promise);
     }

@@ -213,7 +213,7 @@ JSObject* JSTestCallTracer::prototype(VM& vm, JSDOMGlobalObject& globalObject)
 
 JSValue JSTestCallTracer::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestCallTracerDOMConstructor, DOMConstructorID::TestCallTracer>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestCallTracerDOMConstructor, DOMConstructorID::TestCallTracer>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestCallTracer::destroy(JSC::JSCell* cell)
@@ -544,7 +544,7 @@ JSC::GCClient::IsoSubspace* JSTestCallTracer::subspaceForImpl(JSC::VM& vm)
 
 void JSTestCallTracer::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestCallTracer*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestCallTracer>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

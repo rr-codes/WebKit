@@ -167,7 +167,7 @@ JSObject* JSTestStringifierReadWriteAttribute::prototype(VM& vm, JSDOMGlobalObje
 
 JSValue JSTestStringifierReadWriteAttribute::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestStringifierReadWriteAttributeDOMConstructor, DOMConstructorID::TestStringifierReadWriteAttribute>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestStringifierReadWriteAttributeDOMConstructor, DOMConstructorID::TestStringifierReadWriteAttribute>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestStringifierReadWriteAttribute::destroy(JSC::JSCell* cell)
@@ -246,7 +246,7 @@ JSC::GCClient::IsoSubspace* JSTestStringifierReadWriteAttribute::subspaceForImpl
 
 void JSTestStringifierReadWriteAttribute::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestStringifierReadWriteAttribute*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestStringifierReadWriteAttribute>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

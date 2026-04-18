@@ -171,7 +171,7 @@ JSObject* JSTestCEReactionsStringifier::prototype(VM& vm, JSDOMGlobalObject& glo
 
 JSValue JSTestCEReactionsStringifier::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestCEReactionsStringifierDOMConstructor, DOMConstructorID::TestCEReactionsStringifier>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestCEReactionsStringifierDOMConstructor, DOMConstructorID::TestCEReactionsStringifier>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestCEReactionsStringifier::destroy(JSC::JSCell* cell)
@@ -285,7 +285,7 @@ JSC::GCClient::IsoSubspace* JSTestCEReactionsStringifier::subspaceForImpl(JSC::V
 
 void JSTestCEReactionsStringifier::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestCEReactionsStringifier*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestCEReactionsStringifier>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

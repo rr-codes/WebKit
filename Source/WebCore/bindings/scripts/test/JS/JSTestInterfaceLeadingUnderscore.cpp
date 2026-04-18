@@ -160,7 +160,7 @@ JSObject* JSTestInterfaceLeadingUnderscore::prototype(VM& vm, JSDOMGlobalObject&
 
 JSValue JSTestInterfaceLeadingUnderscore::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestInterfaceLeadingUnderscoreDOMConstructor, DOMConstructorID::TestInterfaceLeadingUnderscore>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestInterfaceLeadingUnderscoreDOMConstructor, DOMConstructorID::TestInterfaceLeadingUnderscore>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestInterfaceLeadingUnderscore::destroy(JSC::JSCell* cell)
@@ -204,7 +204,7 @@ JSC::GCClient::IsoSubspace* JSTestInterfaceLeadingUnderscore::subspaceForImpl(JS
 
 void JSTestInterfaceLeadingUnderscore::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestInterfaceLeadingUnderscore*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestInterfaceLeadingUnderscore>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

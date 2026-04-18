@@ -190,7 +190,7 @@ JSObject* JSTestMapLikeWithOverriddenOperations::prototype(VM& vm, JSDOMGlobalOb
 
 JSValue JSTestMapLikeWithOverriddenOperations::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestMapLikeWithOverriddenOperationsDOMConstructor, DOMConstructorID::TestMapLikeWithOverriddenOperations>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestMapLikeWithOverriddenOperationsDOMConstructor, DOMConstructorID::TestMapLikeWithOverriddenOperations>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestMapLikeWithOverriddenOperations::destroy(JSC::JSCell* cell)
@@ -403,7 +403,7 @@ JSC::GCClient::IsoSubspace* JSTestMapLikeWithOverriddenOperations::subspaceForIm
 
 void JSTestMapLikeWithOverriddenOperations::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestMapLikeWithOverriddenOperations*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestMapLikeWithOverriddenOperations>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

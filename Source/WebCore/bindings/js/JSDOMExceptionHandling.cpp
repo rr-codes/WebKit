@@ -117,7 +117,7 @@ void reportException(JSGlobalObject* lexicalGlobalObject, JSC::Exception* except
     scope.clearException();
     vm.clearLastException();
 
-    auto* globalObject = jsCast<JSDOMGlobalObject*>(lexicalGlobalObject);
+    auto* globalObject = uncheckedDowncast<JSDOMGlobalObject>(lexicalGlobalObject);
     if (auto* window = dynamicDowncast<JSDOMWindow>(globalObject)) {
         RefPtr localDOMWindow = dynamicDowncast<LocalDOMWindow>(window->wrapped());
         if (!localDOMWindow || !localDOMWindow->isCurrentlyDisplayedInFrame())

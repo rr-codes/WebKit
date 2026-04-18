@@ -93,7 +93,7 @@ bool pluginElementCustomGetOwnPropertySlot(JSHTMLElement* element, JSGlobalObjec
 
     if (!element->realm()->world().isNormal()) {
         JSValue proto = element->getPrototypeDirect();
-        if (proto.isObject() && JSC::jsCast<JSC::JSObject*>(asObject(proto))->hasProperty(lexicalGlobalObject, propertyName))
+        if (proto.isObject() && asObject(proto)->hasProperty(lexicalGlobalObject, propertyName))
             return false;
     }
 
@@ -126,7 +126,7 @@ bool pluginElementCustomPut(JSHTMLElement* element, JSGlobalObject* lexicalGloba
 
 JSC_DEFINE_HOST_FUNCTION(callPlugin, (JSGlobalObject* lexicalGlobalObject, CallFrame* callFrame))
 {
-    JSHTMLElement* element = jsCast<JSHTMLElement*>(callFrame->jsCallee());
+    JSHTMLElement* element = uncheckedDowncast<JSHTMLElement>(callFrame->jsCallee());
 
     // Get the plug-in script object.
     JSObject* scriptObject = pluginScriptObject(lexicalGlobalObject, element);

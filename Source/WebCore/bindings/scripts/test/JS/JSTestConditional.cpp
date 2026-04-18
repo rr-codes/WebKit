@@ -265,7 +265,7 @@ JSObject* JSTestConditional::prototype(VM& vm, JSDOMGlobalObject& globalObject)
 
 JSValue JSTestConditional::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestConditionalDOMConstructor, DOMConstructorID::TestConditional>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestConditionalDOMConstructor, DOMConstructorID::TestConditional>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestConditional::destroy(JSC::JSCell* cell)
@@ -504,7 +504,7 @@ JSC::GCClient::IsoSubspace* JSTestConditional::subspaceForImpl(JSC::VM& vm)
 
 void JSTestConditional::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestConditional*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestConditional>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

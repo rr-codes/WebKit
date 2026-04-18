@@ -72,7 +72,7 @@ JSC_DEFINE_CUSTOM_GETTER(methodLengthGetter, (JSGlobalObject* exec, EncodedJSVal
 bool RuntimeMethod::getOwnPropertySlot(JSObject* object, JSGlobalObject* exec, PropertyName propertyName, PropertySlot &slot)
 {
     Ref vm = exec->vm();
-    RuntimeMethod* thisObject = jsCast<RuntimeMethod*>(object);
+    RuntimeMethod* thisObject = uncheckedDowncast<RuntimeMethod>(object);
     if (propertyName == vm->propertyNames->length) {
         slot.setCacheableCustom(thisObject, PropertyAttribute::DontDelete | PropertyAttribute::ReadOnly | PropertyAttribute::DontEnum, methodLengthGetter);
         return true;
@@ -90,7 +90,7 @@ JSC_DEFINE_HOST_FUNCTION(callRuntimeMethod, (JSGlobalObject* globalObject, CallF
 {
     auto scope = DECLARE_THROW_SCOPE(globalObject->vm());
 
-    auto* method = jsCast<RuntimeMethod*>(callFrame->jsCallee());
+    auto* method = uncheckedDowncast<RuntimeMethod>(callFrame->jsCallee());
 
     if (!method->method())
         return JSValue::encode(jsUndefined());

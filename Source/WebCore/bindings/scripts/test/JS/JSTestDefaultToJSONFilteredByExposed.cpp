@@ -191,7 +191,7 @@ JSObject* JSTestDefaultToJSONFilteredByExposed::prototype(VM& vm, JSDOMGlobalObj
 
 JSValue JSTestDefaultToJSONFilteredByExposed::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestDefaultToJSONFilteredByExposedDOMConstructor, DOMConstructorID::TestDefaultToJSONFilteredByExposed>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestDefaultToJSONFilteredByExposedDOMConstructor, DOMConstructorID::TestDefaultToJSONFilteredByExposed>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestDefaultToJSONFilteredByExposed::destroy(JSC::JSCell* cell)
@@ -289,7 +289,7 @@ JSC::GCClient::IsoSubspace* JSTestDefaultToJSONFilteredByExposed::subspaceForImp
 
 void JSTestDefaultToJSONFilteredByExposed::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestDefaultToJSONFilteredByExposed*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestDefaultToJSONFilteredByExposed>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

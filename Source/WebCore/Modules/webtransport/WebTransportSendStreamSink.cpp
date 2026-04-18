@@ -87,7 +87,7 @@ void WebTransportSendStreamSink::write(ScriptExecutionContext& context, JSC::JSV
     if (m_isClosed)
         return promise.reject(Exception { ExceptionCode::InvalidStateError });
 
-    auto& globalObject = *JSC::jsCast<JSDOMGlobalObject*>(context.globalObject());
+    auto& globalObject = *uncheckedDowncast<JSDOMGlobalObject>(context.globalObject());
     auto scope = DECLARE_THROW_SCOPE(globalObject.vm());
 
     auto bufferSource = convert<IDLUnion<IDLArrayBuffer, IDLArrayBufferView>>(globalObject, value);

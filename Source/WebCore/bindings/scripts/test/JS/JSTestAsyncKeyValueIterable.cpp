@@ -172,7 +172,7 @@ JSObject* JSTestAsyncKeyValueIterable::prototype(VM& vm, JSDOMGlobalObject& glob
 
 JSValue JSTestAsyncKeyValueIterable::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestAsyncKeyValueIterableDOMConstructor, DOMConstructorID::TestAsyncKeyValueIterable>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestAsyncKeyValueIterableDOMConstructor, DOMConstructorID::TestAsyncKeyValueIterable>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestAsyncKeyValueIterable::destroy(JSC::JSCell* cell)
@@ -304,7 +304,7 @@ JSC::GCClient::IsoSubspace* JSTestAsyncKeyValueIterable::subspaceForImpl(JSC::VM
 
 void JSTestAsyncKeyValueIterable::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestAsyncKeyValueIterable*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestAsyncKeyValueIterable>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

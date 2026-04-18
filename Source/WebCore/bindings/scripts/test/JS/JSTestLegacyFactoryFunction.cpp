@@ -110,7 +110,7 @@ template<> EncodedJSValue JSC_HOST_CALL_ATTRIBUTES JSTestLegacyFactoryFunctionLe
 {
     SUPPRESS_UNCOUNTED_LOCAL auto& vm = lexicalGlobalObject->vm();
     auto throwScope = DECLARE_THROW_SCOPE(vm);
-    auto* castedThis = jsCast<JSTestLegacyFactoryFunctionLegacyFactoryFunction*>(callFrame->jsCallee());
+    auto* castedThis = uncheckedDowncast<JSTestLegacyFactoryFunctionLegacyFactoryFunction>(callFrame->jsCallee());
     ASSERT(castedThis);
     if (callFrame->argumentCount() < 1) [[unlikely]]
         return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));
@@ -216,12 +216,12 @@ JSObject* JSTestLegacyFactoryFunction::prototype(VM& vm, JSDOMGlobalObject& glob
 
 JSValue JSTestLegacyFactoryFunction::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestLegacyFactoryFunctionDOMConstructor, DOMConstructorID::TestLegacyFactoryFunction>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestLegacyFactoryFunctionDOMConstructor, DOMConstructorID::TestLegacyFactoryFunction>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 JSValue JSTestLegacyFactoryFunction::getLegacyFactoryFunction(VM& vm, JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestLegacyFactoryFunctionLegacyFactoryFunction, DOMConstructorID::TestLegacyFactoryFunctionLegacyFactory>(vm, *jsCast<JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestLegacyFactoryFunctionLegacyFactoryFunction, DOMConstructorID::TestLegacyFactoryFunctionLegacyFactory>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestLegacyFactoryFunction::destroy(JSC::JSCell* cell)
@@ -252,7 +252,7 @@ JSC::GCClient::IsoSubspace* JSTestLegacyFactoryFunction::subspaceForImpl(JSC::VM
 
 void JSTestLegacyFactoryFunction::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestLegacyFactoryFunction*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestLegacyFactoryFunction>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));
@@ -261,7 +261,7 @@ void JSTestLegacyFactoryFunction::analyzeHeap(JSCell* cell, HeapAnalyzer& analyz
 
 bool JSTestLegacyFactoryFunctionOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, AbstractSlotVisitor& visitor, ASCIILiteral* reason)
 {
-    SUPPRESS_UNCOUNTED_LOCAL auto* jsTestLegacyFactoryFunction = jsCast<JSTestLegacyFactoryFunction*>(handle.slot()->asCell());
+    SUPPRESS_UNCOUNTED_LOCAL auto* jsTestLegacyFactoryFunction = uncheckedDowncast<JSTestLegacyFactoryFunction>(handle.slot()->asCell());
     SUPPRESS_UNCOUNTED_LOCAL auto& wrapped = jsTestLegacyFactoryFunction->wrapped();
     if (!wrapped.isContextStopped() && wrapped.hasPendingActivity()) {
         if (reason) [[unlikely]]

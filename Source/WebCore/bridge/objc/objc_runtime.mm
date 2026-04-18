@@ -278,7 +278,7 @@ JSC_DEFINE_HOST_FUNCTION(callObjCFallbackObject, (JSGlobalObject* lexicalGlobalO
     if ([targetObject respondsToSelector:@selector(invokeUndefinedMethodFromWebScript:withArguments:)]){
         auto* objcClass = downcast<ObjcClass>(objcInstance->getClass());
         std::unique_ptr<ObjcMethod> fallbackMethod(makeUnique<ObjcMethod>(objcClass->isa(), @selector(invokeUndefinedMethodFromWebScript:withArguments:)));
-        auto& nameIdentifier = jsCast<ObjcFallbackObjectImp*>(callFrame->jsCallee())->propertyName();
+        auto& nameIdentifier = uncheckedDowncast<ObjcFallbackObjectImp>(callFrame->jsCallee())->propertyName();
         fallbackMethod->setJavaScriptName(nameIdentifier.createCFString().get());
         result = objcInstance->invokeObjcMethod(lexicalGlobalObject, callFrame, fallbackMethod.get());
     }
@@ -292,7 +292,7 @@ CallData ObjcFallbackObjectImp::getCallData(JSCell* cell)
 {
     CallData callData;
 
-    ObjcFallbackObjectImp* thisObject = jsCast<ObjcFallbackObjectImp*>(cell);
+    ObjcFallbackObjectImp* thisObject = uncheckedDowncast<ObjcFallbackObjectImp>(cell);
     id targetObject = thisObject->_instance->getObject();
     if ([targetObject respondsToSelector:@selector(invokeUndefinedMethodFromWebScript:withArguments:)]) {
         callData.type = CallData::Type::Native;

@@ -225,7 +225,7 @@ template<typename JSIterator> JSC::JSValue iteratorForEach(JSC::JSGlobalObject& 
     if (callData.type == JSC::CallData::Type::None)
         return throwTypeError(&lexicalGlobalObject, scope, "Cannot call callback"_s);
 
-    auto iterator = thisObject.wrapped().createIterator(protect(JSC::jsCast<JSDOMGlobalObject*>(&lexicalGlobalObject)->scriptExecutionContext()).get());
+    auto iterator = thisObject.wrapped().createIterator(protect(uncheckedDowncast<JSDOMGlobalObject>(&lexicalGlobalObject)->scriptExecutionContext()).get());
     while (auto value = iterator.next()) {
         JSC::MarkedArgumentBuffer arguments;
         appendForEachArguments<JSIterator>(lexicalGlobalObject, *thisObject.realm(), arguments, value);

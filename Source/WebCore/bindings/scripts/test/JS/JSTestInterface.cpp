@@ -269,7 +269,7 @@ template<> EncodedJSValue JSC_HOST_CALL_ATTRIBUTES JSTestInterfaceDOMConstructor
 {
     SUPPRESS_UNCOUNTED_LOCAL auto& vm = lexicalGlobalObject->vm();
     auto throwScope = DECLARE_THROW_SCOPE(vm);
-    auto* castedThis = jsCast<JSTestInterfaceDOMConstructor*>(callFrame->jsCallee());
+    auto* castedThis = uncheckedDowncast<JSTestInterfaceDOMConstructor>(callFrame->jsCallee());
     ASSERT(castedThis);
     if (callFrame->argumentCount() < 1) [[unlikely]]
         return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));
@@ -473,7 +473,7 @@ void JSTestInterfacePrototype::finishCreation(VM& vm)
     reifyStaticProperties(vm, JSTestInterface::info(), JSTestInterfacePrototypeTableValues, *this);
     bool hasDisabledRuntimeProperties = false;
 #if ENABLE(Condition22) || ENABLE(Condition23)
-    if (!downcast<Document>(jsCast<JSDOMGlobalObject*>(realm())->scriptExecutionContext())->settingsValues().testSettingEnabled) {
+    if (!downcast<Document>(uncheckedDowncast<JSDOMGlobalObject>(realm())->scriptExecutionContext())->settingsValues().testSettingEnabled) {
         hasDisabledRuntimeProperties = true;
         auto propertyName = Identifier::fromString(vm, "mixinSettingsConditionalOperation"_s);
         VM::DeletePropertyModeScope scope(vm, VM::DeletePropertyMode::IgnoreConfigurable);
@@ -523,7 +523,7 @@ JSObject* JSTestInterface::prototype(VM& vm, JSDOMGlobalObject& globalObject)
 
 JSValue JSTestInterface::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestInterfaceDOMConstructor, DOMConstructorID::TestInterface>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestInterfaceDOMConstructor, DOMConstructorID::TestInterface>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestInterface::destroy(JSC::JSCell* cell)
@@ -925,7 +925,7 @@ static inline JSC::EncodedJSValue jsTestInterfacePrototypeFunction_mixinComplexO
     SUPPRESS_UNCOUNTED_LOCAL auto& impl = castedThis->wrapped();
     if (callFrame->argumentCount() < 2) [[unlikely]]
         return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));
-    RefPtr context = jsCast<JSDOMGlobalObject*>(lexicalGlobalObject)->scriptExecutionContext();
+    RefPtr context = uncheckedDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext();
     if (!context) [[unlikely]]
         return JSValue::encode(jsUndefined());
     EnsureStillAliveScope argument0 = callFrame->uncheckedArgument(0);
@@ -1064,7 +1064,7 @@ static inline JSC::EncodedJSValue jsTestInterfacePrototypeFunction_supplementalM
     SUPPRESS_UNCOUNTED_LOCAL auto& impl = castedThis->wrapped();
     if (callFrame->argumentCount() < 2) [[unlikely]]
         return throwVMError(lexicalGlobalObject, throwScope, createNotEnoughArgumentsError(lexicalGlobalObject));
-    RefPtr context = jsCast<JSDOMGlobalObject*>(lexicalGlobalObject)->scriptExecutionContext();
+    RefPtr context = uncheckedDowncast<JSDOMGlobalObject>(lexicalGlobalObject)->scriptExecutionContext();
     if (!context) [[unlikely]]
         return JSValue::encode(jsUndefined());
     EnsureStillAliveScope argument0 = callFrame->uncheckedArgument(0);
@@ -1235,7 +1235,7 @@ JSC::GCClient::IsoSubspace* JSTestInterface::subspaceForImpl(JSC::VM& vm)
 
 void JSTestInterface::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestInterface*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestInterface>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));
@@ -1244,7 +1244,7 @@ void JSTestInterface::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 
 bool JSTestInterfaceOwner::isReachableFromOpaqueRoots(JSC::Handle<JSC::Unknown> handle, void*, AbstractSlotVisitor& visitor, ASCIILiteral* reason)
 {
-    SUPPRESS_UNCOUNTED_LOCAL auto* jsTestInterface = jsCast<JSTestInterface*>(handle.slot()->asCell());
+    SUPPRESS_UNCOUNTED_LOCAL auto* jsTestInterface = uncheckedDowncast<JSTestInterface>(handle.slot()->asCell());
     SUPPRESS_UNCOUNTED_LOCAL auto& wrapped = jsTestInterface->wrapped();
     if (!wrapped.isContextStopped() && wrapped.hasPendingActivity()) {
         if (reason) [[unlikely]]

@@ -161,7 +161,7 @@ JSObject* JSTestGenerateAddOpaqueRoot::prototype(VM& vm, JSDOMGlobalObject& glob
 
 JSValue JSTestGenerateAddOpaqueRoot::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestGenerateAddOpaqueRootDOMConstructor, DOMConstructorID::TestGenerateAddOpaqueRoot>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestGenerateAddOpaqueRootDOMConstructor, DOMConstructorID::TestGenerateAddOpaqueRoot>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestGenerateAddOpaqueRoot::destroy(JSC::JSCell* cell)
@@ -206,7 +206,7 @@ JSC::GCClient::IsoSubspace* JSTestGenerateAddOpaqueRoot::subspaceForImpl(JSC::VM
 template<typename Visitor>
 void JSTestGenerateAddOpaqueRoot::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    auto* thisObject = jsCast<JSTestGenerateAddOpaqueRoot*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestGenerateAddOpaqueRoot>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     addWebCoreOpaqueRoot(visitor, thisObject->wrapped().ownerObjectConcurrently());
@@ -216,7 +216,7 @@ DEFINE_VISIT_CHILDREN(JSTestGenerateAddOpaqueRoot);
 
 void JSTestGenerateAddOpaqueRoot::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestGenerateAddOpaqueRoot*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestGenerateAddOpaqueRoot>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

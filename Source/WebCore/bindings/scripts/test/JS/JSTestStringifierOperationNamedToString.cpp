@@ -163,7 +163,7 @@ JSObject* JSTestStringifierOperationNamedToString::prototype(VM& vm, JSDOMGlobal
 
 JSValue JSTestStringifierOperationNamedToString::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestStringifierOperationNamedToStringDOMConstructor, DOMConstructorID::TestStringifierOperationNamedToString>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestStringifierOperationNamedToStringDOMConstructor, DOMConstructorID::TestStringifierOperationNamedToString>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestStringifierOperationNamedToString::destroy(JSC::JSCell* cell)
@@ -209,7 +209,7 @@ JSC::GCClient::IsoSubspace* JSTestStringifierOperationNamedToString::subspaceFor
 
 void JSTestStringifierOperationNamedToString::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestStringifierOperationNamedToString*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestStringifierOperationNamedToString>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

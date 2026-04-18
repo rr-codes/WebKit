@@ -611,7 +611,7 @@ JSObject* JSTestDOMJIT::prototype(VM& vm, JSDOMGlobalObject& globalObject)
 
 JSValue JSTestDOMJIT::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestDOMJITDOMConstructor, DOMConstructorID::TestDOMJIT>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestDOMJITDOMConstructor, DOMConstructorID::TestDOMJIT>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 JSC_DEFINE_CUSTOM_GETTER(jsTestDOMJITConstructor, (JSGlobalObject* lexicalGlobalObject, EncodedJSValue thisValue, PropertyName))
@@ -1274,7 +1274,7 @@ JSC::GCClient::IsoSubspace* JSTestDOMJIT::subspaceForImpl(JSC::VM& vm)
 
 void JSTestDOMJIT::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestDOMJIT*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestDOMJIT>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

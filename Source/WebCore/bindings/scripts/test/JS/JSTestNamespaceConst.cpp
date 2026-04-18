@@ -93,7 +93,7 @@ JSC::Structure* JSTestNamespaceConst::createStructure(JSC::VM& vm, JSC::JSGlobal
 
 JSValue JSTestNamespaceConst::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestNamespaceConstDOMConstructor, DOMConstructorID::TestNamespaceConst>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestNamespaceConstDOMConstructor, DOMConstructorID::TestNamespaceConst>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestNamespaceConst::destroy(JSC::JSCell* cell)

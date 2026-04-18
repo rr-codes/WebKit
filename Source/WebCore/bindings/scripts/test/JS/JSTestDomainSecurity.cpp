@@ -189,7 +189,7 @@ JSObject* JSTestDomainSecurity::prototype(VM& vm, JSDOMGlobalObject& globalObjec
 
 JSValue JSTestDomainSecurity::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestDomainSecurityDOMConstructor, DOMConstructorID::TestDomainSecurity>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestDomainSecurityDOMConstructor, DOMConstructorID::TestDomainSecurity>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestDomainSecurity::destroy(JSC::JSCell* cell)
@@ -341,7 +341,7 @@ JSC::GCClient::IsoSubspace* JSTestDomainSecurity::subspaceForImpl(JSC::VM& vm)
 
 void JSTestDomainSecurity::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestDomainSecurity*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestDomainSecurity>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

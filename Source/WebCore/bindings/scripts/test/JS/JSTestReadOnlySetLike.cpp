@@ -178,7 +178,7 @@ JSObject* JSTestReadOnlySetLike::prototype(VM& vm, JSDOMGlobalObject& globalObje
 
 JSValue JSTestReadOnlySetLike::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestReadOnlySetLikeDOMConstructor, DOMConstructorID::TestReadOnlySetLike>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestReadOnlySetLikeDOMConstructor, DOMConstructorID::TestReadOnlySetLike>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestReadOnlySetLike::destroy(JSC::JSCell* cell)
@@ -303,7 +303,7 @@ JSC::GCClient::IsoSubspace* JSTestReadOnlySetLike::subspaceForImpl(JSC::VM& vm)
 
 void JSTestReadOnlySetLike::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestReadOnlySetLike*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestReadOnlySetLike>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

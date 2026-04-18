@@ -168,7 +168,7 @@ JSObject* JSTestAsyncIterable::prototype(VM& vm, JSDOMGlobalObject& globalObject
 
 JSValue JSTestAsyncIterable::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestAsyncIterableDOMConstructor, DOMConstructorID::TestAsyncIterable>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestAsyncIterableDOMConstructor, DOMConstructorID::TestAsyncIterable>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestAsyncIterable::destroy(JSC::JSCell* cell)
@@ -276,7 +276,7 @@ JSC::GCClient::IsoSubspace* JSTestAsyncIterable::subspaceForImpl(JSC::VM& vm)
 
 void JSTestAsyncIterable::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestAsyncIterable*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestAsyncIterable>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

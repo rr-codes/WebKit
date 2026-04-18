@@ -64,7 +64,6 @@ using JSC::JSLockHolder;
 using JSC::JSObject;
 using JSC::MarkedArgumentBuffer;
 using JSC::PutPropertySlot;
-using JSC::jsCast;
 using JSC::jsUndefined;
 using JSC::makeSource;
 

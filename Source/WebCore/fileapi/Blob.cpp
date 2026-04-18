@@ -517,7 +517,7 @@ ExceptionOr<Ref<ReadableStream>> Blob::stream()
         return promise;
     };
 
-    return ReadableStream::createReadableByteStream(*JSC::jsCast<JSDOMGlobalObject*>(globalObject), WTF::move(pullAlgorithm), WTF::move(cancelAlgorithm), {
+    return ReadableStream::createReadableByteStream(*uncheckedDowncast<JSDOMGlobalObject>(globalObject), WTF::move(pullAlgorithm), WTF::move(cancelAlgorithm), {
         .isSourceReachableFromOpaqueRoot = ReadableStream::IsSourceReachableFromOpaqueRoot::Yes
     });
 }

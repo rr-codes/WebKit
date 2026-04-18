@@ -149,7 +149,7 @@ JSC::Structure* JSDedicatedWorkerGlobalScope::createStructure(JSC::VM& vm, JSC::
 
 JSValue JSDedicatedWorkerGlobalScope::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSDedicatedWorkerGlobalScopeDOMConstructor, DOMConstructorID::DedicatedWorkerGlobalScope>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSDedicatedWorkerGlobalScopeDOMConstructor, DOMConstructorID::DedicatedWorkerGlobalScope>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 JSC_DEFINE_CUSTOM_GETTER(jsDedicatedWorkerGlobalScopeConstructor, (JSGlobalObject* lexicalGlobalObject, EncodedJSValue thisValue, PropertyName))
@@ -197,7 +197,7 @@ JSC::GCClient::IsoSubspace* JSDedicatedWorkerGlobalScope::subspaceForImpl(JSC::V
 
 void JSDedicatedWorkerGlobalScope::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSDedicatedWorkerGlobalScope*>(cell);
+    auto* thisObject = uncheckedDowncast<JSDedicatedWorkerGlobalScope>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

@@ -104,7 +104,7 @@ void JSShadowRealmGlobalScope::finishCreation(VM& vm, JSGlobalProxy* proxy)
 {
     Base::finishCreation(vm, proxy);
 
-    if (jsCast<JSDOMGlobalObject*>(realm())->scriptExecutionContext()->settingsValues().webAPIsInShadowRealmEnabled)
+    if (realm()->scriptExecutionContext()->settingsValues().webAPIsInShadowRealmEnabled)
         putDirectCustomAccessor(vm, builtinNames(vm).ExposedStarPublicName(), CustomGetterSetter::create(vm, jsShadowRealmGlobalScope_ExposedStarConstructor, nullptr), attributesForStructure(static_cast<unsigned>(JSC::PropertyAttribute::DontEnum)));
 }
 
@@ -122,7 +122,7 @@ JSC::Structure* JSShadowRealmGlobalScope::createStructure(JSC::VM& vm, JSC::JSGl
 
 JSValue JSShadowRealmGlobalScope::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSShadowRealmGlobalScopeDOMConstructor, DOMConstructorID::ShadowRealmGlobalScope>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSShadowRealmGlobalScopeDOMConstructor, DOMConstructorID::ShadowRealmGlobalScope>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSShadowRealmGlobalScope::destroy(JSC::JSCell* cell)
@@ -176,7 +176,7 @@ JSC::GCClient::IsoSubspace* JSShadowRealmGlobalScope::subspaceForImpl(JSC::VM& v
 
 void JSShadowRealmGlobalScope::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSShadowRealmGlobalScope*>(cell);
+    auto* thisObject = uncheckedDowncast<JSShadowRealmGlobalScope>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));

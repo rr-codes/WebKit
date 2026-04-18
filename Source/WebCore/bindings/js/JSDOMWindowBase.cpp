@@ -190,7 +190,7 @@ void JSDOMWindowBase::printErrorMessage(const String& message) const
 
 bool JSDOMWindowBase::supportsRichSourceInfo(const JSGlobalObject* object)
 {
-    auto* thisObject = jsCast<const JSDOMWindowBase*>(object);
+    auto* thisObject = uncheckedDowncast<JSDOMWindowBase>(object);
     auto* frame = thisObject->wrapped().frame();
     if (!frame)
         return false;
@@ -218,7 +218,7 @@ static inline bool NODELETE shouldInterruptScriptToPreventInfiniteRecursionWhenC
 
 bool JSDOMWindowBase::shouldInterruptScript(const JSGlobalObject* object)
 {
-    auto* thisObject = jsCast<const JSDOMWindowBase*>(object);
+    auto* thisObject = uncheckedDowncast<JSDOMWindowBase>(object);
     ASSERT(thisObject->wrapped().frame());
     Page* page = thisObject->wrapped().frame()->page();
     return shouldInterruptScriptToPreventInfiniteRecursionWhenClosingPage(page);
@@ -226,7 +226,7 @@ bool JSDOMWindowBase::shouldInterruptScript(const JSGlobalObject* object)
 
 bool JSDOMWindowBase::shouldInterruptScriptBeforeTimeout(const JSGlobalObject* object)
 {
-    auto* thisObject = jsCast<const JSDOMWindowBase*>(object);
+    auto* thisObject = uncheckedDowncast<JSDOMWindowBase>(object);
     ASSERT(thisObject->wrapped().frame());
     Page* page = thisObject->wrapped().frame()->page();
 
@@ -243,7 +243,7 @@ bool JSDOMWindowBase::shouldInterruptScriptBeforeTimeout(const JSGlobalObject* o
 
 RuntimeFlags JSDOMWindowBase::javaScriptRuntimeFlags(const JSGlobalObject* object)
 {
-    auto* thisObject = jsCast<const JSDOMWindowBase*>(object);
+    auto* thisObject = uncheckedDowncast<JSDOMWindowBase>(object);
     auto* frame = thisObject->wrapped().frame();
     if (!frame)
         return RuntimeFlags();
@@ -252,19 +252,19 @@ RuntimeFlags JSDOMWindowBase::javaScriptRuntimeFlags(const JSGlobalObject* objec
 
 JSC::JSObject* JSDOMWindowBase::currentScriptExecutionOwner(JSGlobalObject* object)
 {
-    auto* thisObject = jsCast<JSDOMWindowBase*>(object);
+    auto* thisObject = uncheckedDowncast<JSDOMWindowBase>(object);
     RefPtr document = thisObject->wrapped().documentIfLocal();
-    return jsCast<JSObject*>(document ? toJS(thisObject, thisObject, document.releaseNonNull()) : jsNull());
+    return uncheckedDowncast<JSObject>(document ? toJS(thisObject, thisObject, document.releaseNonNull()) : jsNull());
 }
 
 JSC::ScriptExecutionStatus JSDOMWindowBase::scriptExecutionStatus(JSC::JSGlobalObject*, JSC::JSObject* owner)
 {
-    return jsCast<JSDocument*>(owner)->wrapped().jscScriptExecutionStatus();
+    return uncheckedDowncast<JSDocument>(owner)->wrapped().jscScriptExecutionStatus();
 }
 
 void JSDOMWindowBase::reportViolationForUnsafeEval(JSGlobalObject* object, const String& source)
 {
-    auto* thisObject = jsCast<const JSDOMWindowBase*>(object);
+    auto* thisObject = uncheckedDowncast<JSDOMWindowBase>(object);
     CheckedPtr<ContentSecurityPolicy> contentSecurityPolicy;
     RefPtr localWindow = dynamicDowncast<LocalDOMWindow>(thisObject->wrapped());
     if (CheckedPtr element = localWindow ? localWindow->frameElement() : nullptr)
@@ -298,7 +298,7 @@ Event* JSDOMWindowBase::currentEvent() const
 
 JSWindowProxy& JSDOMWindowBase::proxy() const
 {
-    return *jsCast<JSWindowProxy*>(&JSDOMGlobalObject::proxy());
+    return uncheckedDowncast<JSWindowProxy>(JSDOMGlobalObject::proxy());
 }
 
 JSValue toJS(JSGlobalObject* lexicalGlobalObject, DOMWindow& domWindow)
@@ -311,7 +311,7 @@ JSValue toJS(JSGlobalObject* lexicalGlobalObject, DOMWindow& domWindow)
 
 JSDOMWindow* toJSDOMWindow(LocalFrame& frame, DOMWrapperWorld& world)
 {
-    return JSC::jsCast<JSDOMWindow*>(frame.script().globalObject(world));
+    return uncheckedDowncast<JSDOMWindow>(frame.script().globalObject(world));
 }
 
 LocalDOMWindow& incumbentDOMWindow(JSGlobalObject& fallbackGlobalObject, CallFrame& callFrame)
@@ -359,7 +359,7 @@ void JSDOMWindowBase::fireFrameClearedWatchpointsForWindow(LocalDOMWindow* windo
         JSC::JSObject* wrapper = result->value.get();
         if (!wrapper)
             continue;
-        JSDOMWindowBase* jsWindow = JSC::jsCast<JSDOMWindowBase*>(wrapper);
+        JSDOMWindowBase* jsWindow = uncheckedDowncast<JSDOMWindowBase>(wrapper);
         jsWindow->m_windowCloseWatchpoints->fireAll(vm, "Frame cleared");
     }
 }

@@ -158,7 +158,7 @@ JSObject* JSTestPluginInterface::prototype(VM& vm, JSDOMGlobalObject& globalObje
 
 JSValue JSTestPluginInterface::getConstructor(VM& vm, const JSGlobalObject* globalObject)
 {
-    return getDOMConstructor<JSTestPluginInterfaceDOMConstructor, DOMConstructorID::TestPluginInterface>(vm, *jsCast<const JSDOMGlobalObject*>(globalObject));
+    return getDOMConstructor<JSTestPluginInterfaceDOMConstructor, DOMConstructorID::TestPluginInterface>(vm, *uncheckedDowncast<JSDOMGlobalObject>(globalObject));
 }
 
 void JSTestPluginInterface::destroy(JSC::JSCell* cell)
@@ -170,7 +170,7 @@ void JSTestPluginInterface::destroy(JSC::JSCell* cell)
 bool JSTestPluginInterface::legacyPlatformObjectGetOwnProperty(JSObject* object, JSGlobalObject* lexicalGlobalObject, PropertyName propertyName, PropertySlot& slot, bool ignoreNamedProperties)
 {
     UNUSED_PARAM(ignoreNamedProperties);
-    auto* thisObject = jsCast<JSTestPluginInterface*>(object);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     if (pluginElementCustomGetOwnPropertySlot(thisObject, lexicalGlobalObject, propertyName, slot))
         return true;
@@ -189,7 +189,7 @@ bool JSTestPluginInterface::getOwnPropertySlot(JSObject* object, JSGlobalObject*
 bool JSTestPluginInterface::getOwnPropertySlotByIndex(JSObject* object, JSGlobalObject* lexicalGlobalObject, unsigned index, PropertySlot& slot)
 {
     SUPPRESS_UNCOUNTED_LOCAL auto& vm = JSC::getVM(lexicalGlobalObject);
-    auto* thisObject = jsCast<JSTestPluginInterface*>(object);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(object);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     auto propertyName = Identifier::from(vm, index);
     if (pluginElementCustomGetOwnPropertySlot(thisObject, lexicalGlobalObject, propertyName, slot))
@@ -202,7 +202,7 @@ bool JSTestPluginInterface::getOwnPropertySlotByIndex(JSObject* object, JSGlobal
 
 bool JSTestPluginInterface::put(JSCell* cell, JSGlobalObject* lexicalGlobalObject, PropertyName propertyName, JSValue value, PutPropertySlot& putPropertySlot)
 {
-    auto* thisObject = jsCast<JSTestPluginInterface*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
 
     if (thisObject != putPropertySlot.thisValue()) [[unlikely]]
@@ -235,7 +235,7 @@ bool JSTestPluginInterface::putByIndex(JSCell* cell, JSGlobalObject* lexicalGlob
             return JSObject::putByIndex(cell, lexicalGlobalObject, index, value, shouldThrow);
     }
 
-    auto* thisObject = jsCast<JSTestPluginInterface*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
 
     SUPPRESS_UNCOUNTED_LOCAL auto& vm = JSC::getVM(lexicalGlobalObject);
@@ -255,7 +255,7 @@ bool JSTestPluginInterface::putByIndex(JSCell* cell, JSGlobalObject* lexicalGlob
 
 CallData JSTestPluginInterface::getCallData(JSCell* cell)
 {
-    auto* thisObject = jsCast<JSTestPluginInterface*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
 
     return pluginElementCustomGetCallData(thisObject);
@@ -284,7 +284,7 @@ JSC::GCClient::IsoSubspace* JSTestPluginInterface::subspaceForImpl(JSC::VM& vm)
 template<typename Visitor>
 void JSTestPluginInterface::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    auto* thisObject = jsCast<JSTestPluginInterface*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
 }
@@ -293,7 +293,7 @@ DEFINE_VISIT_CHILDREN(JSTestPluginInterface);
 
 void JSTestPluginInterface::analyzeHeap(JSCell* cell, HeapAnalyzer& analyzer)
 {
-    auto* thisObject = jsCast<JSTestPluginInterface*>(cell);
+    auto* thisObject = uncheckedDowncast<JSTestPluginInterface>(cell);
     analyzer.setWrappedObjectForCell(cell, &thisObject->wrapped());
     if (RefPtr context = thisObject->scriptExecutionContext())
         analyzer.setLabelForCell(cell, makeString("url "_s, context->url().string()));
