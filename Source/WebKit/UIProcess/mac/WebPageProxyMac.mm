@@ -1167,7 +1167,8 @@ void WebPageProxy::interruptSyntheticMomentumScrolling()
         WebCore::FloatSize { },
         timestamp,
         std::nullopt,
-        WebWheelEvent::MomentumEndType::Interrupted
+        WebWheelEvent::MomentumEndType::Interrupted,
+        WebEventInputSource::Automation
     };
     handleNativeWheelEvent(NativeWebWheelEvent { cancelEvent });
 }

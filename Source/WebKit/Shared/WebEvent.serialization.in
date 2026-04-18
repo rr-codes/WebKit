@@ -258,6 +258,7 @@ class WebKit::WebWheelEvent : WebKit::WebEvent {
     MonotonicTime ioHIDEventTimestamp();
     std::optional<WebCore::FloatSize> rawPlatformDelta();
     WebKit::WebWheelEvent::MomentumEndType momentumEndType();
+    WebKit::WebEventInputSource inputSource();
 #endif
 };
 
