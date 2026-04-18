@@ -818,9 +818,10 @@ static JSValue definePropertiesSlow(JSGlobalObject* globalObject, JSObject* obje
     auto scope = DECLARE_THROW_SCOPE(vm);
 
     PropertyNameArrayBuilder propertyNames(vm, PropertyNameMode::StringsAndSymbols, PrivateSymbolMode::Exclude);
-    asObject(properties)->methodTable()->getOwnPropertyNames(asObject(properties), globalObject, propertyNames, DontEnumPropertiesMode::Exclude);
+    asObject(properties)->methodTable()->getOwnPropertyNames(asObject(properties), globalObject, propertyNames, DontEnumPropertiesMode::Include);
     RETURN_IF_EXCEPTION(scope, { });
     size_t numProperties = propertyNames.size();
+    Vector<Identifier> enumerableNames;
     Vector<PropertyDescriptor> descriptors;
     MarkedArgumentBuffer markBuffer;
 #define RETURN_IF_EXCEPTION_CLEARING_OVERFLOW(value) do { \
@@ -830,11 +831,27 @@ static JSValue definePropertiesSlow(JSGlobalObject* globalObject, JSObject* obje
     } \
 } while (false)
     for (size_t i = 0; i < numProperties; i++) {
-        JSValue prop = properties->get(globalObject, propertyNames[i]);
+        auto& propertyName = propertyNames[i];
+        ASSERT(!propertyName.isPrivateName());
+
+        PropertySlot slot(properties, PropertySlot::InternalMethodType::GetOwnProperty);
+        bool hasProperty = properties->methodTable()->getOwnPropertySlot(properties, globalObject, propertyName, slot);
+        RETURN_IF_EXCEPTION_CLEARING_OVERFLOW({ });
+        if (!hasProperty)
+            continue;
+        if (slot.attributes() & PropertyAttribute::DontEnum)
+            continue;
+
+        JSValue prop;
+        if (!slot.isTaintedByOpaqueObject()) [[likely]]
+            prop = slot.getValue(globalObject, propertyName);
+        else
+            prop = properties->get(globalObject, propertyName);
         RETURN_IF_EXCEPTION_CLEARING_OVERFLOW({ });
         PropertyDescriptor descriptor;
         toPropertyDescriptor(globalObject, prop, descriptor);
         RETURN_IF_EXCEPTION_CLEARING_OVERFLOW({ });
+        enumerableNames.append(propertyName);
         descriptors.append(descriptor);
         // Ensure we mark all the values that we're accumulating
         if (descriptor.isDataDescriptor() && descriptor.value())
@@ -848,11 +865,8 @@ static JSValue definePropertiesSlow(JSGlobalObject* globalObject, JSObject* obje
     }
     RELEASE_ASSERT(!markBuffer.hasOverflowed());
 #undef RETURN_IF_EXCEPTION_CLEARING_OVERFLOW
-    for (size_t i = 0; i < numProperties; i++) {
-        auto& propertyName = propertyNames[i];
-        ASSERT(!propertyName.isPrivateName());
-
-        object->methodTable()->defineOwnProperty(object, globalObject, propertyName, descriptors[i], true);
+    for (size_t i = 0; i < descriptors.size(); i++) {
+        object->methodTable()->defineOwnProperty(object, globalObject, enumerableNames[i], descriptors[i], true);
         RETURN_IF_EXCEPTION(scope, { });
     }
     return object;
