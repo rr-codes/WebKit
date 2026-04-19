@@ -79,6 +79,7 @@ DEFINE_VISIT_CHILDREN(IntlLocale);
 class LocaleIDBuilder final {
 public:
     bool initialize(const String&);
+    bool canonicalize();
     CString toCanonical();
 
     void overrideLanguageScriptRegionVariants(StringView language, StringView script, StringView region, StringView variants = { });
@@ -106,6 +107,20 @@ CString LocaleIDBuilder::toCanonical()
         return { };
 
     return canonicalizeUnicodeExtensionsAfterICULocaleCanonicalization(WTF::move(buffer.value())).span();
+}
+
+bool LocaleIDBuilder::canonicalize()
+{
+    ASSERT(m_buffer.size());
+
+    auto buffer = canonicalizeLocaleIDWithoutNullTerminator(m_buffer.span().data());
+    if (!buffer)
+        return false;
+
+    auto canonicalized = canonicalizeUnicodeExtensionsAfterICULocaleCanonicalization(WTF::move(buffer.value()));
+    canonicalized.append('\0');
+    m_buffer = WTF::move(canonicalized);
+    return true;
 }
 
 // Because ICU's C API doesn't have set[Language|Script|Region|Variants] functions...
@@ -391,8 +406,13 @@ void IntlLocale::initializeLocale(JSGlobalObject* globalObject, const String& ta
         }
     }
 
-    if (!language.isNull() || !script.isNull() || !region.isNull() || !variants.isNull())
+    if (!language.isNull() || !script.isNull() || !region.isNull() || !variants.isNull()) {
+        if (!localeID.canonicalize()) {
+            throwTypeError(globalObject, scope, "failed to initialize Locale"_s);
+            return;
+        }
         localeID.overrideLanguageScriptRegionVariants(language, script, region, variants);
+    }
 
     String calendar = intlStringOption(globalObject, options, vm.propertyNames->calendar, { }, { }, { });
     RETURN_IF_EXCEPTION(scope, void());
