@@ -368,7 +368,7 @@ inline To* dynamicDowncast(JSC::JSValue& value)
         return nullptr;
     JSC::JSCell* cell = value.asCell();
     if (JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell)) [[likely]]
-        return static_cast<To*>(cell);
+        SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
     return nullptr;
 }
 

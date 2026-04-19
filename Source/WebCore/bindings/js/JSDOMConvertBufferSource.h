@@ -144,6 +144,29 @@ struct BufferSourceConverter {
             return Result { object.releaseNonNull() };
         }
     }
+
+    static std::optional<Result> tryConvert(JSC::JSGlobalObject& lexicalGlobalObject, JSC::JSValue value)
+    {
+        auto& vm = JSC::getVM(&lexicalGlobalObject);
+
+        RefPtr object = WrapperType::toWrappedAllowSharedAndResizable(vm, value);
+        if (!object)
+            return std::nullopt;
+
+        auto scope = DECLARE_THROW_SCOPE(vm);
+        if constexpr (mode == BufferSourceConverterAllowSharedMode::Disallow) {
+            if (object->isShared()) {
+                throwTypeError(&lexicalGlobalObject, scope, "SharedArrayBuffer is not allowed"_s);
+                return Result::exception();
+            }
+        }
+        // FIXME: Add an AllowResizable mode and make this conditional once [AllowResizable] is supported.
+        if (object->isResizableOrGrowableShared()) {
+            throwTypeError(&lexicalGlobalObject, scope, "Resizable ArrayBuffer is not allowed"_s);
+            return Result::exception();
+        }
+        return Result { object.releaseNonNull() };
+    }
 };
 
 template<typename IDL, typename Wrapper>
