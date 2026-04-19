@@ -1907,7 +1907,7 @@ media/modern-media-controls/scrubber/scrubber-has-correct-ax-label.html [ Timeou
 media/modern-media-controls/volume-support/volume-support-click.html [ Timeout ]
 media/modern-media-controls/audio/audio-controls-styles.html [ Failure ]
 media/modern-media-controls/media-controller/media-controller-auto-hide-mouse-enter-over-controls-bar.html [ Failure ]
-# media/modern-media-controls/media-controller/media-controller-auto-hide-mouse-leave-after-play.html [ Failure ]
+media/modern-media-controls/media-controller/media-controller-auto-hide-mouse-leave-after-play.html [ Failure ]
 media/modern-media-controls/media-controller/media-controller-video-with-only-audio.html [ Failure ]
 media/modern-media-controls/time-label/time-label.html [ Failure ]
 media/modern-media-controls/volume-support/volume-support-drag.html [ Failure ]
@@ -4354,38 +4354,7 @@ webkit.org/b/229062 fast/forms/caps-lock-indicator-width.html [ Skip ]
 # Test is a flaky timeout. The test is also skipped in iOS and Windows.
 media/video-remote-control-playpause.html [ Skip ]
 
-# Timeouts due to gstreamer allocation error
-webkit.org/b/309438 compositing/video/video-clip-change-src.html [ Pass Timeout ]
-webkit.org/b/309438 media/media-controller-timeupdate.html [ Pass Timeout ]
-webkit.org/b/309438 media/media-source/media-source-reopen.html [ Pass Failure ]
-webkit.org/b/309438 media/media-source/media-source-webm-configuration-framerate.html [ Pass Timeout ]
-webkit.org/b/309438 media/modern-media-controls/media-controller/media-controller-auto-hide-mouse-leave-after-play.html [ Failure Timeout ]
-webkit.org/b/309438 media/modern-media-controls/media-controller/media-controller-click-on-video-controls-should-not-pause.html [ Pass Timeout ]
-webkit.org/b/309438 media/modern-media-controls/tracks-support/no-tracks.html [ Pass Timeout ]
-webkit.org/b/309438 media/playlist-inherits-user-gesture.html [ Pass Timeout ]
-webkit.org/b/309438 media/remote-control-command-scrubbing.html [ Pass Timeout ]
-webkit.org/b/309438 media/remote-control-command-seek.html [ Pass Timeout ]
-webkit.org/b/309438 media/remove-from-document-with-text-track.html [ Pass Timeout ]
-webkit.org/b/309438 media/track/track-cue-missing.html [ Pass Timeout ]
-webkit.org/b/309438 media/track/track-long-captions-file.html [ Pass Timeout ]
-webkit.org/b/309438 media/track/webvtt-inline.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-concurrent-playback.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-currentTime-duration.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-currenttime-monotonic.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-currentTime-set2.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-isplayingtoautomotiveheadunit.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-load-preload-metadata.html [ Pass Failure ]
-webkit.org/b/309438 media/video-main-content-allow-then-scroll.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-main-content-autoplay.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-main-content-deny-display-none.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-main-content-deny-too-small.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-paused-0-rate.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-pause-empty-events.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-replaces-poster.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-seek-by-small-increment.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-seeking.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-seek-pause.html [ Pass Timeout ]
-webkit.org/b/309438 media/video-webkit-playsinline.html [ Pass Timeout ]
+webkit.org/b/312714 media/media-source/media-source-webm-configuration-framerate.html [ Pass Timeout ]
 
 # Failure Pass Crash Timeout
 webkit.org/b/207062 webkit.org/b/244776 imported/w3c/web-platform-tests/media-source/mediasource-replay.html [ Skip ]
@@ -5316,7 +5285,6 @@ webkit.org/b/306468 http/wpt/service-workers/fetch-service-worker-preload-changi
 webkit.org/b/306468 http/wpt/service-workers/fetch-service-worker-preload-download-through-direct-preload.https.html [ Pass Failure Timeout ]
 
 webkit.org/b/116277 media/video-buffered.html [ Pass Failure Timeout ]
-webkit.org/b/306471 media/video-poster-not-found.html [ Pass Timeout ]
 
 webkit.org/b/306472 fast/repaint/selection-gap-absolute-child.html [ Pass Failure ]
 webkit.org/b/306474 imported/w3c/web-platform-tests/fetch/range/sw-416.https.window.html [ Pass Failure ]
@@ -5353,10 +5321,6 @@ webkit.org/b/307292 imported/w3c/web-platform-tests/resource-timing/buffered-fla
 webkit.org/b/307293 imported/w3c/web-platform-tests/event-timing/keyup.html [ Pass Failure ]
 webkit.org/b/301110 imported/w3c/web-platform-tests/event-timing/gap-pointerdown-pointerup.html [ Pass Failure ]
 
-webkit.org/b/307294 media/video-pause-immediately.html [ Pass Timeout ]
-webkit.org/b/307294 media/video-playbackrate.html [ Pass Timeout ]
-webkit.org/b/307294 media/video-seek-past-end-paused.html [ Timeout Pass ]
-
 webkit.org/b/294295 fullscreen/full-screen-request-removed-with-raf.html [ Pass Timeout ]
 
 webkit.org/b/307368 fast/repaint/iframe-from-display-none-repaint.html [ Pass ImageOnlyFailure ]
@@ -5365,8 +5329,6 @@ webkit.org/b/307368 fast/repaint/iframe-from-display-none-repaint.html [ Pass Im
 webkit.org/b/307597 imported/w3c/web-platform-tests/service-workers/service-worker/redirected-response.https.html [ Crash Pass ]
 
 webkit.org/b/307657 imported/w3c/web-platform-tests/resource-timing/status-codes-create-entry.html [ Pass Failure ]
-
-webkit.org/b/307666 media/modern-media-controls/status-support/status-support-playing.html [ Pass Timeout ]
 
 webkit.org/b/307989 imported/w3c/web-platform-tests/cookies/path/default.html [ Pass Failure ]
 
@@ -5382,8 +5344,6 @@ webkit.org/b/288005 imported/w3c/web-platform-tests/css/selectors/invalidation/n
 
 webkit.org/b/308971 fast/canvas/canvas-strokePath-round-lineCap.html [ Pass ImageOnlyFailure ]
 webkit.org/b/308972 fast/repaint/search-field-cancel.html [ Pass ImageOnlyFailure Failure ]
-
-webkit.org/b/308146 media/video-size.html [ Pass Failure Timeout ]
 
 webkit.org/b/308262 fast/css/view-transitions-hide-under-page-background-color.html [ Pass ImageOnlyFailure ]
 
@@ -5421,10 +5381,6 @@ webkit.org/b/310215 fast/loader/submit-form-while-parsing-2.html [ Pass Failure 
 
 webkit.org/b/310268 fast/css/anchor-position-media-query-viewport-units.html [ Pass ImageOnlyFailure ]
 
-webkit.org/b/310274 media/media-controller-time.html [ Pass Timeout ]
-
-webkit.org/b/310278 media/video-pause-play-resolve.html [ Pass Timeout ]
-
 webkit.org/b/310543 fast/css/outline-auto-zoom-canvas.html [ Failure ]
 webkit.org/b/310543 fast/images/imagemap-focus-ring-zoom-style.html [ ImageOnlyFailure ]
 webkit.org/b/310543 fast/images/image-map-outline-with-scale-transform.html [ ImageOnlyFailure ]
@@ -5457,8 +5413,6 @@ webkit.org/b/309872 imported/w3c/web-platform-tests/permissions-policy/reporting
 
 imported/w3c/web-platform-tests/css/css-overflow/scrollbar-gutter-root.html [ ImageOnlyFailure Pass ]
 imported/w3c/web-platform-tests/css/css-overflow/scrollbar-gutter-root-both-edges.html [ ImageOnlyFailure ]
-
-webkit.org/b/311093 media/video-src-blob-replay.html [ Pass Timeout ]
 
 webkit.org/b/195466 imported/w3c/web-platform-tests/html/semantics/embedded-content/media-elements/ready-states/autoplay.html [ Failure Pass ]
 

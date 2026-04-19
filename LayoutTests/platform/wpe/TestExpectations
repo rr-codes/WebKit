@@ -173,8 +173,10 @@ webkit.org/b/298588 fast/media/mq-pointer-styling.html [ Skip ]
 webkit.org/b/298588 fast/media/mq-pointer.html [ Skip ]
 
 # Pending to create bug.
-media/video-background-tab-playback.html [ Failure ]
 svg/hixie/viewbox/002.xml [ Failure ]
+
+webkit.org/b/264680 media/video-background-tab-playback.html [ Failure ]
+webkit.org/b/264680 media/no-fullscreen-when-hidden.html [ Pass Failure ]
 
 webkit.org/b/298919 imported/w3c/web-platform-tests/custom-elements/form-associated/ElementInternals-reportValidity-delegatesFocus.html [ Skip ]
 
@@ -1262,9 +1264,6 @@ webkit.org/b/310739 imported/w3c/web-platform-tests/editing/other/copy-elements-
 webkit.org/b/310741 imported/w3c/web-platform-tests/navigation-api/navigate-event/defer/tentative/defer-restore-callback-abort.html [ Pass Timeout ]
 webkit.org/b/310743 imported/w3c/web-platform-tests/css/css-position/sticky/position-sticky-table-td-right.html [ Pass ImageOnlyFailure ]
 webkit.org/b/310744 imported/w3c/web-platform-tests/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Pass ImageOnlyFailure ]
-webkit.org/b/310745 media/modern-media-controls/time-label/time-label-white-space-nowrap.html [ Pass Timeout ]
-webkit.org/b/310746 media/video-seek-double.html [ Pass Timeout ]
-webkit.org/b/310747 media/video-seekable.html [ Pass Timeout ]
 
 webkit.org/b/310543 imported/w3c/web-platform-tests/css/css-contain/content-visibility/content-visibility-082.html [ ImageOnlyFailure ]
 webkit.org/b/310543 imported/w3c/web-platform-tests/css/css-contain/content-visibility/scrollIntoView-with-focus-target-with-contents-hidden.html [ ImageOnlyFailure ]
@@ -1275,7 +1274,6 @@ webkit.org/b/311857 [ arm64 ] imported/w3c/web-platform-tests/css/css-position/s
 webkit.org/b/311858 [ arm64 ] imported/w3c/web-platform-tests/css/css-conditional/container-queries/canvas-as-container-001.html [ Pass ImageOnlyFailure ]
 webkit.org/b/311859 [ arm64 ] http/tests/resourceLoadStatistics/prevalent-resource-with-user-interaction-timeout.html [ Pass Failure ]
 webkit.org/b/311861 [ arm64 ] media/video-played-ranges-1.html [ Pass Failure Timeout Crash ]
-webkit.org/b/311863 [ arm64 ] media/video-interruption-with-resume-not-allowing-play.html [ Pass Failure Timeout ]
 webkit.org/b/311864 [ arm64 ] fast/events/monotonic-event-time-real-gap.html [ Pass Failure ]
 webkit.org/b/311865 [ arm64 ] imported/w3c/web-platform-tests/webrtc/RTCDataChannel-send-close-blob.window.html [ Pass Failure ]
 

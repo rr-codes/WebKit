@@ -1294,7 +1294,7 @@ webgl/2.0.y/conformance/context/context-no-alpha-fbo-with-alpha.html [ Skip ]
 
 # Flaky tests on Aug-2023
 webkit.org/b/261024 imported/w3c/web-platform-tests/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-return-value-handling-dynamic.html [ Failure Pass ]
-webkit.org/b/261024 imported/w3c/web-platform-tests/media-source/mediasource-play.html [ Failure Pass Timeout ]
+webkit.org/b/261024 imported/w3c/web-platform-tests/media-source/mediasource-play.html [ Failure Pass ]
 webkit.org/b/261024 inspector/canvas/recording-webgl-full.html [ Failure ]
 
 imported/w3c/web-platform-tests/css/filter-effects/backdrop-filter-plus-filter.html [ ImageOnlyFailure ]
@@ -1303,6 +1303,8 @@ imported/w3c/web-platform-tests/css/filter-effects/filtered-inline-is-container.
 
 http/tests/scroll-to-text-fragment/no-scroll-after-stylesheet-load.html [ Skip ]
 
+media/video-concurrent-playback.html [ Pass Failure ]
+
 # Flaky tests Nov2023
 webkit.org/b/264680 fast/media/mq-prefers-contrast-live-update-for-listener.html [ Failure Pass ]
 webkit.org/b/264680 fast/scrolling/gtk/user-scroll-snapping-interaction.html [ Timeout ]
@@ -1310,8 +1312,6 @@ webkit.org/b/264680 http/wpt/service-workers/controlled-sharedworker.https.html 
 webkit.org/b/264680 imported/w3c/web-platform-tests/html/infrastructure/urls/resolving-urls/query-encoding/windows-1251.html?include=loading [ Failure Pass ]
 webkit.org/b/264680 imported/w3c/web-platform-tests/media-source/mediasource-seek-during-pending-seek.html [ Crash Failure Pass Timeout ]
 webkit.org/b/264680 inspector/heap/getPreview.html [ Failure Pass ]
-webkit.org/b/264680 media/no-fullscreen-when-hidden.html [ Timeout Pass ]
-webkit.org/b/264680 media/video-background-tab-playback.html [ Timeout Pass ]
 webkit.org/b/264680 scrollbars/scrollbar-selectors.html [ Pass Timeout ]
 
 fast/dom/no-scroll-when-command-click-fragment-URL.html [ Skip ]
@@ -1467,9 +1467,7 @@ webkit.org/b/310751 imported/w3c/web-platform-tests/webrtc/protocol/h264-profile
 webkit.org/b/310752 imported/w3c/web-platform-tests/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter.html [ Pass Failure ]
 webkit.org/b/310753 imported/w3c/web-platform-tests/webrtc/protocol/split.https.html [ Pass Failure ]
 webkit.org/b/310754 inspector/controller/runtime-controller-import.html [ Pass Failure ]
-webkit.org/b/310755 media/modern-media-controls/time-labels-support/remaining-time.html [ Pass Timeout ]
-webkit.org/b/310756 media/video-currentTime-set.html [ Pass Timeout ]
-webkit.org/b/310757 media/video-main-content-allow-then-scroll.html [ Pass Timeout ]
+media/video-currentTime-set.html [ Pass Failure ]
 
 inspector/unit-tests/retryuntil.html [ Pass Failure ]
 
