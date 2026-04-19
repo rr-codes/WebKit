@@ -4721,6 +4721,7 @@ imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-mode
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/basic.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/bidi/u002E_LF_u05D0.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/bidi/u0041_first.html [ Pass ]
+imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/bidi/u06E9_no_strong_dir.html [ Skip ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/disable_controls_reposition.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/dom_override_cue_text_while_paused.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/dom_override_cue_text.html [ Pass ]
