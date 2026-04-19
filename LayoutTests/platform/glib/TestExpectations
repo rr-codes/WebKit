@@ -1661,16 +1661,12 @@ webkit.org/b/308037 imported/w3c/web-platform-tests/webrtc/simulcast/vp9.https.h
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCRtpReceiver-video-jitterBufferTarget-stats.html [ Failure ]
 
-webkit.org/b/307144 media/video-restricted-invisible-autoplay-not-allowed.html [ Timeout Pass ]
-
-webkit.org/b/254520 media/video-ended-event-negative-playback.html [ Failure Timeout Pass ]
 webkit.org/b/254519 media/media-continues-playing-after-replace-source.html [ Failure Pass ]
 webkit.org/b/254521 imported/w3c/web-platform-tests/media-source/mediasource-getvideoplaybackquality.html [ Pass Failure ]
 webkit.org/b/311462 imported/w3c/web-platform-tests/media-source/mediasource-config-change-mp4-av-framesize.html [ Pass Failure Timeout Crash ]
 webkit.org/b/308601 [ Release ] imported/w3c/web-platform-tests/media-source/SourceBuffer-abort-updating.html [ Failure Pass ]
 webkit.org/b/254522 media/video-volume.html [ Pass Failure ]
 media/video-seek-to-current-time.html [ Pass Failure ]
-webkit.org/b/264680 media/video-seek-past-end-playing.html [ Timeout Pass ]
 webkit.org/b/285595 media/video-seek-after-end-play.html [ Skip ]
 webkit.org/b/307295 media/video-frame-accurate-seek.html [ Failure ImageOnlyFailure Pass ]
 
@@ -1690,7 +1686,7 @@ webkit.org/b/307032 imported/w3c/web-platform-tests/mediacapture-streams/MediaSt
 # No support for Matroska container in GStreamer port.
 http/wpt/mediarecorder/MediaRecorder-matroska-AV-audio-video-dataavailable.html
 
-webkit.org/b/293119 http/wpt/mediarecorder/MediaRecorder-webm-AV-audio-video-dataavailable.html [ Timeout Failure ]
+webkit.org/b/293119 http/wpt/mediarecorder/MediaRecorder-webm-AV-audio-video-dataavailable.html [ Failure ]
 
 # The "Pausing and resuming the recording should impact the video duration" test fails.
 webkit.org/b/285813 http/wpt/mediarecorder/pause-recording.html [ Failure Pass ]
@@ -1721,11 +1717,6 @@ webkit.org/b/211995 fast/images/animated-image-mp4.html [ Timeout ]
 # Player is often not rendering in image tests, especially in Release
 webkit.org/b/234352 imported/w3c/web-platform-tests/media-source/mediasource-video-is-visible.html [ ImageOnlyFailure ]
 webkit.org/b/234352 media/media-source/media-source-video-renders.html [ ImageOnlyFailure Pass ]
-webkit.org/b/234352 media/track/track-webvtt-no-snap-to-lines-overlap.html [ Timeout Pass ]
-webkit.org/b/234352 media/track/track-webvtt-snap-to-lines-inline-style.html [ Timeout Pass ]
-webkit.org/b/234352 media/track/track-webvtt-snap-to-lines-left-right.html [ Timeout Pass ]
-
-media/track/webvtt-ruby.html [ Timeout Pass ]
 
 webkit.org/b/308023 media/video-played-reset.html [ Failure Pass ]
 
