@@ -49,7 +49,7 @@ Ref<WebViewGroup> WebViewGroup::getOrCreate(const String& name, const String& lo
 
     auto& webViewGroup = webViewGroups().add(name, nullptr).iterator->value;
     if (!webViewGroup) {
-        auto result = adoptRef(*new WebViewGroup(name, localStorageDatabasePath));
+        Ref result = adoptRef(*new WebViewGroup(name, localStorageDatabasePath));
         webViewGroup = result.copyRef();
         return result;
     }

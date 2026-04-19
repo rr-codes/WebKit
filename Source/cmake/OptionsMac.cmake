@@ -3,6 +3,13 @@
 set(WEBKIT_MAC_VERSION 615.1.1)
 set(MACOSX_FRAMEWORK_BUNDLE_VERSION 615.1.1+)
 
+# Enable Objective-C / Objective-C++ so .m/.mm sources use the OBJC/OBJCXX
+# compile rules and $<COMPILE_LANGUAGE:OBJC/OBJCXX> generator expressions
+# match. Without this CMake compiles .mm as CXX, CMAKE_OBJCXX_FLAGS are
+# ignored, and the -include flag in ADD_WEBKIT_PREFIX_HEADERS never fires
+# for .mm sources.
+enable_language(OBJC OBJCXX)
+
 WEBKIT_OPTION_BEGIN()
 # Private options shared with other WebKit ports. Add options here only if
 # we need a value different from the default defined in WebKitFeatures.cmake.
@@ -296,6 +303,8 @@ if (CMAKE_CXX_COMPILER_LAUNCHER OR CMAKE_C_COMPILER_LAUNCHER)
     # -frecord-command-line embeds absolute paths; use CMAKE_*_FLAGS for all languages.
     string(APPEND CMAKE_C_FLAGS " -fno-record-command-line")
     string(APPEND CMAKE_CXX_FLAGS " -fno-record-command-line")
+    string(APPEND CMAKE_OBJC_FLAGS " -fno-record-command-line")
+    string(APPEND CMAKE_OBJCXX_FLAGS " -fno-record-command-line")
 endif ()
 
 # Mac-specific sanitizer flags — mirror Configurations/Sanitizers.xcconfig.

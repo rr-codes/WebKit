@@ -3074,7 +3074,7 @@ list(APPEND WebCore_SOURCES ${WebCore_DERIVED_SOURCES_DIR}/Namespace.cpp)
 
 WEBKIT_COMPUTE_SOURCES(WebCore)
 
-target_precompile_headers(WebCore PRIVATE WebCorePrefix.h)
+ADD_WEBKIT_PREFIX_HEADERS(WebCore WebCorePrefix.h)
 
 list(APPEND WebCore_PRIVATE_FRAMEWORK_HEADERS
     ${WebCore_DERIVED_SOURCES_DIR}/DocumentSyncData.serialization.in
@@ -3150,7 +3150,7 @@ if (WTF_CPU_ARM AND NOT CMAKE_CROSSCOMPILING)
     set_source_files_properties(${WebCore_DERIVED_SOURCES_DIR}/JSDOMWindow.cpp PROPERTIES COMPILE_OPTIONS "${DerivedSources_COMPILE_OPTIONS}")
 endif ()
 
-target_precompile_headers(WebCoreTestSupport PRIVATE testing/js/WebCoreTestSupportPrefix.h)
+ADD_WEBKIT_PREFIX_HEADERS(WebCoreTestSupport testing/js/WebCoreTestSupportPrefix.h)
 
 WEBKIT_COPY_FILES(Copy_WebCoreTestSupportPrivateHeaders
     DESTINATION ${WebCore_PRIVATE_FRAMEWORK_HEADERS_DIR}/WebCoreTestSupport

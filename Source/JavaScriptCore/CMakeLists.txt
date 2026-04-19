@@ -1764,7 +1764,7 @@ endif ()
 WEBKIT_COMPUTE_SOURCES(JavaScriptCore)
 WEBKIT_FRAMEWORK(JavaScriptCore)
 
-target_precompile_headers(JavaScriptCore PRIVATE JavaScriptCorePrefix.h)
+ADD_WEBKIT_PREFIX_HEADERS(JavaScriptCore JavaScriptCorePrefix.h)
 
 if (NOT "${PORT}" STREQUAL "Mac")
     if (${JavaScriptCore_LIBRARY_TYPE} STREQUAL "SHARED")

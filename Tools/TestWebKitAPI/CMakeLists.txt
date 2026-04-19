@@ -8,6 +8,7 @@ set(TestWebKitAPI_DISABLED_WARNINGS
 
 macro(WEBKIT_TEST _target)
     WEBKIT_EXECUTABLE(${_target})
+    ADD_WEBKIT_PREFIX_HEADERS(${_target} Helpers/TestWebKitAPIPrefix.h)
     add_test(${_target} ${TESTWEBKITAPI_RUNTIME_OUTPUT_DIRECTORY}/${_target})
     set_tests_properties(${_target} PROPERTIES TIMEOUT 60)
     set_target_properties(${_target} PROPERTIES
