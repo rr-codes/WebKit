@@ -30,7 +30,7 @@ use Getopt::Long;
 use Cwd;
 use Config;
 use Class::Struct;
-use JSON::PP;
+BEGIN { eval { require JSON::XS; JSON::XS->import(); 1 } or do { require JSON::PP; JSON::PP->import() } }
 use Data::Dumper;
 
 use IDLParser;
@@ -144,7 +144,7 @@ if ($validateAgainstParser) {
         close(JSON);
     }
 
-    my $jsonDecoder = JSON::PP->new->utf8;
+    my $jsonDecoder = (eval { JSON::XS->new->utf8 } or JSON::PP->new->utf8);
     my $jsonHashRef = $jsonDecoder->decode($input);
     $idlAttributes = $jsonHashRef->{attributes};
 }

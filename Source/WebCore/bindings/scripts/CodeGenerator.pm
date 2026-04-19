@@ -30,6 +30,7 @@ use strict;
 
 use File::Basename;
 use Carp qw<longmess>;
+use Storable qw(dclone);
 use Data::Dumper;
 
 my $useDocument = "";
@@ -126,6 +127,7 @@ my $cachedExtendedAttributes = {};
 my $cachedExternalDictionaries = {};
 my $cachedExternalEnumerations = {};
 my $cachedTypes = {};
+my %cachedParsedDocuments;
 
 sub assert
 {
@@ -399,8 +401,13 @@ sub ProcessInterfaceSupplementalDependencies
         next if fileparse($idlFile) eq $targetFileName;
 
         my $interfaceName = fileparse($idlFile, ".idl");
-        my $parser = IDLParser->new(!$verbose);
-        my $document = $parser->Parse($idlFile, $defines, $preprocessor, $idlAttributes);
+        my $document;
+        if (exists $cachedParsedDocuments{$idlFile}) {
+            $document = dclone($cachedParsedDocuments{$idlFile});
+        } else {
+            $document = IDLParser->new(!$verbose)->Parse($idlFile, $defines, $preprocessor, $idlAttributes);
+            $cachedParsedDocuments{$idlFile} = dclone($document);
+        }
 
         foreach my $interface (@{$document->interfaces}) {
             next unless $object->IsValidSupplementalInterface($interface, $targetInterface, \%includesMap);
@@ -477,8 +484,13 @@ sub ProcessDictionarySupplementalDependencies
         next if fileparse($idlFile) eq $targetFileName;
 
         my $dictionaryName = fileparse($idlFile, ".idl");
-        my $parser = IDLParser->new(!$verbose);
-        my $document = $parser->Parse($idlFile, $defines, $preprocessor, $idlAttributes);
+        my $document;
+        if (exists $cachedParsedDocuments{$idlFile}) {
+            $document = dclone($cachedParsedDocuments{$idlFile});
+        } else {
+            $document = IDLParser->new(!$verbose)->Parse($idlFile, $defines, $preprocessor, $idlAttributes);
+            $cachedParsedDocuments{$idlFile} = dclone($document);
+        }
 
         foreach my $dictionary (@{$document->dictionaries}) {
             next unless $object->IsValidSupplementalDictionary($dictionary, $targetDictionary);
@@ -1501,12 +1513,16 @@ sub ConditionalComparator
     ($a =~ s/^(!?)(.+)/$2$1/r) cmp ($b =~ s/^(!?)(.+)/$2$1/r)
 }
 
+my %conditionalStringCache;
+
 sub GenerateConditionalStringFromAttributeValue
 {
     my ($generator, $conditional) = @_;
 
     # Unquote string literals if needed.
     $conditional = UnquoteStringLiteral($generator, $conditional) if $conditional =~ /^['"]/;
+
+    return $conditionalStringCache{$conditional} if exists $conditionalStringCache{$conditional};
 
     my %disjunction = map {
         my %conjunction = map {
@@ -1518,9 +1534,12 @@ sub GenerateConditionalStringFromAttributeValue
         join(" && ", sort ConditionalComparator keys %conjunction) => 1
     } split(/\|/, $conditional);
 
-    return "1" if %disjunction == 0;
-    return (keys %disjunction)[0] if %disjunction == 1;
-    return join(" || ", map { / / ? "($_)" : $_ } sort ConditionalComparator keys %disjunction);
+    my $result;
+    $result = "1" if %disjunction == 0;
+    $result = (keys %disjunction)[0] if !defined($result) && %disjunction == 1;
+    $result = join(" || ", map { / / ? "($_)" : $_ } sort ConditionalComparator keys %disjunction) if !defined($result);
+    $conditionalStringCache{$conditional} = $result;
+    return $result;
 }
 
 sub GenerateCompileTimeCheckForEnumsIfNeeded
