@@ -44,10 +44,10 @@ class BlobDataItem {
 public:
     WEBCORE_EXPORT static const long long toEndOfFile;
 
-#if PLATFORM(GTK)
-    template<typename... F> constexpr decltype(auto) switchOn(F&&... f) const
-#else
+#if PLATFORM(COCOA)
     template<typename... F> constexpr decltype(auto) switchOn(NOESCAPE F&&... f) const
+#else
+    template<typename... F> constexpr decltype(auto) switchOn(F&&... f) const
 #endif
     {
         auto visitor = WTF::makeVisitor(std::forward<F>(f)...);
