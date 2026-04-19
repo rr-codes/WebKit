@@ -410,7 +410,7 @@ bool CodeBlock::finishCreation(VM& vm, ScriptExecutable* ownerExecutable, Unlink
 
     // We already have the cloned symbol table for the module environment since we need to instantiate
     // the module environments before linking the code block. We replace the stored symbol table with the already cloned one.
-    if (UnlinkedModuleProgramCodeBlock* unlinkedModuleProgramCodeBlock = jsDynamicCast<UnlinkedModuleProgramCodeBlock*>(unlinkedCodeBlock)) {
+    if (UnlinkedModuleProgramCodeBlock* unlinkedModuleProgramCodeBlock = dynamicDowncast<UnlinkedModuleProgramCodeBlock>(unlinkedCodeBlock)) {
         SymbolTable* clonedSymbolTable = jsCast<ModuleProgramExecutable*>(ownerExecutable)->moduleEnvironmentSymbolTable();
         if (m_unlinkedCode->wasCompiledWithTypeProfilerOpcodes()) {
             ConcurrentJSLocker locker(clonedSymbolTable->m_lock);
@@ -1065,7 +1065,7 @@ Vector<unsigned> CodeBlock::setConstantRegisters(const FixedVector<WriteBarrier<
             if (!constant.isEmpty()) {
                 if (constant.isCell()) {
                     JSCell* cell = constant.asCell();
-                    if (SymbolTable* symbolTable = jsDynamicCast<SymbolTable*>(cell)) {
+                    if (SymbolTable* symbolTable = dynamicDowncast<SymbolTable>(cell)) {
                         if (m_unlinkedCode->wasCompiledWithTypeProfilerOpcodes()) {
                             ConcurrentJSLocker locker(symbolTable->m_lock);
                             symbolTable->prepareForTypeProfiling(locker);
@@ -1084,7 +1084,7 @@ Vector<unsigned> CodeBlock::setConstantRegisters(const FixedVector<WriteBarrier<
                             clone->collectDebuggerInfo(this);
 
                         constant = clone;
-                    } else if (jsDynamicCast<JSTemplateObjectDescriptor*>(cell))
+                    } else if (is<JSTemplateObjectDescriptor>(cell))
                         templateObjectIndices.append(i);
                 }
             }
@@ -1451,7 +1451,7 @@ void CodeBlock::determineLiveness(const ConcurrentJSLocker&, Visitor& visitor)
     bool allAreLiveSoFar = true;
     for (unsigned i = 0; i < dfgCommon->m_weakReferences.size(); ++i) {
         JSCell* reference = dfgCommon->m_weakReferences[i].get();
-        ASSERT(!jsDynamicCast<CodeBlock*>(reference));
+        ASSERT(!is<CodeBlock>(reference));
         if (!visitor.isMarked(reference)) {
             allAreLiveSoFar = false;
             break;
@@ -2471,7 +2471,7 @@ void CodeBlock::noticeIncomingCall(JSCell* caller)
 {
     RELEASE_ASSERT(!m_isJettisoned);
 
-    CodeBlock* callerCodeBlock = jsDynamicCast<CodeBlock*>(caller);
+    CodeBlock* callerCodeBlock = dynamicDowncast<CodeBlock>(caller);
     
     dataLogLnIf(Options::verboseCallLink(), "Noticing call link from ", pointerDump(callerCodeBlock), " to ", *this);
     
@@ -3346,7 +3346,7 @@ String CodeBlock::nameForRegister(VirtualRegister virtualRegister)
     for (auto& constantRegister : m_constantRegisters) {
         if (constantRegister.get().isEmpty())
             continue;
-        if (SymbolTable* symbolTable = jsDynamicCast<SymbolTable*>(constantRegister.get())) {
+        if (SymbolTable* symbolTable = dynamicDowncast<SymbolTable>(constantRegister.get())) {
             ConcurrentJSLocker locker(symbolTable->m_lock);
             auto end = symbolTable->end(locker);
             for (auto ptr = symbolTable->begin(locker); ptr != end; ++ptr) {

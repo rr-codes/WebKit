@@ -147,7 +147,7 @@ JSValue ModuleRegistryEntry::error(JSGlobalObject* globalObject) const
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
     if (JSValue fetchError = m_fetchError.get()) {
-        if (auto* errorInstance = jsDynamicCast<ErrorInstance*>(fetchError))
+        if (auto* errorInstance = dynamicDowncast<ErrorInstance>(fetchError))
             RELEASE_AND_RETURN(scope, JSModuleLoader::duplicateError(globalObject, errorInstance));
         RELEASE_AND_RETURN(scope, fetchError);
     }
@@ -156,7 +156,7 @@ JSValue ModuleRegistryEntry::error(JSGlobalObject* globalObject) const
     if (m_evaluationError)
         RELEASE_AND_RETURN(scope, m_evaluationError.get());
     if (m_record) {
-        if (auto* cyclic = jsDynamicCast<CyclicModuleRecord*>(m_record.get()))
+        if (auto* cyclic = dynamicDowncast<CyclicModuleRecord>(m_record.get()))
             RELEASE_AND_RETURN(scope, cyclic->evaluationError());
     }
     return { };

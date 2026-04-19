@@ -283,7 +283,7 @@ JSValue JSScope::resolveScopeForHoistingFuncDeclInEval(JSGlobalObject* globalObj
     RETURN_IF_EXCEPTION(throwScope, { });
 
     bool result = false;
-    if (JSScope* scope = jsDynamicCast<JSScope*>(object)) {
+    if (JSScope* scope = dynamicDowncast<JSScope>(object)) {
         if (SymbolTable* scopeSymbolTable = scope->symbolTable()) {
             result = scope->isGlobalObject() || scopeSymbolTable->scopeType() == SymbolTable::ScopeType::VarScope;
         }
@@ -418,7 +418,7 @@ JSScope* JSScope::constantScopeForCodeBlock(ResolveType type, CodeBlock* codeBlo
 
 SymbolTable* JSScope::symbolTable()
 {
-    if (JSSymbolTableObject* symbolTableObject = jsDynamicCast<JSSymbolTableObject*>(this))
+    if (JSSymbolTableObject* symbolTableObject = dynamicDowncast<JSSymbolTableObject>(this))
         return symbolTableObject->symbolTable();
 
     return nullptr;

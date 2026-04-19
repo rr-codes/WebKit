@@ -121,7 +121,7 @@ ALWAYS_INLINE static JSSet* getSet(JSGlobalObject* globalObject, JSValue thisVal
         throwVMError(globalObject, scope, createNotAnObjectError(globalObject, thisValue));
         return nullptr;
     }
-    if (auto* set = jsDynamicCast<JSSet*>(thisValue.asCell())) [[likely]]
+    if (auto* set = dynamicDowncast<JSSet>(thisValue.asCell())) [[likely]]
         return set;
     throwTypeError(globalObject, scope, "Set operation called on non-Set object"_s);
     return nullptr;
@@ -266,7 +266,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncIntersection, (JSGlobalObject* globalObject
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetIntersection(globalObject, thisSet, otherSet);
@@ -397,7 +397,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncUnion, (JSGlobalObject* globalObject, CallF
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetUnion(globalObject, thisSet, otherSet);
@@ -525,7 +525,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncDifference, (JSGlobalObject* globalObject, 
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetDifference(globalObject, thisSet, otherSet);
@@ -706,7 +706,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncSymmetricDifference, (JSGlobalObject* globa
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetSymmetricDifference(globalObject, thisSet, otherSet);
@@ -804,7 +804,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncIsSubsetOf, (JSGlobalObject* globalObject, 
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetIsSubsetOf(globalObject, thisSet, otherSet);
@@ -923,7 +923,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncIsSupersetOf, (JSGlobalObject* globalObject
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetIsSupersetOf(globalObject, thisSet, otherSet);
@@ -1057,7 +1057,7 @@ JSC_DEFINE_HOST_FUNCTION(setProtoFuncIsDisjointFrom, (JSGlobalObject* globalObje
     JSValue otherValue = callFrame->argument(0);
 
     if (otherValue.isCell()) [[likely]] {
-        if (auto* otherSet = jsDynamicCast<JSSet*>(otherValue.asCell())) [[likely]] {
+        if (auto* otherSet = dynamicDowncast<JSSet>(otherValue.asCell())) [[likely]] {
             if (setPrimordialWatchpointIsValid(vm, otherSet)) [[likely]] {
                 scope.release();
                 return fastSetIsDisjointFrom(globalObject, thisSet, otherSet);

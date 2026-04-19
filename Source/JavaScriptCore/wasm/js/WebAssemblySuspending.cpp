@@ -136,7 +136,7 @@ void* runWebAssemblySuspendingFunction(JSGlobalObject* globalObject, CallFrame* 
     JSValue result = call(globalObject, callable, callData, jsUndefined(), args);
     RETURN_IF_EXCEPTION(scope, { });
 
-    JSPromise* promise = jsDynamicCast<JSPromise*>(result);
+    JSPromise* promise = dynamicDowncast<JSPromise>(result);
     if (!promise) {
         // The spec requires us to suspend even if the wrapped function returned a real value.
         promise = JSPromise::create(vm, globalObject->promiseStructure());

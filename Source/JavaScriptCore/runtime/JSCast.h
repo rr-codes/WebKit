@@ -258,23 +258,6 @@ bool inherits(From* from)
 
 } // namespace JSCastingHelpers
 
-template<typename To, typename From>
-To jsDynamicCast(From* from)
-{
-    using Dispatcher = JSCastingHelpers::InheritsTraits<typename std::remove_cv<typename std::remove_pointer<To>::type>::type>;
-    if (Dispatcher::template inherits<>(from)) [[likely]]
-        return static_cast<To>(from);
-    return nullptr;
-}
-
-template<typename To>
-To jsDynamicCast(JSValue from)
-{
-    if (!from.isCell()) [[unlikely]]
-        return nullptr;
-    return jsDynamicCast<To>(from.asCell());
-}
-
 } // namespace JSC
 
 // Concept that identifies JSCell subclasses without requiring complete types.
@@ -380,7 +363,7 @@ inline To* dynamicDowncast(const JSC::JSValue& value)
         return nullptr;
     JSC::JSCell* cell = value.asCell();
     if (JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell)) [[likely]]
-        return static_cast<To*>(cell);
+        SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
     return nullptr;
 }
 
@@ -391,7 +374,7 @@ inline To* downcast(JSC::JSValue& value)
     RELEASE_ASSERT(value.isCell());
     JSC::JSCell* cell = value.asCell();
     RELEASE_ASSERT(JSC::JSCastingHelpers::InheritsTraits<To>::inherits(cell));
-    return static_cast<To*>(cell);
+    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<To*>(cell);
 }
 
 template<typename To>

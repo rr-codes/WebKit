@@ -455,7 +455,7 @@ void Interpreter::getAsyncStackTrace(JSCell* owner, Vector<StackFrame>& results,
         if (promise && promise->status() == JSPromise::Status::Pending) {
             JSValue reactionsValue = promise->internalField(JSPromise::Field::ReactionsOrResult).get();
             if (reactionsValue) {
-                if (auto* reaction = jsDynamicCast<JSPromiseReaction*>(reactionsValue))
+                if (auto* reaction = dynamicDowncast<JSPromiseReaction>(reactionsValue))
                     return reaction->context();
             }
         }
@@ -465,24 +465,24 @@ void Interpreter::getAsyncStackTrace(JSCell* owner, Vector<StackFrame>& results,
     auto getParentGenerator = [&](JSGenerator* gen) -> JSGenerator* {
         JSValue generatorContext = gen->internalField(static_cast<unsigned>(JSGenerator::Field::Context)).get();
         ASSERT(generatorContext);
-        JSPromise* awaitedPromise = jsDynamicCast<JSPromise*>(generatorContext);
+        JSPromise* awaitedPromise = dynamicDowncast<JSPromise>(generatorContext);
         JSValue promiseContext = getContextValueFromPromise(awaitedPromise);
 
         if (!promiseContext)
             return nullptr;
 
         // handle simple `await`
-        if (auto* generator = jsDynamicCast<JSGenerator*>(promiseContext))
+        if (auto* generator = dynamicDowncast<JSGenerator>(promiseContext))
             return generator;
 
         // handle `Promise.all`, `Promise.allSettled`, and `Promise.any`
-        if (auto* promiseCombinatorsContext = jsDynamicCast<JSPromiseCombinatorsContext*>(promiseContext)) {
-            if (auto* globalContext = jsDynamicCast<JSPromiseCombinatorsGlobalContext*>(promiseCombinatorsContext->globalContext())) {
+        if (auto* promiseCombinatorsContext = dynamicDowncast<JSPromiseCombinatorsContext>(promiseContext)) {
+            if (auto* globalContext = promiseCombinatorsContext->globalContext()) {
                 JSValue promiseValue = globalContext->promise();
                 ASSERT(promiseValue);
-                if (auto* promise = jsDynamicCast<JSPromise*>(promiseValue)) {
+                if (auto* promise = dynamicDowncast<JSPromise>(promiseValue)) {
                     if (JSValue promiseContext = getContextValueFromPromise(promise)) {
-                        if (auto* generator = jsDynamicCast<JSGenerator*>(promiseContext))
+                        if (auto* generator = dynamicDowncast<JSGenerator>(promiseContext))
                             return generator;
                     }
                 }
@@ -490,9 +490,9 @@ void Interpreter::getAsyncStackTrace(JSCell* owner, Vector<StackFrame>& results,
         }
 
         // handle and `Promise.race`
-        if (auto* contextPromise = jsDynamicCast<JSPromise*>(promiseContext)) {
+        if (auto* contextPromise = dynamicDowncast<JSPromise>(promiseContext)) {
             if (JSValue parentContext = getContextValueFromPromise(contextPromise)) {
-                if (auto* generator = jsDynamicCast<JSGenerator*>(parentContext))
+                if (auto* generator = dynamicDowncast<JSGenerator>(parentContext))
                     return generator;
             }
         }
@@ -520,7 +520,7 @@ void Interpreter::getAsyncStackTrace(JSCell* owner, Vector<StackFrame>& results,
     JSGenerator* currentGenerator = getParentGenerator(generator);
     while (currentGenerator && results.size() < maxStackSize) {
         JSValue nextValue = currentGenerator->internalField(static_cast<unsigned>(JSGenerator::Field::Next)).get();
-        JSFunction* asyncFunction = jsDynamicCast<JSFunction*>(nextValue);
+        JSFunction* asyncFunction = dynamicDowncast<JSFunction>(nextValue);
         if (asyncFunction && !asyncFunction->isHostOrBuiltinFunction()) {
             if (FunctionExecutable* executable = asyncFunction->jsExecutable()) {
                 // If a CodeBlock doesn't already exist, the stack trace will only show the filename and won't show line column
@@ -569,7 +569,7 @@ void Interpreter::getStackTrace(JSCell* owner, Vector<StackFrame>& results, size
 
     if (!caller && ownerOfCallLinkInfo && callLinkInfo && callLinkInfo->isTailCall()) {
         // Reconstruct the top frame from CallLinkInfo*
-        CodeBlock* codeBlock = jsDynamicCast<CodeBlock*>(ownerOfCallLinkInfo);
+        CodeBlock* codeBlock = dynamicDowncast<CodeBlock>(ownerOfCallLinkInfo);
         if (codeBlock) {
             CodeOrigin codeOrigin = callLinkInfo->codeOrigin();
             if (codeOrigin.inlineCallFrame()) {
@@ -592,7 +592,7 @@ void Interpreter::getStackTrace(JSCell* owner, Vector<StackFrame>& results, size
         ASSERT(Options::useAsyncStackTrace());
         auto* record = vmEntryRecord(previousEntryFrame);
         if (record->m_context) {
-            if (auto* generator = jsDynamicCast<JSGenerator*>(record->m_context)) {
+            if (auto* generator = dynamicDowncast<JSGenerator>(record->m_context)) {
                 asyncStackTraceOriginGenerator = generator;
                 asyncStackTraceInsertPos = previousEntryFrameStackTraceInsertPos;
             }
@@ -776,12 +776,12 @@ public:
     {
 
         if (!m_isTermination) {
-            if (JSWebAssemblyException* wasmException = jsDynamicCast<JSWebAssemblyException*>(thrownValue)) {
+            if (JSWebAssemblyException* wasmException = dynamicDowncast<JSWebAssemblyException>(thrownValue)) {
                 m_catchableFromWasm = true;
                 m_wasmTag = &wasmException->tag();
                 if (m_wasmTag == &Wasm::Tag::jsExceptionTag())
                     m_exception->tryUnwrapValueForJSTag(m_vm);
-            } else if (ErrorInstance* error = jsDynamicCast<ErrorInstance*>(thrownValue))
+            } else if (ErrorInstance* error = dynamicDowncast<ErrorInstance>(thrownValue))
                 m_catchableFromWasm = error->isCatchableFromWasm();
             else
                 m_catchableFromWasm = true;

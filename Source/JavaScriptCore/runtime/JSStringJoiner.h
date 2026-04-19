@@ -147,7 +147,7 @@ ALWAYS_INLINE bool JSStringJoiner::appendWithoutSideEffects(JSGlobalObject* glob
     if (value.isCell()) {
         // FIXME: Support JSBigInt in side-effect-free append.
         // https://bugs.webkit.org/show_bug.cgi?id=211173
-        if (JSString* jsString = jsDynamicCast<JSString*>(value)) {
+        if (JSString* jsString = dynamicDowncast<JSString>(value)) {
             auto view = jsString->view(globalObject);
             RETURN_IF_EXCEPTION(scope, false);
             // Since getting the view didn't OOM, we know that the underlying String exists and isn't

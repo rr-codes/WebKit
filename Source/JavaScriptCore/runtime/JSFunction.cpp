@@ -117,7 +117,7 @@ JSFunction::JSFunction(VM& vm, NativeExecutable* executable, JSGlobalObject* glo
 void JSFunction::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(jsDynamicCast<JSFunction*>(this));
+    ASSERT(is<JSFunction>(this));
     ASSERT(type() == JSFunctionType);
     // JSCell::{getCallData,getConstructData} relies on the following conditions.
     ASSERT(methodTable()->getConstructData == &JSFunction::getConstructData);
@@ -487,7 +487,7 @@ CallData JSFunction::getConstructData(JSCell* cell)
 
 String getCalculatedDisplayName(VM& vm, JSObject* object)
 {
-    if (!jsDynamicCast<JSFunction*>(object) && !jsDynamicCast<InternalFunction*>(object))
+    if (!is<JSFunction>(object) && !is<InternalFunction>(object))
         return emptyString();
 
     Structure* structure = object->structure();
@@ -500,14 +500,14 @@ String getCalculatedDisplayName(VM& vm, JSObject* object)
             return asString(displayName)->tryGetValueWithoutGC();
     }
 
-    if (auto* function = jsDynamicCast<JSFunction*>(object)) {
+    if (auto* function = dynamicDowncast<JSFunction>(object)) {
         String actualName = function->nameWithoutGC(vm);
         if (!actualName.isEmpty() || function->isHostOrBuiltinFunction())
             return actualName;
 
         return function->jsExecutable()->ecmaName().string();
     }
-    if (auto* function = jsDynamicCast<InternalFunction*>(object))
+    if (auto* function = dynamicDowncast<InternalFunction>(object))
         return function->name();
 
     return emptyString();

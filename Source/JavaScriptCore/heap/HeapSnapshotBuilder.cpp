@@ -416,8 +416,8 @@ void HeapSnapshotBuilder::dumpToStream(PrintStream& out)
                     nodeLabel.append(it->value);
 
                 if (nodeLabel.isEmpty()) {
-                    if (auto* object = jsDynamicCast<JSObject*>(node.cell)) {
-                        if (auto* function = jsDynamicCast<JSFunction*>(object))
+                    if (auto* object = dynamicDowncast<JSObject>(node.cell)) {
+                        if (auto* function = dynamicDowncast<JSFunction>(object))
                             nodeLabel.append(function->calculatedDisplayName(vm));
                     }
                 }

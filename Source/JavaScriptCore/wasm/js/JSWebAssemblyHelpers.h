@@ -105,14 +105,14 @@ ALWAYS_INLINE std::span<const uint8_t> getWasmBufferFromValue(JSGlobalObject* gl
     VM& vm = getVM(globalObject);
     auto throwScope = DECLARE_THROW_SCOPE(vm);
 
-    if (auto* source = jsDynamicCast<JSSourceCode*>(value)) {
+    if (auto* source = dynamicDowncast<JSSourceCode>(value)) {
         auto* provider = static_cast<BaseWebAssemblySourceProvider*>(source->sourceCode().provider());
         return { provider->data(), provider->size() };
     }
 
     // If the given bytes argument is not a BufferSource, a TypeError exception is thrown.
-    JSArrayBuffer* arrayBuffer = value.getObject() ? jsDynamicCast<JSArrayBuffer*>(value.getObject()) : nullptr;
-    JSArrayBufferView* arrayBufferView = value.getObject() ? jsDynamicCast<JSArrayBufferView*>(value.getObject()) : nullptr;
+    JSArrayBuffer* arrayBuffer = value.getObject() ? dynamicDowncast<JSArrayBuffer>(value.getObject()) : nullptr;
+    JSArrayBufferView* arrayBufferView = value.getObject() ? dynamicDowncast<JSArrayBufferView>(value.getObject()) : nullptr;
     if (!(arrayBuffer || arrayBufferView)) {
         throwException(globalObject, throwScope, createTypeError(globalObject,
             "first argument must be an ArrayBufferView or an ArrayBuffer"_s, defaultSourceAppender, runtimeTypeForValue(value)));
@@ -145,7 +145,7 @@ ALWAYS_INLINE Vector<uint8_t> createSourceBufferFromValue(VM& vm, JSGlobalObject
     auto throwScope = DECLARE_THROW_SCOPE(vm);
 
     BaseWebAssemblySourceProvider* provider = nullptr;
-    if (auto* source = jsDynamicCast<JSSourceCode*>(value))
+    if (auto* source = dynamicDowncast<JSSourceCode>(value))
         provider = static_cast<BaseWebAssemblySourceProvider*>(source->sourceCode().provider());
     SourceProviderBufferGuard bufferGuard(provider);
 
@@ -250,7 +250,7 @@ ALWAYS_INLINE uint64_t toWebAssemblyValue(JSGlobalObject* globalObject, const Wa
             if (type.isNullable() && value.isNull())
                 break;
 
-            auto* wasmFunction = jsDynamicCast<WebAssemblyFunctionBase*>(value);
+            auto* wasmFunction = dynamicDowncast<WebAssemblyFunctionBase>(value);
             if (!wasmFunction)
                 return throwVMTypeError(globalObject, scope, "Argument value did not match the reference type"_s);
 

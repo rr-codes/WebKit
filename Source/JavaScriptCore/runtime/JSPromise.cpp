@@ -147,9 +147,9 @@ JSPromise::DeferredData JSPromise::createDeferredData(JSGlobalObject* globalObje
     auto scope = DECLARE_THROW_SCOPE(vm);
     auto [ promiseCapability, resolveCapability, rejectCapability ] = newPromiseCapability(globalObject, promiseConstructor);
     RETURN_IF_EXCEPTION(scope, { });
-    auto* promise = jsDynamicCast<JSPromise*>(promiseCapability);
-    auto* resolve = jsDynamicCast<JSFunction*>(resolveCapability);
-    auto* reject  = jsDynamicCast<JSFunction*>(rejectCapability);
+    auto* promise = dynamicDowncast<JSPromise>(promiseCapability);
+    auto* resolve = dynamicDowncast<JSFunction>(resolveCapability);
+    auto* reject  = dynamicDowncast<JSFunction>(rejectCapability);
     if (promise && resolve && reject)
         return DeferredData { promise, resolve, reject };
 
@@ -399,7 +399,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseResolvingFunctionResolve, (JSGlobalObject* globa
     VM& vm = globalObject->vm();
 
     auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
-    auto* other = jsDynamicCast<JSFunctionWithFields*>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
+    auto* other = dynamicDowncast<JSFunctionWithFields>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
     if (!other) [[unlikely]]
         return JSValue::encode(jsUndefined());
 
@@ -418,7 +418,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseResolvingFunctionReject, (JSGlobalObject* global
     VM& vm = globalObject->vm();
 
     auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
-    auto* other = jsDynamicCast<JSFunctionWithFields*>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
+    auto* other = dynamicDowncast<JSFunctionWithFields>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
     if (!other) [[unlikely]]
         return JSValue::encode(jsUndefined());
 
@@ -457,7 +457,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseResolvingFunctionResolveWithInternalMicrotask, (
     VM& vm = globalObject->vm();
 
     auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
-    auto* other = jsDynamicCast<JSFunctionWithFields*>(callee->getField(JSFunctionWithFields::Field::ResolvingWithInternalMicrotaskOther));
+    auto* other = dynamicDowncast<JSFunctionWithFields>(callee->getField(JSFunctionWithFields::Field::ResolvingWithInternalMicrotaskOther));
     if (!other) [[unlikely]]
         return JSValue::encode(jsUndefined());
 
@@ -476,7 +476,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseResolvingFunctionRejectWithInternalMicrotask, (J
     VM& vm = globalObject->vm();
 
     auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
-    auto* other = jsDynamicCast<JSFunctionWithFields*>(callee->getField(JSFunctionWithFields::Field::ResolvingWithInternalMicrotaskOther));
+    auto* other = dynamicDowncast<JSFunctionWithFields>(callee->getField(JSFunctionWithFields::Field::ResolvingWithInternalMicrotaskOther));
     if (!other) [[unlikely]]
         return JSValue::encode(jsUndefined());
 
@@ -704,7 +704,7 @@ JSObject* promiseSpeciesConstructor(JSGlobalObject* globalObject, JSObject* this
     VM& vm = getVM(globalObject);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    if (auto* promise = jsDynamicCast<JSPromise*>(thisObject)) [[likely]] {
+    if (auto* promise = dynamicDowncast<JSPromise>(thisObject)) [[likely]] {
         if (promiseSpeciesWatchpointIsValid(vm, promise)) [[likely]]
             return globalObject->promiseConstructor();
     }

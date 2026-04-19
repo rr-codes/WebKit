@@ -74,7 +74,7 @@ JSC_DEFINE_HOST_FUNCTION(constructSet, (JSGlobalObject* globalObject, CallFrame*
         return JSValue::encode(JSSet::create(vm, setStructure));
 
     bool canPerformFastAdd = JSSet::isAddFastAndNonObservable(setStructure);
-    if (auto* iterableSet = jsDynamicCast<JSSet*>(iterable)) {
+    if (auto* iterableSet = dynamicDowncast<JSSet>(iterable)) {
         if (canPerformFastAdd && iterableSet->isIteratorProtocolFastAndNonObservable()) 
             RELEASE_AND_RETURN(scope, JSValue::encode(iterableSet->clone(globalObject, vm, setStructure)));
     }
@@ -110,7 +110,7 @@ JSC_DEFINE_HOST_FUNCTION(constructSet, (JSGlobalObject* globalObject, CallFrame*
 
 JSC_DEFINE_HOST_FUNCTION(setPrivateFuncSetStorage, (JSGlobalObject* globalObject, CallFrame* callFrame))
 {
-    ASSERT(jsDynamicCast<JSSet*>(callFrame->argument(0)));
+    ASSERT(is<JSSet>(callFrame->argument(0)));
     JSSet* set = jsCast<JSSet*>(callFrame->uncheckedArgument(0));
     return JSValue::encode(set->storageOrSentinel(getVM(globalObject)));
 }

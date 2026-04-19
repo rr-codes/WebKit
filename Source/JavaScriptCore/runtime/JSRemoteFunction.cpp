@@ -177,7 +177,7 @@ JSC_DEFINE_HOST_FUNCTION(createRemoteFunction, (JSGlobalObject* globalObject, Ca
     JSObject* targetCallable = jsCast<JSObject*>(targetFunction.asCell());
     JSGlobalObject* destinationGlobalObject = globalObject;
     if (!callFrame->uncheckedArgument(1).isUndefinedOrNull()) {
-        if (auto shadowRealm = jsDynamicCast<ShadowRealmObject*>(callFrame->uncheckedArgument(1)))
+        if (auto shadowRealm = dynamicDowncast<ShadowRealmObject>(callFrame->uncheckedArgument(1)))
             destinationGlobalObject = shadowRealm->globalObject();
         else
             destinationGlobalObject = jsCast<JSGlobalObject*>(callFrame->uncheckedArgument(1));
@@ -195,7 +195,7 @@ inline Structure* getRemoteFunctionStructure(JSGlobalObject* globalObject)
 JSRemoteFunction* JSRemoteFunction::tryCreate(JSGlobalObject* globalObject, VM& vm, JSObject* targetCallable)
 {
     ASSERT(targetCallable && targetCallable->isCallable());
-    if (auto remote = jsDynamicCast<JSRemoteFunction*>(targetCallable)) {
+    if (auto remote = dynamicDowncast<JSRemoteFunction>(targetCallable)) {
         targetCallable = remote->targetFunction();
         ASSERT(!JSC::isRemoteFunction(targetCallable));
     }

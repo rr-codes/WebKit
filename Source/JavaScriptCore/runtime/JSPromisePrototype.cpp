@@ -121,7 +121,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseProtoFuncThen, (JSGlobalObject* globalObject, Ca
     JSValue onFulfilled = callFrame->argument(0);
     JSValue onRejected = callFrame->argument(1);
 
-    auto* promise = jsDynamicCast<JSPromise*>(thisValue);
+    auto* promise = dynamicDowncast<JSPromise>(thisValue);
     if (!promise) [[unlikely]]
         return throwVMTypeError(globalObject, scope, "|this| is not a Promise");
 
@@ -136,7 +136,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseProtoFuncCatch, (JSGlobalObject* globalObject, C
     JSValue thisValue = callFrame->thisValue().toThis(globalObject, ECMAMode::strict());
     JSValue onRejected = callFrame->argument(0);
 
-    if (auto* promise = jsDynamicCast<JSPromise*>(thisValue); promise && promise->isThenFastAndNonObservable()) [[likely]]
+    if (auto* promise = dynamicDowncast<JSPromise>(thisValue); promise && promise->isThenFastAndNonObservable()) [[likely]]
         RELEASE_AND_RETURN(scope, JSValue::encode(promise->then(globalObject, jsUndefined(), onRejected)));
 
     JSValue then = thisValue.get(globalObject, vm.propertyNames->then);
@@ -244,7 +244,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseProtoFuncFinally, (JSGlobalObject* globalObject,
     JSValue onFinally = callFrame->argument(0);
 
     if (!onFinally.isCallable()) {
-        if (auto* promise = jsDynamicCast<JSPromise*>(thisValue); promise && promise->isThenFastAndNonObservable()) [[likely]]
+        if (auto* promise = dynamicDowncast<JSPromise>(thisValue); promise && promise->isThenFastAndNonObservable()) [[likely]]
             RELEASE_AND_RETURN(scope, JSValue::encode(promise->then(globalObject, onFinally, onFinally)));
 
         JSValue then = thisValue.get(globalObject, vm.propertyNames->then);
@@ -260,7 +260,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseProtoFuncFinally, (JSGlobalObject* globalObject,
         RELEASE_AND_RETURN(scope, JSValue::encode(call(globalObject, then, thenCallData, thisValue, thenArguments)));
     }
 
-    auto* promise = jsDynamicCast<JSPromise*>(thisValue);
+    auto* promise = dynamicDowncast<JSPromise>(thisValue);
     if (promise && promise->isThenFastAndNonObservable() && promiseSpeciesWatchpointIsValid(vm, promise)) [[likely]] {
         JSPromise* resultPromise = JSPromise::create(vm, globalObject->promiseStructure());
         auto* context = JSPromiseCombinatorsGlobalContext::create(vm, resultPromise, onFinally, jsUndefined());

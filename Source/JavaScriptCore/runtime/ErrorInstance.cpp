@@ -252,7 +252,7 @@ String ErrorInstance::tryGetMessageForDebugging()
     if (JSObject::getOwnNonIndexPropertySlot(vm, structure(), messagePropertName, messageSlot))
         messageValue = messageSlot.getPureResult();
 
-    if (JSString* string = jsDynamicCast<JSString*>(messageValue))
+    if (JSString* string = dynamicDowncast<JSString>(messageValue))
         return string->tryGetValue();
     return emptyString();
 }

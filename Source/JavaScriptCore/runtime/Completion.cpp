@@ -301,7 +301,7 @@ UncheckedKeyHashMap<RefPtr<UniquedStringImpl>, String> retrieveImportAttributesF
     if (options.isUndefined())
         return { };
 
-    auto* optionsObject = jsDynamicCast<JSObject*>(options);
+    auto* optionsObject = dynamicDowncast<JSObject>(options);
     if (!optionsObject) [[unlikely]] {
         throwTypeError(globalObject, scope, "dynamic import's options should be an object"_s);
         return { };
@@ -313,7 +313,7 @@ UncheckedKeyHashMap<RefPtr<UniquedStringImpl>, String> retrieveImportAttributesF
     if (attributes.isUndefined())
         return { };
 
-    auto* attributesObject = jsDynamicCast<JSObject*>(attributes);
+    auto* attributesObject = dynamicDowncast<JSObject>(attributes);
     if (!attributesObject) [[unlikely]] {
         throwTypeError(globalObject, scope, "dynamic import's options.with should be an object"_s);
         return { };

@@ -133,7 +133,7 @@ ALWAYS_INLINE void* linkFor(VM& vm, JSCell* owner, CallFrame* calleeFrame, CallL
     JSValue calleeAsValue = calleeFrame->guaranteedJSValueCallee();
     JSCell* calleeAsFunctionCell = getJSFunction(calleeAsValue);
     if (!calleeAsFunctionCell) {
-        if (auto* internalFunction = jsDynamicCast<InternalFunction*>(calleeAsValue)) {
+        if (auto* internalFunction = dynamicDowncast<InternalFunction>(calleeAsValue)) {
             CodePtr<JSEntryPtrTag> codePtr = vm.getCTIInternalFunctionTrampolineFor(kind);
             RELEASE_ASSERT(!!codePtr);
 
@@ -233,7 +233,7 @@ ALWAYS_INLINE void* virtualForWithFunction(VM& vm, JSCell* owner, CallFrame* cal
     JSValue calleeAsValue = calleeFrame->guaranteedJSValueCallee();
     calleeAsFunctionCell = getJSFunction(calleeAsValue);
     if (!calleeAsFunctionCell) [[unlikely]] {
-        if (jsDynamicCast<InternalFunction*>(calleeAsValue)) {
+        if (is<InternalFunction>(calleeAsValue)) {
             CodePtr<JSEntryPtrTag> codePtr = vm.getCTIInternalFunctionTrampolineFor(kind);
             ASSERT(!!codePtr);
             return codePtr.taggedPtr();

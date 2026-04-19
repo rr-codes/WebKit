@@ -249,7 +249,7 @@ JSObject* addErrorInfo(VM& vm, JSObject* error, int line, const SourceCode& sour
     // ErrorInstance to materialize whatever it needs to. There's a chance that we get passed some
     // other kind of object, which also has materializable properties. But this code is heuristic-ey
     // enough that if we're wrong in such corner cases, it's not the end of the world.
-    if (ErrorInstance* errorInstance = jsDynamicCast<ErrorInstance*>(error))
+    if (ErrorInstance* errorInstance = dynamicDowncast<ErrorInstance>(error))
         errorInstance->materializeErrorInfoIfNeeded(vm);
     
     // FIXME: This does not modify the column property, which confusingly continues to reflect

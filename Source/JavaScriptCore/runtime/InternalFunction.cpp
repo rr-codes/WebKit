@@ -42,7 +42,7 @@ InternalFunction::InternalFunction(VM& vm, Structure* structure, NativeFunction 
     ASSERT_WITH_MESSAGE(m_functionForCall, "[[Call]] must be implemented");
     ASSERT(m_functionForConstruct);
 
-    ASSERT(jsDynamicCast<InternalFunction*>(this));
+    ASSERT(is<InternalFunction>(this));
     // JSCell::{getCallData,getConstructData} relies on the following conditions.
     ASSERT(methodTable()->getCallData == InternalFunction::info()->methodTable.getCallData);
     ASSERT(methodTable()->getConstructData == InternalFunction::info()->methodTable.getConstructData);
@@ -146,7 +146,7 @@ Structure* InternalFunction::createSubclassStructure(JSGlobalObject* globalObjec
     ASSERT(baseClass->hasMonoProto());
 
     // newTarget may be an InternalFunction if we were called from Reflect.construct.
-    JSFunction* targetFunction = jsDynamicCast<JSFunction*>(newTarget);
+    JSFunction* targetFunction = dynamicDowncast<JSFunction>(newTarget);
 
     if (!targetFunction || !targetFunction->canUseAllocationProfiles()) [[unlikely]] {
         JSValue prototypeValue = newTarget->get(globalObject, vm.propertyNames->prototype);
@@ -156,7 +156,7 @@ Structure* InternalFunction::createSubclassStructure(JSGlobalObject* globalObjec
             if (baseGlobalObject->isOriginalArrayStructure(baseClass))
                 baseClass = baseGlobalObject->arrayStructureForIndexingTypeDuringAllocation(baseClass->indexingType());
         }
-        if (JSObject* prototype = jsDynamicCast<JSObject*>(prototypeValue)) {
+        if (JSObject* prototype = dynamicDowncast<JSObject>(prototypeValue)) {
             // This only happens if someone Reflect.constructs our builtin constructor with another builtin constructor or weird .prototype property on a
             // JSFunction as the new.target. Thus, we don't care about the cost of looking up the structure from our hash table every time.
             return baseGlobalObject->structureCache().emptyStructureForPrototypeFromBaseStructure(baseGlobalObject, prototype, baseClass);
@@ -173,7 +173,7 @@ Structure* InternalFunction::createSubclassStructure(JSGlobalObject* globalObjec
     JSValue prototypeValue = targetFunction->get(globalObject, vm.propertyNames->prototype);
     RETURN_IF_EXCEPTION(scope, nullptr);
 
-    if (JSObject* prototype = jsDynamicCast<JSObject*>(prototypeValue))
+    if (JSObject* prototype = dynamicDowncast<JSObject>(prototypeValue))
         return rareData->createInternalFunctionAllocationStructureFromBase(vm, baseGlobalObject, prototype, baseClass);
 
     return baseClass;

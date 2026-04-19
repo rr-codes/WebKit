@@ -864,9 +864,9 @@ JSObjectRef JSObjectGetProxyTarget(JSObjectRef objectRef)
     VM& vm = object->vm();
     JSLockHolder locker(vm);
     JSObject* result = nullptr;
-    if (JSGlobalProxy* proxy = jsDynamicCast<JSGlobalProxy*>(object))
+    if (JSGlobalProxy* proxy = dynamicDowncast<JSGlobalProxy>(object))
         result = proxy->target();
-    else if (ProxyObject* proxy = jsDynamicCast<ProxyObject*>(object))
+    else if (ProxyObject* proxy = dynamicDowncast<ProxyObject>(object))
         result = proxy->target();
     return toRef(result);
 }

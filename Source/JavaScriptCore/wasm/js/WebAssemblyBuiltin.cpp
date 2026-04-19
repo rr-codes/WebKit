@@ -250,7 +250,7 @@ static bool isMutI16Array(const JSWebAssemblyArray* array)
 // Expands into code that verifies that the variable contains a (non-null) array of mutable i16s.
 #define ENSURE_ARRAY_MUT_I16(var) \
     { \
-        auto* tmpArray = jsDynamicCast<JSWebAssemblyArray*>(var); \
+        auto* tmpArray = dynamicDowncast<JSWebAssemblyArray>(var); \
         if (!tmpArray || !isMutI16Array(tmpArray)) [[unlikely]] \
             THROW_ILLEGAL_ARGUMENT_EXCEPTION; \
     }

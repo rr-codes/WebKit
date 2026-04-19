@@ -130,7 +130,7 @@ JSC_DEFINE_HOST_FUNCTION(errorConstructorCaptureStackTrace, (JSGlobalObject* glo
 
     object->putDirect(vm, vm.propertyNames->stack, jsString(vm, Interpreter::stackTraceAsString(vm, stackTrace)), static_cast<unsigned>(PropertyAttribute::DontEnum));
 
-    if (auto* errorInstance = jsDynamicCast<ErrorInstance*>(object))
+    if (auto* errorInstance = dynamicDowncast<ErrorInstance>(object))
         errorInstance->setStackPropertyAlreadyMaterialized();
 
     return encodedJSUndefined();
@@ -138,7 +138,7 @@ JSC_DEFINE_HOST_FUNCTION(errorConstructorCaptureStackTrace, (JSGlobalObject* glo
 
 JSC_DEFINE_HOST_FUNCTION(errorConstructorIsError, (JSGlobalObject*, CallFrame* callFrame))
 {
-    JSObject* object = jsDynamicCast<JSObject*>(callFrame->argument(0));
+    JSObject* object = dynamicDowncast<JSObject>(callFrame->argument(0));
     return JSValue::encode(jsBoolean(object && object->isErrorInstance()));
 }
 

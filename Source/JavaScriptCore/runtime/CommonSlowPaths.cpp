@@ -154,7 +154,7 @@ JSC_DEFINE_COMMON_SLOW_PATH(slow_path_create_this)
     auto bytecode = pc->as<OpCreateThis>();
     JSObject* result;
     JSObject* constructorAsObject = asObject(GET(bytecode.m_callee).jsValue());
-    JSFunction* constructor = jsDynamicCast<JSFunction*>(constructorAsObject);
+    JSFunction* constructor = dynamicDowncast<JSFunction>(constructorAsObject);
     if (constructor && constructor->canUseAllocationProfiles()) {
         WriteBarrier<JSCell>& cachedCallee = bytecode.metadata(codeBlock).m_cachedCallee;
         if (!cachedCallee)
@@ -202,7 +202,7 @@ JSC_DEFINE_COMMON_SLOW_PATH(slow_path_create_promise)
         result = JSPromise::create(vm, structure);
     }
 
-    JSFunction* constructor = jsDynamicCast<JSFunction*>(constructorAsObject);
+    JSFunction* constructor = dynamicDowncast<JSFunction>(constructorAsObject);
     if (constructor && constructor->canUseAllocationProfiles()) {
         WriteBarrier<JSCell>& cachedCallee = bytecode.metadata(codeBlock).m_cachedCallee;
         if (!cachedCallee)
@@ -230,7 +230,7 @@ static JSClass* createInternalFieldObject(JSGlobalObject* globalObject, VM& vm, 
     RETURN_IF_EXCEPTION(scope, nullptr);
     JSClass* result = JSClass::create(vm, structure);
 
-    JSFunction* constructor = jsDynamicCast<JSFunction*>(constructorAsObject);
+    JSFunction* constructor = dynamicDowncast<JSFunction>(constructorAsObject);
     if (constructor && constructor->canUseAllocationProfiles()) {
         WriteBarrier<JSCell>& cachedCallee = bytecode.metadata(codeBlock).m_cachedCallee;
         if (!cachedCallee)
@@ -847,8 +847,8 @@ ALWAYS_INLINE UGPRPair iteratorNextTryFastImpl(VM& vm, JSGlobalObject* globalObj
     ASSERT(!GET(bytecode.m_next).jsValue());
     JSObject* iterator = jsCast<JSObject*>(GET(bytecode.m_iterator).jsValue());;
     JSCell* iterable = GET(bytecode.m_iterable).jsValue().asCell();
-    if (auto arrayIterator = jsDynamicCast<JSArrayIterator*>(iterator)) {
-        if (auto array = jsDynamicCast<JSArray*>(iterable); array && isJSArray(array)) {
+    if (auto arrayIterator = dynamicDowncast<JSArrayIterator>(iterator)) {
+        if (auto array = dynamicDowncast<JSArray>(iterable); array && isJSArray(array)) {
             metadata.m_iterableProfile.observeStructureID(array->structureID());
 
             metadata.m_iterationMetadata.seenModes = metadata.m_iterationMetadata.seenModes | IterationMode::FastArray;

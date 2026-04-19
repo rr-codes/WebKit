@@ -139,7 +139,7 @@ JSC_DEFINE_HOST_FUNCTION(boundFunctionConstruct, (JSGlobalObject* globalObject, 
 
 JSC_DEFINE_HOST_FUNCTION(isBoundFunction, (JSGlobalObject*, CallFrame* callFrame))
 {
-    return JSValue::encode(JSValue(static_cast<bool>(jsDynamicCast<JSBoundFunction*>(callFrame->uncheckedArgument(0)))));
+    return JSValue::encode(JSValue(static_cast<bool>(dynamicDowncast<JSBoundFunction>(callFrame->uncheckedArgument(0)))));
 }
 
 JSC_DEFINE_HOST_FUNCTION(hasInstanceBoundFunction, (JSGlobalObject* globalObject, CallFrame* callFrame))
@@ -152,7 +152,7 @@ JSC_DEFINE_HOST_FUNCTION(hasInstanceBoundFunction, (JSGlobalObject* globalObject
 inline Structure* getBoundFunctionStructure(VM& vm, JSGlobalObject* globalObject, JSObject* targetFunction)
 {
     auto scope = DECLARE_THROW_SCOPE(vm);
-    JSFunction* targetJSFunction = jsDynamicCast<JSFunction*>(targetFunction);
+    JSFunction* targetJSFunction = dynamicDowncast<JSFunction>(targetFunction);
     if (targetJSFunction && targetJSFunction->getPrototypeDirect() == globalObject->functionPrototype()) [[likely]]
         return globalObject->boundFunctionStructure();
 

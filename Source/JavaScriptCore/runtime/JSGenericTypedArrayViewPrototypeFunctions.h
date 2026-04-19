@@ -146,7 +146,7 @@ inline JSArrayBufferView* speciesConstruct(JSGlobalObject* globalObject, ViewCla
     JSValue result = construct(globalObject, species, args, "species is not a constructor"_s);
     RETURN_IF_EXCEPTION(scope, nullptr);
 
-    if (JSArrayBufferView* view = jsDynamicCast<JSArrayBufferView*>(result); view) [[likely]] {
+    if (JSArrayBufferView* view = dynamicDowncast<JSArrayBufferView>(result); view) [[likely]] {
         if (view->type() == DataViewType) [[unlikely]] {
             throwTypeError(globalObject, scope, "species constructor did not return a TypedArray View"_s);
             return nullptr;
@@ -1804,14 +1804,14 @@ ALWAYS_INLINE EncodedJSValue genericTypedArrayViewPrivateFuncFromFast(VM& vm, JS
     auto scope = DECLARE_THROW_SCOPE(vm);
 
     JSValue arrayLike = callFrame->uncheckedArgument(1);
-    JSArrayBufferView* items = jsDynamicCast<JSArrayBufferView*>(arrayLike);
+    JSArrayBufferView* items = dynamicDowncast<JSArrayBufferView>(arrayLike);
     if (!items) {
         // Converting Double or Int32 to BigInt throws an error.
         if constexpr (ViewClass::TypedArrayStorageType == TypeBigInt64 || ViewClass::TypedArrayStorageType == TypeBigUint64)
             return JSValue::encode(jsUndefined());
 
         // TypedArray.from(Array) case.
-        JSArray* array = jsDynamicCast<JSArray*>(arrayLike);
+        JSArray* array = dynamicDowncast<JSArray>(arrayLike);
         if (!array)
             return JSValue::encode(jsUndefined());
 

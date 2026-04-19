@@ -803,7 +803,7 @@ JSModuleNamespaceObject* AbstractModuleRecord::getModuleNamespace(JSGlobalObject
     auto scope = DECLARE_THROW_SCOPE(vm);
 
 #if ASSERT_ENABLED
-    if (auto* cyclic = jsDynamicCast<CyclicModuleRecord*>(this))
+    if (auto* cyclic = dynamicDowncast<CyclicModuleRecord>(this))
         ASSERT(cyclic->status() != CyclicModuleRecord::Status::New && cyclic->status() != CyclicModuleRecord::Status::Unlinked);
 #endif
 
@@ -883,9 +883,9 @@ void AbstractModuleRecord::setModuleEnvironment(JSGlobalObject* globalObject, JS
 
 void AbstractModuleRecord::link(JSGlobalObject* globalObject, JSValue scriptFetcher)
 {
-    if (auto* cyclicModuleRecord = jsDynamicCast<CyclicModuleRecord*>(this))
+    if (auto* cyclicModuleRecord = dynamicDowncast<CyclicModuleRecord>(this))
         cyclicModuleRecord->link(globalObject, scriptFetcher); // can throw
-    else if (auto* moduleRecord = jsDynamicCast<SyntheticModuleRecord*>(this))
+    else if (auto* moduleRecord = dynamicDowncast<SyntheticModuleRecord>(this))
         moduleRecord->link(globalObject, scriptFetcher);
     else
         RELEASE_ASSERT_NOT_REACHED();
@@ -896,10 +896,10 @@ JS_EXPORT_PRIVATE JSValue AbstractModuleRecord::evaluate(JSGlobalObject* globalO
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    if (auto* jsModuleRecord = jsDynamicCast<JSModuleRecord*>(this))
+    if (auto* jsModuleRecord = dynamicDowncast<JSModuleRecord>(this))
         RELEASE_AND_RETURN(scope, jsModuleRecord->evaluate(globalObject, sentValue, resumeMode));
 #if ENABLE(WEBASSEMBLY)
-    if (auto* wasmModuleRecord = jsDynamicCast<WebAssemblyModuleRecord*>(this)) {
+    if (auto* wasmModuleRecord = dynamicDowncast<WebAssemblyModuleRecord>(this)) {
         // WebAssembly imports need to be supplied during evaluation so that, e.g.,
         // JS module exports are actually available to be read and installed as import
         // bindings.
@@ -910,7 +910,7 @@ JS_EXPORT_PRIVATE JSValue AbstractModuleRecord::evaluate(JSGlobalObject* globalO
         RELEASE_AND_RETURN(scope, wasmModuleRecord->evaluate(globalObject));
     }
 #endif
-    if (auto* syntheticRecord = jsDynamicCast<SyntheticModuleRecord*>(this))
+    if (auto* syntheticRecord = dynamicDowncast<SyntheticModuleRecord>(this))
         RELEASE_AND_RETURN(scope, syntheticRecord->evaluate(globalObject));
     RELEASE_ASSERT_NOT_REACHED();
     return jsUndefined();
@@ -923,16 +923,16 @@ JSPromise* AbstractModuleRecord::evaluate(JSGlobalObject* globalObject)
     auto wrap = [&](JSValue value) -> JSPromise* {
         if (!value)
             return nullptr;
-        if (auto* promise = jsDynamicCast<JSPromise*>(value))
+        if (auto* promise = dynamicDowncast<JSPromise>(value))
             return promise;
         auto* promise = JSPromise::create(vm, globalObject->promiseStructure());
         promise->resolve(globalObject, vm, value);
         return promise;
     };
 
-    if (auto* cyclicRecord = jsDynamicCast<CyclicModuleRecord*>(this))
+    if (auto* cyclicRecord = dynamicDowncast<CyclicModuleRecord>(this))
         return wrap(cyclicRecord->evaluate(globalObject));
-    if (auto* syntheticRecord = jsDynamicCast<SyntheticModuleRecord*>(this))
+    if (auto* syntheticRecord = dynamicDowncast<SyntheticModuleRecord>(this))
         return wrap(syntheticRecord->evaluate(globalObject));
     RELEASE_ASSERT_NOT_REACHED();
     return nullptr;
@@ -969,7 +969,7 @@ unsigned AbstractModuleRecord::innerModuleEvaluation(JSGlobalObject* globalObjec
 
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
-    auto* module = jsDynamicCast<CyclicModuleRecord*>(this);
+    auto* module = dynamicDowncast<CyclicModuleRecord>(this);
 
     // 1. If module is not a Cyclic Module Record, then
     if (!module) {
@@ -1017,7 +1017,7 @@ unsigned AbstractModuleRecord::innerModuleEvaluation(JSGlobalObject* globalObjec
         RETURN_IF_EXCEPTION(scope, invalid);
         index = result;
         // 11.c. If requiredModule is a Cyclic Module Record, then
-        if (auto* cyclic = jsDynamicCast<CyclicModuleRecord*>(requiredModule)) {
+        if (auto* cyclic = dynamicDowncast<CyclicModuleRecord>(requiredModule)) {
             // 11.c.i. Assert: requiredModule.[[Status]] is one of EVALUATING, EVALUATING-ASYNC, or EVALUATED.
             ASSERT(cyclic->status() == Status::Evaluating || cyclic->status() == Status::EvaluatingAsync || cyclic->status() == Status::Evaluated);
             // 11.c.ii. Assert: requiredModule.[[Status]] is EVALUATING if and only if stack contains requiredModule.
@@ -1109,7 +1109,7 @@ unsigned AbstractModuleRecord::innerModuleLinking(JSGlobalObject* globalObject, 
 
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
-    auto* module = jsDynamicCast<CyclicModuleRecord*>(this);
+    auto* module = dynamicDowncast<CyclicModuleRecord>(this);
 
     // 1. If module is not a Cyclic Module Record, then
     if (!module) {
@@ -1150,7 +1150,7 @@ unsigned AbstractModuleRecord::innerModuleLinking(JSGlobalObject* globalObject, 
         index = requiredModule->innerModuleLinking(globalObject, stack, index, scriptFetcher);
         RETURN_IF_EXCEPTION(scope, invalid);
         // 9.c. If requiredModule is a Cyclic Module Record, then
-        if (auto* requiredCyclic = jsDynamicCast<CyclicModuleRecord*>(requiredModule)) {
+        if (auto* requiredCyclic = dynamicDowncast<CyclicModuleRecord>(requiredModule)) {
             // 9.c.i. Assert: requiredModule.[[Status]] is one of LINKING, LINKED, EVALUATING-ASYNC, or EVALUATED.
             Status status = requiredCyclic->status();
             ASSERT_UNUSED(status, status == Status::Linking || status == Status::Linked || status == Status::EvaluatingAsync || status == Status::Evaluated);
@@ -1207,12 +1207,12 @@ static String printableName(const Identifier& ident)
 
 ScriptFetchParameters::Type AbstractModuleRecord::moduleType() const
 {
-    if (jsDynamicCast<const JSModuleRecord*>(this))
+    if (is<JSModuleRecord>(this))
         return ScriptFetchParameters::JavaScript;
-    if (jsDynamicCast<const SyntheticModuleRecord*>(this))
+    if (is<SyntheticModuleRecord>(this))
         return ScriptFetchParameters::JSON;
 #if ENABLE(WEBASSEMBLY)
-    if (jsDynamicCast<const WebAssemblyModuleRecord*>(this))
+    if (is<WebAssemblyModuleRecord>(this))
         return ScriptFetchParameters::WebAssembly;
 #endif
     RELEASE_ASSERT_NOT_REACHED();

@@ -223,7 +223,7 @@ void forEachInIterable(JSGlobalObject* globalObject, JSValue iterable, NOESCAPE 
         return;
     }
 
-    if (auto* jsMap = jsDynamicCast<JSMap*>(iterable)) {
+    if (auto* jsMap = dynamicDowncast<JSMap>(iterable)) {
         if (jsMap->isIteratorProtocolFastAndNonObservable()) {
             JSCell* storageCell = jsMap->storageOrSentinel(vm);
             if (storageCell != vm.orderedHashTableSentinel()) {
@@ -232,7 +232,7 @@ void forEachInIterable(JSGlobalObject* globalObject, JSValue iterable, NOESCAPE 
             }
             return;
         }
-    } else if (auto* jsSet = jsDynamicCast<JSSet*>(iterable)) {
+    } else if (auto* jsSet = dynamicDowncast<JSSet>(iterable)) {
         if (jsSet->isIteratorProtocolFastAndNonObservable()) {
             JSCell* storageCell = jsSet->storageOrSentinel(vm);
             if (storageCell != vm.orderedHashTableSentinel()) {
@@ -322,7 +322,7 @@ void forEachInIteratorProtocol(JSGlobalObject* globalObject, JSValue iterable, N
     auto& vm = getVM(globalObject);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    if (auto* mapIterator = jsDynamicCast<JSMapIterator*>(iterable)) {
+    if (auto* mapIterator = dynamicDowncast<JSMapIterator>(iterable)) {
         if (mapIteratorProtocolIsFastAndNonObservable(vm, mapIterator)) {
             if (JSMap* iteratedMap = jsCast<JSMap*>(mapIterator->iteratedObject())) {
                 JSCell* storageCell = iteratedMap->storageOrSentinel(vm);
@@ -335,7 +335,7 @@ void forEachInIteratorProtocol(JSGlobalObject* globalObject, JSValue iterable, N
                 return;
             }
         }
-    } else if (auto* setIterator = jsDynamicCast<JSSetIterator*>(iterable)) {
+    } else if (auto* setIterator = dynamicDowncast<JSSetIterator>(iterable)) {
         if (setIteratorProtocolIsFastAndNonObservable(vm, setIterator)) {
             if (JSSet* iteratedSet = jsCast<JSSet*>(setIterator->iteratedObject())) {
                 JSCell* storageCell = iteratedSet->storageOrSentinel(vm);

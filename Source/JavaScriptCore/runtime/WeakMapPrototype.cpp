@@ -66,7 +66,7 @@ ALWAYS_INLINE static JSWeakMap* getWeakMap(JSGlobalObject* globalObject, JSValue
         return nullptr;
     }
 
-    if (auto* map = jsDynamicCast<JSWeakMap*>(asObject(value))) [[likely]]
+    if (auto* map = dynamicDowncast<JSWeakMap>(asObject(value))) [[likely]]
         return map;
 
     throwTypeError(globalObject, scope, "Called WeakMap function on a non-WeakMap object"_s);

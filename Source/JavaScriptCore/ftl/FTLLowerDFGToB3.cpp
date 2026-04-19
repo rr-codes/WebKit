@@ -12938,7 +12938,7 @@ IGNORE_CLANG_WARNINGS_END
         bool isConstruct = node->op() == DirectConstruct;
 
         ExecutableBase* executable = node->castOperand<ExecutableBase*>();
-        FunctionExecutable* functionExecutable = jsDynamicCast<FunctionExecutable*>(executable);
+        FunctionExecutable* functionExecutable = dynamicDowncast<FunctionExecutable>(executable);
 
         unsigned numPassedArgs = node->numChildren() - 1;
         unsigned numAllocatedArgs = numPassedArgs;
@@ -13001,7 +13001,7 @@ IGNORE_CLANG_WARNINGS_END
         Edge calleeEdge = m_graph.child(node, 0);
         JSGlobalObject* calleeScope = nullptr;
         if (JSValue calleeValue = m_state.forNode(calleeEdge).value()) {
-            if (auto* callee = jsDynamicCast<JSFunction*>(calleeValue)) {
+            if (auto* callee = dynamicDowncast<JSFunction>(calleeValue)) {
                 m_graph.freeze(callee);
                 calleeScope = callee->realm();
             }

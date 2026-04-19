@@ -79,7 +79,7 @@ JSC_DEFINE_HOST_FUNCTION(constructMap, (JSGlobalObject* globalObject, CallFrame*
         return JSValue::encode(JSMap::create(vm, mapStructure));
 
     bool canPerformFastSet = JSMap::isSetFastAndNonObservable(mapStructure);
-    if (auto* iterableMap = jsDynamicCast<JSMap*>(iterable)) {
+    if (auto* iterableMap = dynamicDowncast<JSMap>(iterable)) {
         if (canPerformFastSet && iterableMap->isIteratorProtocolFastAndNonObservable())
             RELEASE_AND_RETURN(scope, JSValue::encode(iterableMap->clone(globalObject, vm, mapStructure)));
     }
@@ -181,7 +181,7 @@ JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapIterationEntryValue, (JSGlobalObject* 
 
 JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapStorage, (JSGlobalObject* globalObject, CallFrame* callFrame))
 {
-    ASSERT(jsDynamicCast<JSMap*>(callFrame->argument(0)));
+    ASSERT(is<JSMap>(callFrame->argument(0)));
     JSMap* map = jsCast<JSMap*>(callFrame->uncheckedArgument(0));
     return JSValue::encode(map->storageOrSentinel(getVM(globalObject)));
 }

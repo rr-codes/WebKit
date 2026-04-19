@@ -6210,18 +6210,6 @@ class WebKitStyleTest(CppStyleTestBase):
             '',
             'foo.h')
 
-    def test_js_dynamic_cast(self):
-        self.assert_lint(
-            'auto* foo = dynamicDowncast<JSFoo>(bar);',
-            '',
-            'foo.cpp')
-
-        self.assert_lint(
-            'auto* foo = jsDynamicCast<JSFoo*>(bar);',
-            "Use 'dynamicDowncast<T>()' instead of 'jsDynamicCast<T*>()'."
-            "  [runtime/js_dynamic_cast] [4]",
-            'foo.cpp')
-
     def test_js_cast(self):
         self.assert_lint(
             'auto* foo = uncheckedDowncast<JSFoo>(bar);',

@@ -766,7 +766,7 @@ JSC_DEFINE_NOEXCEPT_JIT_OPERATION(operationMaterializeObjectInOSR, HeapCell*, (J
             if (property.location().kind() == NewArrayWithSpreadArgumentPLoc) {
                 ++numProperties;
                 JSValue value = JSValue::decode(values[i]);
-                if (JSCellButterfly* immutableButterfly = jsDynamicCast<JSCellButterfly*>(value))
+                if (JSCellButterfly* immutableButterfly = dynamicDowncast<JSCellButterfly>(value))
                     checkedArraySize += immutableButterfly->publicLength();
                 else
                     checkedArraySize += 1;
@@ -808,7 +808,7 @@ JSC_DEFINE_NOEXCEPT_JIT_OPERATION(operationMaterializeObjectInOSR, HeapCell*, (J
 
         unsigned arrayIndex = 0;
         for (JSValue value : arguments) {
-            if (JSCellButterfly* immutableButterfly = jsDynamicCast<JSCellButterfly*>(value)) {
+            if (JSCellButterfly* immutableButterfly = dynamicDowncast<JSCellButterfly>(value)) {
                 for (unsigned i = 0; i < immutableButterfly->publicLength(); i++) {
                     ASSERT(immutableButterfly->get(i));
                     result->putDirectIndex(globalObject, arrayIndex, immutableButterfly->get(i));
@@ -870,7 +870,7 @@ JSC_DEFINE_NOEXCEPT_JIT_OPERATION(operationTypeOfObjectAsTypeofType, UCPUStrictI
     CallFrame* callFrame = DECLARE_CALL_FRAME(vm);
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
 
-    ASSERT(jsDynamicCast<JSObject*>(object));
+    ASSERT(is<JSObject>(object));
 
     if (object->structure()->masqueradesAsUndefined(globalObject))
         return toUCPUStrictInt32(static_cast<int32_t>(TypeofType::Undefined));

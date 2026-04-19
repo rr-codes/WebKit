@@ -128,7 +128,7 @@ JSC_DEFINE_HOST_FUNCTION(functionProtoFuncBind, (JSGlobalObject* globalObject, C
 
     double length = 0;
     JSString* name = nullptr;
-    JSFunction* function = jsDynamicCast<JSFunction*>(target);
+    JSFunction* function = dynamicDowncast<JSFunction>(target);
     if (function && function->canAssumeNameAndLengthAreOriginal(vm)) [[likely]] {
         // Do nothing! 'length' and 'name' computation are lazily done.
         // And this is totally OK since we know that wrapped functions have canAssumeNameAndLengthAreOriginal condition
@@ -218,7 +218,7 @@ JSC_DEFINE_CUSTOM_GETTER(argumentsGetter, (JSGlobalObject* globalObject, Encoded
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    JSFunction* thisObj = jsDynamicCast<JSFunction*>(JSValue::decode(thisValue));
+    JSFunction* thisObj = dynamicDowncast<JSFunction>(JSValue::decode(thisValue));
     if (!thisObj || !isAllowedReceiverFunctionForCallerAndArguments(thisObj))
         return throwVMTypeError(globalObject, scope, RestrictedPropertyAccessError);
 
@@ -289,7 +289,7 @@ JSC_DEFINE_CUSTOM_GETTER(callerGetter, (JSGlobalObject* globalObject, EncodedJSV
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    JSFunction* thisObj = jsDynamicCast<JSFunction*>(JSValue::decode(thisValue));
+    JSFunction* thisObj = dynamicDowncast<JSFunction>(JSValue::decode(thisValue));
     if (!thisObj || !isAllowedReceiverFunctionForCallerAndArguments(thisObj))
         return throwVMTypeError(globalObject, scope, RestrictedPropertyAccessError);
 
@@ -298,7 +298,7 @@ JSC_DEFINE_CUSTOM_GETTER(callerGetter, (JSGlobalObject* globalObject, EncodedJSV
         return JSValue::encode(jsNull());
 
     // 11. If caller is not an ECMAScript function object, return null.
-    JSFunction* function = jsDynamicCast<JSFunction*>(caller);
+    JSFunction* function = dynamicDowncast<JSFunction>(caller);
     if (!function || function->isHostOrBuiltinFunction())
         return JSValue::encode(jsNull());
 
@@ -321,7 +321,7 @@ JSC_DEFINE_CUSTOM_SETTER(callerAndArgumentsSetter, (JSGlobalObject* globalObject
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    JSFunction* thisObj = jsDynamicCast<JSFunction*>(JSValue::decode(thisValue));
+    JSFunction* thisObj = dynamicDowncast<JSFunction>(JSValue::decode(thisValue));
     if (!thisObj || !isAllowedReceiverFunctionForCallerAndArguments(thisObj))
         throwTypeError(globalObject, scope, RestrictedPropertyAccessError);
 

@@ -81,9 +81,9 @@ ModuleLoadingContext* ModuleLoadingContext::create(VM& vm, const AbstractModuleR
 JSModuleLoader::ModuleReferrer ModuleLoadingContext::referrer() const
 {
     JSValue ref = m_referrer.get();
-    if (auto* module = jsDynamicCast<CyclicModuleRecord*>(ref))
+    if (auto* module = dynamicDowncast<CyclicModuleRecord>(ref))
         return module;
-    if (auto* exec = jsDynamicCast<ProgramExecutable*>(ref))
+    if (auto* exec = dynamicDowncast<ProgramExecutable>(ref))
         return exec;
     return jsCast<JSGlobalObject*>(ref);
 }

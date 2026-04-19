@@ -433,7 +433,7 @@ IterationMode getIterationMode(VM&, JSGlobalObject* globalObject, JSValue iterab
         return IterationMode::Generic;
 
     // This is correct because we just checked the watchpoint is still valid.
-    JSFunction* symbolIteratorFunction = jsDynamicCast<JSFunction*>(symbolIterator);
+    JSFunction* symbolIteratorFunction = dynamicDowncast<JSFunction>(symbolIterator);
     if (!symbolIteratorFunction)
         return IterationMode::Generic;
 

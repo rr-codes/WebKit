@@ -393,7 +393,7 @@ private:
             // We have to do some constant-folding here because this enables CreateThis folding. Note
             // that we don't have such watchpoint-based folding for inlined uses of Callee, since in that
             // case if the function is a singleton then we already know it.
-            if (FunctionExecutable* executable = jsDynamicCast<FunctionExecutable*>(m_codeBlock->ownerExecutable())) {
+            if (FunctionExecutable* executable = dynamicDowncast<FunctionExecutable>(m_codeBlock->ownerExecutable())) {
                 if (JSFunction* function = executable->singleton().inferredValue()) {
                     m_graph.watchpoints().addLazily(m_graph, executable);
                     return weakJSConstant(function);
@@ -2292,7 +2292,7 @@ ByteCodeParser::CallOptimizationResult ByteCodeParser::handleInlining(
                 if (executable->intrinsic() == BoundFunctionCallIntrinsic)
                     return inliningResult;
 
-                if (auto* functionExecutable = jsDynamicCast<FunctionExecutable*>(executable)) {
+                if (auto* functionExecutable = dynamicDowncast<FunctionExecutable>(executable)) {
                     if (callOp == Construct && functionExecutable->constructAbility() == ConstructAbility::CannotConstruct)
                         return inliningResult;
 
@@ -4519,7 +4519,7 @@ auto ByteCodeParser::handleIntrinsicCall(Node* callee, Operand resultOperand, Ca
             JSFunction* function = variant.function();
             if (!function)
                 return CallOptimizationResult::DidNothing;
-            JSBoundFunction* boundFunction = jsDynamicCast<JSBoundFunction*>(function);
+            JSBoundFunction* boundFunction = dynamicDowncast<JSBoundFunction>(function);
             if (!boundFunction)
                 return CallOptimizationResult::DidNothing;
 

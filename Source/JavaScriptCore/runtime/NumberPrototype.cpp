@@ -101,7 +101,7 @@ static ALWAYS_INLINE bool NODELETE toThisNumber(JSValue thisValue, double& x)
         return true;
     }
 
-    if (auto* numberObject = jsDynamicCast<NumberObject*>(thisValue)) {
+    if (auto* numberObject = dynamicDowncast<NumberObject>(thisValue)) {
         Integrity::auditStructureID(numberObject->structureID());
         x = numberObject->internalValue().asNumber();
         return true;

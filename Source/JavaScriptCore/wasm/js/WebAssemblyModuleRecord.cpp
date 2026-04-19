@@ -431,7 +431,7 @@ void WebAssemblyModuleRecord::initializeImports(JSGlobalObject* globalObject, JS
 
         case Wasm::ExternalKind::Table: {
             // 7. If i is a table import:
-            JSWebAssemblyTable* table = jsDynamicCast<JSWebAssemblyTable*>(value);
+            JSWebAssemblyTable* table = dynamicDowncast<JSWebAssemblyTable>(value);
             // i. If v is not a WebAssembly.Table object, throw a WebAssembly.LinkError.
             if (!table)
                 return exception(createJSWebAssemblyLinkError(globalObject, vm, importFailMessage(import, "Table import"_s, "is not an instance of WebAssembly.Table"_s)));
@@ -462,7 +462,7 @@ void WebAssemblyModuleRecord::initializeImports(JSGlobalObject* globalObject, JS
         }
 
         case Wasm::ExternalKind::Exception: {
-            JSWebAssemblyTag* tag = jsDynamicCast<JSWebAssemblyTag*>(value);
+            JSWebAssemblyTag* tag = dynamicDowncast<JSWebAssemblyTag>(value);
             if (!tag)
                 return exception(createJSWebAssemblyLinkError(globalObject, vm, importFailMessage(import, "Tag import"_s, "is not an instance of WebAssembly.Tag"_s)));
 
@@ -477,7 +477,7 @@ void WebAssemblyModuleRecord::initializeImports(JSGlobalObject* globalObject, JS
         }
 
         case Wasm::ExternalKind::Memory:
-            JSWebAssemblyMemory* memory = jsDynamicCast<JSWebAssemblyMemory*>(value);
+            JSWebAssemblyMemory* memory = dynamicDowncast<JSWebAssemblyMemory>(value);
             // i. If v is not a WebAssembly.Memory object, throw a WebAssembly.LinkError.
             if (!memory)
                 return exception(createJSWebAssemblyLinkError(globalObject, vm, importFailMessage(import, "Memory import"_s, "is not an instance of WebAssembly.Memory"_s)));

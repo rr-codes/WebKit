@@ -610,7 +610,7 @@ void JSWebAssemblyInstance::initElementSegment(uint32_t tableIndex, const Elemen
         if (jsTable->table()->isFuncrefTable()) {
             // Validation should guarantee that the table is for funcs, and the value is a func as well.
             if (initValue.isObject())
-                ASSERT(jsDynamicCast<WebAssemblyFunctionBase*>(asObject(initValue)));
+                ASSERT(is<WebAssemblyFunctionBase>(asObject(initValue)));
             else
                 ASSERT(initValue.isNull());
         } else

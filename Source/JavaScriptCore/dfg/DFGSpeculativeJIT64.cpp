@@ -696,7 +696,7 @@ void SpeculativeJIT::emitCall(Node* node)
     FunctionExecutable* functionExecutable = nullptr;
     if (isDirect) {
         executable = node->castOperand<ExecutableBase*>();
-        functionExecutable = jsDynamicCast<FunctionExecutable*>(executable);
+        functionExecutable = dynamicDowncast<FunctionExecutable>(executable);
     }
     
     unsigned numPassedArgs = 0;
@@ -999,7 +999,7 @@ void SpeculativeJIT::emitCall(Node* node)
         Edge calleeEdge = m_graph.child(node, 0);
         JSGlobalObject* calleeScope = nullptr;
         if (JSValue calleeValue = m_state.forNode(calleeEdge).value()) {
-            if (auto* callee = jsDynamicCast<JSFunction*>(calleeValue)) {
+            if (auto* callee = dynamicDowncast<JSFunction>(calleeValue)) {
                 m_graph.freeze(callee);
                 calleeScope = callee->realm();
             }

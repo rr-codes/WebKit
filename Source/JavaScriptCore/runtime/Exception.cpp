@@ -96,7 +96,7 @@ void Exception::tryUnwrapValueForJSTag(VM& vm)
     if (!m_value)
         return;
 
-    if (auto* exception = jsDynamicCast<JSWebAssemblyException*>(m_value.get())) {
+    if (auto* exception = dynamicDowncast<JSWebAssemblyException>(m_value.get())) {
         if (&exception->tag() == &Wasm::Tag::jsExceptionTag()) {
             m_value.set(vm, this, JSValue::decode(exception->payload().at(0)));
             return;

@@ -80,7 +80,7 @@ void CyclicModuleRecord::initializeEnvironment(JSGlobalObject* globalObject, JSV
     if (m_initialized)
         return;
 
-    auto* jsModule = jsDynamicCast<JSModuleRecord*>(this);
+    auto* jsModule = dynamicDowncast<JSModuleRecord>(this);
 #if ENABLE(WEBASSEMBLY)
     auto* wasmModule = !jsModule ? jsCast<WebAssemblyModuleRecord*>(this) : nullptr;
 #else
@@ -444,7 +444,7 @@ void CyclicModuleRecord::execute(JSGlobalObject* globalObject, JSPromise* capabi
     auto scope = DECLARE_THROW_SCOPE(vm);
 
 #if ENABLE(WEBASSEMBLY)
-    if (auto* wasmModule = jsDynamicCast<WebAssemblyModuleRecord*>(this)) {
+    if (auto* wasmModule = dynamicDowncast<WebAssemblyModuleRecord>(this)) {
         wasmModule->initializeImports(globalObject, nullptr, Wasm::CreationMode::FromModuleLoader);
         RETURN_IF_EXCEPTION(scope, void());
         wasmModule->initializeExports(globalObject);

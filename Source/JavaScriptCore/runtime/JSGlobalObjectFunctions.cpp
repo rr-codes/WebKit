@@ -740,7 +740,7 @@ JSC_DEFINE_HOST_FUNCTION(globalFuncProtoSetter, (JSGlobalObject* globalObject, C
 
     JSValue value = callFrame->argument(0);
 
-    JSObject* thisObject = jsDynamicCast<JSObject*>(thisValue);
+    JSObject* thisObject = dynamicDowncast<JSObject>(thisValue);
 
     // Setting __proto__ of a primitive should have no effect.
     if (!thisObject)

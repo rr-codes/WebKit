@@ -1659,7 +1659,7 @@ static RefPtr<Node> NODELETE nodeFromJSHandleIdentifier(JSHandleIdentifier ident
     if (!object)
         return { };
 
-    auto* jsNode = jsDynamicCast<JSNode*>(object);
+    auto* jsNode = dynamicDowncast<JSNode>(object);
     if (!jsNode)
         return { };
 

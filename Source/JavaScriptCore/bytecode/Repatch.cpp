@@ -85,7 +85,7 @@ void linkMonomorphicCall(VM& vm, JSCell* owner, CallLinkInfo& callLinkInfo, Code
 {
     ASSERT(!callLinkInfo.stub());
 
-    CodeBlock* callerCodeBlock = jsDynamicCast<CodeBlock*>(owner); // WebAssembly -> JS stubs don't have a valid CodeBlock.
+    CodeBlock* callerCodeBlock = dynamicDowncast<CodeBlock>(owner); // WebAssembly -> JS stubs don't have a valid CodeBlock.
     ASSERT(owner);
 
     if (Options::forceICFailure()) [[unlikely]]
@@ -113,7 +113,7 @@ CodePtr<JSEntryPtrTag> jsToWasmICCodePtr(CodeSpecializationKind kind, JSObject* 
         return nullptr;
     if (kind != CodeSpecializationKind::CodeForCall)
         return nullptr;
-    if (auto* wasmFunction = jsDynamicCast<WebAssemblyFunction*>(callee))
+    if (auto* wasmFunction = dynamicDowncast<WebAssemblyFunction>(callee))
         return wasmFunction->jsCallICEntrypoint();
 #else
     UNUSED_PARAM(kind);
@@ -133,7 +133,7 @@ void linkPolymorphicCall(VM& vm, JSCell* owner, CallFrame* callFrame, CallLinkIn
         return;
     }
 
-    CodeBlock* callerCodeBlock = jsDynamicCast<CodeBlock*>(owner); // WebAssembly -> JS stubs don't have a valid CodeBlock.
+    CodeBlock* callerCodeBlock = dynamicDowncast<CodeBlock>(owner); // WebAssembly -> JS stubs don't have a valid CodeBlock.
     ASSERT(owner);
 #if ENABLE(WEBASSEMBLY)
     bool isWebAssembly = owner->inherits<JSWebAssemblyModule>();
@@ -518,12 +518,12 @@ static InlineCacheAction tryCacheGetBy(JSGlobalObject* globalObject, CodeBlock* 
                 }
 
                 newCase = AccessCase::create(vm, codeBlock, AccessCase::StringLength, lengthPropertyName);
-            } else if (DirectArguments* arguments = jsDynamicCast<DirectArguments*>(baseCell)) {
+            } else if (DirectArguments* arguments = dynamicDowncast<DirectArguments>(baseCell)) {
                 // If there were overrides, then we can handle this as a normal property load! Guarding
                 // this with such a check enables us to add an IC case for that load if needed.
                 if (!arguments->overrodeThings())
                     newCase = AccessCase::create(vm, codeBlock, AccessCase::DirectArgumentsLength, lengthPropertyName);
-            } else if (ScopedArguments* arguments = jsDynamicCast<ScopedArguments*>(baseCell)) {
+            } else if (ScopedArguments* arguments = dynamicDowncast<ScopedArguments>(baseCell)) {
                 // Ditto.
                 if (!arguments->overrodeThings())
                     newCase = AccessCase::create(vm, codeBlock, AccessCase::ScopedArgumentsLength, lengthPropertyName);
@@ -531,7 +531,7 @@ static InlineCacheAction tryCacheGetBy(JSGlobalObject* globalObject, CodeBlock* 
         }
 
         if (!newCase && propertyName == vm.propertyNames->lastIndex) {
-            if (jsDynamicCast<RegExpObject*>(baseCell))
+            if (is<RegExpObject>(baseCell))
                 newCase = AccessCase::create(vm, codeBlock, AccessCase::RegExpLastIndexLoad, CacheableIdentifier::createFromImmortalIdentifier(vm.propertyNames->lastIndex.impl()));
         }
 
@@ -671,7 +671,7 @@ static InlineCacheAction tryCacheGetBy(JSGlobalObject* globalObject, CodeBlock* 
 
             JSFunction* getter = nullptr;
             if (slot.isCacheableGetter())
-                getter = jsDynamicCast<JSFunction*>(slot.getterSetter()->getter());
+                getter = dynamicDowncast<JSFunction>(slot.getterSetter()->getter());
 
             std::optional<DOMAttributeAnnotation> domAttribute;
             if (slot.isCacheableCustom() && slot.domAttribute())
@@ -1059,7 +1059,7 @@ static InlineCacheAction tryCachePutBy(JSGlobalObject* globalObject, CodeBlock* 
             if (baseCell->type() == ArrayType)
                 newCase = AccessCase::create(vm, codeBlock, AccessCase::ArrayLengthStore, propertyName);
         } else if (propertyName == vm.propertyNames->lastIndex) {
-            if (jsDynamicCast<RegExpObject*>(baseCell))
+            if (is<RegExpObject>(baseCell))
                 newCase = AccessCase::create(vm, codeBlock, AccessCase::RegExpLastIndexStore, propertyName);
         }
 
@@ -1934,9 +1934,9 @@ static InlineCacheAction tryCacheInstanceOf(JSGlobalObject* globalObject, CodeBl
         JSCell* value = valueValue.asCell();
         Structure* structure = value->structure();
         RefPtr<AccessCase> newCase;
-        JSObject* prototype = jsDynamicCast<JSObject*>(prototypeValue);
+        JSObject* prototype = dynamicDowncast<JSObject>(prototypeValue);
         if (prototype) {
-            if (!jsDynamicCast<JSObject*>(value)) {
+            if (!is<JSObject>(value)) {
                 newCase = InstanceOfAccessCase::create(
                     vm, codeBlock, AccessCase::InstanceOfMiss, structure, ObjectPropertyConditionSet(),
                     prototype);

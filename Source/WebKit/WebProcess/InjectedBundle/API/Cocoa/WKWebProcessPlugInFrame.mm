@@ -88,7 +88,7 @@
     JSC::JSGlobalObject* globalObject = ::toJS(context.JSGlobalContextRef);
     JSC::JSObject* jsObject = ::toJS(globalObject, object).toObject(globalObject);
 
-    if (auto* info = jsDynamicCast<WebCore::JSWebKitJSHandle*>(jsObject)) {
+    if (auto* info = dynamicDowncast<WebCore::JSWebKitJSHandle>(jsObject)) {
         RELEASE_ASSERT(globalObject->template inherits<WebCore::JSDOMGlobalObject>());
         auto* domGlobalObject = jsCast<WebCore::JSDOMGlobalObject*>(globalObject);
         RefPtr document = dynamicDowncast<WebCore::Document>(domGlobalObject->scriptExecutionContext());

@@ -232,7 +232,7 @@ EncodedJSValue JSCallbackObject<Parent>::customToPrimitive(JSGlobalObject* globa
     VM& vm = getVM(globalObject);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    JSCallbackObject* thisObject = jsDynamicCast<JSCallbackObject*>(callFrame->thisValue());
+    JSCallbackObject* thisObject = dynamicDowncast<JSCallbackObject>(callFrame->thisValue());
     if (!thisObject)
         return throwVMTypeError(globalObject, scope, "JSCallbackObject[Symbol.toPrimitive] method called on incompatible |this| value."_s);
     PreferredPrimitiveType hint = toPreferredPrimitiveType(globalObject, callFrame->argument(0));

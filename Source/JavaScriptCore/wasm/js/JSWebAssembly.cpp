@@ -388,7 +388,7 @@ JSC_DEFINE_HOST_FUNCTION(webAssemblyPromisingFunc, (JSGlobalObject* globalObject
 
     JSValue arg = callFrame->argument(0);
 
-    auto* wrapped = jsDynamicCast<WebAssemblyFunctionBase*>(arg);
+    auto* wrapped = dynamicDowncast<WebAssemblyFunctionBase>(arg);
     if (!wrapped) [[unlikely]]
         return JSValue::encode(throwTypeError(globalObject, scope, "Argument 0 must be a WebAssembly exported function"_s));
 

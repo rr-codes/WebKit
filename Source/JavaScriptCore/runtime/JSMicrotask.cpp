@@ -835,7 +835,7 @@ static void moduleRegistryFetchSettled(JSGlobalObject* globalObject, VM& vm, Thr
         makeModulePromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleRegistryModuleSettled, modulePromise, entry);
     } else {
         JSValue errorValue = arguments[1];
-        if (auto* error = jsDynamicCast<ErrorInstance*>(errorValue))
+        if (auto* error = dynamicDowncast<ErrorInstance>(errorValue))
             JSModuleLoader::attachErrorInfo(globalObject, error, nullptr, entry->key(), entry->moduleType(), JSModuleLoader::ModuleFailure::Kind::Instantiation);
         entry->fetchError(globalObject, errorValue);
         modulePromise->reject(vm, globalObject, errorValue);
@@ -870,7 +870,7 @@ static void moduleGraphLoadingError(JSGlobalObject* globalObject, VM& vm, ThrowS
     if (status == JSPromise::Status::Rejected) {
         auto* state = jsCast<ModuleGraphLoadingState*>(arguments[2]);
         JSValue errorValue = arguments[1];
-        if (auto* error = jsDynamicCast<ErrorInstance*>(errorValue)) {
+        if (auto* error = dynamicDowncast<ErrorInstance>(errorValue)) {
             errorValue = JSModuleLoader::maybeDuplicateFetchError(globalObject, error);
             RETURN_IF_EXCEPTION(scope, void());
         }
@@ -916,7 +916,7 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
 
             // setEntryRecord logic
             auto* entry = context->entry();
-            if (auto* cyclic = jsDynamicCast<CyclicModuleRecord*>(module); cyclic && cyclic->status() != CyclicModuleRecord::Status::Unlinked) {
+            if (auto* cyclic = dynamicDowncast<CyclicModuleRecord>(module); cyclic && cyclic->status() != CyclicModuleRecord::Status::Unlinked) {
                 ASSERT(cyclic->status() != CyclicModuleRecord::Status::Linking);
                 loadPromise->fulfill(vm, globalObject, entry->record());
             } else {
@@ -1024,7 +1024,7 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
             return;
         }
         JSValue errorValue = arguments[1];
-        if (auto* error = jsDynamicCast<ErrorInstance*>(errorValue)) {
+        if (auto* error = dynamicDowncast<ErrorInstance>(errorValue)) {
             auto failure = JSModuleLoader::getErrorInfo(globalObject, error);
             if (failure.isEvaluationError(specifier, type))
                 entry->evaluationError(globalObject, error);
@@ -1055,7 +1055,7 @@ static void moduleLoadTopRejected(JSGlobalObject* globalObject, VM& vm, ThrowSco
             return;
         }
         if (JSValue fetchErrorValue = entry->fetchError()) {
-            if (ErrorInstance* fetchError = jsDynamicCast<ErrorInstance*>(fetchErrorValue)) {
+            if (ErrorInstance* fetchError = dynamicDowncast<ErrorInstance>(fetchErrorValue)) {
                 ErrorInstance* fetchErrorCopy = JSModuleLoader::maybeDuplicateFetchError(globalObject, fetchError);
                 if (scope.exception()) {
                     resultPromise->rejectWithCaughtException(globalObject, scope);
@@ -1195,7 +1195,7 @@ static void moduleLoadStoreError(JSGlobalObject* globalObject, ThrowScope& scope
         auto type = context->moduleRequest().type();
         ModuleRegistryEntry* entry = globalObject->moduleLoader()->ensureRegistered(globalObject, specifier, type);
         RETURN_IF_EXCEPTION(scope, void());
-        if (auto* error = jsDynamicCast<ErrorInstance*>(errorValue)) {
+        if (auto* error = dynamicDowncast<ErrorInstance>(errorValue)) {
             auto failure = JSModuleLoader::getErrorInfo(globalObject, error);
             if (failure.isEvaluationError(specifier, type))
                 entry->evaluationError(globalObject, error);
@@ -1432,7 +1432,7 @@ void runInternalMicrotask(JSGlobalObject* globalObject, VM& vm, InternalMicrotas
         }
 
         if (error) {
-            if (auto* promise = jsDynamicCast<JSPromise*>(promiseOrCapability))
+            if (auto* promise = dynamicDowncast<JSPromise>(promiseOrCapability))
                 RELEASE_AND_RETURN(scope, promise->rejectPromise(vm, globalObject, error));
 
             JSValue reject = promiseOrCapability.get(globalObject, vm.propertyNames->reject);
@@ -1446,7 +1446,7 @@ void runInternalMicrotask(JSGlobalObject* globalObject, VM& vm, InternalMicrotas
             return;
         }
 
-        if (auto* promise = jsDynamicCast<JSPromise*>(promiseOrCapability))
+        if (auto* promise = dynamicDowncast<JSPromise>(promiseOrCapability))
             RELEASE_AND_RETURN(scope, promise->resolvePromise(globalObject, vm, result));
 
         JSValue resolve = promiseOrCapability.get(globalObject, vm.propertyNames->resolve);

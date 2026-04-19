@@ -175,7 +175,7 @@ JSArrayBufferView::JSArrayBufferView(VM& vm, ConstructionContext& context)
 void JSArrayBufferView::finishCreation(VM& vm)
 {
     Base::finishCreation(vm);
-    ASSERT(jsDynamicCast<JSArrayBufferView*>(this));
+    ASSERT(is<JSArrayBufferView>(this));
     switch (m_mode) {
     case FastTypedArray:
         return;

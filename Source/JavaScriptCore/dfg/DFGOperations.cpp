@@ -311,7 +311,7 @@ JSC_DEFINE_JIT_OPERATION(operationObjectAssignObject, void, (JSGlobalObject* glo
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    if (auto* targetObject = jsDynamicCast<JSFinalObject*>(target); targetObject && targetObject->canPerformFastPutInlineExcludingProto() && targetObject->isStructureExtensible()) {
+    if (auto* targetObject = dynamicDowncast<JSFinalObject>(target); targetObject && targetObject->canPerformFastPutInlineExcludingProto() && targetObject->isStructureExtensible()) {
         Vector<UniquedStringImpl*, 8> properties;
         MarkedArgumentBuffer values;
         if (!source->staticPropertiesReified()) {
@@ -354,7 +354,7 @@ JSC_DEFINE_JIT_OPERATION(operationObjectAssignUntyped, void, (JSGlobalObject* gl
     JSObject* source = sourceValue.toObject(globalObject);
     OPERATION_RETURN_IF_EXCEPTION(scope);
 
-    if (auto* targetObject = jsDynamicCast<JSFinalObject*>(target); targetObject && targetObject->canPerformFastPutInlineExcludingProto() && targetObject->isStructureExtensible()) {
+    if (auto* targetObject = dynamicDowncast<JSFinalObject>(target); targetObject && targetObject->canPerformFastPutInlineExcludingProto() && targetObject->isStructureExtensible()) {
         if (!source->staticPropertiesReified()) {
             source->reifyAllStaticProperties(globalObject);
             OPERATION_RETURN_IF_EXCEPTION(scope);
@@ -812,7 +812,7 @@ ALWAYS_INLINE EncodedJSValue getByValCellInt(JSGlobalObject* globalObject, VM& v
     if (index < 0) {
         // When index is negative, -1 is the most common case. Let's handle it separately.
         if (index == -1) [[likely]] {
-            if (auto* array = jsDynamicCast<JSArray*>(base); array && array->definitelyNegativeOneMiss()) [[likely]]
+            if (auto* array = dynamicDowncast<JSArray>(base); array && array->definitelyNegativeOneMiss()) [[likely]]
                 return JSValue::encode(jsUndefined());
             return JSValue::encode(JSValue(base).get(globalObject, vm.propertyNames->negativeOneIdentifier));
         }
@@ -1423,7 +1423,7 @@ JSC_DEFINE_JIT_OPERATION(operationRegExpExecGeneric, EncodedJSValue, (JSGlobalOb
     JSValue base = JSValue::decode(encodedBase);
     JSValue argument = JSValue::decode(encodedArgument);
     
-    auto* regexp = jsDynamicCast<RegExpObject*>(base);
+    auto* regexp = dynamicDowncast<RegExpObject>(base);
     if (!regexp) [[unlikely]]
         OPERATION_RETURN(scope, throwVMTypeError(globalObject, scope, "Builtin RegExp exec can only be called on a RegExp object"_s));
 
@@ -1729,7 +1729,7 @@ JSC_DEFINE_JIT_OPERATION(operationRegExpTestGeneric, size_t, (JSGlobalObject* gl
     JSValue base = JSValue::decode(encodedBase);
     JSValue argument = JSValue::decode(encodedArgument);
 
-    auto* regexp = jsDynamicCast<RegExpObject*>(base);
+    auto* regexp = dynamicDowncast<RegExpObject>(base);
     if (!regexp) [[unlikely]] {
         throwTypeError(globalObject, scope);
         OPERATION_RETURN(scope, false);
@@ -2354,7 +2354,7 @@ JSC_DEFINE_JIT_OPERATION(operationNewArrayBuffer, JSCell*, (VM* vmPointer, Struc
         auto scope = DECLARE_THROW_SCOPE(vm); \
         JSValue firstValue = JSValue::decode(encodedValue); \
         bool isResizableOrGrowableShared = false; \
-        if (auto* arrayBuffer = jsDynamicCast<JSArrayBuffer*>(firstValue)) \
+        if (auto* arrayBuffer = dynamicDowncast<JSArrayBuffer>(firstValue)) \
             isResizableOrGrowableShared = arrayBuffer->isResizableOrGrowableShared(); \
         Structure* structure = globalObject->typedArrayStructure(Type##type, isResizableOrGrowableShared); \
         OPERATION_RETURN(scope, reinterpret_cast<char*>(constructGenericTypedArrayViewWithArguments<JS##type##Array>(globalObject, structure, firstValue, 0, std::nullopt))); \
@@ -2598,7 +2598,7 @@ JSC_DEFINE_JIT_OPERATION(operationTypeOfIsObject, size_t, (JSGlobalObject* globa
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(jsDynamicCast<JSObject*>(object));
+    ASSERT(is<JSObject>(object));
     
     OPERATION_RETURN(scope, jsTypeofIsObject(globalObject, object));
 }
@@ -2610,7 +2610,7 @@ JSC_DEFINE_JIT_OPERATION(operationTypeOfIsFunction, size_t, (JSGlobalObject* glo
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(jsDynamicCast<JSObject*>(object));
+    ASSERT(is<JSObject>(object));
 
     OPERATION_RETURN(scope, jsTypeofIsFunction(globalObject, object));
 }
@@ -2622,7 +2622,7 @@ JSC_DEFINE_JIT_OPERATION(operationObjectIsCallable, size_t, (JSGlobalObject* glo
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(jsDynamicCast<JSObject*>(object));
+    ASSERT(is<JSObject>(object));
     
     OPERATION_RETURN(scope, object->isCallable());
 }
@@ -2656,7 +2656,7 @@ JSC_DEFINE_JIT_OPERATION(operationTypeOfObject, JSCell*, (JSGlobalObject* global
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(jsDynamicCast<JSObject*>(object));
+    ASSERT(is<JSObject>(object));
     
     if (object->structure()->masqueradesAsUndefined(globalObject))
         OPERATION_RETURN(scope, vm.smallStrings.undefinedString());
@@ -2802,7 +2802,7 @@ JSC_DEFINE_JIT_OPERATION(operationHasIndexedProperty, size_t, (JSGlobalObject* g
         // When subscript is negative, -1 is the most common case. Let's handle it separately.
         if (subscript == -1) [[likely]] {
             // what?
-            if (auto* array = jsDynamicCast<JSArray*>(object); array && array->definitelyNegativeOneMiss()) [[likely]]
+            if (auto* array = dynamicDowncast<JSArray>(object); array && array->definitelyNegativeOneMiss()) [[likely]]
                 OPERATION_RETURN(scope, false);
             OPERATION_RETURN(scope, object->hasProperty(globalObject, vm.propertyNames->negativeOneIdentifier));
         }
@@ -2823,7 +2823,7 @@ JSC_DEFINE_JIT_OPERATION(operationHasEnumerableIndexedProperty, size_t, (JSGloba
     if (subscript < 0) [[unlikely]] {
         // When subscript is negative, -1 is the most common case. Let's handle it separately.
         if (subscript == -1) [[likely]] {
-            if (auto* array = jsDynamicCast<JSArray*>(baseCell); array && array->definitelyNegativeOneMiss()) [[likely]]
+            if (auto* array = dynamicDowncast<JSArray>(baseCell); array && array->definitelyNegativeOneMiss()) [[likely]]
                 OPERATION_RETURN(scope, false);
             OPERATION_RETURN(scope, object->hasProperty(globalObject, vm.propertyNames->negativeOneIdentifier));
         }
@@ -3036,7 +3036,7 @@ JSC_DEFINE_JIT_OPERATION(operationStringValueOf, JSString*, (JSGlobalObject* glo
     if (argument.isString())
         OPERATION_RETURN(scope,  asString(argument));
 
-    if (auto* stringObject = jsDynamicCast<StringObject*>(argument))
+    if (auto* stringObject = dynamicDowncast<StringObject>(argument))
         OPERATION_RETURN(scope,  stringObject->internalValue());
 
     throwVMTypeError(globalObject, scope);
@@ -3785,7 +3785,7 @@ JSC_DEFINE_JIT_OPERATION(operationFunctionBind, JSBoundFunction*, (JSGlobalObjec
 
     double length = 0;
     JSString* name = nullptr;
-    JSFunction* function = jsDynamicCast<JSFunction*>(target);
+    JSFunction* function = dynamicDowncast<JSFunction>(target);
     if (function && function->canAssumeNameAndLengthAreOriginal(vm)) [[likely]] {
         // Do nothing! 'length' and 'name' computation are lazily done.
         // And this is totally OK since we know that wrapped functions have canAssumeNameAndLengthAreOriginal condition
@@ -4772,7 +4772,7 @@ JSC_DEFINE_JIT_OPERATION(operationNewArrayWithSpreadSlow, JSCell*, (JSGlobalObje
     CheckedUint32 checkedLength = 0;
     for (unsigned i = 0; i < numItems; i++) {
         JSValue value = JSValue::decode(values[i]);
-        if (JSCellButterfly* array = jsDynamicCast<JSCellButterfly*>(value))
+        if (JSCellButterfly* array = dynamicDowncast<JSCellButterfly>(value))
             checkedLength += array->publicLength();
         else
             ++checkedLength;
@@ -4801,7 +4801,7 @@ JSC_DEFINE_JIT_OPERATION(operationNewArrayWithSpreadSlow, JSCell*, (JSGlobalObje
     unsigned index = 0;
     for (unsigned i = 0; i < numItems; i++) {
         JSValue value = JSValue::decode(values[i]);
-        if (JSCellButterfly* array = jsDynamicCast<JSCellButterfly*>(value)) {
+        if (JSCellButterfly* array = dynamicDowncast<JSCellButterfly>(value)) {
             // We are spreading.
             for (unsigned i = 0; i < array->publicLength(); i++) {
                 result->putDirectIndex(globalObject, index, array->get(i));
@@ -4873,7 +4873,7 @@ JSC_DEFINE_JIT_OPERATION(operationSpreadSet, JSCell*, (JSGlobalObject* globalObj
     JITOperationPrologueCallFrameTracer tracer(vm, callFrame);
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(jsDynamicCast<JSSet*>(cell));
+    ASSERT(is<JSSet>(cell));
     JSSet* set = jsCast<JSSet*>(cell);
 
     OPERATION_RETURN(scope, JSCellButterfly::createFromSet(globalObject, set));

@@ -51,7 +51,7 @@ void ShadowChicken::Packet::dump(PrintStream& out) const
     
     if (isPrologue()) {
         String name = "?"_s;
-        if (auto* function = jsDynamicCast<JSFunction*>(callee)) {
+        if (auto* function = dynamicDowncast<JSFunction>(callee)) {
             name = function->name(callee->vm());
             if (name.isEmpty())
                 name = "?"_s;
@@ -75,7 +75,7 @@ void ShadowChicken::Packet::dump(PrintStream& out) const
 void ShadowChicken::Frame::dump(PrintStream& out) const
 {
     String name = "?"_s;
-    if (auto* function = jsDynamicCast<JSFunction*>(callee)) {
+    if (auto* function = dynamicDowncast<JSFunction>(callee)) {
         name = function->name(callee->vm());
         if (name.isEmpty())
             name = "?"_s;
@@ -315,7 +315,7 @@ void ShadowChicken::update(VM& vm, CallFrame* callFrame)
             if (ShadowChickenInternal::verbose) {
                 dataLog("    Examining callFrame:", RawPointer(callFrame), ", callee:", RawPointer(callFrame->jsCallee()), ", callerFrame:", RawPointer(callFrame->callerFrame()), "\n");
                 JSObject* callee = callFrame->jsCallee();
-                if (auto* function = jsDynamicCast<JSFunction*>(callee))
+                if (auto* function = dynamicDowncast<JSFunction>(callee))
                     dataLog("      Function = ", function->name(callee->vm()), "\n");
             }
 

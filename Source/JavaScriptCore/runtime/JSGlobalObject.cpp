@@ -859,7 +859,7 @@ JSC_DEFINE_HOST_FUNCTION(asyncGeneratorQueueEnqueue, (JSGlobalObject* globalObje
 {
     VM& vm = globalObject->vm();
 
-    JSAsyncGenerator* generator = jsDynamicCast<JSAsyncGenerator*>(callFrame->uncheckedArgument(0));
+    JSAsyncGenerator* generator = dynamicDowncast<JSAsyncGenerator>(callFrame->uncheckedArgument(0));
     JSValue value = callFrame->uncheckedArgument(1);
     int32_t resumeMode = callFrame->uncheckedArgument(2).asInt32();
     JSPromise* promise = jsCast<JSPromise*>(callFrame->uncheckedArgument(3));
@@ -973,7 +973,7 @@ static ObjectPropertyCondition setupAdaptiveWatchpoint(JSGlobalObject* globalObj
     RELEASE_ASSERT(slot.isCacheableValue() || slot.isCacheableGetter());
     JSValue functionValue = slot.isCacheableValue() ? slot.getValue(globalObject, ident) : slot.getterSetter();
     catchScope.assertNoException();
-    ASSERT(jsDynamicCast<JSFunction*>(functionValue) || jsDynamicCast<GetterSetter*>(functionValue));
+    ASSERT(is<JSFunction>(functionValue) || is<GetterSetter>(functionValue));
 
     ObjectPropertyCondition condition = generateConditionForSelfEquivalence(vm, nullptr, base, ident.impl());
     RELEASE_ASSERT(condition.requiredValue() == functionValue);
@@ -1849,7 +1849,7 @@ capitalName ## Constructor* lowerName ## Constructor = featureFlag ? capitalName
     {
         JSValue hasOwnPropertyFunction = jsCast<JSFunction*>(objectPrototype()->get(this, vm.propertyNames->hasOwnProperty));
         catchScope.assertNoException();
-        RELEASE_ASSERT(!!jsDynamicCast<JSFunction*>(hasOwnPropertyFunction));
+        RELEASE_ASSERT(is<JSFunction>(hasOwnPropertyFunction));
         m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::hasOwnPropertyFunction)].set(vm, this, jsCast<JSFunction*>(hasOwnPropertyFunction));
     }
 
@@ -3265,7 +3265,7 @@ void JSGlobalObject::tryInstallSpeciesWatchpoint(JSObject* prototype, JSObject* 
         speciesCondition = ObjectPropertyCondition::equivalence(vm, this, constructor, vm.propertyNames->speciesSymbol.impl(), speciesGetterSetter);
         break;
     case HasSpeciesProperty::No:
-        speciesCondition = ObjectPropertyCondition::absence(vm, this, constructor, vm.propertyNames->speciesSymbol.impl(), jsDynamicCast<JSObject*>(constructor->getPrototypeDirect()));
+        speciesCondition = ObjectPropertyCondition::absence(vm, this, constructor, vm.propertyNames->speciesSymbol.impl(), dynamicDowncast<JSObject>(constructor->getPrototypeDirect()));
         break;
     }
 

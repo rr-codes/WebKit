@@ -544,7 +544,7 @@ bool StackVisitor::Frame::isImplementationVisibilityPrivate() const
 
         if (callee().isCell()) {
             if (auto* callee = this->callee().asCell()) {
-                if (auto* jsFunction = jsDynamicCast<JSFunction*>(callee)) {
+                if (auto* jsFunction = dynamicDowncast<JSFunction>(callee)) {
                     if (auto* executable = jsFunction->executable())
                         return executable->implementationVisibility();
                     return ImplementationVisibility::Public;

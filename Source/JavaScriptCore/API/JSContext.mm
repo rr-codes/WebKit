@@ -136,7 +136,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
         return [JSValue valueWithJSValueRef:result inContext:self];
     }
 
-    auto* apiGlobalObject = JSC::jsDynamicCast<JSC::JSAPIGlobalObject*>(globalObject);
+    auto* apiGlobalObject = dynamicDowncast<JSC::JSAPIGlobalObject>(globalObject);
     if (!apiGlobalObject)
         return [JSValue valueWithNewPromiseRejectedWithReason:[JSValue valueWithNewErrorFromMessage:@"Context does not support module loading" inContext:self] inContext:self];
 

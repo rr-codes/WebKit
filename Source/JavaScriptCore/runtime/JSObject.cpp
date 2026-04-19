@@ -514,10 +514,10 @@ String JSObject::calculatedClassName(JSObject* object)
     if (object->getOwnPropertySlot(object, globalObject, vm.propertyNames->constructor, slot)) {
         EXCEPTION_ASSERT(!scope.exception());
         if (slot.isValue()) {
-            if (JSObject* ctorObject = jsDynamicCast<JSObject*>(slot.getValue(globalObject, vm.propertyNames->constructor))) {
-                if (JSFunction* constructorFunction = jsDynamicCast<JSFunction*>(ctorObject))
+            if (JSObject* ctorObject = dynamicDowncast<JSObject>(slot.getValue(globalObject, vm.propertyNames->constructor))) {
+                if (JSFunction* constructorFunction = dynamicDowncast<JSFunction>(ctorObject))
                     constructorFunctionName = constructorFunction->calculatedDisplayName(vm);
-                else if (InternalFunction* constructorFunction = jsDynamicCast<InternalFunction*>(ctorObject))
+                else if (InternalFunction* constructorFunction = dynamicDowncast<InternalFunction>(ctorObject))
                     constructorFunctionName = constructorFunction->calculatedDisplayName(vm);
             }
         }
@@ -538,10 +538,10 @@ String JSObject::calculatedClassName(JSObject* object)
                 if (protoObject->getPropertySlot(globalObject, vm.propertyNames->constructor, slot)) {
                     EXCEPTION_ASSERT(!scope.exception());
                     if (slot.isValue()) {
-                        if (JSObject* ctorObject = jsDynamicCast<JSObject*>(slot.getValue(globalObject, vm.propertyNames->constructor))) {
-                            if (JSFunction* constructorFunction = jsDynamicCast<JSFunction*>(ctorObject))
+                        if (JSObject* ctorObject = dynamicDowncast<JSObject>(slot.getValue(globalObject, vm.propertyNames->constructor))) {
+                            if (JSFunction* constructorFunction = dynamicDowncast<JSFunction>(ctorObject))
                                 constructorFunctionName = constructorFunction->calculatedDisplayName(vm);
-                            else if (InternalFunction* constructorFunction = jsDynamicCast<InternalFunction*>(ctorObject))
+                            else if (InternalFunction* constructorFunction = dynamicDowncast<InternalFunction>(ctorObject))
                                 constructorFunctionName = constructorFunction->calculatedDisplayName(vm);
                         }
                     }
@@ -3000,7 +3000,7 @@ ALWAYS_INLINE static bool canDoFastPutDirectIndex(JSObject* object)
         return false;
 
     return (isJSArray(object) && !isCopyOnWrite(object->indexingMode()))
-        || jsDynamicCast<JSFinalObject*>(object);
+        || is<JSFinalObject>(object);
 }
 
 // https://tc39.es/ecma262/#sec-ordinarydefineownproperty

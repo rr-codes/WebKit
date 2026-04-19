@@ -278,7 +278,7 @@ static void copyMethodsToObject(JSContext *context, Class objcClass, Protocol *p
             // to override normal builtins e.g. "toString" we check if
             // the existing value on the prototype chain is an ObjC
             // callback already.
-            if ([existingMethod isObject] && JSC::jsDynamicCast<JSC::ObjCCallbackFunction*>(toJS(globalObject, [existingMethod JSValueRef])))
+            if ([existingMethod isObject] && is<JSC::ObjCCallbackFunction>(toJS(globalObject, [existingMethod JSValueRef])))
                 return;
             JSObjectRef method = objCCallbackFunctionForMethod(context, objcClass, protocol, isInstanceMethod, sel, types);
             if (method)

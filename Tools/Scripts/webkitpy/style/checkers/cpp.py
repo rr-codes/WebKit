@@ -2860,26 +2860,6 @@ def check_wtf_move(clean_lines, line_number, file_state, error):
         error(line_number, 'runtime/wtf_move', 4, "Use 'WTF::move()' instead of 'WTFMove()'.")
 
 
-def check_js_dynamic_cast(clean_lines, line_number, file_state, error):
-    """Looks for use of 'jsDynamicCast' which should be replaced with 'dynamicDowncast'.
-
-    Args:
-      clean_lines: A CleansedLines instance containing the file.
-      line_number: The number of the line to check.
-      file_state: A _FileState instance which maintains information about
-                  the state of things in the file.
-      error: The function to call with any errors found.
-    """
-
-    if file_state.is_c():
-        return
-
-    line = clean_lines.elided[line_number]
-
-    if search(r'\bjsDynamicCast\b', line):
-        error(line_number, 'runtime/js_dynamic_cast', 4, "Use 'dynamicDowncast<T>()' instead of 'jsDynamicCast<T*>()'.")
-
-
 def check_js_cast(clean_lines, line_number, file_state, error):
     """Looks for use of 'jsCast' which should be replaced with 'downcast' or 'uncheckedDowncast'.
 
@@ -3959,7 +3939,6 @@ def check_style(clean_lines, line_number, file_extension, class_state, file_stat
     check_max_min_macros(clean_lines, line_number, file_state, error)
     check_wtf_checked_size(clean_lines, line_number, file_state, error)
     check_wtf_move(clean_lines, line_number, file_state, error)
-    check_js_dynamic_cast(clean_lines, line_number, file_state, error)
     check_js_cast(clean_lines, line_number, file_state, error)
     check_unsafe_get(clean_lines, line_number, file_state, error)
     check_wtf_make_unique(clean_lines, line_number, file_state, error)
