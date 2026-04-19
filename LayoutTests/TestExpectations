@@ -6139,6 +6139,15 @@ imported/w3c/web-platform-tests/workers/modules/dedicated-worker-import-csp.html
 # due to how MessagePort::dispatchMessages() is implemented.
 imported/w3c/web-platform-tests/workers/shared-worker-name-via-options.html [ Failure Pass ]
 
+# Tests are flaky since import.
+imported/w3c/web-platform-tests/workers/same-site-cookies/first-party.all.tentative.https.window.html [ Skip ]
+imported/w3c/web-platform-tests/workers/same-site-cookies/first-party.default.tentative.https.window.html [ Skip ]
+imported/w3c/web-platform-tests/workers/same-site-cookies/first-party.none.tentative.https.window.html [ Skip ]
+imported/w3c/web-platform-tests/workers/SharedWorker-extendedLifetime-named-module.html [ Skip ]
+imported/w3c/web-platform-tests/workers/SharedWorker-extendedLifetime.html [ Skip ]
+imported/w3c/web-platform-tests/workers/shared-worker-partitioned-cookies.tentative.https.html [ Skip ]
+imported/w3c/web-platform-tests/workers/shared-worker-from-blob-url.window.html [ Skip ]
+
 # Some Trusted Types tests are flaky due to subtest ordering
 webkit.org/b/274089 imported/w3c/web-platform-tests/trusted-types/trusted-types-from-literal.tentative.html [ Pass Failure ]
 webkit.org/b/266630 imported/w3c/web-platform-tests/trusted-types/trusted-types-navigation.html [ Pass Failure ]
