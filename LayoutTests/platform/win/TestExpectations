@@ -4557,6 +4557,7 @@ imported/w3c/web-platform-tests/wasm/core/data.wast.js.html [ Failure Pass ]
 imported/w3c/web-platform-tests/wasm/core/elem.wast.js.html [ Failure Pass ]
 imported/w3c/web-platform-tests/wasm/core/global.wast.js.html [ Failure Pass ]
 imported/w3c/web-platform-tests/wasm/core/unreached-invalid.wast.js.html [ Failure Pass ]
+imported/w3c/web-platform-tests/wasm/core/float_exprs.wast.js.html [ Skip ] # timeout
 # 2) tests timing out on wimpy Windows test machines
 imported/w3c/web-platform-tests/wasm/core/f32.wast.js.html [ Timeout Pass ]
 imported/w3c/web-platform-tests/wasm/core/f32_cmp.wast.js.html [ Timeout Pass ]
@@ -4581,6 +4582,7 @@ imported/w3c/web-platform-tests/speculation-rules/speculation-tags/invalid-tags.
 imported/w3c/web-platform-tests/speculation-rules/speculation-tags/invalid-tags.https.html?tag-level=ruleset&type=prefetch [ Failure ]
 imported/w3c/web-platform-tests/speculation-rules/speculation-tags/valid-tags.https.html?tag-level=rule&type=prefetch [ Failure ]
 imported/w3c/web-platform-tests/speculation-rules/speculation-tags/valid-tags.https.html?tag-level=ruleset&type=prefetch [ Failure ]
+imported/w3c/web-platform-tests/speculation-rules/prefetch/no-http-cache-interference-slow-error.https.html [ Skip ] # timeout
 
 # Lockdown Mode does not apply
 dom/xsl/lockdown-mode [ Skip ]
