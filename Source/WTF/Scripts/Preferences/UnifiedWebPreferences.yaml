@@ -4916,6 +4916,20 @@ MathFontFamily:
     WebCore:
       default: '""_str'
 
+MathMLDisableHrefOnNonAnchorElement:
+  type: bool
+  status: testable
+  category: dom
+  humanReadableName: "Disable href attribute on MathML elements"
+  humanReadableDescription: "The only MathML element on which href is allowed is <a>."
+  defaultValue:
+    WebKitLegacy:
+      default: false
+    WebKit:
+      default: false
+    WebCore:
+      default: false
+
 MathMLEnabled:
   type: bool
   status: embedder
