@@ -72,7 +72,7 @@ struct AppKitGesturesTests {
             return range.getBoundingClientRect().toJSON();
             """
 
-        let crazyBoundsDictionary = try await #require(page.callJavaScript(getSelectionBounds) as? [String: Int])
+        let crazyBoundsDictionary = try await #require(page.callJavaScript(getSelectionBounds) as? [String: Double])
         let crazyBoundsInViewportCoordinates = CGRect(
             x: crazyBoundsDictionary["x", default: 0],
             y: crazyBoundsDictionary["y", default: 0],
@@ -103,14 +103,23 @@ struct AppKitGesturesTests {
 
         try await page.callJavaScript(moveSelectionToStart)
 
+        let waitForSelectionChange = """
+            return await new Promise(resolve => {
+                document.addEventListener("selectionchange", () => {
+                    const offset = window.getSelection().focusOffset;
+                    resolve(offset);
+                });
+            });
+            """
+
+        async let newSelection = page.callJavaScript(waitForSelectionChange) as? Int
+
+        // Ensure the JS `selectionchange` event listener is installed before performing the click.
+        await Task.yield()
+
         page.click(at: middleOfCrazy)
 
-        try await waitUntil {
-            let selection = try await page.callJavaScript("return window.getSelection().focusOffset") as? Int
-            return selection != 0
-        }
-
-        let selection = try await page.callJavaScript("return window.getSelection().focusOffset") as? Int
+        let selection = try await newSelection
         let expected = "Here's to the cra".count
         #expect(selection == expected)
     }

@@ -53,29 +53,3 @@ extension AsyncSequence {
         }
     }
 }
-
-/// Repeatedly invokes a condition until it evaluates to true or until a timeout has been reached.
-///
-/// - Parameters:
-///   - timeout: The timeout to wait until before exiting this function and throwing an Error.
-///   - interval: The duration to wait between consecutive evaluations of the condition
-///   - function: The function of the source location where this is called.
-///   - line: The line number of the source location where this is called.
-///   - condition: The predicate condition to evaluate.
-/// - Throws: An Error if the condition throws an Error, or if the timeout duration is reached.
-public nonisolated(nonsending) func waitUntil(
-    timeout: Duration = .seconds(10),
-    interval: Duration = .milliseconds(100),
-    function: StaticString = #function,
-    line: Int = #line,
-    condition: () async throws -> Bool,
-) async throws {
-    let deadline = ContinuousClock.now + timeout
-    while ContinuousClock.now < deadline {
-        if try await condition() {
-            return
-        }
-        try await Task.sleep(for: interval)
-    }
-    throw CancellationError()
-}
