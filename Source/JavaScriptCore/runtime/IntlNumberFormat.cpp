@@ -540,11 +540,31 @@ void IntlNumberFormat::initializeNumberFormat(JSGlobalObject* globalObject, JSVa
         return;
     }
 
-    m_numberRangeFormatter = std::unique_ptr<UNumberRangeFormatter, UNumberRangeFormatterDeleter>(unumrf_openForSkeletonWithCollapseAndIdentityFallback(upconverted.get(), skeletonView.length(), UNUM_RANGE_COLLAPSE_AUTO, UNUM_IDENTITY_FALLBACK_APPROXIMATELY, dataLocaleWithExtensions.data(), nullptr, &status));
+    // Defer creation of the range formatter; it is only needed for formatRange / formatRangeToParts.
+    m_numberFormatterSkeleton = WTF::move(skeleton);
+    m_dataLocaleWithExtensions = WTF::move(dataLocaleWithExtensions);
+}
+
+UNumberRangeFormatter* IntlNumberFormat::createNumberRangeFormatterIfNecessary(JSGlobalObject* globalObject)
+{
+    VM& vm = globalObject->vm();
+    auto scope = DECLARE_THROW_SCOPE(vm);
+
+    ASSERT(m_numberFormatter);
+    if (m_numberRangeFormatter)
+        return m_numberRangeFormatter.get();
+
+    StringView skeletonView(m_numberFormatterSkeleton);
+    auto upconverted = skeletonView.upconvertedCharacters();
+
+    UErrorCode status = U_ZERO_ERROR;
+    m_numberRangeFormatter = std::unique_ptr<UNumberRangeFormatter, UNumberRangeFormatterDeleter>(unumrf_openForSkeletonWithCollapseAndIdentityFallback(upconverted.get(), skeletonView.length(), UNUM_RANGE_COLLAPSE_AUTO, UNUM_IDENTITY_FALLBACK_APPROXIMATELY, m_dataLocaleWithExtensions.data(), nullptr, &status));
     if (U_FAILURE(status)) {
         throwTypeError(globalObject, scope, "failed to initialize NumberFormat"_s);
-        return;
+        return nullptr;
     }
+
+    return m_numberRangeFormatter.get();
 }
 
 // https://tc39.es/ecma402/#sec-formatnumber
@@ -594,22 +614,23 @@ JSValue IntlNumberFormat::format(JSGlobalObject* globalObject, IntlMathematicalV
     return jsString(vm, String(WTF::move(buffer)));
 }
 
-JSValue IntlNumberFormat::formatRange(JSGlobalObject* globalObject, double start, double end) const
+JSValue IntlNumberFormat::formatRange(JSGlobalObject* globalObject, double start, double end)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(m_numberRangeFormatter);
-
     if (std::isnan(start) || std::isnan(end))
         return throwRangeError(globalObject, scope, "Passed numbers are out of range"_s);
+
+    auto* rangeFormatter = createNumberRangeFormatterIfNecessary(globalObject);
+    RETURN_IF_EXCEPTION(scope, { });
 
     UErrorCode status = U_ZERO_ERROR;
     auto range = std::unique_ptr<UFormattedNumberRange, ICUDeleter<unumrf_closeResult>>(unumrf_openResult(&status));
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
-    unumrf_formatDoubleRange(m_numberRangeFormatter.get(), start, end, range.get(), &status);
+    unumrf_formatDoubleRange(rangeFormatter, start, end, range.get(), &status);
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
@@ -625,15 +646,16 @@ JSValue IntlNumberFormat::formatRange(JSGlobalObject* globalObject, double start
     return jsString(vm, String({ string, static_cast<size_t>(length) }));
 }
 
-JSValue IntlNumberFormat::formatRange(JSGlobalObject* globalObject, IntlMathematicalValue&& start, IntlMathematicalValue&& end) const
+JSValue IntlNumberFormat::formatRange(JSGlobalObject* globalObject, IntlMathematicalValue&& start, IntlMathematicalValue&& end)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(m_numberRangeFormatter);
-
     if (start.numberType() == IntlMathematicalValue::NumberType::NaN || end.numberType() == IntlMathematicalValue::NumberType::NaN)
         return throwRangeError(globalObject, scope, "Passed numbers are out of range"_s);
+
+    auto* rangeFormatter = createNumberRangeFormatterIfNecessary(globalObject);
+    RETURN_IF_EXCEPTION(scope, { });
 
     start.ensureNonDouble();
     const auto& startString = start.getString();
@@ -646,7 +668,7 @@ JSValue IntlNumberFormat::formatRange(JSGlobalObject* globalObject, IntlMathemat
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
-    unumrf_formatDecimalRange(m_numberRangeFormatter.get(), startString.data(), startString.length(), endString.data(), endString.length(), range.get(), &status);
+    unumrf_formatDecimalRange(rangeFormatter, startString.data(), startString.length(), endString.data(), endString.length(), range.get(), &status);
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
@@ -907,22 +929,23 @@ void IntlNumberFormat::formatRangeToPartsInternal(JSGlobalObject* globalObject, 
     }
 }
 
-JSValue IntlNumberFormat::formatRangeToParts(JSGlobalObject* globalObject, double start, double end) const
+JSValue IntlNumberFormat::formatRangeToParts(JSGlobalObject* globalObject, double start, double end)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(m_numberRangeFormatter);
-
     if (std::isnan(start) || std::isnan(end))
         return throwRangeError(globalObject, scope, "Passed numbers are out of range"_s);
+
+    auto* rangeFormatter = createNumberRangeFormatterIfNecessary(globalObject);
+    RETURN_IF_EXCEPTION(scope, { });
 
     UErrorCode status = U_ZERO_ERROR;
     auto range = std::unique_ptr<UFormattedNumberRange, ICUDeleter<unumrf_closeResult>>(unumrf_openResult(&status));
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
-    unumrf_formatDoubleRange(m_numberRangeFormatter.get(), start, end, range.get(), &status);
+    unumrf_formatDoubleRange(rangeFormatter, start, end, range.get(), &status);
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
@@ -954,15 +977,16 @@ JSValue IntlNumberFormat::formatRangeToParts(JSGlobalObject* globalObject, doubl
     return parts;
 }
 
-JSValue IntlNumberFormat::formatRangeToParts(JSGlobalObject* globalObject, IntlMathematicalValue&& start, IntlMathematicalValue&& end) const
+JSValue IntlNumberFormat::formatRangeToParts(JSGlobalObject* globalObject, IntlMathematicalValue&& start, IntlMathematicalValue&& end)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    ASSERT(m_numberRangeFormatter);
-
     if (start.numberType() == IntlMathematicalValue::NumberType::NaN || end.numberType() == IntlMathematicalValue::NumberType::NaN)
         return throwRangeError(globalObject, scope, "Passed numbers are out of range"_s);
+
+    auto* rangeFormatter = createNumberRangeFormatterIfNecessary(globalObject);
+    RETURN_IF_EXCEPTION(scope, { });
 
     start.ensureNonDouble();
     const auto& startString = start.getString();
@@ -975,7 +999,7 @@ JSValue IntlNumberFormat::formatRangeToParts(JSGlobalObject* globalObject, IntlM
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
-    unumrf_formatDecimalRange(m_numberRangeFormatter.get(), startString.data(), startString.length(), endString.data(), endString.length(), range.get(), &status);
+    unumrf_formatDecimalRange(rangeFormatter, startString.data(), startString.length(), endString.data(), endString.length(), range.get(), &status);
     if (U_FAILURE(status))
         return throwTypeError(globalObject, scope, "failed to format a range"_s);
 
