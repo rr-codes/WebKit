@@ -1698,8 +1698,6 @@ webkit.org/b/116117 imported/w3c/web-platform-tests/css/css-flexbox/intrinsic-si
 imported/w3c/web-platform-tests/css/css-flexbox/stretch-flex-item-checkbox-input.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/stretch-flex-item-radio-input.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/webkit-box-vertical-writing-mode.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-flexbox/flexbox-min-width-auto-005.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-flexbox/flexbox-min-width-auto-006.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/intrinsic-size/col-wrap-020.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/aspect-ratio-intrinsic-size-009.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/multiline-shrink-to-fit.html [ ImageOnlyFailure ]

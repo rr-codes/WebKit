@@ -290,7 +290,7 @@ public:
         , m_flexItem(flexItem)
 #endif
     {
-        if (flexBox.hasDefiniteCrossSizeForFlexItem(flexItem) && !flexBox.isFlexItem()) {
+        if (flexBox.hasDefiniteCrossSizeForFlexItem(flexItem)) {
             auto axis = flexBox.mainAxisIsFlexItemInlineAxis(flexItem) ? OverridingSizesScope::Axis::Block : OverridingSizesScope::Axis::Inline;
             m_overridingScope.emplace(flexItem, axis, flexBox.computeCrossSizeForFlexItemUsingContainerCrossSize(flexItem));
             if (invalidatePreferredWidths == InvalidatePreferredWidths::Yes) {
@@ -1910,7 +1910,7 @@ bool RenderFlexibleBox::canUseFlexItemForPercentageResolution(const RenderBox& f
 
     auto canUseByLayoutPhase = [&] {
         if (m_inFlexItemIntrinsicWidthComputation)
-            return hasDefiniteCrossSizeForFlexItem(flexItem) && !isFlexItem();
+            return hasDefiniteCrossSizeForFlexItem(flexItem);
 
         if (m_afterMainAxisItemSizing) {
             // Final sizes for flex items are available only along the main axis.
