@@ -5626,6 +5626,19 @@ MouseEventsSimulationEnabled:
     WebCore:
       default: false
 
+MoveBeforeEnabled:
+  type: bool
+  status: unstable
+  category: dom
+  humanReadableName: "DOM moveBefore()"
+  defaultValue:
+    WebKitLegacy:
+      default: false
+    WebKit:
+      default: false
+    WebCore:
+      default: false
+
 MultiProcessBackForwardCacheEnabled:
   type: bool
   status: unstable

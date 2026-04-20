@@ -1423,6 +1423,48 @@ void ContainerNode::replaceChildrenWithoutValidityCheck(NodeVector&& newChildren
     dispatchSubtreeModifiedEvent();
 }
 
+// https://dom.spec.whatwg.org/#dom-parentnode-movebefore
+ExceptionOr<void> ContainerNode::moveBefore(Node& node, RefPtr<Node>&& refChild)
+{
+    if (refChild == &node)
+        refChild = node.nextSibling();
+
+    // From https://dom.spec.whatwg.org/#move
+    if (&shadowIncludingRoot() != &node.shadowIncludingRoot())
+        return Exception { ExceptionCode::HierarchyRequestError };
+
+    if (containsIncludingHostElements(node, *this))
+        return Exception { ExceptionCode::HierarchyRequestError };
+
+    if (refChild && refChild->parentNode() != this)
+        return Exception { ExceptionCode::NotFoundError };
+
+    if (!node.isElementNode() && !node.isCharacterDataNode())
+        return Exception { ExceptionCode::HierarchyRequestError };
+
+    if (is<Text>(node) && is<Document>(*this))
+        return Exception { ExceptionCode::HierarchyRequestError };
+
+    if (is<Document>(*this) && is<Element>(node)) {
+        bool hasElementChild = childElementCount() > 0;
+        bool childIsDoctype = refChild && refChild->isDocumentTypeNode();
+
+        if (hasElementChild || childIsDoctype)
+            return Exception { ExceptionCode::HierarchyRequestError };
+
+        if (refChild) {
+            for (auto* followingSibling = refChild.get(); followingSibling; followingSibling = followingSibling->nextSibling()) {
+                if (followingSibling->isDocumentTypeNode())
+                    return Exception { ExceptionCode::HierarchyRequestError };
+            }
+        }
+    }
+
+    // FIXME(281223): Implement the rest of this function.
+
+    return { };
+}
+
 HTMLCollection* ContainerNode::cachedHTMLCollection(CollectionType type)
 {
     return hasRareData() && rareData()->nodeLists() ? rareData()->nodeLists()->cachedCollection<HTMLCollection>(type) : nullptr;
