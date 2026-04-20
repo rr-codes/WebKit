@@ -662,7 +662,7 @@ public:
 
     const Ref<ImportMap> m_importMap;
 
-    HashMap<String, JSCJSGlobalObjectSignpostIdentifier> m_signposts;
+    UncheckedKeyHashMap<String, JSCJSGlobalObjectSignpostIdentifier> m_signposts;
 
 #if ASSERT_ENABLED
     const JSGlobalObject* m_globalObjectAtDebuggerEntry { nullptr };

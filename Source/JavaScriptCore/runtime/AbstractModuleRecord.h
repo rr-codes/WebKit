@@ -283,7 +283,7 @@ protected:
 
     AsyncEvaluationOrder m_asyncEvaluationOrder { };
 
-    HashMap<String, WriteBarrier<AbstractModuleRecord>> m_dependencies;
+    UncheckedKeyHashMap<String, WriteBarrier<AbstractModuleRecord>> m_dependencies;
 
     WriteBarrier<JSPromise> m_topLevelCapability;
 

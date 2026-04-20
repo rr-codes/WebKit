@@ -390,7 +390,7 @@ void IntlLocale::initializeLocale(JSGlobalObject* globalObject, const String& ta
                 return;
             }
         } else {
-            HashSet<String> seenVariants;
+            UncheckedKeyHashSet<String> seenVariants;
             for (auto variant : variantList) {
                 if (!isUnicodeVariantSubtag(variant)) [[unlikely]] {
                     throwRangeError(globalObject, scope, variantsErrorMessage);

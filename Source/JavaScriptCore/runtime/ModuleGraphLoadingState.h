@@ -81,7 +81,7 @@ private:
     // [[Visited]]
     Vector<WriteBarrier<CyclicModuleRecord>, 8> m_visited;
     // Contains the same contents as m_visited, so no write barriers needed.
-    HashSet<CyclicModuleRecord*> m_visitedSet;
+    UncheckedKeyHashSet<CyclicModuleRecord*> m_visitedSet;
     // [[PendingModulesCount]]
     unsigned m_pendingModulesCount { 1 };
     // [[IsLoading]]
