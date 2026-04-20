@@ -1876,8 +1876,6 @@ webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-v
 webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_overline.html [ ImageOnlyFailure ]
 webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_overline_underline_line-through.html [ ImageOnlyFailure ]
 webkit.org/b/312138 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/text-decoration_underline.html [ ImageOnlyFailure ]
-webkit.org/b/312157 fast/mediastream/error.html [ Crash Pass ]
-webkit.org/b/312157 imported/w3c/web-platform-tests/permissions-policy/reporting/report-to-single-endpoint.https.sub.html [ Crash Pass ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of GStreamer-related bugs
