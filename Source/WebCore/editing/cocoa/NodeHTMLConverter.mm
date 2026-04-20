@@ -1298,12 +1298,14 @@ BOOL HTMLConverter::_addAttachmentForElement(Element& element, NSURL *url, BOOL 
         NSDictionary *attrs;
 
 #if ENABLE(MULTI_REPRESENTATION_HEIC)
-        if (RetainPtr data = [fileWrapper regularFileContents]) {
-            RefPtr imageElement = dynamicDowncast<HTMLImageElement>(element);
-            if (imageElement && imageElement->isMultiRepresentationHEIC())
-                attachment = adoptNS([[PlatformNSAdaptiveImageGlyph alloc] initWithImageContent:data.get()]);
-            if (attachment)
-                attributeName = NSAdaptiveImageGlyphAttributeName;
+        if ([fileWrapper isRegularFile]) {
+            if (RetainPtr data = [fileWrapper regularFileContents]) {
+                RefPtr imageElement = dynamicDowncast<HTMLImageElement>(element);
+                if (imageElement && imageElement->isMultiRepresentationHEIC())
+                    attachment = adoptNS([[PlatformNSAdaptiveImageGlyph alloc] initWithImageContent:data.get()]);
+                if (attachment)
+                    attributeName = NSAdaptiveImageGlyphAttributeName;
+            }
         }
 #endif
 
