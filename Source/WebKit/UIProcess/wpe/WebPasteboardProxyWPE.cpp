@@ -47,10 +47,7 @@ using namespace WebCore;
 #if ENABLE(WPE_PLATFORM)
 static Vector<String> clipboardFormats(WPEClipboard* clipboard)
 {
-    auto* strv = wpe_clipboard_get_formats(clipboard);
-    if (!strv)
-        return { };
-    const auto formats = span(strv);
+    const auto formats = span(wpe_clipboard_get_formats(clipboard));
     return Vector<String>(formats.size(), [&formats](size_t index) {
         return String::fromUTF8(formats[index]);
     });
@@ -170,15 +167,13 @@ void WebPasteboardProxy::typesSafeForDOMToReadAndWrite(IPC::Connection&, const S
                     domTypes.add(type);
             }
 
-            if (auto* strv = wpe_clipboard_get_formats(clipboard)) {
-                for (const char* format : span(strv)) {
-                    String formatString = String::fromUTF8(format);
-                    if (formatString == PasteboardCustomData::wpeType())
-                        continue;
+            for (const char* format : span(wpe_clipboard_get_formats(clipboard))) {
+                String formatString = String::fromUTF8(format);
+                if (formatString == PasteboardCustomData::wpeType())
+                    continue;
 
-                    if (Pasteboard::isSafeTypeForDOMToReadAndWrite(formatString))
-                        domTypes.add(formatString);
-                }
+                if (Pasteboard::isSafeTypeForDOMToReadAndWrite(formatString))
+                    domTypes.add(formatString);
             }
             completionHandler(copyToVector(domTypes));
             return;
