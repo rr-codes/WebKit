@@ -680,7 +680,9 @@ void clobberize(Graph& graph, Node* node, const ReadFunctor& read, const WriteFu
         return;
 
     case ArrayIsArray:
-        clobberTop();
+        read(MiscFields);
+        write(SideState);
+        def(HeapLocation(ArrayIsArrayLoc, MiscFields, node->child1()), LazyNode(node));
         return;
 
     case MatchStructure:

@@ -2098,34 +2098,28 @@ bool AbstractInterpreter<AbstractStateType>::executeEffects(unsigned clobberLimi
         AbstractValue& child = forNode(node->child1());
         if (JSValue v = child.value()) {
             if (!v.isCell()) {
-                didFoldClobberWorld();
                 setConstant(node, jsBoolean(false));
                 break;
             }
             JSType type = v.asCell()->type();
             if (type == ArrayType || type == DerivedArrayType) {
-                didFoldClobberWorld();
                 setConstant(node, jsBoolean(true));
                 break;
             }
             if (type != ProxyObjectType) {
-                didFoldClobberWorld();
                 setConstant(node, jsBoolean(false));
                 break;
             }
         } else {
             if (!(child.m_type & (SpecArray | SpecDerivedArray | SpecProxyObject))) {
-                didFoldClobberWorld();
                 setConstant(node, jsBoolean(false));
                 break;
             }
             if (!(child.m_type & ~(SpecArray | SpecDerivedArray))) {
-                didFoldClobberWorld();
                 setConstant(node, jsBoolean(true));
                 break;
             }
         }
-        clobberWorld();
         setNonCellTypeForNode(node, SpecBoolean);
         break;
     }
