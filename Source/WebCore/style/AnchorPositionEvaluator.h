@@ -136,9 +136,8 @@ enum class AnchorPositionResolutionStage : uint8_t {
     // transition to Resolved.
     WaitingForAnchorToBePositioned,
 
-    // The anchor-positioned element has resolved the anchors it refers to.
-    // If we determine any anchor(s) in itself is/are anchor-positioned,
-    // we kick it back to WaitingForAnchorToBePositioned.
+    // The anchor-positioned element has resolved the anchors it refers to, and
+    // the anchors are also at Positioned stage, if they themselves are anchor-positioned.
     Resolved,
 
     // The anchor-positioned element has been laid out and its position determined.
@@ -177,6 +176,10 @@ struct ResolvedAnchor {
 
 struct AnchorPositionedToAnchorEntry {
     Vector<ResolvedAnchor> anchors;
+
+    // True if all anchors above have been laid out and positioned.
+    // Only then can this anchor-positioned element be positioned.
+    bool allAnchorsPositioned { false };
 
     WTF_MAKE_STRUCT_TZONE_ALLOCATED(AnchorPositionedToAnchorEntry);
 };
