@@ -117,11 +117,7 @@ WebKitGstIceAgent* webkitGstWebRTCCreateIceAgent(const String&, WebCore::ScriptE
 
 const GRefPtr<RiceAgent>& webkitGstWebRTCIceAgentGetRiceAgent(WebKitGstIceAgent*);
 
-#if RICE_CHECK_VERSION(0, 4, 0)
 Vector<GUniquePtr<RiceTurnConfig>> webkitGstWebRTCIceAgentGetTurnConfigs(WebKitGstIceAgent*);
-#else
-Vector<GRefPtr<RiceTurnConfig>> webkitGstWebRTCIceAgentGetTurnConfigs(WebKitGstIceAgent*);
-#endif
 
 WebCore::RiceGatherResult webkitGstWebRTCIceAgentGatherSocketAddresses(WebKitGstIceAgent*, unsigned);
 

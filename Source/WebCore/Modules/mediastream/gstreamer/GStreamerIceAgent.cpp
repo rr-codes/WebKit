@@ -101,11 +101,7 @@ typedef struct _WebKitGstIceAgentPrivate {
     String turnServer;
 
     HashSet<URL> turnServers;
-#if RICE_CHECK_VERSION(0, 4, 0)
     Vector<GUniquePtr<RiceTurnConfig>> turnConfigs;
-#else
-    Vector<GRefPtr<RiceTurnConfig>> turnConfigs;
-#endif
 
     GRefPtr<GSource> recvSource;
     bool forceRelay { false };
@@ -258,7 +254,7 @@ static void webkitGstWebRTCIceAgentAddRiceTurnServer(WebKitGstIceAgent* agent, c
     GRefPtr<RiceTlsConfig> tlsConfig;
     if (isTurns)
         tlsConfig = adoptGRef(rice_tls_config_new_openssl(relayTransport));
-#if RICE_CHECK_VERSION(0, 4, 0)
+
     GUniquePtr<RiceTurnConfig> config(rice_turn_config_new(relayTransport, riceAddress.get(), credentials.get()));
     rice_turn_config_add_address_family(config.get(), RICE_ADDRESS_FAMILY_IPV4);
     rice_turn_config_add_address_family(config.get(), RICE_ADDRESS_FAMILY_IPV6);
@@ -268,14 +264,6 @@ static void webkitGstWebRTCIceAgentAddRiceTurnServer(WebKitGstIceAgent* agent, c
     rice_turn_config_add_supported_integrity(config.get(), RICE_INTEGRITY_ALGORITHM_SHA256);
     if (tlsConfig)
         rice_turn_config_set_tls_config(config.get(), tlsConfig.get());
-#else
-    const std::array<RiceAddressFamily, 2> families = { RICE_ADDRESS_FAMILY_IPV4, RICE_ADDRESS_FAMILY_IPV6 };
-    auto config = adoptGRef(rice_turn_config_new(relayTransport, riceAddress.get(), credentials.get(),
-#if RICE_CHECK_VERSION(0, 3, 0)
-        RICE_TRANSPORT_TYPE_UDP,
-#endif
-        families.size(), families.data(), tlsConfig.leakRef()));
-#endif // RICE_CHECK_VERSION(0, 4, 0)
     agent->priv->turnConfigs.append(WTF::move(config));
 }
 
@@ -795,7 +783,6 @@ const GRefPtr<RiceAgent>& webkitGstWebRTCIceAgentGetRiceAgent(WebKitGstIceAgent*
     return agent->priv->agent;
 }
 
-#if RICE_CHECK_VERSION(0, 4, 0)
 Vector<GUniquePtr<RiceTurnConfig>> webkitGstWebRTCIceAgentGetTurnConfigs(WebKitGstIceAgent* agent)
 {
     Vector<GUniquePtr<RiceTurnConfig>> result;
@@ -805,17 +792,6 @@ Vector<GUniquePtr<RiceTurnConfig>> webkitGstWebRTCIceAgentGetTurnConfigs(WebKitG
 
     return result;
 }
-#else
-Vector<GRefPtr<RiceTurnConfig>> webkitGstWebRTCIceAgentGetTurnConfigs(WebKitGstIceAgent* agent)
-{
-    Vector<GRefPtr<RiceTurnConfig>> result;
-    result.reserveInitialCapacity(agent->priv->turnConfigs.size());
-    for (const auto& config : agent->priv->turnConfigs)
-        result.append(GRefPtr(config));
-
-    return result;
-}
-#endif
 
 RiceGatherResult webkitGstWebRTCIceAgentGatherSocketAddresses(WebKitGstIceAgent* agent, unsigned streamId)
 {

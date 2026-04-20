@@ -198,13 +198,9 @@ static gboolean webkitGstWebRTCIceStreamGatherCandidates(GstWebRTCICEStream* ice
     auto turnAddressDataStorage = turnAddressValues.span();
 
     Vector<RiceTurnConfig*> turnConfigValues;
-    for (auto& config : turnConfigs) {
-#if RICE_CHECK_VERSION(0, 4, 0)
+    for (auto& config : turnConfigs)
         turnConfigValues.append(rice_turn_config_copy(config.get()));
-#else
-        turnConfigValues.append(config.ref());
-#endif
-    }
+
     auto turnConfigDataStorage = turnConfigValues.releaseBuffer();
 
     auto component = adoptGRef(rice_stream_get_component(stream->priv->riceStream.get(), 1));

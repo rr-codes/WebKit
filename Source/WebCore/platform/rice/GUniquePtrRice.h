@@ -30,9 +30,7 @@ namespace WTF {
 WTF_DEFINE_GPTR_DELETER(RiceAddress, rice_address_free)
 WTF_DEFINE_GPTR_DELETER(RiceCandidate, rice_candidate_free)
 WTF_DEFINE_GPTR_DELETER(RiceCredentials, rice_credentials_free)
-#if RICE_CHECK_VERSION(0, 4, 0)
 WTF_DEFINE_GPTR_DELETER(RiceTurnConfig, rice_turn_config_free)
-#endif
 
 }
 

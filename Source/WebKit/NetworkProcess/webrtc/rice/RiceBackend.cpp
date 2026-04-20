@@ -434,15 +434,13 @@ const RiceAddress* RiceBackend::ensureRiceAddressFromCache(const String& address
     return result.get();
 }
 
-void RiceBackend::setSocketTypeOfService([[maybe_unused]] unsigned streamId, [[maybe_unused]] unsigned value)
+void RiceBackend::setSocketTypeOfService(unsigned streamId, unsigned value)
 {
-#if RICE_CHECK_VERSION(0, 2, 2)
     auto sockets = getSocketsForStream(streamId);
     if (!sockets) [[unlikely]]
         return;
 
     rice_sockets_set_tos(sockets.get(), value);
-#endif
 }
 
 struct SocketAllocationData {
@@ -504,13 +502,11 @@ void RiceBackend::removeSocket(unsigned streamId, unsigned componentId, WebCore:
 
 void RiceBackend::configureSocketBufferSizes()
 {
-#if RICE_CHECK_VERSION(0, 2, 2)
     // Setting same librice socket size options as LibWebRTC. 1MB for incoming streams and 256Kb for outgoing streams.
     static const uint32_t receiveBufferSize = 1048576;
     static const uint32_t sendBufferSize = 262144;
     for (auto& data : m_sockets.values())
         rice_sockets_set_buffer_sizes(data.sockets.get(), sendBufferSize, receiveBufferSize);
-#endif
 }
 
 } // namespace WebKit
