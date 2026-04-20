@@ -26,7 +26,6 @@
 #pragma once
 
 #include <JavaScriptCore/MemoryMode.h>
-#include <JavaScriptCore/Options.h>
 #include <JavaScriptCore/PageCount.h>
 
 #include <atomic>
@@ -120,10 +119,10 @@ public:
     static BufferMemoryManager& singleton();
 
 private:
-    BufferMemoryManager() = default;
+    BufferMemoryManager();
 
     Lock m_lock;
-    unsigned m_maxFastMemoryCount { Options::maxNumWasmFastMemories() };
+    unsigned m_maxFastMemoryCount;
     Vector<void*> m_fastMemories;
     StdSet<std::pair<uintptr_t, size_t>> m_growableBoundsCheckingMemories;
     size_t m_physicalBytes { 0 };
