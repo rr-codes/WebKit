@@ -35,6 +35,7 @@
 #include "JSCBuiltins.h"
 #include "JSCInlines.h"
 #include "JSCellButterfly.h"
+#include "JSEmbedderArrayLike.h"
 #include "JSStringJoiner.h"
 #include "ObjectConstructor.h"
 #include "ObjectPrototypeInlines.h"
@@ -1352,6 +1353,13 @@ JSC_DEFINE_HOST_FUNCTION(arrayProtoFuncIndexOf, (JSGlobalObject* globalObject, C
         RETURN_IF_EXCEPTION(scope, { });
         if (result)
             return JSValue::encode(result);
+    }
+
+    if (thisObject->type() == EmbedderArrayLikeType) {
+        Ref arrayLike = uncheckedDowncast<JSEmbedderArrayLike>(*thisObject).embeddedArrayLike();
+        int64_t fastResult = arrayLike->fastIndexOf(globalObject, searchElement, index, length);
+        RETURN_IF_EXCEPTION(scope, { });
+        return JSValue::encode(jsNumber(fastResult));
     }
 
     for (; index < length; ++index) {

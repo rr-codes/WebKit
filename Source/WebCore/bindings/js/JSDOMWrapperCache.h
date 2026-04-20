@@ -48,16 +48,16 @@ template<typename WrapperClass> JSC::JSObject* getDOMPrototype(JSC::VM&, JSC::JS
 JSC::WeakHandleOwner* wrapperOwner(DOMWrapperWorld&, JSC::ArrayBuffer*);
 void* wrapperKey(JSC::ArrayBuffer*);
 
-std::optional<JSDOMObject*> getInlineCachedWrapper(DOMWrapperWorld&, void*);
-std::optional<JSDOMObject*> getInlineCachedWrapper(DOMWrapperWorld&, ScriptWrappable*);
+std::optional<JSC::JSObject*> getInlineCachedWrapper(DOMWrapperWorld&, void*);
+std::optional<JSC::JSObject*> getInlineCachedWrapper(DOMWrapperWorld&, ScriptWrappable*);
 std::optional<JSC::JSArrayBuffer*> getInlineCachedWrapper(DOMWrapperWorld&, JSC::ArrayBuffer*);
 
-bool setInlineCachedWrapper(DOMWrapperWorld&, void*, JSDOMObject*, JSC::WeakHandleOwner*);
-bool setInlineCachedWrapper(DOMWrapperWorld&, ScriptWrappable*, JSDOMObject* wrapper, JSC::WeakHandleOwner* wrapperOwner);
+bool setInlineCachedWrapper(DOMWrapperWorld&, void*, JSC::JSObject*, JSC::WeakHandleOwner*);
+bool setInlineCachedWrapper(DOMWrapperWorld&, ScriptWrappable*, JSC::JSObject* wrapper, JSC::WeakHandleOwner* wrapperOwner);
 bool setInlineCachedWrapper(DOMWrapperWorld&, JSC::ArrayBuffer*, JSC::JSArrayBuffer* wrapper, JSC::WeakHandleOwner* wrapperOwner);
 
-bool clearInlineCachedWrapper(DOMWrapperWorld&, void*, JSDOMObject*);
-bool clearInlineCachedWrapper(DOMWrapperWorld&, ScriptWrappable*, JSDOMObject* wrapper);
+bool clearInlineCachedWrapper(DOMWrapperWorld&, void*, JSC::JSObject*);
+bool clearInlineCachedWrapper(DOMWrapperWorld&, ScriptWrappable*, JSC::JSObject* wrapper);
 bool clearInlineCachedWrapper(DOMWrapperWorld&, JSC::ArrayBuffer*, JSC::JSArrayBuffer* wrapper);
 
 template<typename DOMClass> JSC::JSObject* getOrCreateWrapper(DOMWrapperWorld&, DOMClass&);
@@ -110,11 +110,11 @@ inline void* wrapperKey(JSC::ArrayBuffer* domObject)
     return domObject;
 }
 
-inline std::optional<JSDOMObject*> getInlineCachedWrapper(DOMWrapperWorld&, void*) { return std::nullopt; }
-inline bool setInlineCachedWrapper(DOMWrapperWorld&, void*, JSDOMObject*, JSC::WeakHandleOwner*) { return false; }
-inline bool clearInlineCachedWrapper(DOMWrapperWorld&, void*, JSDOMObject*) { return false; }
+inline std::optional<JSC::JSObject*> getInlineCachedWrapper(DOMWrapperWorld&, void*) { return std::nullopt; }
+inline bool setInlineCachedWrapper(DOMWrapperWorld&, void*, JSC::JSObject*, JSC::WeakHandleOwner*) { return false; }
+inline bool clearInlineCachedWrapper(DOMWrapperWorld&, void*, JSC::JSObject*) { return false; }
 
-inline std::optional<JSDOMObject*> getInlineCachedWrapper(DOMWrapperWorld& world, ScriptWrappable* domObject)
+inline std::optional<JSC::JSObject*> getInlineCachedWrapper(DOMWrapperWorld& world, ScriptWrappable* domObject)
 {
     if (!world.isNormal())
         return std::nullopt;
@@ -128,7 +128,7 @@ inline std::optional<JSC::JSArrayBuffer*> getInlineCachedWrapper(DOMWrapperWorld
     return buffer->m_wrapper.get();
 }
 
-inline bool setInlineCachedWrapper(DOMWrapperWorld& world, ScriptWrappable* domObject, JSDOMObject* wrapper, JSC::WeakHandleOwner* wrapperOwner)
+inline bool setInlineCachedWrapper(DOMWrapperWorld& world, ScriptWrappable* domObject, JSC::JSObject* wrapper, JSC::WeakHandleOwner* wrapperOwner)
 {
     if (!world.isNormal())
         return false;
@@ -144,7 +144,7 @@ inline bool setInlineCachedWrapper(DOMWrapperWorld& world, JSC::ArrayBuffer* dom
     return true;
 }
 
-inline bool clearInlineCachedWrapper(DOMWrapperWorld& world, ScriptWrappable* domObject, JSDOMObject* wrapper)
+inline bool clearInlineCachedWrapper(DOMWrapperWorld& world, ScriptWrappable* domObject, JSC::JSObject* wrapper)
 {
     if (!world.isNormal())
         return false;

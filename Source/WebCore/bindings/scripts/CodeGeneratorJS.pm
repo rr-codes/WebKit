@@ -518,6 +518,7 @@ sub GetParentClassName
     return $interface->extendedAttributes->{JSLegacyParent} if $interface->extendedAttributes->{JSLegacyParent};
     return "JSDOMObject" unless NeedsImplementationClass($interface);
     return "JS" . $interface->parentType->name if $interface->parentType;
+    return "JSDOMEmbedderArrayLikeWrapper<" . GetImplClassName($interface) . ">" if $interface->extendedAttributes->{EmbedderArrayLike};
     return "JSDOMWrapper<" . GetImplClassName($interface) . ", SignedPtrTraits<" . GetImplClassName($interface) . ", " . GetImplClassPtrTag($interface) . ">>" if HasTaggedWrapperForInterface($interface);
     return "JSDOMWrapper<" . GetImplClassName($interface) . ">";
 }
@@ -5292,6 +5293,8 @@ sub GenerateImplementation
         push(@implContent, "    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType($type), StructureFlags), info(), $indexingModeIncludingHistory);\n");
     } elsif ($codeGenerator->InheritsInterface($interface, "Event")) {
         push(@implContent, "    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSEventType), StructureFlags), info(), $indexingModeIncludingHistory);\n");
+    } elsif ($interface->extendedAttributes->{EmbedderArrayLike}) {
+        push(@implContent, "    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::JSType(JSEmbedderArrayLikeType), StructureFlags), info(), $indexingModeIncludingHistory);\n");
     } else {
         push(@implContent, "    return JSC::Structure::create(vm, globalObject, prototype, JSC::TypeInfo(JSC::ObjectType, StructureFlags), info(), $indexingModeIncludingHistory);\n");
     }

@@ -166,6 +166,8 @@ enum JSType : uint8_t {
     MaxJSType = 0b11111111,
 };
 
+static constexpr uint8_t EmbedderArrayLikeType = 0b11101101;
+
 static constexpr uint32_t LastMaybeFalsyCellPrimitive = HeapBigIntType;
 
 static constexpr uint32_t FirstTypedArrayType = Int8ArrayType;

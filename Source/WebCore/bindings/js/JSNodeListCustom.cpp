@@ -27,9 +27,7 @@
 #include "JSNodeList.h"
 
 #include "ChildNodeList.h"
-#include "JSNode.h"
 #include "LiveNodeList.h"
-#include "Node.h"
 #include "NodeList.h"
 #include "WebCoreOpaqueRootInlines.h"
 #include <JavaScriptCore/HeapCellInlines.h>

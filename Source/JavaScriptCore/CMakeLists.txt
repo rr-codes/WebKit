@@ -1087,6 +1087,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/DOMAttributeGetterSetter.h
     runtime/DumpContext.h
     runtime/ECMAMode.h
+    runtime/EmbedderArrayLike.h
     runtime/EnsureStillAliveHere.h
     runtime/EnumerationMode.h
     runtime/Error.h
@@ -1186,6 +1187,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/JSDateMath.h
     runtime/JSDestructibleObject.h
     runtime/JSDestructibleObjectHeapCellType.h
+    runtime/JSEmbedderArrayLike.h
     runtime/JSHeapDouble.h
     runtime/JSHeapInt32.h
     runtime/JSExportMacros.h
