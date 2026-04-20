@@ -164,88 +164,6 @@ static Vector<uint8_t> loadData(RetainPtr<CFStringRef> filename)
     return makeVector(data.get());
 }
 
-static MTLPixelFormat computePixelFormat(size_t bytesPerComponent, size_t channelCount)
-{
-    switch (bytesPerComponent) {
-    default:
-    case 1:
-        switch (channelCount) {
-        case 1:
-            return MTLPixelFormatR8Unorm;
-        case 2:
-            return MTLPixelFormatRG8Unorm;
-        case 4:
-        default:
-            return MTLPixelFormatRGBA8Unorm;
-        }
-    case 2:
-        switch (channelCount) {
-        case 1:
-            return MTLPixelFormatR16Float;
-        case 2:
-            return MTLPixelFormatRG16Float;
-        case 4:
-        default:
-            return MTLPixelFormatRGBA16Float;
-        }
-    case 4:
-        switch (channelCount) {
-        case 1:
-            return MTLPixelFormatR32Float;
-        case 2:
-            return MTLPixelFormatRG32Float;
-        case 4:
-        default:
-            return MTLPixelFormatRGBA32Float;
-        }
-    }
-}
-
-static std::optional<WebModel::ImageAsset> loadIBL(Ref<WebCore::SharedBuffer>&& data)
-{
-    RetainPtr imageAssetData = data->createNSData();
-    RetainPtr imageSource = adoptCF(CGImageSourceCreateWithData((CFDataRef)imageAssetData.get(), nullptr));
-    if (!imageSource) {
-        ASSERT_NOT_REACHED();
-        return std::nullopt;
-    }
-
-    RetainPtr platformImage = adoptCF(CGImageSourceCreateImageAtIndex(imageSource.get(), 0, nullptr));
-    if (!platformImage) {
-        ASSERT_NOT_REACHED();
-        return std::nullopt;
-    }
-
-    RetainPtr pixelDataCfData = adoptCF(CGDataProviderCopyData(CGImageGetDataProvider(platformImage.get())));
-    auto byteSpan = span(pixelDataCfData.get());
-
-    auto width = CGImageGetWidth(platformImage.get());
-    auto height = CGImageGetHeight(platformImage.get());
-    auto bytesPerPixel = static_cast<size_t>(byteSpan.size() / (width * height));
-    auto bytesPerComponent = CGImageGetBitsPerComponent(platformImage.get()) / 8;
-
-    MTLPixelFormat pixelFormat = computePixelFormat(bytesPerComponent, bytesPerPixel / bytesPerComponent);
-
-    return WebModel::ImageAsset {
-        .data = Vector<uint8_t> { byteSpan },
-        .width = static_cast<long>(width),
-        .height = static_cast<long>(height),
-        .depth = 1,
-        .bytesPerPixel = static_cast<long>(bytesPerPixel),
-        .textureType = WebCore::WebGPU::TextureViewDimension::_2d,
-        .pixelFormat = toTextureFormat(pixelFormat),
-        .mipmapLevelCount = 1,
-        .arrayLength = 1,
-        .textureUsage = WebCore::WebGPU::TextureUsage::TextureBinding,
-        .swizzle = WebModel::ImageAssetSwizzle {
-            .red = MTLTextureSwizzleRed,
-            .green = MTLTextureSwizzleGreen,
-            .blue = MTLTextureSwizzleBlue,
-            .alpha = MTLTextureSwizzleAlpha
-        }
-    };
-}
-
 // MARK: - ModelPlayer overrides.
 
 void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
@@ -312,7 +230,7 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
             RefPtr model = protectedThis->m_currentModel;
             if (model) {
                 model->update(makeVector(updateRequest, [](WKBridgeUpdateMesh *update) {
-                    return std::optional { toCpp(update) };
+                    return std::optional { convert(update) };
                 }));
                 protectedThis->setStageMode(protectedThis->m_stageMode);
             }
@@ -331,13 +249,8 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
                 client->didUpdateBoundingBox(protectedThis.get(), WebCore::FloatPoint3D(simdCenter.x, simdCenter.y, simdCenter.z), WebCore::FloatPoint3D(simdExtents.x, simdExtents.y, simdExtents.z));
                 protectedThis->notifyEntityTransformUpdated();
 
-                auto environmentMap = protectedThis->m_environmentMap;
-                if (environmentMap) {
-                    if (auto environmentMapImage = loadIBL(WTF::move(*environmentMap))) {
-                        model->setEnvironmentMap(*environmentMapImage);
-                        protectedThis->m_environmentMap = std::nullopt;
-                    }
-                }
+                if (auto environmentMap = protectedThis->m_environmentMap)
+                    protectedThis->setEnvironmentMap(WTF::move(*environmentMap));
             }
             protectedThis->startUpdateLoopIfNeeded();
         });
@@ -345,7 +258,7 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
         ensureOnMainThreadWithProtectedThis([updateTexture] (Ref<WebModelPlayer> protectedThis) {
             if (protectedThis->m_currentModel)
                 protectedThis->m_currentModel->updateTexture(makeVector(updateTexture, [](WKBridgeUpdateTexture *update) {
-                    return std::optional { toCpp(update) };
+                    return std::optional { convert(update) };
                 }));
 
             [protectedThis->m_modelLoader requestCompleted:updateTexture];
@@ -355,7 +268,7 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
         ensureOnMainThreadWithProtectedThis([updateMaterial] (Ref<WebModelPlayer> protectedThis) {
             if (protectedThis->m_currentModel)
                 protectedThis->m_currentModel->updateMaterial(makeVector(updateMaterial, [](WKBridgeUpdateMaterial *update) {
-                    return std::optional { toCpp(update) };
+                    return std::optional { convert(update) };
                 }));
 
             [protectedThis->m_modelLoader requestCompleted:updateMaterial];
@@ -798,9 +711,9 @@ void WebModelPlayer::setEntityTransform(WebCore::TransformationMatrix matrix)
 void WebModelPlayer::setEnvironmentMap(Ref<WebCore::SharedBuffer>&& data)
 {
     bool success = false;
-    if (RefPtr currentModel = m_currentModel; currentModel && m_didFinishLoading) {
-        if (auto environmentMap = loadIBL(WTF::move(data))) {
-            currentModel->setEnvironmentMap(*environmentMap);
+    if (RefPtr currentModel = m_currentModel; currentModel && m_didFinishLoading && m_modelLoader) {
+        if (auto environmentMap = [m_modelLoader loadEnvironmentMap:data->createNSData().get()]) {
+            currentModel->setEnvironmentMap(convert(environmentMap));
             m_environmentMap = std::nullopt;
         }
         success = true;

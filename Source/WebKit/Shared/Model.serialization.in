@@ -60,10 +60,18 @@ header: <WebKit/ModelTypes.h>
 };
 
 header: <WebKit/ModelTypes.h>
+[AdditionalEncoder=StreamConnectionEncoder, CustomHeader] struct WebModel::TextureLevelInfo {
+    long dataOffset;
+    long byteCountPerRow;
+    long byteCountPerImage;
+};
+
+header: <WebKit/ModelTypes.h>
 [AdditionalEncoder=StreamConnectionEncoder, CustomHeader] struct WebModel::UpdateTextureDescriptor {
     WebModel::ImageAsset imageAsset;
     WebModel::TypedResourceId identifier;
     String hashString;
+    Vector<WebModel::TextureLevelInfo> layout;
 };
 
 header: <WebKit/ModelTypes.h>

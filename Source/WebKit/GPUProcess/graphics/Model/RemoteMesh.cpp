@@ -127,7 +127,7 @@ void RemoteMesh::play(bool playing)
     m_backing->play(playing);
 }
 
-void RemoteMesh::setEnvironmentMap(const WebModel::ImageAsset& imageAsset)
+void RemoteMesh::setEnvironmentMap(const WebModel::UpdateTextureDescriptor& imageAsset)
 {
     m_backing->setEnvironmentMap(imageAsset);
 }

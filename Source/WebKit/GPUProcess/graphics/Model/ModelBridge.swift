@@ -400,19 +400,40 @@ extension WKBridgeImageAsset {
 
 @objc
 @implementation
-extension WKBridgeUpdateTexture {
-    let imageAsset: WKBridgeImageAsset?
-    let identifier: WKBridgeTypedResourceId
-    let hashString: String
+extension WKBridgeTextureLevelInfo {
+    let dataOffset: Int
+    let byteCountPerRow: Int
+    let byteCountPerImage: Int
 
     init(
-        imageAsset: WKBridgeImageAsset?,
+        dataOffset: Int,
+        byteCountPerRow: Int,
+        byteCountPerImage: Int
+    ) {
+        self.dataOffset = dataOffset
+        self.byteCountPerRow = byteCountPerRow
+        self.byteCountPerImage = byteCountPerImage
+    }
+}
+
+@objc
+@implementation
+extension WKBridgeUpdateTexture {
+    let imageAsset: WKBridgeImageAsset
+    let identifier: WKBridgeTypedResourceId
+    let hashString: String
+    let layout: [WKBridgeTextureLevelInfo]
+
+    init(
+        imageAsset: WKBridgeImageAsset,
         identifier: WKBridgeTypedResourceId,
-        hashString: String
+        hashString: String,
+        layout: [WKBridgeTextureLevelInfo]
     ) {
         self.imageAsset = imageAsset
         self.identifier = identifier
         self.hashString = hashString
+        self.layout = layout
     }
 }
 
