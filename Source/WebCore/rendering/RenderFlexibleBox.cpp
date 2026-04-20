@@ -1949,9 +1949,11 @@ bool RenderFlexibleBox::canUseFlexItemForPercentageResolution(const RenderBox& f
         if (mainAxisIsFlexItemInlineAxis(flexItem))
             return alignmentForFlexItem(flexItem) == ItemPosition::Stretch;
 
-        if (flexItem.style().flexGrow() == Style::ComputedStyle::initialFlexGrow() && flexItem.style().flexShrink().isZero() && flexItemMainSizeIsDefinite(flexItem, flexBasisForFlexItem(flexItem)))
+        // Flexbox 9.8 rule 2: definite flex-basis makes post-flexing main size definite.
+        if (flexItemMainSizeIsDefinite(flexItem, flexBasisForFlexItem(flexItem)))
             return true;
 
+        // Flexbox 9.8 rule 1: definite container main size makes post-flexing sizes definite.
         return canComputePercentageFlexBasis(flexItem, Style::PreferredSize { 0_css_percentage }, UpdatePercentageHeightDescendants::Yes);
     };
     return canUseByStyle();

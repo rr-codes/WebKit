@@ -2946,8 +2946,23 @@ std::optional<LayoutUnit> RenderBlock::availableLogicalHeightForPercentageComput
 
         auto& style = this->style();
         if (auto fixedLogicalHeight = style.logicalHeight().tryFixed()) {
-            auto contentBoxHeight = adjustContentBoxLogicalHeightForBoxSizing(LayoutUnit { fixedLogicalHeight->resolveZoom(style.usedZoomForLength()) });
-            return std::max(0_lu, constrainContentBoxLogicalHeightByMinMax(contentBoxHeight - scrollbarLogicalHeight(), { }));
+            auto flexBasisOverridesHeight = [&] {
+                if (!isFlexItem())
+                    return false;
+                // When flex-basis is anything other than 'auto', it overrides the
+                // specified main axis size. The logical height should not be
+                // definite for percentage children when it IS the main axis,
+                // because the flex algorithm will use flex-basis, not the CSS
+                // height. logicalHeight is the item's block axis (vertical for
+                // horizontal WM, horizontal for vertical WM). It aligns with the
+                // main axis when they point in different physical directions.
+                auto& flexContainer = downcast<RenderFlexibleBox>(*parent());
+                return !style.flexBasis().isAuto() && flexContainer.isHorizontalFlow() != isHorizontalWritingMode();
+            };
+            if (!flexBasisOverridesHeight()) {
+                auto contentBoxHeight = adjustContentBoxLogicalHeightForBoxSizing(LayoutUnit { fixedLogicalHeight->resolveZoom(style.usedZoomForLength()) });
+                return std::max(0_lu, constrainContentBoxLogicalHeightByMinMax(contentBoxHeight - scrollbarLogicalHeight(), { }));
+            }
         }
 
         if (shouldComputeLogicalHeightFromAspectRatio()) {

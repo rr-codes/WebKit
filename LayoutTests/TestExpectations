@@ -5250,11 +5250,6 @@ webkit.org/b/234704 imported/w3c/web-platform-tests/css/css-writing-modes/text-c
 webkit.org/b/234704 imported/w3c/web-platform-tests/css/css-writing-modes/text-combine-upright-compression-006a.html [ ImageOnlyFailure ]
 webkit.org/b/234704 imported/w3c/web-platform-tests/css/css-writing-modes/text-combine-upright-compression-007.html [ ImageOnlyFailure ]
 
-# Used flex-basis should be used to compute definiteness instead of specified.
-webkit.org/b/233196 imported/w3c/web-platform-tests/css/css-flexbox/percentage-heights-016.html [ ImageOnlyFailure ]
-webkit.org/b/233196 imported/w3c/web-platform-tests/css/css-flexbox/percentage-heights-017.html [ ImageOnlyFailure ]
-webkit.org/b/233196 imported/w3c/web-platform-tests/css/css-flexbox/percentage-heights-018.html [ ImageOnlyFailure ]
-
 # align baseline in flexbox.
 webkit.org/b/221478 imported/w3c/web-platform-tests/css/css-flexbox/dynamic-baseline-change-nested.html [ ImageOnlyFailure ]
 webkit.org/b/221478 imported/w3c/web-platform-tests/css/css-flexbox/dynamic-baseline-change.html [ ImageOnlyFailure ]
