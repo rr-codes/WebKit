@@ -292,6 +292,7 @@ private:
     void repaintFlexItemsDuringLayoutIfMoved(const FlexItemFrameRects&);
 
     bool flexItemHasPercentHeightDescendants(const RenderBox&) const;
+    void dirtyPercentHeightDescendantsWithinFlexItem(RenderBox&);
 
     void resetHasDefiniteHeight() { m_hasDefiniteHeight = SizeDefiniteness::Unknown; }
     const RenderBox* flexItemForFirstBaseline() const;

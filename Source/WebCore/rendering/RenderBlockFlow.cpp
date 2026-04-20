@@ -752,41 +752,40 @@ void RenderBlockFlow::layoutBlock(RelayoutChildren relayoutChildren, LayoutUnit 
     }
 }
 
+void RenderBlockFlow::dirtyForLayoutFromPercentageHeightDescendant(RenderBox& descendant)
+{
+    // Let's not dirty the height percentage descendant when it has an absolutely positioned containing block ancestor. We should be able to dirty such boxes through the regular invalidation logic.
+    for (auto* ancestor = descendant.containingBlock(); ancestor && ancestor != this; ancestor = ancestor->containingBlock()) {
+        if (ancestor->isOutOfFlowPositioned())
+            return;
+    }
+
+    for (CheckedPtr<RenderElement> renderer = &descendant; renderer && renderer != this && !renderer->normalChildNeedsLayout(); renderer = renderer->container()) {
+        renderer->setChildNeedsLayout(MarkingBehavior::MarkOnlyThis);
+        if (CheckedPtr renderBox = dynamicDowncast<RenderBox>(*renderer)) {
+            // If the width of an image is affected by the height of a child (e.g., an image with an aspect ratio),
+            // then we have to dirty preferred widths, since even enclosing blocks can become dirty as a result.
+            // (A horizontal flexbox that contains an inline image wrapped in an anonymous block for example.)
+            if (renderBox->hasIntrinsicAspectRatio() || renderBox->style().aspectRatio().hasRatio())
+                renderBox->setNeedsPreferredWidthsUpdate();
+            // Also propagate into nested percent-height descendants: a block whose percent-height
+            // children themselves have percent-height replaced elements with aspect ratios (e.g.
+            // #target -> div[height:100%] -> canvas[height:100%]) needs its own descendants dirtied
+            // so that the preferred widths cascade correctly up the tree.
+            if (CheckedPtr blockFlow = dynamicDowncast<RenderBlockFlow>(*renderBox))
+                blockFlow->dirtyForLayoutFromPercentageHeightDescendants();
+        }
+    }
+}
+
 void RenderBlockFlow::dirtyForLayoutFromPercentageHeightDescendants()
 {
     auto* descendants = percentHeightDescendants();
     if (!descendants)
         return;
 
-    for (auto& descendant : *descendants) {
-        // Let's not dirty the height perecentage descendant when it has an absolutely positioned containing block ancestor. We should be able to dirty such boxes through the regular invalidation logic.
-        bool descendantNeedsLayout = true;
-        for (auto* ancestor = descendant.containingBlock(); ancestor && ancestor != this; ancestor = ancestor->containingBlock()) {
-            if (ancestor->isOutOfFlowPositioned()) {
-                descendantNeedsLayout = false;
-                break;
-            }
-        }
-        if (!descendantNeedsLayout)
-            continue;
-
-        for (CheckedPtr<RenderElement> renderer = &descendant; renderer && renderer != this && !renderer->normalChildNeedsLayout(); renderer = renderer->container()) {
-            renderer->setChildNeedsLayout(MarkingBehavior::MarkOnlyThis);
-            if (CheckedPtr renderBox = dynamicDowncast<RenderBox>(*renderer)) {
-                // If the width of an image is affected by the height of a child (e.g., an image with an aspect ratio),
-                // then we have to dirty preferred widths, since even enclosing blocks can become dirty as a result.
-                // (A horizontal flexbox that contains an inline image wrapped in an anonymous block for example.)
-                if (renderBox->hasIntrinsicAspectRatio() || renderBox->style().aspectRatio().hasRatio())
-                    renderBox->setNeedsPreferredWidthsUpdate();
-                // Also propagate into nested percent-height descendants: a block whose percent-height
-                // children themselves have percent-height replaced elements with aspect ratios (e.g.
-                // #target -> div[height:100%] -> canvas[height:100%]) needs its own descendants dirtied
-                // so that the preferred widths cascade correctly up the tree.
-                if (CheckedPtr blockFlow = dynamicDowncast<RenderBlockFlow>(*renderBox))
-                    blockFlow->dirtyForLayoutFromPercentageHeightDescendants();
-            }
-        }
-    }
+    for (auto& descendant : *descendants)
+        dirtyForLayoutFromPercentageHeightDescendant(descendant);
 }
 
 LayoutUnit RenderBlockFlow::shiftForAlignContent(LayoutUnit intrinsicLogicalHeight, LayoutUnit& repaintLogicalTop, LayoutUnit& repaintLogicalBottom)
