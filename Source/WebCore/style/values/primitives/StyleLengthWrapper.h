@@ -84,10 +84,6 @@ template<typename Numeric, CSS::PrimitiveKeyword... Ks> struct LengthWrapperBase
 
     explicit LengthWrapperBase(WTF::HashTableEmptyValueType token) : m_value(token) { }
 
-    // IPC Support
-    explicit LengthWrapperBase(LengthWrapperData::IPCData&& data) : m_value { toData(WTF::move(data)) } { }
-    LengthWrapperData::IPCData ipcData() const { return m_value.ipcData(); }
-
     ALWAYS_INLINE bool isFixed() const { return holdsAlternative<Fixed>(); }
     ALWAYS_INLINE bool isPercent() const { return holdsAlternative<Percentage>(); }
     ALWAYS_INLINE bool isCalculated() const { return holdsAlternative<Calc>();}
@@ -175,21 +171,6 @@ private:
                 return LengthWrapperData { indexForCalc, protect(calc.calculation()) };
             }
         );
-    }
-
-    static LengthWrapperData toData(LengthWrapperData::IPCData&& ipcData)
-    {
-        RELEASE_ASSERT(ipcData.opaqueType <= maxIndex);
-        RELEASE_ASSERT(ipcData.opaqueType != indexForCalc);
-
-        if (ipcData.opaqueType == indexForFixed) {
-            RELEASE_ASSERT(CSS::isWithinRange<Fixed::range>(ipcData.value));
-        }
-        if (ipcData.opaqueType == indexForPercentage) {
-            RELEASE_ASSERT(CSS::isWithinRange<Percentage::range>(ipcData.value));
-        }
-
-        return LengthWrapperData { WTF::move(ipcData) };
     }
 
     LengthWrapperDataEvaluationKind evaluationKind() const
