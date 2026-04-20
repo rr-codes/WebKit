@@ -137,7 +137,7 @@ JSValue JSInjectedScriptHost::internalConstructorName(JSGlobalObject* globalObje
         return jsUndefined();
 
     VM& vm = globalObject->vm();
-    JSObject* object = jsCast<JSObject*>(callFrame->uncheckedArgument(0).toThis(globalObject, ECMAMode::sloppy()));
+    JSObject* object = uncheckedDowncast<JSObject>(callFrame->uncheckedArgument(0).toThis(globalObject, ECMAMode::sloppy()));
     return jsString(vm, JSObject::calculatedClassName(object));
 }
 
@@ -681,14 +681,14 @@ static JSObject* cloneArrayIteratorObject(JSGlobalObject* globalObject, VM& vm, 
 
 static JSObject* cloneMapIteratorObject(JSGlobalObject* globalObject, VM& vm, JSMapIterator* iteratorObject)
 {
-    JSMapIterator* clone = JSMapIterator::create(vm, globalObject->mapIteratorStructure(), jsCast<JSMap*>(iteratorObject->iteratedObject()), iteratorObject->kind());
+    JSMapIterator* clone = JSMapIterator::create(vm, globalObject->mapIteratorStructure(), iteratorObject->iteratedObject(), iteratorObject->kind());
     clone->internalField(JSMapIterator::Field::Entry).set(vm, clone, iteratorObject->internalField(JSMapIterator::Field::Entry).get());
     return clone;
 }
 
 static JSObject* cloneSetIteratorObject(JSGlobalObject* globalObject, VM& vm, JSSetIterator* iteratorObject)
 {
-    JSSetIterator* clone = JSSetIterator::create(vm, globalObject->setIteratorStructure(), jsCast<JSSet*>(iteratorObject->iteratedObject()), iteratorObject->kind());
+    JSSetIterator* clone = JSSetIterator::create(vm, globalObject->setIteratorStructure(), iteratorObject->iteratedObject(), iteratorObject->kind());
     clone->internalField(JSSetIterator::Field::Entry).set(vm, clone, iteratorObject->internalField(JSSetIterator::Field::Entry).get());
     return clone;
 }
@@ -710,7 +710,7 @@ JSValue JSInjectedScriptHost::iteratorEntries(JSGlobalObject* globalObject, Call
         if (auto* arrayIterator = dynamicDowncast<JSArrayIterator>(iteratorObject)) {
             JSObject* iteratedObject = arrayIterator->iteratedObject();
             if (isJSArray(iteratedObject)) {
-                JSArray* array = jsCast<JSArray*>(iteratedObject);
+                JSArray* array = uncheckedDowncast<JSArray>(iteratedObject);
                 if (array->isIteratorProtocolFastAndNonObservable())
                     iterator = cloneArrayIteratorObject(globalObject, vm, arrayIterator);
             } else if (TypeInfo::isArgumentsType(iteratedObject->type())) {
@@ -718,12 +718,12 @@ JSValue JSInjectedScriptHost::iteratorEntries(JSGlobalObject* globalObject, Call
                     iterator = cloneArrayIteratorObject(globalObject, vm, arrayIterator);
             }
         } else if (auto* mapIterator = dynamicDowncast<JSMapIterator>(iteratorObject)) {
-            if (jsCast<JSMap*>(mapIterator->iteratedObject())->isIteratorProtocolFastAndNonObservable()) {
+            if (mapIterator->iteratedObject()->isIteratorProtocolFastAndNonObservable()) {
                 iterator = cloneMapIteratorObject(globalObject, vm, mapIterator);
                 RETURN_IF_EXCEPTION(scope, { });
             }
         } else if (auto* setIterator = dynamicDowncast<JSSetIterator>(iteratorObject)) {
-            if (jsCast<JSSet*>(setIterator->iteratedObject())->isIteratorProtocolFastAndNonObservable()) {
+            if (setIterator->iteratedObject()->isIteratorProtocolFastAndNonObservable()) {
                 iterator = cloneSetIteratorObject(globalObject, vm, setIterator);
                 RETURN_IF_EXCEPTION(scope, { });
             }

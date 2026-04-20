@@ -577,7 +577,7 @@ public:
         VM& vm = globalObject->vm();
         PropertyNameArrayBuilder ownPropertyNames(vm, propertyNames.propertyNameMode(), propertyNames.privateSymbolMode());
         Base::getOwnPropertyNames(object, globalObject, ownPropertyNames, mode);
-        auto* thisObject = jsCast<GlobalObject*>(object);
+        auto* thisObject = uncheckedDowncast<GlobalObject>(object);
         auto& filter = thisObject->ensurePropertyFilter();
         for (auto& propertyName : ownPropertyNames) {
             if (!filter.contains(propertyName.impl()))
@@ -2084,13 +2084,13 @@ JSC_DEFINE_HOST_FUNCTION(functionWriteFile, (JSGlobalObject* globalObject, CallF
         data = asString(dataValue)->value(globalObject);
         RETURN_IF_EXCEPTION(scope, { });
     } else if (dataValue.inherits<JSArrayBuffer>()) {
-        auto* arrayBuffer = jsCast<JSArrayBuffer*>(dataValue);
+        auto* arrayBuffer = uncheckedDowncast<JSArrayBuffer>(dataValue);
         if (arrayBuffer->impl()->isDetached())
             data = emptyString();
         else
             data = std::span(static_cast<const uint8_t*>(arrayBuffer->impl()->data()), arrayBuffer->impl()->byteLength());
     } else if (dataValue.inherits<JSArrayBufferView>()) {
-        auto* view = jsCast<JSArrayBufferView*>(dataValue);
+        auto* view = uncheckedDowncast<JSArrayBufferView>(dataValue);
         if (view->isDetached())
             data = emptyString();
         else
@@ -2482,7 +2482,7 @@ JSC_DEFINE_HOST_FUNCTION(functionDollarEvalScript, (JSGlobalObject* globalObject
     JSValue global = callFrame->thisValue().get(globalObject, Identifier::fromString(vm, "global"_s));
     RETURN_IF_EXCEPTION(scope, encodedJSValue());
     while (global.inherits<JSGlobalProxy>())
-        global = jsCast<JSGlobalProxy*>(global)->target();
+        global = uncheckedDowncast<JSGlobalProxy>(global)->target();
     GlobalObject* realm = dynamicDowncast<GlobalObject>(global);
     if (!realm)
         return JSValue::encode(throwException(globalObject, scope, createError(globalObject, "Expected global to point to a global object"_s)));
@@ -3056,7 +3056,7 @@ JSC_DEFINE_HOST_FUNCTION(functionCreateBigInt32, (JSGlobalObject* globalObject, 
     if (bigIntValue.isBigInt32())
         return JSValue::encode(bigIntValue);
     ASSERT(bigIntValue.isHeapBigInt());
-    JSBigInt* bigInt = jsCast<JSBigInt*>(bigIntValue);
+    JSBigInt* bigInt = uncheckedDowncast<JSBigInt>(bigIntValue);
     if (!bigInt->length())
         return JSValue::encode(jsBigInt32(0));
     if (bigInt->length() == 1) {
@@ -3773,7 +3773,7 @@ static bool checkUncaughtException(VM& vm, GlobalObject* globalObject, JSValue e
         return false;
     }
 
-    bool isInstanceOfExpectedException = jsCast<JSObject*>(exceptionClass)->hasInstance(globalObject, exception);
+    bool isInstanceOfExpectedException = uncheckedDowncast<JSObject>(exceptionClass)->hasInstance(globalObject, exception);
     if (scope.exception()) {
         printf("Expected uncaught exception with name '%s' but given exception class fails performing hasInstance\n", expectedExceptionName.utf8().data());
         return false;
@@ -3825,7 +3825,7 @@ static void checkException(GlobalObject* globalObject, bool isLastFile, bool has
 
 void GlobalObject::reportUncaughtExceptionAtEventLoop(JSGlobalObject* globalObject, Exception* exception)
 {
-    auto* global = jsCast<GlobalObject*>(globalObject);
+    auto* global = uncheckedDowncast<GlobalObject>(globalObject);
     dumpException(global, exception->value());
     bool hideNoReturn = true;
     if (hideNoReturn)
@@ -3894,12 +3894,12 @@ static void runWithOptions(GlobalObject* globalObject, CommandLine& options, boo
             }
 
             JSFunction* fulfillHandler = JSNativeStdFunction::create(vm, globalObject, 1, String(), [&success, &options, isLastFile](JSGlobalObject* globalObject, CallFrame* callFrame) {
-                checkException(jsCast<GlobalObject*>(globalObject), isLastFile, false, callFrame->argument(0), options, success);
+                checkException(uncheckedDowncast<GlobalObject>(globalObject), isLastFile, false, callFrame->argument(0), options, success);
                 return JSValue::encode(jsUndefined());
             });
 
             JSFunction* rejectHandler = JSNativeStdFunction::create(vm, globalObject, 1, String(), [&success, &options, isLastFile](JSGlobalObject* globalObject, CallFrame* callFrame) {
-                checkException(jsCast<GlobalObject*>(globalObject), isLastFile, true, callFrame->argument(0), options, success);
+                checkException(uncheckedDowncast<GlobalObject>(globalObject), isLastFile, true, callFrame->argument(0), options, success);
                 return JSValue::encode(jsUndefined());
             });
 

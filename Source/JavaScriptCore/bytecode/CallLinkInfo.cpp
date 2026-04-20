@@ -208,7 +208,7 @@ void CallLinkInfo::visitWeak(VM& vm)
 
     if (haveLastSeenCallee() && !vm.heap.isMarked(lastSeenCallee())) {
         if (lastSeenCallee()->type() == JSFunctionType)
-            handleSpecificCallee(jsCast<JSFunction*>(lastSeenCallee()));
+            handleSpecificCallee(uncheckedDowncast<JSFunction>(lastSeenCallee()));
         else
             m_clearedByGC = true;
         m_lastSeenCallee.clear();

@@ -281,7 +281,7 @@ template<typename Visitor>
 void Element::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
     DollarVMAssertScope assertScope;
-    Element* thisObject = jsCast<Element*>(cell);
+    Element* thisObject = uncheckedDowncast<Element>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     visitor.append(thisObject->m_root);
@@ -297,7 +297,7 @@ public:
         DollarVMAssertScope assertScope;
         if (reason) [[unlikely]]
             *reason = "JSC::Element is opaque root"_s;
-        Element* element = jsCast<Element*>(handle.slot()->asCell());
+        Element* element = uncheckedDowncast<Element>(handle.slot()->asCell());
         return visitor.containsOpaqueRoot(element->root());
     }
 };
@@ -428,7 +428,7 @@ template<typename Visitor>
 void SimpleObject::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
     DollarVMAssertScope assertScope;
-    SimpleObject* thisObject = jsCast<SimpleObject*>(cell);
+    SimpleObject* thisObject = uncheckedDowncast<SimpleObject>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     visitor.append(thisObject->m_hiddenValue);
@@ -481,7 +481,7 @@ public:
         DollarVMAssertScope assertScope;
         VM& vm = globalObject->vm();
         auto scope = DECLARE_THROW_SCOPE(vm);
-        ImpureGetter* thisObject = jsCast<ImpureGetter*>(object);
+        ImpureGetter* thisObject = uncheckedDowncast<ImpureGetter>(object);
         
         if (thisObject->m_delegate) {
             if (thisObject->m_delegate->getPropertySlot(globalObject, name, slot))
@@ -509,7 +509,7 @@ void ImpureGetter::visitChildrenImpl(JSCell* cell, Visitor& visitor)
     DollarVMAssertScope assertScope;
     ASSERT_GC_OBJECT_INHERITS(cell, info());
     Base::visitChildren(cell, visitor);
-    ImpureGetter* thisObject = jsCast<ImpureGetter*>(cell);
+    ImpureGetter* thisObject = uncheckedDowncast<ImpureGetter>(cell);
     visitor.append(thisObject->m_delegate);
 }
 
@@ -554,7 +554,7 @@ public:
     {
         DollarVMAssertScope assertScope;
         VM& vm = globalObject->vm();
-        CustomGetter* thisObject = jsCast<CustomGetter*>(object);
+        CustomGetter* thisObject = uncheckedDowncast<CustomGetter>(object);
         if (propertyName == PropertyName(Identifier::fromString(vm, "customGetter"_s))) {
             slot.setCacheableCustom(thisObject, PropertyAttribute::DontDelete | PropertyAttribute::ReadOnly | PropertyAttribute::DontEnum, customGetterValueGetter);
             return true;
@@ -641,7 +641,7 @@ IGNORE_WARNINGS_END
     {
         DollarVMAssertScope assertScope;
         VM& vm = globalObject->vm();
-        RuntimeArray* thisObject = jsCast<RuntimeArray*>(object);
+        RuntimeArray* thisObject = uncheckedDowncast<RuntimeArray>(object);
         if (propertyName == vm.propertyNames->length) {
             slot.setCacheableCustom(thisObject, PropertyAttribute::DontDelete | PropertyAttribute::ReadOnly | PropertyAttribute::DontEnum, runtimeArrayLengthGetter);
             return true;
@@ -659,7 +659,7 @@ IGNORE_WARNINGS_END
     static bool getOwnPropertySlotByIndex(JSObject* object, JSGlobalObject* globalObject, unsigned index, PropertySlot& slot)
     {
         DollarVMAssertScope assertScope;
-        RuntimeArray* thisObject = jsCast<RuntimeArray*>(object);
+        RuntimeArray* thisObject = uncheckedDowncast<RuntimeArray>(object);
         if (index < thisObject->getLength()) {
             slot.setValue(thisObject, PropertyAttribute::DontDelete | PropertyAttribute::DontEnum, jsNumber(thisObject->m_vector[index]));
             return true;
@@ -1003,7 +1003,7 @@ public:
     static bool put(JSCell* cell, JSGlobalObject* globalObject, PropertyName propertyName, JSValue value, PutPropertySlot& slot)
     {
         DollarVMAssertScope assertScope;
-        auto* thisObject = jsCast<ObjectDoingSideEffectPutWithoutCorrectSlotStatus*>(cell);
+        auto* thisObject = uncheckedDowncast<ObjectDoingSideEffectPutWithoutCorrectSlotStatus>(cell);
         auto throwScope = DECLARE_THROW_SCOPE(globalObject->vm());
         auto* string = value.toString(globalObject);
         RETURN_IF_EXCEPTION(throwScope, false);
@@ -1728,7 +1728,7 @@ JSC_DEFINE_CUSTOM_GETTER(customGetValue2, (JSGlobalObject* globalObject, Encoded
 
     RELEASE_ASSERT(JSValue::decode(slotValue).inherits<JSTestCustomGetterSetter>());
 
-    auto* target = jsCast<JSTestCustomGetterSetter*>(JSValue::decode(slotValue));
+    auto* target = uncheckedDowncast<JSTestCustomGetterSetter>(JSValue::decode(slotValue));
     JSValue value = target->getDirect(vm, Identifier::fromString(vm, "value2"_s));
     return JSValue::encode(value ? value : jsUndefined());
 }
@@ -1817,7 +1817,7 @@ JSC_DEFINE_CUSTOM_SETTER(customSetValue2, (JSGlobalObject* globalObject, Encoded
     VM& vm = globalObject->vm();
 
     RELEASE_ASSERT(JSValue::decode(slotValue).inherits<JSTestCustomGetterSetter>());
-    auto* target = jsCast<JSTestCustomGetterSetter*>(JSValue::decode(slotValue));
+    auto* target = uncheckedDowncast<JSTestCustomGetterSetter>(JSValue::decode(slotValue));
     PutPropertySlot slot(target);
     target->putDirect(vm, Identifier::fromString(vm, "value2"_s), JSValue::decode(encodedValue));
     return true;
@@ -2073,7 +2073,7 @@ template<typename Visitor>
 void WasmStreamingCompiler::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
     DollarVMAssertScope assertScope;
-    auto* thisObject = jsCast<WasmStreamingCompiler*>(cell);
+    auto* thisObject = uncheckedDowncast<WasmStreamingCompiler>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     visitor.append(thisObject->m_promise);
@@ -3098,7 +3098,7 @@ JSC_DEFINE_HOST_FUNCTION_WITH_ATTRIBUTES(functionCallWithStackSize, SUPPRESS_ASA
     helper.updateVMStackLimits();
 
 #if OS(DARWIN) && CPU(X86_64)
-    JSFunction* function = jsCast<JSFunction*>(arg0);
+    JSFunction* function = uncheckedDowncast<JSFunction>(arg0);
 
     __asm__ volatile (
         "subq %[sizeDiff], %%rsp" "\n"
@@ -3600,7 +3600,7 @@ JSC_DEFINE_HOST_FUNCTION(functionShadowChickenFunctionsOnStack, (JSGlobalObject*
             return IterationStatus::Continue;
         if (visitor->isNativeCalleeFrame())
             return IterationStatus::Continue;
-        result->push(globalObject, jsCast<JSObject*>(visitor->callee().asCell()));
+        result->push(globalObject, uncheckedDowncast<JSObject>(visitor->callee().asCell()));
         scope.releaseAssertNoException(); // This function is only called from tests.
         return IterationStatus::Continue;
     });
@@ -3790,7 +3790,7 @@ JSC_DEFINE_HOST_FUNCTION(functionGlobalObjectForObject, (JSGlobalObject*, CallFr
     DollarVMAssertScope assertScope;
     JSValue value = callFrame->argument(0);
     RELEASE_ASSERT(value.isObject());
-    JSGlobalObject* result = jsCast<JSObject*>(value)->realmMayBeNull();
+    JSGlobalObject* result = uncheckedDowncast<JSObject>(value)->realmMayBeNull();
     if (!result)
         return JSValue::encode(jsUndefined());
     return JSValue::encode(result->globalThis());
@@ -3972,7 +3972,7 @@ JSC_DEFINE_HOST_FUNCTION(functionHasOwnLengthProperty, (JSGlobalObject* globalOb
 JSC_DEFINE_HOST_FUNCTION(functionRejectPromiseAsHandled, (JSGlobalObject* globalObject, CallFrame* callFrame))
 {
     DollarVMAssertScope assertScope;
-    JSPromise* promise = jsCast<JSPromise*>(callFrame->uncheckedArgument(0));
+    JSPromise* promise = uncheckedDowncast<JSPromise>(callFrame->uncheckedArgument(0));
     JSValue reason = callFrame->uncheckedArgument(1);
     promise->rejectAsHandled(globalObject->vm(), globalObject, reason);
     return JSValue::encode(jsUndefined());
@@ -4301,7 +4301,7 @@ JSC_DEFINE_HOST_FUNCTION(functionCallFromCPP, (JSGlobalObject* globalObject, Cal
     auto callData = JSC::getCallData(callback);
     if (callData.type == CallData::Type::None)
         return JSValue::encode(jsUndefined());
-    auto* callbackObject = jsCast<JSObject*>(callback);
+    auto* callbackObject = uncheckedDowncast<JSObject>(callback);
 
     int32_t count = callFrame->argument(1).toInt32(globalObject);
     RETURN_IF_EXCEPTION(scope, { });
@@ -4335,7 +4335,7 @@ JSC_DEFINE_HOST_FUNCTION(functionCachedCallFromCPP, (JSGlobalObject* globalObjec
     auto callData = JSC::getCallData(callback);
     if (callData.type != CallData::Type::JS)
         return JSValue::encode(jsUndefined());
-    auto* callbackObject = jsCast<JSFunction*>(callback);
+    auto* callbackObject = uncheckedDowncast<JSFunction>(callback);
 
     int32_t count = callFrame->argument(1).toInt32(globalObject);
     RETURN_IF_EXCEPTION(scope, { });
@@ -4604,7 +4604,7 @@ void JSDollarVM::getOwnPropertyNames(JSObject* object, JSGlobalObject* globalObj
 template<typename Visitor>
 void JSDollarVM::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    JSDollarVM* thisObject = jsCast<JSDollarVM*>(cell);
+    JSDollarVM* thisObject = uncheckedDowncast<JSDollarVM>(cell);
     Base::visitChildren(thisObject, visitor);
     visitor.append(thisObject->m_objectDoingSideEffectPutWithoutCorrectSlotStatusStructureID);
 }

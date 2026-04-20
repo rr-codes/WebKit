@@ -113,7 +113,7 @@ CString CodeBlock::inferredName() const
     case EvalCode:
         return "<eval>"_span;
     case FunctionCode:
-        return jsCast<FunctionExecutable*>(ownerExecutable())->ecmaName().utf8();
+        return uncheckedDowncast<FunctionExecutable>(ownerExecutable())->ecmaName().utf8();
     case ModuleCode:
         return "<module>"_span;
     default:
@@ -165,7 +165,7 @@ CString CodeBlock::sourceCodeForTools() const
     if (codeType() != FunctionCode)
         return ownerExecutable()->source().toUTF8();
 
-    FunctionExecutable* executable = jsCast<FunctionExecutable*>(ownerExecutable());
+    FunctionExecutable* executable = uncheckedDowncast<FunctionExecutable>(ownerExecutable());
     return executable->source().provider()->getRange(
         executable->functionStart(),
         executable->parametersStartOffset() + executable->source().length()).utf8();
@@ -274,7 +274,7 @@ public:
     
     void dump(PrintStream& out) const final
     {
-        out.print("Linking put_to_scope in ", FunctionExecutableDump(jsCast<FunctionExecutable*>(m_codeBlock->ownerExecutable())), " for ", m_ident);
+        out.print("Linking put_to_scope in ", FunctionExecutableDump(uncheckedDowncast<FunctionExecutable>(m_codeBlock->ownerExecutable())), " for ", m_ident);
     }
     
 private:
@@ -411,7 +411,7 @@ bool CodeBlock::finishCreation(VM& vm, ScriptExecutable* ownerExecutable, Unlink
     // We already have the cloned symbol table for the module environment since we need to instantiate
     // the module environments before linking the code block. We replace the stored symbol table with the already cloned one.
     if (UnlinkedModuleProgramCodeBlock* unlinkedModuleProgramCodeBlock = dynamicDowncast<UnlinkedModuleProgramCodeBlock>(unlinkedCodeBlock)) {
-        SymbolTable* clonedSymbolTable = jsCast<ModuleProgramExecutable*>(ownerExecutable)->moduleEnvironmentSymbolTable();
+        SymbolTable* clonedSymbolTable = uncheckedDowncast<ModuleProgramExecutable>(ownerExecutable)->moduleEnvironmentSymbolTable();
         if (m_unlinkedCode->wasCompiledWithTypeProfilerOpcodes()) {
             ConcurrentJSLocker locker(clonedSymbolTable->m_lock);
             clonedSymbolTable->prepareForTypeProfiling(locker);
@@ -569,7 +569,7 @@ bool CodeBlock::finishCreation(VM& vm, ScriptExecutable* ownerExecutable, Unlink
             if (op.lexicalEnvironment) {
                 if (op.type == ModuleVar) {
                     // Keep the linked module environment strongly referenced.
-                    if (stronglyReferencedModuleEnvironments.add(jsCast<JSModuleEnvironment*>(op.lexicalEnvironment)).isNewEntry)
+                    if (stronglyReferencedModuleEnvironments.add(uncheckedDowncast<JSModuleEnvironment>(op.lexicalEnvironment)).isNewEntry)
                         addConstant(ConcurrentJSLocker(m_lock), op.lexicalEnvironment);
                     metadata.m_lexicalEnvironment.set(vm, this, op.lexicalEnvironment);
                 } else
@@ -614,7 +614,7 @@ bool CodeBlock::finishCreation(VM& vm, ScriptExecutable* ownerExecutable, Unlink
             if (bytecode.m_getPutInfo.resolveType() == ResolvedClosureVar) {
                 // Only do watching if the property we're putting to is not anonymous.
                 if (bytecode.m_var != UINT_MAX) {
-                    SymbolTable* symbolTable = jsCast<SymbolTable*>(getConstant(bytecode.m_symbolTableOrScopeDepth.symbolTable()));
+                    SymbolTable* symbolTable = uncheckedDowncast<SymbolTable>(getConstant(bytecode.m_symbolTableOrScopeDepth.symbolTable()));
                     const Identifier& ident = identifier(bytecode.m_var);
                     ConcurrentJSLocker locker(symbolTable->m_lock);
                     auto iter = symbolTable->find(locker, ident.impl());
@@ -685,7 +685,7 @@ bool CodeBlock::finishCreation(VM& vm, ScriptExecutable* ownerExecutable, Unlink
                 break;
             }
             case ProfileTypeBytecodeLocallyResolved: {
-                SymbolTable* symbolTable = jsCast<SymbolTable*>(getConstant(bytecode.m_symbolTableOrScopeDepth.symbolTable()));
+                SymbolTable* symbolTable = uncheckedDowncast<SymbolTable>(getConstant(bytecode.m_symbolTableOrScopeDepth.symbolTable()));
                 const Identifier& ident = identifier(bytecode.m_identifier);
                 ConcurrentJSLocker locker(symbolTable->m_lock);
                 // If our parent scope was created while profiling was disabled, it will not have prepared for profiling yet.
@@ -701,7 +701,7 @@ bool CodeBlock::finishCreation(VM& vm, ScriptExecutable* ownerExecutable, Unlink
             }
             case ProfileTypeBytecodeFunctionReturnStatement: {
                 RELEASE_ASSERT(ownerExecutable->isFunctionExecutable());
-                globalTypeSet = jsCast<FunctionExecutable*>(ownerExecutable)->returnStatementTypeSet();
+                globalTypeSet = uncheckedDowncast<FunctionExecutable>(ownerExecutable)->returnStatementTypeSet();
                 globalVariableID = TypeProfilerReturnStatement;
                 if (!shouldAnalyze) {
                     // Because a return statement can be added implicitly to return undefined at the end of a function,
@@ -1100,7 +1100,7 @@ void CodeBlock::initializeTemplateObjects(ScriptExecutable* topLevelExecutable, 
 {
     auto scope = DECLARE_THROW_SCOPE(vm());
     for (unsigned i : templateObjectIndices) {
-        auto* descriptor = jsCast<JSTemplateObjectDescriptor*>(m_constantRegisters[i].get());
+        auto* descriptor = uncheckedDowncast<JSTemplateObjectDescriptor>(m_constantRegisters[i].get());
         auto* templateObject = topLevelExecutable->createTemplateObject(globalObject(), descriptor);
         RETURN_IF_EXCEPTION(scope, void());
         m_constantRegisters[i].set(vm(), this, templateObject);
@@ -1135,7 +1135,7 @@ CodeBlock* CodeBlock::specialOSREntryBlockOrNull()
 
 size_t CodeBlock::estimatedSize(JSCell* cell, VM& vm)
 {
-    CodeBlock* thisObject = jsCast<CodeBlock*>(cell);
+    CodeBlock* thisObject = uncheckedDowncast<CodeBlock>(cell);
     size_t extraMemoryAllocated = 0;
     if (thisObject->m_metadata)
         extraMemoryAllocated += thisObject->m_metadata->sizeInBytesForGC();
@@ -1181,7 +1181,7 @@ inline void CodeBlock::forEachPropertyInlineCache(Func func)
 template<typename Visitor>
 void CodeBlock::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    CodeBlock* thisObject = jsCast<CodeBlock*>(cell);
+    CodeBlock* thisObject = uncheckedDowncast<CodeBlock>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(cell, visitor);
     thisObject->visitChildren(visitor);
@@ -2235,16 +2235,16 @@ CodeBlock* CodeBlock::replacement()
     const ClassInfo* classInfo = this->classInfo();
 
     if (classInfo == FunctionCodeBlock::info())
-        return jsCast<FunctionExecutable*>(ownerExecutable())->codeBlockFor(isConstructor() ? CodeSpecializationKind::CodeForConstruct : CodeSpecializationKind::CodeForCall);
+        return uncheckedDowncast<FunctionExecutable>(ownerExecutable())->codeBlockFor(isConstructor() ? CodeSpecializationKind::CodeForConstruct : CodeSpecializationKind::CodeForCall);
 
     if (classInfo == EvalCodeBlock::info())
-        return jsCast<EvalExecutable*>(ownerExecutable())->codeBlock();
+        return uncheckedDowncast<EvalExecutable>(ownerExecutable())->codeBlock();
 
     if (classInfo == ProgramCodeBlock::info())
-        return jsCast<ProgramExecutable*>(ownerExecutable())->codeBlock();
+        return uncheckedDowncast<ProgramExecutable>(ownerExecutable())->codeBlock();
 
     if (classInfo == ModuleProgramCodeBlock::info())
-        return jsCast<ModuleProgramExecutable*>(ownerExecutable())->codeBlock();
+        return uncheckedDowncast<ModuleProgramExecutable>(ownerExecutable())->codeBlock();
 
     RELEASE_ASSERT_NOT_REACHED();
     return nullptr;
@@ -3228,7 +3228,7 @@ void CodeBlock::tallyFrequentExitSites()
 void CodeBlock::notifyLexicalBindingUpdate()
 {
     JSGlobalObject* globalObject = m_globalObject.get();
-    JSGlobalLexicalEnvironment* globalLexicalEnvironment = jsCast<JSGlobalLexicalEnvironment*>(globalObject->globalScope());
+    JSGlobalLexicalEnvironment* globalLexicalEnvironment = uncheckedDowncast<JSGlobalLexicalEnvironment>(globalObject->globalScope());
     SymbolTable* symbolTable = globalLexicalEnvironment->symbolTable();
 
     ConcurrentJSLocker locker(m_lock);

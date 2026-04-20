@@ -678,7 +678,7 @@ id tryUnwrapObjcObject(JSGlobalContextRef context, JSValueRef value)
     ASSERT(!exception);
     JSC::JSLockHolder locker(toJS(context));
     if (toJS(object)->inherits<JSC::JSCallbackObject<JSC::JSAPIWrapperObject>>())
-        return (__bridge id)JSC::jsCast<JSC::JSAPIWrapperObject*>(toJS(object))->wrappedObject();
+        return (__bridge id)uncheckedDowncast<JSC::JSAPIWrapperObject>(toJS(object))->wrappedObject();
     if (id target = tryUnwrapConstructor(object))
         return target;
     return nil;

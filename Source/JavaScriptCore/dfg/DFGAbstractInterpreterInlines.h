@@ -5215,7 +5215,7 @@ bool AbstractInterpreter<AbstractStateType>::executeEffects(unsigned clobberLimi
                 if (asString(childConstant)->tryGetValueImpl() == uid)
                     break;
             } else if (childConstant.isSymbol()) {
-                if (&jsCast<Symbol*>(childConstant)->uid() == uid)
+                if (&uncheckedDowncast<Symbol>(childConstant)->uid() == uid)
                     break;
             }
         }

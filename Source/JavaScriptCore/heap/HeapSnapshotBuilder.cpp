@@ -320,7 +320,7 @@ String HeapSnapshotBuilder::descriptionForNode(const HeapSnapshotNode& node)
     Structure* structure = cell->structure();
 
     if (structure->classInfoForCells()->isSubClassOf(Structure::info())) {
-        Structure* cellAsStructure = jsCast<Structure*>(cell);
+        Structure* cellAsStructure = uncheckedDowncast<Structure>(cell);
         String className = cellAsStructure->classInfoForCells()->className;
         if (m_client)
             className = m_client->heapSnapshotBuilderOverrideClassName(*this, cell, className);

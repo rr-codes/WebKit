@@ -2052,7 +2052,7 @@ ByteCodeParser::CallOptimizationResult ByteCodeParser::handleCallVariant(Node* c
     };
 
     if (callee.internalFunction() || callee.function()) {
-        JSObject* function = callee.internalFunction() ? jsCast<JSObject*>(callee.internalFunction()) : jsCast<JSObject*>(callee.function());
+        JSObject* function = callee.internalFunction() ? static_cast<JSObject*>(callee.internalFunction()) : static_cast<JSObject*>(callee.function());
         if (handleConstantFunction(callTargetNode, result, function, registerOffset, argumentCountIncludingThis, specializationKind, prediction, newTarget, insertChecksWithAccounting)) {
             endSpecialCase();
             return CallOptimizationResult::Inlined;
@@ -7269,7 +7269,7 @@ void ByteCodeParser::parseBlock(unsigned limit)
                         FrozenValue* frozen = m_graph.freeze(cachedFunction);
                         addToGraph(CheckIsConstant, OpInfo(frozen), callee);
 
-                        promiseConstructor = jsCast<JSPromiseConstructor*>(cachedFunction);
+                        promiseConstructor = uncheckedDowncast<JSPromiseConstructor>(cachedFunction);
                     }
                 }
                 if (promiseConstructor) {
@@ -9819,7 +9819,7 @@ void ByteCodeParser::parseBlock(unsigned limit)
                 addToGraph(Phantom, get(bytecode.m_scope));
                 WatchpointSet* watchpointSet;
                 ScopeOffset offset;
-                JSSegmentedVariableObject* scopeObject = jsCast<JSSegmentedVariableObject*>(JSScope::constantScopeForCodeBlock(resolveType, m_inlineStackTop->m_codeBlock));
+                JSSegmentedVariableObject* scopeObject = uncheckedDowncast<JSSegmentedVariableObject>(JSScope::constantScopeForCodeBlock(resolveType, m_inlineStackTop->m_codeBlock));
                 {
                     ConcurrentJSLocker locker(scopeObject->symbolTable()->m_lock);
                     SymbolTableEntry entry = scopeObject->symbolTable()->get(locker, uid);
@@ -10008,7 +10008,7 @@ void ByteCodeParser::parseBlock(unsigned limit)
                 if (resolveType == GlobalVar || resolveType == GlobalVarWithVarInjectionChecks)
                     m_graph.watchpoints().addLazily(globalObject->varReadOnlyWatchpointSet());
 
-                JSSegmentedVariableObject* scopeObject = jsCast<JSSegmentedVariableObject*>(JSScope::constantScopeForCodeBlock(resolveType, m_inlineStackTop->m_codeBlock));
+                JSSegmentedVariableObject* scopeObject = uncheckedDowncast<JSSegmentedVariableObject>(JSScope::constantScopeForCodeBlock(resolveType, m_inlineStackTop->m_codeBlock));
                 if (watchpoints) {
                     SymbolTableEntry entry = scopeObject->symbolTable()->get(uid);
                     ASSERT_UNUSED(entry, watchpoints == entry.watchpointSet());

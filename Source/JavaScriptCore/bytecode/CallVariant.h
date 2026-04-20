@@ -80,7 +80,7 @@ public:
     ALWAYS_INLINE CallVariant despecifiedClosure() const
     {
         if (m_callee->type() == JSFunctionType)
-            return CallVariant(jsCast<JSFunction*>(m_callee)->executable());
+            return CallVariant(uncheckedDowncast<JSFunction>(m_callee)->executable());
         return *this;
     }
     

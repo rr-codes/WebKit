@@ -181,7 +181,7 @@ void Debugger::attach(JSGlobalObject* globalObject)
                 auto* cell = static_cast<JSCell*>(heapCell);
                 if (auto* function = dynamicDowncast<JSFunction>(cell)) {
                     if (function->scope()->realm() == globalObject && function->executable()->isFunctionExecutable() && !function->isHostOrBuiltinFunction())
-                        sourceProviders.add(jsCast<FunctionExecutable*>(function->executable())->source().provider());
+                        sourceProviders.add(uncheckedDowncast<FunctionExecutable>(function->executable())->source().provider());
                 }
             }
             return IterationStatus::Continue;

@@ -125,7 +125,7 @@ ALWAYS_INLINE std::span<const uint8_t> getWasmBufferFromValue(JSGlobalObject* gl
             RETURN_IF_EXCEPTION(throwScope, { });
         } else {
             IdempotentArrayBufferByteLengthGetter<std::memory_order_relaxed> getter;
-            if (!jsCast<JSDataView*>(arrayBufferView)->viewByteLength(getter)) [[unlikely]] {
+            if (!uncheckedDowncast<JSDataView>(arrayBufferView)->viewByteLength(getter)) [[unlikely]] {
                 throwTypeError(globalObject, throwScope, typedArrayBufferHasBeenDetachedErrorMessage);
                 return { };
             }
@@ -164,12 +164,12 @@ ALWAYS_INLINE Vector<uint8_t> createSourceBufferFromValue(VM& vm, JSGlobalObject
 ALWAYS_INLINE bool isWebAssemblyHostFunction(JSObject* object, WebAssemblyFunction*& wasmFunction, WebAssemblyWrapperFunction*& wasmWrapperFunction)
 {
     if (object->inherits<WebAssemblyFunction>()) {
-        wasmFunction = jsCast<WebAssemblyFunction*>(object);
+        wasmFunction = uncheckedDowncast<WebAssemblyFunction>(object);
         wasmWrapperFunction = nullptr;
         return true;
     }
     if (object->inherits<WebAssemblyWrapperFunction>()) {
-        wasmWrapperFunction = jsCast<WebAssemblyWrapperFunction*>(object);
+        wasmWrapperFunction = uncheckedDowncast<WebAssemblyWrapperFunction>(object);
         wasmFunction = nullptr;
         return true;
     }
@@ -180,7 +180,7 @@ ALWAYS_INLINE bool isWebAssemblyHostFunction(JSValue value, WebAssemblyFunction*
 {
     if (!value.isObject())
         return false;
-    return isWebAssemblyHostFunction(jsCast<JSObject*>(value), wasmFunction, wasmWrapperFunction);
+    return isWebAssemblyHostFunction(uncheckedDowncast<JSObject>(value), wasmFunction, wasmWrapperFunction);
 }
 
 ALWAYS_INLINE bool isWebAssemblyHostFunction(JSValue object)

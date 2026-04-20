@@ -509,7 +509,7 @@ DEFINE_BUILTIN_IMPLEMENTATION(jsstring, fromCharCodeArray, JSGlobalObject* globa
 
     // At this point 'array' must be an (array mut i16), guaranteed by Wasm type rules
     // or by a runtime check in JS entrypoint wrapper.
-    auto* array = jsCast<JSWebAssemblyArray*>(arrayObject);
+    auto* array = uncheckedDowncast<JSWebAssemblyArray>(arrayObject);
     ASSERT(isMutI16Array(array));
 
     if (startArg < 0 || endArg < 0)
@@ -545,10 +545,10 @@ DEFINE_BUILTIN_IMPLEMENTATION_I32(jsstring, intoCharCodeArray, JSGlobalObject* g
     if (!arrayObject || !stringArg.isString()) [[unlikely]]
         THROW_ILLEGAL_ARGUMENT_EXCEPTION;
 
-    JSString* string = jsCast<JSString*>(stringArg);
+    JSString* string = uncheckedDowncast<JSString>(stringArg);
     // At this point 'array' must be an (array mut i16), guaranteed by Wasm type rules
     // or by a runtime check in JS entrypoint wrapper.
-    auto* array = jsCast<JSWebAssemblyArray*>(arrayObject);
+    auto* array = uncheckedDowncast<JSWebAssemblyArray>(arrayObject);
     ASSERT(isMutI16Array(array));
 
     size_t stringLength = string->length();

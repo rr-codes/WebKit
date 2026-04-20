@@ -80,7 +80,7 @@ public:
     template<typename T>
     T cast()
     {
-        return jsCast<T>(value());
+        return uncheckedDowncast<std::remove_pointer_t<T>>(value());
     }
     
     Structure* structure() const { return m_structure; }

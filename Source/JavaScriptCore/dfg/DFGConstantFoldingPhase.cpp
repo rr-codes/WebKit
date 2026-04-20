@@ -467,7 +467,7 @@ private:
                                 constantUid = static_cast<const UniquedStringImpl*>(impl);
                         }
                     } else if (childConstant.isSymbol()) {
-                        Symbol* symbol = jsCast<Symbol*>(childConstant);
+                        Symbol* symbol = uncheckedDowncast<Symbol>(childConstant);
                         constantUid = &symbol->uid();
                     }
                 }

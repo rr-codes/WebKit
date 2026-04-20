@@ -1073,14 +1073,14 @@ void ScriptExecutable::prepareForExecution(VM& vm, JSFunction* function, JSScope
 {
     if (hasJITCodeFor(kind)) {
         if constexpr (std::same_as<ExecutableType, EvalExecutable>)
-            resultCodeBlock = jsCast<CodeBlock*>(jsCast<ExecutableType*>(this)->codeBlock());
+            resultCodeBlock = uncheckedDowncast<ExecutableType>(this)->codeBlock();
         else if constexpr (std::same_as<ExecutableType, ProgramExecutable>)
-            resultCodeBlock = jsCast<CodeBlock*>(jsCast<ExecutableType*>(this)->codeBlock());
+            resultCodeBlock = uncheckedDowncast<ExecutableType>(this)->codeBlock();
         else if constexpr (std::same_as<ExecutableType, ModuleProgramExecutable>)
-            resultCodeBlock = jsCast<CodeBlock*>(jsCast<ExecutableType*>(this)->codeBlock());
+            resultCodeBlock = uncheckedDowncast<ExecutableType>(this)->codeBlock();
         else {
             static_assert(std::same_as<ExecutableType, FunctionExecutable>);
-            resultCodeBlock = jsCast<CodeBlock*>(jsCast<ExecutableType*>(this)->codeBlockFor(kind));
+            resultCodeBlock = uncheckedDowncast<ExecutableType>(this)->codeBlockFor(kind);
         }
         return;
     }

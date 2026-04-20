@@ -190,7 +190,7 @@ void ShadowChicken::update(VM& vm, CallFrame* callFrame)
                 bool isTailDeleted = false;
                 // FIXME: Make shadow chicken work with Wasm.
                 // https://bugs.webkit.org/show_bug.cgi?id=165441
-                stackRightNow.append(Frame(jsCast<JSObject*>(visitor->callee().asCell()), visitor->callFrame(), isTailDeleted));
+                stackRightNow.append(Frame(uncheckedDowncast<JSObject>(visitor->callee().asCell()), visitor->callFrame(), isTailDeleted));
                 return IterationStatus::Continue;
             });
         stackRightNow.reverse();
@@ -338,14 +338,14 @@ void ShadowChicken::update(VM& vm, CallFrame* callFrame)
                 ? callFrame->registers()[codeBlock->scopeRegister().offset()].jsValue()
                 : jsUndefined();
             if (!scopeValue.isUndefined() && codeBlock->wasCompiledWithDebuggingOpcodes()) {
-                scope = jsCast<JSScope*>(scopeValue.asCell());
+                scope = uncheckedDowncast<JSScope>(scopeValue.asCell());
                 RELEASE_ASSERT(scope->inherits<JSScope>());
             } else if (foundFrame) {
                 scope = m_log[indexInLog].scope;
                 if (scope)
                     RELEASE_ASSERT(scope->inherits<JSScope>());
             }
-            toPush.append(Frame(jsCast<JSObject*>(visitor->callee().asCell()), callFrame, isTailDeleted, callFrame->thisValue(), scope, codeBlock, callFrame->callSiteIndex()));
+            toPush.append(Frame(uncheckedDowncast<JSObject>(visitor->callee().asCell()), callFrame, isTailDeleted, callFrame->thisValue(), scope, codeBlock, callFrame->callSiteIndex()));
 
             if (indexInLog < logCursorIndex
                 // This condition protects us from the case where advanceIndexInLogTo didn't find
