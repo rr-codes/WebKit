@@ -1260,7 +1260,6 @@ webkit.org/b/310273 imported/w3c/web-platform-tests/uievents/textInput/basic.htm
 
 webkit.org/b/310279 imported/w3c/web-platform-tests/html/semantics/interactive-elements/the-dialog-element/dialog-popover-closedby-simple.html [ Pass Failure ]
 
-webkit.org/b/310739 imported/w3c/web-platform-tests/editing/other/copy-elements-with-css-vars.tentative.html [ Pass Crash Failure ]
 webkit.org/b/310741 imported/w3c/web-platform-tests/navigation-api/navigate-event/defer/tentative/defer-restore-callback-abort.html [ Pass Timeout ]
 webkit.org/b/310743 imported/w3c/web-platform-tests/css/css-position/sticky/position-sticky-table-td-right.html [ Pass ImageOnlyFailure ]
 webkit.org/b/310744 imported/w3c/web-platform-tests/css/css-shapes/shape-outside/shape-image/shape-image-014.html [ Pass ImageOnlyFailure ]
