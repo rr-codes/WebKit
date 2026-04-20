@@ -578,6 +578,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WebKit/WebPage/AppKitGesturesTests.swift,
+				WebKit/WebPage/DrawingToPDFTests.swift,
+				WebKit/WebPage/PDFSnapshotTests.swift,
 				WebKit/WebPage/URLSchemeHandlerTests.swift,
 				WebKit/WebPage/WebPageNavigationTests.swift,
 				WebKit/WebPage/WebPageTests.swift,
@@ -596,6 +598,7 @@
 				"cocoa/Bundle+Extras.swift",
 				"cocoa/Foundation+Extras.swift",
 				cocoa/HTTPServer.mm,
+				cocoa/PlatformUtilities.swift,
 				cocoa/SmartListsSupport.swift,
 				"cocoa/SwiftUI+Extras.swift",
 				cocoa/TestCocoaImageAndCocoaColor.mm,
@@ -1309,6 +1312,8 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WebKit/WebPage/AppKitGesturesTests.swift,
+				WebKit/WebPage/DrawingToPDFTests.swift,
+				WebKit/WebPage/PDFSnapshotTests.swift,
 				WebKit/WebPage/URLSchemeHandlerTests.swift,
 				WebKit/WebPage/WebPageNavigationTests.swift,
 				WebKit/WebPage/WebPageTests.swift,

@@ -125,7 +125,6 @@ Tests/WebKit/WKWebView/DocumentEditingContext.mm @nonARC
 Tests/WebKit/WKWebView/Download.mm @nonARC
 Tests/WebKit/WKWebView/DownloadProgress.mm @nonARC
 Tests/WebKit/WKWebView/DragAndDropTests.mm @nonARC
-Tests/WebKit/WKWebView/DrawingToPDF.mm @nonARC
 Tests/WebKit/WKWebView/DuplicateCompletionHandlerCalls.mm @nonARC
 Tests/WebKit/WKWebView/EditorStateTests.mm @nonARC
 Tests/WebKit/WKWebView/ElementTargetingTests.mm @nonARC
@@ -227,7 +226,6 @@ Tests/WebKit/WKWebView/ObservedRenderingProgressEventsAfterCrash.mm @nonARC
 Tests/WebKit/WKWebView/OpenAndCloseWindow.mm @nonARC
 Tests/WebKit/WKWebView/OverrideViewportArguments.mm @nonARC
 Tests/WebKit/WKWebView/PDFLinkReferrer.mm @nonARC
-Tests/WebKit/WKWebView/PDFSnapshot.mm @nonARC
 Tests/WebKit/WKWebView/PageZoom.mm @nonARC
 Tests/WebKit/WKWebView/ParserYieldTokenTests.mm @nonARC
 Tests/WebKit/WKWebView/PasteHTML.mm @nonARC

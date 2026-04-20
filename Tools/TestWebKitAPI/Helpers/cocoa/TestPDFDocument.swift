@@ -32,14 +32,6 @@ import struct Foundation.URL
 import struct Swift.String
 private import TestWebKitAPILibrary.Helpers.cocoa.TestPDFDocument
 
-#if canImport(UIKit)
-import UIKit
-typealias CocoaColor = UIColor
-#else
-import AppKit
-typealias CocoaColor = NSColor
-#endif
-
 @objc
 @implementation
 extension TestPDFAnnotation {
