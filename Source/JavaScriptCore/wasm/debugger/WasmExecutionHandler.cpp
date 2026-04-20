@@ -151,9 +151,12 @@ DebuggerTrapStatus ExecutionHandler::handleDebuggerTrapIfNeeded(CallFrame* callF
         return DebuggerTrapStatus::NotResolvedByDebugger; // Throw; no debugger connected
 
     if (exceptionType == Wasm::ExceptionType::StackOverflow || exceptionType == Wasm::ExceptionType::Termination) {
-        // Fires during the prologue stack check — stopData already set as prologue context.
-        // Upgrade reason to Trap and add trap type; keep existing callee/instance/address.
-        RELEASE_ASSERT(debuggee.debugState()->isStoppedAtPrologue());
+        // Prologue trap: pc/mc/stack are caller's, not the overflowing function's.
+        // handleTrapsIfNeeded() may have already processed a NeedStopTheWorld trap,
+        // serving a debugger stop and clearing stopData via clearStop(); re-establish
+        // prologue context if needed.
+        if (!debuggee.debugState()->stopData)
+            debuggee.debugState()->setPrologueStopData(instance, callee, callFrame);
         debuggee.debugState()->stopReason = DebugState::Reason::WasmTrap;
         debuggee.debugState()->stopData->wasmTrapType = exceptionType;
     } else
