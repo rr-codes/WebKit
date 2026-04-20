@@ -7427,7 +7427,6 @@ TEST(ProcessSwap, PageOverlayLayerPersistence)
 
 #if PLATFORM(IOS) || PLATFORM(VISION)
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED > 130400
 TEST(ProcessSwap, QuickLookRequestsPasswordAfterSwap)
 {
     auto processPoolConfiguration = psonProcessPoolConfiguration();
@@ -7461,7 +7460,6 @@ TEST(ProcessSwap, QuickLookRequestsPasswordAfterSwap)
     TestWebKitAPI::Util::run(&didFinishQuickLookLoad);
     didFinishQuickLookLoad = false;
 }
-#endif
 
 static constexpr auto minimumWidthPageBytes = R"PSONRESOURCE(
 <!DOCTYPE html>

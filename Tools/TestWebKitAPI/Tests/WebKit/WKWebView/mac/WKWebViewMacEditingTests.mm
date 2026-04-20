@@ -420,7 +420,6 @@ TEST(WKWebViewMacEditingTests, DoNotRenderInlinePredictionsForRegularMarkedText)
     EXPECT_TRUE(foundNonWhitePixel);
 }
 
-#if HAVE(INLINE_PREDICTIONS)
 TEST(WKWebViewMacEditingTests, InlinePredictionsShouldSuppressAutocorrection)
 {
     auto configuration = [WKWebViewConfiguration _test_configurationWithTestPlugInClassName:@"WebProcessPlugInWithInternals" configureJSCForTesting:YES];
@@ -488,7 +487,6 @@ TEST(WKWebViewMacEditingTests, SetMarkedTextWithNoAttributedString)
 
     [webView setMarkedText:@"hello" selectedRange:NSMakeRange(4, 0) replacementRange:NSMakeRange(6, 4)];
 }
-#endif
 
 TEST(WKWebViewMacEditingTests, FirstRectForCharacterRange)
 {

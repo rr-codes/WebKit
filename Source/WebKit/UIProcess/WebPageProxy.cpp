@@ -7772,9 +7772,6 @@ void WebPageProxy::didFailProvisionalLoadForFrameShared(Ref<WebProcessProxy>&& p
 
     MESSAGE_CHECK_URL(process, provisionalURL);
     MESSAGE_CHECK_URL(process, error.failingURL());
-#if PLATFORM(COCOA) && USE(NSURL_ERROR_FAILING_URL_STRING_KEY)
-    MESSAGE_CHECK(process, error.hasMatchingFailingURLKeys());
-#endif
 
     RefPtr protectedPageClient { pageClient() };
 

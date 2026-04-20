@@ -1442,20 +1442,8 @@ window.webkit.messageHandlers.regularPage.postMessage("PASS");
 </script>
 )SWRESOURCE"_s;
 
-static bool isSWProcessConnectionCreationTestSlow()
-{
-#if (!defined(NDEBUG) && PLATFORM(MAC) && __MAC_OS_X_VERSION_MIN_REQUIRED < 140000)
-    return true;
-#else
-    return false;
-#endif
-}
-
 TEST(ServiceWorkers, SWProcessConnectionCreation)
 {
-    if (isSWProcessConnectionCreationTestSlow())
-        return;
-
     [WKWebsiteDataStore _allowWebsiteDataRecordsForAllOrigins];
 
     RetainPtr<WKWebViewConfiguration> configuration = adoptNS([[WKWebViewConfiguration alloc] init]);
