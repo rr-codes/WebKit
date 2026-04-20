@@ -312,8 +312,6 @@ private:
 };
 static_assert(sizeof(PlainDate) == sizeof(int32_t));
 
-using TimeZone = Variant<TimeZoneID, int64_t>;
-
 class PlainYearMonth final {
     WTF_MAKE_TZONE_ALLOCATED(PlainYearMonth);
 public:

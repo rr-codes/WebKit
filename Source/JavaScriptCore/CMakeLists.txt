@@ -1180,6 +1180,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/JSPIContext.h
     runtime/JSPIContextInlines.h
     runtime/JSCPtrTag.h
+    runtime/JSCTimeZone.h
     runtime/JSCustomGetterFunction.h
     runtime/JSCustomSetterFunction.h
     runtime/JSDataView.h

@@ -26,6 +26,7 @@
 
 #pragma once
 
+#include "ISO8601.h"
 #include "JSObject.h"
 #include <unicode/udat.h>
 #include <wtf/unicode/icu/ICUHelpers.h>
@@ -133,8 +134,7 @@ private:
     String m_dataLocale;
     String m_calendar;
     String m_numberingSystem;
-    String m_timeZone;
-    String m_timeZoneForICU;
+    TimeZone m_timeZone;
     HourCycle m_hourCycle { HourCycle::None };
     Weekday m_weekday { Weekday::None };
     Era m_era { Era::None };

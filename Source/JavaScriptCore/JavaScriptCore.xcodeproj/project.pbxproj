@@ -1549,6 +1549,7 @@
 		9E72940B190F0514001A91B5 /* BundlePath.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E72940A190F0514001A91B5 /* BundlePath.h */; };
 		9F63434577274FAFB9336C38 /* ModuleNamespaceAccessCase.h in Headers */ = {isa = PBXBuildFile; fileRef = 4CE978E385A8498199052153 /* ModuleNamespaceAccessCase.h */; };
 		A12BBFF21B044A8B00664B69 /* IntlObject.h in Headers */ = {isa = PBXBuildFile; fileRef = A12BBFF11B044A8B00664B69 /* IntlObject.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		B1D7736A1D0A42A4B9017DE0 /* JSCTimeZone.h in Headers */ = {isa = PBXBuildFile; fileRef = 24FF4DFDAD3D4D97BE486930 /* JSCTimeZone.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		A1587D6E1B4DC14100D69849 /* IntlDateTimeFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = A1587D681B4DC14100D69849 /* IntlDateTimeFormat.h */; };
 		A1587D701B4DC14100D69849 /* IntlDateTimeFormatConstructor.h in Headers */ = {isa = PBXBuildFile; fileRef = A1587D6A1B4DC14100D69849 /* IntlDateTimeFormatConstructor.h */; };
 		A1587D721B4DC14100D69849 /* IntlDateTimeFormatPrototype.h in Headers */ = {isa = PBXBuildFile; fileRef = A1587D6C1B4DC14100D69849 /* IntlDateTimeFormatPrototype.h */; };
@@ -5199,6 +5200,7 @@
 		A125846C1B45A36000CC7F6C /* IntlNumberFormatConstructor.lut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntlNumberFormatConstructor.lut.h; sourceTree = "<group>"; };
 		A125846D1B45A36000CC7F6C /* IntlNumberFormatPrototype.lut.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntlNumberFormatPrototype.lut.h; sourceTree = "<group>"; };
 		A12BBFF11B044A8B00664B69 /* IntlObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntlObject.h; sourceTree = "<group>"; };
+		24FF4DFDAD3D4D97BE486930 /* JSCTimeZone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCTimeZone.h; sourceTree = "<group>"; };
 		A12BBFF31B044A9800664B69 /* IntlObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntlObject.cpp; sourceTree = "<group>"; };
 		A1587D671B4DC14100D69849 /* IntlDateTimeFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntlDateTimeFormat.cpp; sourceTree = "<group>"; };
 		A1587D681B4DC14100D69849 /* IntlDateTimeFormat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IntlDateTimeFormat.h; sourceTree = "<group>"; };
@@ -8911,6 +8913,7 @@
 				CDBF70762EBCFE6D00F6D00B /* JSCJSValueStructure.h */,
 				FE1E2C3C2240C1EF00F6B729 /* JSCPtrTag.cpp */,
 				FE7497E5209001B00003565B /* JSCPtrTag.h */,
+				24FF4DFDAD3D4D97BE486930 /* JSCTimeZone.h */,
 				84323E7D25D5EC6A00F97776 /* JSCustomGetterFunction.cpp */,
 				84323E7C25D5EC6900F97776 /* JSCustomGetterFunction.h */,
 				276B39002A71D2B200252F4E /* JSCustomGetterFunctionInlines.h */,
@@ -11934,6 +11937,7 @@
 				148CD1D8108CF902008163C6 /* JSContextRefPrivate.h in Headers */,
 				FE7497E6209001B10003565B /* JSCPtrTag.h in Headers */,
 				A72028B81797601E0098028C /* JSCTestRunnerUtils.h in Headers */,
+				B1D7736A1D0A42A4B9017DE0 /* JSCTimeZone.h in Headers */,
 				84323E8025D5EC6A00F97776 /* JSCustomGetterFunction.h in Headers */,
 				276B39182A71D2B600252F4E /* JSCustomGetterFunctionInlines.h in Headers */,
 				84323E7F25D5EC6A00F97776 /* JSCustomSetterFunction.h in Headers */,
