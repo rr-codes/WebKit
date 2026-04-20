@@ -1631,23 +1631,31 @@ bool SelectorChecker::matchHasPseudoClass(CheckingContext& checkingContext, cons
         switch (relation.type) {
         case Style::Relation::ChildrenAffectedByForwardPositionalRules:
         case Style::Relation::ChildrenAffectedByBackwardPositionalRules:
-            checkingContext.styleRelations.append(Style::Relation { *relation.element, Style::Relation::AffectedByHasWithPositionalPseudoClass });
+            checkingContext.styleRelations.append(Style::Relation { *relation.element, Style::Relation::AffectedByHasWithSiblingRelationship });
             return;
         case Style::Relation::ChildrenAffectedByFirstChildRules:
         case Style::Relation::ChildrenAffectedByLastChildRules:
             checkingContext.styleRelations.append(relation);
             return;
         case Style::Relation::AffectedByEmpty:
+            return;
         case Style::Relation::AffectedByPreviousSibling:
-        case Style::Relation::DescendantsAffectedByPreviousSibling:
         case Style::Relation::AffectsNextSibling:
+            if (CheckedPtr parent = relation.element->parentElement())
+                checkingContext.styleRelations.append(Style::Relation { *parent, Style::Relation::AffectedByHasWithAdjacentSiblingRelationship });
+            return;
+        case Style::Relation::DescendantsAffectedByPreviousSibling:
+            if (CheckedPtr parent = relation.element->parentElement())
+                checkingContext.styleRelations.append(Style::Relation { *parent, Style::Relation::AffectedByHasWithSiblingRelationship });
+            return;
         case Style::Relation::DescendantsAffectedByForwardPositionalRules:
         case Style::Relation::DescendantsAffectedByBackwardPositionalRules:
         case Style::Relation::FirstChild:
         case Style::Relation::LastChild:
         case Style::Relation::NthChildIndex:
             return;
-        case Style::Relation::AffectedByHasWithPositionalPseudoClass:
+        case Style::Relation::AffectedByHasWithSiblingRelationship:
+        case Style::Relation::AffectedByHasWithAdjacentSiblingRelationship:
             ASSERT_NOT_REACHED();
             return;
         }

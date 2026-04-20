@@ -545,7 +545,8 @@ public:
     bool descendantsAffectedByBackwardPositionalRules() const { return hasStyleFlag(NodeStyleFlag::DescendantsAffectedByBackwardPositionalRules); }
     bool affectsNextSiblingElementStyle() const { return hasStyleFlag(NodeStyleFlag::AffectsNextSiblingElementStyle); }
     bool styleIsAffectedByPreviousSibling() const { return hasStyleFlag(NodeStyleFlag::StyleIsAffectedByPreviousSibling); }
-    bool affectedByHasWithPositionalPseudoClass() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithPositionalPseudoClass); }
+    bool affectedByHasWithSiblingRelationship() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithSiblingRelationship); }
+    bool affectedByHasWithAdjacentSiblingRelationship() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithAdjacentSiblingRelationship); }
     unsigned childIndex() const { return hasRareData() ? rareDataChildIndex() : 0; }
 
     bool NODELETE hasFlagsSetDuringStylingOfChildren() const;
@@ -560,7 +561,8 @@ public:
     void setDescendantsAffectedByBackwardPositionalRules() { setStyleFlag(NodeStyleFlag::DescendantsAffectedByBackwardPositionalRules); }
     void setAffectsNextSiblingElementStyle() { setStyleFlag(NodeStyleFlag::AffectsNextSiblingElementStyle); }
     void setStyleIsAffectedByPreviousSibling() { setStyleFlag(NodeStyleFlag::StyleIsAffectedByPreviousSibling); }
-    void setAffectedByHasWithPositionalPseudoClass() { setStyleFlag(NodeStyleFlag::AffectedByHasWithPositionalPseudoClass); }
+    void setAffectedByHasWithSiblingRelationship() { setStyleFlag(NodeStyleFlag::AffectedByHasWithSiblingRelationship); }
+    void setAffectedByHasWithAdjacentSiblingRelationship() { setStyleFlag(NodeStyleFlag::AffectedByHasWithAdjacentSiblingRelationship); }
     void setChildIndex(unsigned);
 
     const AtomString& effectiveLang() const;

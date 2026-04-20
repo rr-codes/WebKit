@@ -184,10 +184,15 @@ void ChildChangeInvalidation::invalidateForHasBeforeMutation()
         return false;
     };
 
-    if (parentElement().affectedByHasWithPositionalPseudoClass()) {
+    if (parentElement().affectedByHasWithSiblingRelationship()) {
         traverseRemainingExistingSiblings([&](auto& changedElement) {
             invalidateForChangedElement(changedElement, matchingHasSelectors, ChangedElementRelation::Sibling);
         });
+    } else if (parentElement().affectedByHasWithAdjacentSiblingRelationship()) {
+        if (m_childChange.previousSiblingElement)
+            invalidateForChangedElement(*m_childChange.previousSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
+        if (m_childChange.nextSiblingElement)
+            invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
     } else {
         if (firstChildStateWillStopMatching())
             invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
@@ -244,10 +249,15 @@ void ChildChangeInvalidation::invalidateForHasAfterMutation()
         return false;
     };
 
-    if (parentElement().affectedByHasWithPositionalPseudoClass()) {
+    if (parentElement().affectedByHasWithSiblingRelationship()) {
         traverseRemainingExistingSiblings([&](auto& changedElement) {
             invalidateForChangedElement(changedElement, matchingHasSelectors, ChangedElementRelation::Sibling);
         });
+    } else if (parentElement().affectedByHasWithAdjacentSiblingRelationship()) {
+        if (m_childChange.previousSiblingElement)
+            invalidateForChangedElement(*m_childChange.previousSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
+        if (m_childChange.nextSiblingElement)
+            invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
     } else {
         if (firstChildStateWillStartMatching(m_childChange.nextSiblingElement))
             invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);

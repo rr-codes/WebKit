@@ -715,7 +715,7 @@ protected:
         DescendantNeedsStyleResolution                          = 1 << 0,
         DirectChildNeedsStyleResolution                         = 1 << 1,
 
-        AffectedByHasWithPositionalPseudoClass                  = 1 << 2,
+        AffectedByHasWithSiblingRelationship                    = 1 << 2,
         ChildrenAffectedByFirstChildRules                       = 1 << 3,
         ChildrenAffectedByLastChildRules                        = 1 << 4,
         AffectsNextSiblingElementStyle                          = 1 << 5,
@@ -728,6 +728,7 @@ protected:
         DescendantsAffectedByForwardPositionalRules             = 1 << 10,
         ChildrenAffectedByBackwardPositionalRules               = 1 << 11,
         DescendantsAffectedByBackwardPositionalRules            = 1 << 12,
+        AffectedByHasWithAdjacentSiblingRelationship            = 1 << 13,
     };
 
     struct StyleBitfields {
