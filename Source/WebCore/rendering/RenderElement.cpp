@@ -1209,6 +1209,11 @@ void RenderElement::insertedIntoTree()
 
 void RenderElement::willBeRemovedFromTree()
 {
+    if (isLegend()) {
+        if (CheckedPtr fieldset = dynamicDowncast<RenderBlock>(parent()); fieldset && fieldset->isFieldset())
+            fieldset->setIntrinsicBorderForFieldset({ });
+    }
+
     // If we remove a visible child from an invisible parent, we don't know the layer visibility any more.
     if (parent()->style().usedVisibility() != Visibility::Visible && style().usedVisibility() == Visibility::Visible && !hasLayer()) {
         // FIXME: should get parent layer. Necessary?
