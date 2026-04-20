@@ -86,6 +86,9 @@ static void swizzledSetAnalysis(VKCImageAnalysisInteraction *, SEL, VKCImageAnal
 {
     auto configuration = [WKWebViewConfiguration _test_configurationWithTestPlugInClassName:@"WebProcessPlugInWithInternals" configureJSCForTesting:YES];
     configuration.preferences.elementFullscreenEnabled = YES;
+#if PLATFORM(IOS_FAMILY)
+    configuration.allowsInlineMediaPlayback = YES;
+#endif
     RetainPtr webView = adoptNS([[FullscreenVideoTextRecognitionWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 568) configuration:configuration]);
     [webView synchronouslyLoadTestPageNamed:@"element-fullscreen"];
     return webView;
@@ -287,12 +290,7 @@ TEST(FullscreenVideoTextRecognition, TogglePlaybackInElementFullscreen)
     [webView waitForImageAnalysisToEnd];
 }
 
-// FIXME: Re-enable this test for iOS once webkit.org/b/248094 is resolved.
-#if PLATFORM(IOS) || PLATFORM(VISION)
-TEST(FullscreenVideoTextRecognition, DISABLED_AddVideoAfterEnteringFullscreen)
-#else
 TEST(FullscreenVideoTextRecognition, AddVideoAfterEnteringFullscreen)
-#endif
 {
     auto webView = [FullscreenVideoTextRecognitionWebView create];
     [webView loadVideoSource:@"test.mp4"];
@@ -306,12 +304,7 @@ TEST(FullscreenVideoTextRecognition, AddVideoAfterEnteringFullscreen)
     [webView waitForImageAnalysisToBegin];
 }
 
-// FIXME: Re-enable this test for iOS once webkit.org/b/248094 is resolved.
-#if PLATFORM(IOS) || PLATFORM(VISION)
-TEST(FullscreenVideoTextRecognition, DISABLED_DoNotAnalyzeVideoAfterExitingFullscreen)
-#else
 TEST(FullscreenVideoTextRecognition, DoNotAnalyzeVideoAfterExitingFullscreen)
-#endif
 {
     auto webView = [FullscreenVideoTextRecognitionWebView create];
     [webView loadVideoSource:@"test.mp4"];
