@@ -4515,11 +4515,6 @@ int runJSC(const CommandLine& options, bool isWorker, const Func& func)
         vm.derefSuppressingSaferCPPChecking();
     }
 
-#if ENABLE(WEBASSEMBLY_DEBUGGER)
-    if (Options::enableWasmDebugger()) [[unlikely]]
-        Wasm::DebugServer::singleton().stop();
-#endif
-
     return result;
 }
 
