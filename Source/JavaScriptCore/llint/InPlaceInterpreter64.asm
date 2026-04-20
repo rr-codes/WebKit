@@ -744,58 +744,48 @@ end)
     # 0x20 - 0x26: get and set values #
     ###################################
 
-macro localGetPostDecode()
+macro localGet()
     # Index into locals: local[i] = CFR - IPIntLocalsBaseOffset - i * LocalSize
-    mulq LocalSize, t0
+    lshiftp (constexpr (WTF::fastLog2(JSC::IPInt::LOCAL_SIZE))), t0
     subp cfr, t0, t0
     loadv -IPIntLocalsBaseOffset[t0], v0
-    # Push to stack
-    pushVec(v0)
-    nextIPIntInstruction()
+end
+
+macro localSet()
+    # Store to locals: local[i] = CFR - IPIntLocalsBaseOffset - i * LocalSize
+    lshiftp (constexpr (WTF::fastLog2(JSC::IPInt::LOCAL_SIZE))), t0
+    subp cfr, t0, t0
+    storev v0, -IPIntLocalsBaseOffset[t0]
 end
 
 ipintOp(_local_get, macro()
     # local.get
     loadb 1[PC], t0
-    advancePC(2)
     bbaeq t0, 0x80, .ipint_local_get_slow_path
-    localGetPostDecode()
-end)
-
-macro localSetPostDecode()
-    # Pop from stack
-    popVec(v0)
-    # Store to locals: local[i] = CFR - IPIntLocalsBaseOffset - i * LocalSize
-    mulq LocalSize, t0
-    subp cfr, t0, t0
-    storev v0, -IPIntLocalsBaseOffset[t0]
+    localGet()
+    pushVec(v0)
+    advancePC(2)
     nextIPIntInstruction()
-end
+end)
 
 ipintOp(_local_set, macro()
     # local.set
     loadb 1[PC], t0
-    advancePC(2)
     bbaeq t0, 0x80, .ipint_local_set_slow_path
-    localSetPostDecode()
-end)
-
-macro localTeePostDecode()
-    # Load from stack
-    loadv [sp], v0
-    # Store to locals: local[i] = CFR - IPIntLocalsBaseOffset - i * LocalSize
-    mulq LocalSize, t0
-    subp cfr, t0, t0
-    storev v0, -IPIntLocalsBaseOffset[t0]
+    popVec(v0)
+    localSet()
+    advancePC(2)
     nextIPIntInstruction()
-end
+end)
 
 ipintOp(_local_tee, macro()
     # local.tee
     loadb 1[PC], t0
-    advancePC(2)
     bbaeq t0, 0x80, .ipint_local_tee_slow_path
-    localTeePostDecode()
+    loadv [sp], v0
+    localSet()
+    advancePC(2)
+    nextIPIntInstruction()
 end)
 
 ipintOp(_global_get, macro()
@@ -10471,32 +10461,29 @@ end)
 ## ULEB128 decoding logic for locals ##
 #######################################
 
-macro decodeULEB128(result)
-    # result should already be the first byte.
-    andq 0x7f, result
-    move 7, t2 # t1 holds the shift.
-    validateOpcodeConfig(t3)
-.loop:
-    loadb [PC], t3
-    andq t3, 0x7f, t1
-    lshiftq t2, t1
-    orq t1, result
-    addq 7, t2
-    advancePC(1)
-    bbaeq t3, 128, .loop
-end
-
 .ipint_local_get_slow_path:
-    decodeULEB128(t0)
-    localGetPostDecode()
+    leap 1[PC], t4
+    decodeLEBVarUInt(t0, t4, t1, t2)
+    localGet()
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
 
 .ipint_local_set_slow_path:
-    decodeULEB128(t0)
-    localSetPostDecode()
+    leap 1[PC], t4
+    decodeLEBVarUInt(t0, t4, t1, t2)
+    popVec(v0)
+    localSet()
+    move t4, PC
+    nextIPIntInstruction()
 
 .ipint_local_tee_slow_path:
-    decodeULEB128(t0)
-    localTeePostDecode()
+    leap 1[PC], t4
+    decodeLEBVarUInt(t0, t4, t1, t2)
+    loadv [sp], v0
+    localSet()
+    move t4, PC
+    nextIPIntInstruction()
 
 ##########################################
 ## Out-of-line LEB128 decode slow paths ##
