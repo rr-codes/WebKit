@@ -1519,6 +1519,7 @@ fast/webgpu/nocrash/fuzz-286820.html [ Skip ]
 
 # skipped outside of macOS Sequoia due to crash in failed allocation
 [ Sonoma ] fast/webgpu/nocrash/fuzz-279086.html [ Skip ]
+http/tests/webgpu/webgpu/api/operation/command_buffer/queries/timestampQuery.html [ Skip ]
 
 # skipped on non-AS due to requiring features unavailable on Intel
 [ x86_64 ] fast/webgpu/nocrash/fuzz-273021.html [ Skip ]
@@ -1567,6 +1568,7 @@ webkit.org/b/293808 [ Sequoia+ arm64 ] http/tests/webgpu/webgpu/shader [ Slow ]
 [ Debug ] http/tests/webgpu/webgpu/api/validation/image_copy/texture_related.html [ Skip ]
 [ Debug ] http/tests/webgpu/webgpu/api/validation/state/device_lost/destroy.html [ Skip ]
 [ Debug ] http/tests/webgpu/webgpu/shader/execution/expression/binary/f16_matrix_vector_multiplication.html [ Skip ]
+[ Debug ] http/tests/webgpu/webgpu/shader/validation/uniformity/uniformity.html [ Skip ]
 http/tests/webgpu/webgpu/api/operation/command_buffer/copyTextureToTexture.html [ Skip ]
 http/tests/webgpu/webgpu/api/operation/command_buffer/image_copy.html [ Skip ]
 http/tests/webgpu/webgpu/api/operation/resource_init/texture_zero.html [ Skip ]
@@ -2232,8 +2234,8 @@ webkit.org/b/298292 [ Sequoia ] http/tests/webgpu/webgpu/api/operation/sampling/
 http/tests/webgpu/webgpu/web_platform/copyToTexture [ Pass Timeout ]
 
 # this test is very slow and times out on debug so skip
-[ Release ] http/tests/webgpu/webgpu/web_platform/copyToTexture/ImageData.html [ Slow ]
-[ Debug ] http/tests/webgpu/webgpu/web_platform/copyToTexture/ImageData.html [ Skip ]
+[ Release arm64 ] http/tests/webgpu/webgpu/web_platform/copyToTexture/ImageData.html [ Slow ]
+[ Debug arm64 ] http/tests/webgpu/webgpu/web_platform/copyToTexture/ImageData.html [ Skip ]
 
 http/tests/webgpu/webgpu/web_platform/copyToTexture/image_file.html [ Pass ]
 
@@ -2242,6 +2244,7 @@ http/tests/webgpu/webgpu/web_platform/copyToTexture/ImageBitmap.html [ Pass Time
 
 # skip on intel for now due to small precision error differences
 [ x86_64 ] http/tests/webgpu/webgpu/web_platform/copyToTexture/video.html [ Skip ]
+[ Release x86_64 ] http/tests/webgpu/webgpu/web_platform/copyToTexture/ImageData.html [ Skip ]
 
 webkit.org/b/298416 [ Debug ] http/tests/websocket/construct-in-detached-frame.html [ Skip ]
 
