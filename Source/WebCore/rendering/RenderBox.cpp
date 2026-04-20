@@ -3867,9 +3867,22 @@ template<typename SizeType> std::optional<LayoutUnit> RenderBox::computePercenta
 
     auto availableHeight = !overridingAvailableSize ? (!isOrthogonal ? containingBlock->availableLogicalHeightForPercentageComputation() : containingBlockChild->containingBlockLogicalWidthForContent()) : overridingAvailableSize;
 
+    auto availableHeightForQuirksPercentageResolution = [&]() -> std::optional<LayoutUnit> {
+        // Quirks spec §3.5 step 4: the walk stops at flex containers because they
+        // are not block containers. The flex container may have auto height, making
+        // availableLogicalHeightForPercentageComputation return nullopt, but during
+        // cross-axis stretch layout its used content height is known.
+        if (availableHeight || !skippedAutoHeightContainingBlock)
+            return availableHeight;
+        CheckedPtr flexContainer = dynamicDowncast<RenderFlexibleBox>(*containingBlock);
+        if (!flexContainer || !flexContainer->isInCrossAxisStretchLayout())
+            return { };
+        return containingBlock->contentBoxLogicalHeight();
+    };
+    availableHeight = availableHeightForQuirksPercentageResolution();
+
     if (!availableHeight)
         return { };
-
 
     auto result = [&] {
         if constexpr (Style::IsPercentage<SizeType>)
