@@ -96,6 +96,11 @@ void IntlNumberFormat::visitChildrenImpl(JSCell* cell, Visitor& visitor)
     Base::visitChildren(thisObject, visitor);
 
     visitor.append(thisObject->m_boundFormat);
+
+    if (thisObject->m_numberFormatter)
+        visitor.reportExtraMemoryVisited(estimatedUNumberFormatterSize);
+    if (thisObject->m_numberRangeFormatter)
+        visitor.reportExtraMemoryVisited(estimatedUNumberRangeFormatterSize);
 }
 
 DEFINE_VISIT_CHILDREN(IntlNumberFormat);
@@ -540,6 +545,8 @@ void IntlNumberFormat::initializeNumberFormat(JSGlobalObject* globalObject, JSVa
         return;
     }
 
+    vm.heap.reportExtraMemoryAllocated(this, estimatedUNumberFormatterSize);
+
     // Defer creation of the range formatter; it is only needed for formatRange / formatRangeToParts.
     m_numberFormatterSkeleton = WTF::move(skeleton);
     m_dataLocaleWithExtensions = WTF::move(dataLocaleWithExtensions);
@@ -563,6 +570,8 @@ UNumberRangeFormatter* IntlNumberFormat::createNumberRangeFormatterIfNecessary(J
         throwTypeError(globalObject, scope, "failed to initialize NumberFormat"_s);
         return nullptr;
     }
+
+    vm.heap.reportExtraMemoryAllocated(this, estimatedUNumberRangeFormatterSize);
 
     return m_numberRangeFormatter.get();
 }

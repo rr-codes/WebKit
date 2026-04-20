@@ -60,6 +60,10 @@ struct UNumberRangeFormatterDeleter {
     JS_EXPORT_PRIVATE void operator()(UNumberRangeFormatter*);
 };
 
+// Approximate sizes of ICU objects for GC memory pressure reporting, measured empirically with unumf_open + format.
+inline constexpr size_t estimatedUNumberFormatterSize = 1000;
+inline constexpr size_t estimatedUNumberRangeFormatterSize = 20000;
+
 class IntlMathematicalValue {
     WTF_MAKE_TZONE_ALLOCATED(IntlMathematicalValue);
 public:
