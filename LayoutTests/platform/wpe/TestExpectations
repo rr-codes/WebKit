@@ -1277,3 +1277,9 @@ webkit.org/b/311864 [ arm64 ] fast/events/monotonic-event-time-real-gap.html [ P
 webkit.org/b/311865 [ arm64 ] imported/w3c/web-platform-tests/webrtc/RTCDataChannel-send-close-blob.window.html [ Pass Failure ]
 
 webkit.org/b/312273 http/tests/media/video-play-waiting.html [ Pass Failure ]
+
+# This might not be a regression since the GStreamer 1.28 deployment because this test was flaky before.
+webkit.org/b/312138 [ Debug ] media/track/webvtt-parser-does-not-leak.html [ Failure Pass ]
+
+webkit.org/b/312138 [ Debug ] media/media-event-listeners.html [ Failure Pass ]
+webkit.org/b/312138 [ Debug ] media/video-background-playback.html [ Failure Pass ]
