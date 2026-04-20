@@ -3760,9 +3760,6 @@
     "imported/w3c/webdriver/tests/bidi/script/disown/handles.py": {
         "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288059"}}
     },
-    "imported/w3c/webdriver/tests/bidi/script/disown/invalid.py": {
-        "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288059"}}
-    },
     "imported/w3c/webdriver/tests/bidi/script/disown/target.py": {
         "expected": { "all": { "status": ["SKIP"], "bug": "webkit.org/b/288059"}}
     },
