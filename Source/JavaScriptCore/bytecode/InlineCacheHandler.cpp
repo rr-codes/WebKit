@@ -56,6 +56,7 @@ InlineCacheHandler::InlineCacheHandler()
     disableThreadingChecks();
 }
 
+WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 InlineCacheHandler::InlineCacheHandler(bool makesJSCalls, Ref<InlineCacheHandler>&& previous, Ref<PolymorphicAccessJITStubRoutine>&& stubRoutine, std::unique_ptr<PropertyInlineCacheClearingWatchpoint>&& watchpoint, CacheType cacheType)
     : m_callTarget(stubRoutine->code().code().template retagged<JITStubRoutinePtrTag>())
     , m_jumpTarget(CodePtr<NoPtrTag> { m_callTarget.retagged<NoPtrTag>().dataLocation<uint8_t*>() + prologueSizeInBytesDataIC }.template retagged<JITStubRoutinePtrTag>())
@@ -67,6 +68,7 @@ InlineCacheHandler::InlineCacheHandler(bool makesJSCalls, Ref<InlineCacheHandler
 {
     disableThreadingChecks();
 }
+WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 
 InlineCacheHandlerWithJSCall::InlineCacheHandlerWithJSCall(Ref<InlineCacheHandler>&& previous, Ref<PolymorphicAccessJITStubRoutine>&& stubRoutine, std::unique_ptr<PropertyInlineCacheClearingWatchpoint>&& watchpoint, CacheType cacheType)
     : InlineCacheHandler(true, WTF::move(previous), WTF::move(stubRoutine), WTF::move(watchpoint), cacheType)
@@ -192,6 +194,7 @@ Ref<InlineCacheHandler> InlineCacheHandler::createNonHandlerSlowPath(CodePtr<JIT
     return result;
 }
 
+WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 Ref<InlineCacheHandler> InlineCacheHandler::createSlowPath(VM& vm, AccessType accessType)
 {
     auto result = adoptRef(*new InlineCacheHandler);
@@ -200,6 +203,7 @@ Ref<InlineCacheHandler> InlineCacheHandler::createSlowPath(VM& vm, AccessType ac
     result->m_jumpTarget = CodePtr<NoPtrTag> { codeRef.retaggedCode<NoPtrTag>().dataLocation<uint8_t*>() + prologueSizeInBytesDataIC }.template retagged<JITStubRoutinePtrTag>();
     return result;
 }
+WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 
 Ref<InlineCacheHandler> InlineCacheCompiler::generateSlowPathHandler(VM& vm, AccessType accessType)
 {
