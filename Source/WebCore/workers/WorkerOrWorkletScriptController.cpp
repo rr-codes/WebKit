@@ -61,8 +61,6 @@
 #include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/JSModuleRecord.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>
-#include <JavaScriptCore/JSScriptFetchParameters.h>
-#include <JavaScriptCore/JSScriptFetcher.h>
 #include <JavaScriptCore/ScriptCallStack.h>
 #include <JavaScriptCore/StrongInlines.h>
 #include <JavaScriptCore/Symbol.h>
@@ -331,7 +329,7 @@ bool WorkerOrWorkletScriptController::loadModuleSynchronously(WorkerScriptFetche
 
     Ref protector { scriptFetcher };
     {
-        auto* promise = JSExecState::loadModule(globalObject, sourceCode.jsSourceCode(), JSC::JSScriptFetcher::create(vm, { &scriptFetcher }));
+        auto* promise = JSExecState::loadModule(globalObject, sourceCode.jsSourceCode(), protector.ptr());
         scope.assertNoExceptionExceptTermination();
         RETURN_IF_EXCEPTION(scope, false);
 
@@ -453,7 +451,7 @@ void WorkerOrWorkletScriptController::linkAndEvaluateModule(WorkerScriptFetcher&
     JSLockHolder lock { vm };
 
     NakedPtr<JSC::Exception> returnedException;
-    JSC::JSPromise* promise = JSExecState::linkAndEvaluateModule(globalObject, Identifier::fromUid(vm, protect(scriptFetcher.moduleKey()).get()), jsUndefined(), returnedException);
+    JSC::JSPromise* promise = JSExecState::linkAndEvaluateModule(globalObject, Identifier::fromUid(vm, protect(scriptFetcher.moduleKey()).get()), nullptr, returnedException);
     if ((returnedException && vm.isTerminationException(returnedException)) || isTerminatingExecution()) {
         forbidExecution();
         return;
@@ -510,7 +508,7 @@ void WorkerOrWorkletScriptController::loadAndEvaluateModule(const URL& moduleURL
     RefPtr globalScope = m_globalScope.get();
     auto scriptFetcher = WorkerScriptFetcher::create(WTF::move(parameters), credentials, globalScope->destination(), globalScope->referrerPolicy());
 
-    auto* promise = JSExecState::loadModule(globalObject, moduleURL, JSC::JSScriptFetchParameters::create(vm, scriptFetcher->parameters()), JSC::JSScriptFetcher::create(vm, { scriptFetcher.ptr() }));
+    auto* promise = JSExecState::loadModule(globalObject, moduleURL, &scriptFetcher->parameters(), scriptFetcher.ptr());
     if (promise) [[likely]] {
         auto task = createSharedTask<void(std::optional<Exception>&&)>([completionHandler = WTF::move(completionHandler)](std::optional<Exception>&& exception) mutable {
             completionHandler(WTF::move(exception));
@@ -533,7 +531,7 @@ void WorkerOrWorkletScriptController::loadAndEvaluateModule(const URL& moduleURL
             }
 
             NakedPtr<JSC::Exception> returnedException;
-            JSPromise* promise = JSExecState::linkAndEvaluateModule(*globalObject, moduleKey, jsUndefined(), returnedException);
+            JSPromise* promise = JSExecState::linkAndEvaluateModule(*globalObject, moduleKey, nullptr, returnedException);
             if ((returnedException && vm.isTerminationException(returnedException)) || context->script()->isTerminatingExecution()) {
                 if (context->script())
                     context->script()->forbidExecution();

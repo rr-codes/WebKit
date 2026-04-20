@@ -900,7 +900,6 @@
 		276B38DF2A71D26400252F4E /* ProxyObjectInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38BA2A71D25B00252F4E /* ProxyObjectInlines.h */; };
 		276B38E02A71D26400252F4E /* JSAsyncFunctionInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38BB2A71D25B00252F4E /* JSAsyncFunctionInlines.h */; };
 		276B38E12A71D26400252F4E /* JSModuleEnvironmentInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38BC2A71D25B00252F4E /* JSModuleEnvironmentInlines.h */; };
-		276B38F82A71D26400252F4E /* JSScriptFetchParametersInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38D32A71D26400252F4E /* JSScriptFetchParametersInlines.h */; };
 		276B39142A71D2B600252F4E /* PropertyTableInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38FC2A71D2B200252F4E /* PropertyTableInlines.h */; };
 		276B39152A71D2B600252F4E /* NativeErrorConstructorInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38FD2A71D2B200252F4E /* NativeErrorConstructorInlines.h */; };
 		276B39162A71D2B600252F4E /* JSModuleNamespaceObjectInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B38FE2A71D2B200252F4E /* JSModuleNamespaceObjectInlines.h */; };
@@ -908,7 +907,6 @@
 		276B39192A71D2B600252F4E /* JSSourceCodeInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B39012A71D2B300252F4E /* JSSourceCodeInlines.h */; };
 		276B391A2A71D2B600252F4E /* JSBoundFunctionInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B39022A71D2B300252F4E /* JSBoundFunctionInlines.h */; };
 		276B391B2A71D2B600252F4E /* JSLexicalEnvironmentInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B39032A71D2B300252F4E /* JSLexicalEnvironmentInlines.h */; };
-		276B391C2A71D2B600252F4E /* JSScriptFetcherInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B39042A71D2B300252F4E /* JSScriptFetcherInlines.h */; };
 		276B391E2A71D2B600252F4E /* ProgramExecutableInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B39062A71D2B300252F4E /* ProgramExecutableInlines.h */; };
 		276B39212A71D2B600252F4E /* JSGeneratorFunctionInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B39092A71D2B400252F4E /* JSGeneratorFunctionInlines.h */; };
 		276B39232A71D2B600252F4E /* JSWeakObjectRefInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 276B390B2A71D2B400252F4E /* JSWeakObjectRefInlines.h */; };
@@ -1501,7 +1499,6 @@
 		8CF21B932DD9D68A00355A6C /* JSAsyncDisposableStack.h in Headers */ = {isa = PBXBuildFile; fileRef = 8CF21B922DD9D68A00355A6C /* JSAsyncDisposableStack.h */; };
 		8CF21B952DD9D69000355A6C /* JSAsyncDisposableStackInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 8CF21B942DD9D69000355A6C /* JSAsyncDisposableStackInlines.h */; };
 		90213E3E123A40C200D422F3 /* MemoryStatistics.h in Headers */ = {isa = PBXBuildFile; fileRef = 90213E3C123A40C200D422F3 /* MemoryStatistics.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		9064337DD4B0402BAF34A592 /* JSScriptFetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BA93C9590484C5BAD9316EA /* JSScriptFetcher.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		91278D5521DEB82600B57184 /* InspectorAuditAgent.h in Headers */ = {isa = PBXBuildFile; fileRef = 91278D5321DEB82500B57184 /* InspectorAuditAgent.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		91278D5821DEDA9600B57184 /* JSGlobalObjectAuditAgent.h in Headers */ = {isa = PBXBuildFile; fileRef = 91278D5621DEDA9400B57184 /* JSGlobalObjectAuditAgent.h */; };
 		9168BD872447BA4E0080FFB4 /* AggregateError.h in Headers */ = {isa = PBXBuildFile; fileRef = 9168BD852447BA4D0080FFB4 /* AggregateError.h */; };
@@ -2004,7 +2001,6 @@
 		E319A3F128DA84EB00DF18C7 /* IntlDurationFormatPrototype.h in Headers */ = {isa = PBXBuildFile; fileRef = E319A3EB28DA84EB00DF18C7 /* IntlDurationFormatPrototype.h */; };
 		E31C31322511AFD700E7A3A0 /* IntlCache.h in Headers */ = {isa = PBXBuildFile; fileRef = E31C31302511AFD600E7A3A0 /* IntlCache.h */; };
 		E31D8F482E71227200DE481A /* WasmMergedProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = E31D8F462E71227200DE481A /* WasmMergedProfile.h */; };
-		E3201C1D1F8E82360076A032 /* JSScriptFetchParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = E38D060B1F8E814100649CF2 /* JSScriptFetchParameters.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E3201C1E1F8E824C0076A032 /* ScriptFetchParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = E38D060C1F8E814100649CF2 /* ScriptFetchParameters.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E320B66C2912298100E87CDB /* MemoryMode.h in Headers */ = {isa = PBXBuildFile; fileRef = E320B66A2912298000E87CDB /* MemoryMode.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E322E5A31DA64439006E7709 /* DFGSnippetParams.h in Headers */ = {isa = PBXBuildFile; fileRef = E322E5A11DA64435006E7709 /* DFGSnippetParams.h */; };
@@ -3799,7 +3795,6 @@
 		0FFFC95214EF909500C72532 /* DFGPredictionPropagationPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DFGPredictionPropagationPhase.h; path = dfg/DFGPredictionPropagationPhase.h; sourceTree = "<group>"; };
 		0FFFC95314EF909500C72532 /* DFGVirtualRegisterAllocationPhase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DFGVirtualRegisterAllocationPhase.cpp; path = dfg/DFGVirtualRegisterAllocationPhase.cpp; sourceTree = "<group>"; };
 		0FFFC95414EF909500C72532 /* DFGVirtualRegisterAllocationPhase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DFGVirtualRegisterAllocationPhase.h; path = dfg/DFGVirtualRegisterAllocationPhase.h; sourceTree = "<group>"; };
-		11C197C2624848EDA84CED7F /* JSScriptFetcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSScriptFetcher.cpp; sourceTree = "<group>"; };
 		140D17D60E8AD4A9000CD17D /* JSBasePrivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBasePrivate.h; sourceTree = "<group>"; };
 		141211020A48780900480255 /* minidom.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = minidom.c; path = tests/minidom.c; sourceTree = "<group>"; };
 		1412110D0A48788700480255 /* minidom.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = minidom.js; path = tests/minidom.js; sourceTree = "<group>"; };
@@ -4139,7 +4134,6 @@
 		276B38BA2A71D25B00252F4E /* ProxyObjectInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyObjectInlines.h; sourceTree = "<group>"; };
 		276B38BB2A71D25B00252F4E /* JSAsyncFunctionInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSAsyncFunctionInlines.h; sourceTree = "<group>"; };
 		276B38BC2A71D25B00252F4E /* JSModuleEnvironmentInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSModuleEnvironmentInlines.h; sourceTree = "<group>"; };
-		276B38D32A71D26400252F4E /* JSScriptFetchParametersInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSScriptFetchParametersInlines.h; sourceTree = "<group>"; };
 		276B38FA2A71D2B100252F4E /* ProxyRevokeInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProxyRevokeInlines.h; sourceTree = "<group>"; };
 		276B38FB2A71D2B200252F4E /* JSStringIteratorInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSStringIteratorInlines.h; sourceTree = "<group>"; };
 		276B38FC2A71D2B200252F4E /* PropertyTableInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PropertyTableInlines.h; sourceTree = "<group>"; };
@@ -4150,7 +4144,6 @@
 		276B39012A71D2B300252F4E /* JSSourceCodeInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSSourceCodeInlines.h; sourceTree = "<group>"; };
 		276B39022A71D2B300252F4E /* JSBoundFunctionInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSBoundFunctionInlines.h; sourceTree = "<group>"; };
 		276B39032A71D2B300252F4E /* JSLexicalEnvironmentInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSLexicalEnvironmentInlines.h; sourceTree = "<group>"; };
-		276B39042A71D2B300252F4E /* JSScriptFetcherInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSScriptFetcherInlines.h; sourceTree = "<group>"; };
 		276B39052A71D2B300252F4E /* ModuleProgramExecutableInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModuleProgramExecutableInlines.h; sourceTree = "<group>"; };
 		276B39062A71D2B300252F4E /* ProgramExecutableInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgramExecutableInlines.h; sourceTree = "<group>"; };
 		276B39072A71D2B400252F4E /* NumberPrototypeInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberPrototypeInlines.h; sourceTree = "<group>"; };
@@ -4769,7 +4762,6 @@
 		6B2360CD26C6253C0054AEEC /* JITOperationValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JITOperationValidation.h; sourceTree = "<group>"; };
 		6B731CC02647A8370014646F /* SlowPathCall.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SlowPathCall.cpp; sourceTree = "<group>"; };
 		6B767E7A26791F270017F8D1 /* AssemblyHelpersSpoolers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AssemblyHelpersSpoolers.h; sourceTree = "<group>"; };
-		6BA93C9590484C5BAD9316EA /* JSScriptFetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSScriptFetcher.h; sourceTree = "<group>"; };
 		6BCCEC0325D1FA27000F391D /* VerifierSlotVisitorInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerifierSlotVisitorInlines.h; sourceTree = "<group>"; };
 		70113D491A8DB093003848C4 /* IteratorOperations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IteratorOperations.cpp; sourceTree = "<group>"; };
 		70113D4A1A8DB093003848C4 /* IteratorOperations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IteratorOperations.h; sourceTree = "<group>"; };
@@ -6047,9 +6039,7 @@
 		E389D852291226BC0085C3DC /* PageCount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PageCount.h; sourceTree = "<group>"; };
 		E38C72C32EA05F84009CD28C /* WasmCallProfile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WasmCallProfile.cpp; sourceTree = "<group>"; };
 		E38CA06E2E614C0C00041A0C /* WasmCallProfile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WasmCallProfile.h; sourceTree = "<group>"; };
-		E38D060B1F8E814100649CF2 /* JSScriptFetchParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSScriptFetchParameters.h; sourceTree = "<group>"; };
 		E38D060C1F8E814100649CF2 /* ScriptFetchParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScriptFetchParameters.h; sourceTree = "<group>"; };
-		E38D060D1F8E814100649CF2 /* JSScriptFetchParameters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSScriptFetchParameters.cpp; sourceTree = "<group>"; };
 		E38DAB512A95D23A0050B7A8 /* PerfLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PerfLog.h; sourceTree = "<group>"; };
 		E38DAB522A95D23A0050B7A8 /* PerfLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PerfLog.cpp; sourceTree = "<group>"; };
 		E38DB2E627F588F70027BD3F /* ScriptExecutableInlines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScriptExecutableInlines.h; sourceTree = "<group>"; };
@@ -9068,12 +9058,6 @@
 				534638701E70CF3D00F12AC1 /* JSRunLoopTimer.h */,
 				14874AE115EBDE4A002E3587 /* JSScope.cpp */,
 				14874AE215EBDE4A002E3587 /* JSScope.h */,
-				11C197C2624848EDA84CED7F /* JSScriptFetcher.cpp */,
-				6BA93C9590484C5BAD9316EA /* JSScriptFetcher.h */,
-				276B39042A71D2B300252F4E /* JSScriptFetcherInlines.h */,
-				E38D060D1F8E814100649CF2 /* JSScriptFetchParameters.cpp */,
-				E38D060B1F8E814100649CF2 /* JSScriptFetchParameters.h */,
-				276B38D32A71D26400252F4E /* JSScriptFetchParametersInlines.h */,
 				0F919D0E157F3327004A4E7D /* JSSegmentedVariableObject.cpp */,
 				0F919D0F157F3327004A4E7D /* JSSegmentedVariableObject.h */,
 				A7299D9B17D12837005F5FF9 /* JSSet.cpp */,
@@ -12065,10 +12049,6 @@
 				534638711E70CF3D00F12AC1 /* JSRunLoopTimer.h in Headers */,
 				14874AE615EBDE4A002E3587 /* JSScope.h in Headers */,
 				53EE01B6218F691600AD1F8D /* JSScript.h in Headers */,
-				9064337DD4B0402BAF34A592 /* JSScriptFetcher.h in Headers */,
-				276B391C2A71D2B600252F4E /* JSScriptFetcherInlines.h in Headers */,
-				E3201C1D1F8E82360076A032 /* JSScriptFetchParameters.h in Headers */,
-				276B38F82A71D26400252F4E /* JSScriptFetchParametersInlines.h in Headers */,
 				53EE01B8218F7EFF00AD1F8D /* JSScriptInternal.h in Headers */,
 				A7C0C4AC168103020017011D /* JSScriptRefPrivate.h in Headers */,
 				14D01A7721FB351F00BC54E9 /* JSScriptSourceProvider.h in Headers */,

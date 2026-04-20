@@ -1238,9 +1238,6 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/JSRemoteFunction.h
     runtime/JSRunLoopTimer.h
     runtime/JSScope.h
-    runtime/JSScriptFetchParameters.h
-    runtime/JSScriptFetcher.h
-    runtime/JSScriptFetchParametersInlines.h
     runtime/JSSegmentedVariableObject.h
     runtime/JSSet.h
     runtime/JSSetInlines.h

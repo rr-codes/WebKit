@@ -548,8 +548,6 @@ public:
     std::array<WriteBarrier<Structure>, NumberOfCopyOnWriteIndexingModes> cellButterflyStructures;
     WriteBarrier<Structure> cellButterflyOnlyAtomStringsStructure;
     WriteBarrier<Structure> sourceCodeStructure;
-    WriteBarrier<Structure> scriptFetcherStructure;
-    WriteBarrier<Structure> scriptFetchParametersStructure;
     WriteBarrier<Structure> structureChainStructure;
     WriteBarrier<Structure> sparseArrayValueMapStructure;
     WriteBarrier<Structure> templateObjectDescriptorStructure;

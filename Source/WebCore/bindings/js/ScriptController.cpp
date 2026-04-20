@@ -76,8 +76,6 @@
 #include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/JSModuleRecord.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>
-#include <JavaScriptCore/JSScriptFetchParameters.h>
-#include <JavaScriptCore/JSScriptFetcher.h>
 #include <JavaScriptCore/ScriptCallStack.h>
 #include <JavaScriptCore/StrongInlines.h>
 #include <JavaScriptCore/SyntheticModuleRecord.h>
@@ -210,7 +208,7 @@ void ScriptController::loadModuleScriptInWorld(LoadableModuleScript& moduleScrip
     auto& proxy = jsWindowProxy(world);
     auto& lexicalGlobalObject = *proxy.window();
 
-    auto* promise = JSExecState::loadModule(lexicalGlobalObject, topLevelModuleURL, JSC::JSScriptFetchParameters::create(lexicalGlobalObject.vm(), WTF::move(topLevelFetchParameters)), JSC::JSScriptFetcher::create(lexicalGlobalObject.vm(), { &moduleScript }));
+    auto* promise = JSExecState::loadModule(lexicalGlobalObject, topLevelModuleURL, WTF::move(topLevelFetchParameters), &moduleScript);
     if (!promise) [[unlikely]]
         return;
     setupModuleScriptHandlers(moduleScript, *promise, world);
@@ -228,7 +226,7 @@ void ScriptController::loadModuleScriptInWorld(LoadableModuleScript& moduleScrip
     auto& proxy = jsWindowProxy(world);
     auto& lexicalGlobalObject = *proxy.window();
 
-    auto* promise = JSExecState::loadModule(lexicalGlobalObject, sourceCode.jsSourceCode(), JSC::JSScriptFetcher::create(lexicalGlobalObject.vm(), { &moduleScript }));
+    auto* promise = JSExecState::loadModule(lexicalGlobalObject, sourceCode.jsSourceCode(), &moduleScript);
     if (!promise) [[unlikely]]
         return;
     setupModuleScriptHandlers(moduleScript, *promise, world);
@@ -255,7 +253,7 @@ JSC::JSPromise* ScriptController::linkAndEvaluateModuleScriptInWorld(LoadableMod
     NakedPtr<JSC::Exception> evaluationException;
     constexpr bool fromModule = true;
 
-    JSPromise* returnPromise = JSExecState::linkAndEvaluateModule(lexicalGlobalObject, Identifier::fromUid(vm, protect(moduleScript.moduleKey()).get()), jsUndefined(), evaluationException);
+    JSPromise* returnPromise = JSExecState::linkAndEvaluateModule(lexicalGlobalObject, Identifier::fromUid(vm, protect(moduleScript.moduleKey()).get()), nullptr, evaluationException);
     if (evaluationException) {
         // FIXME: Give a chance to dump the stack trace if the "crossorigin" attribute allows.
         // https://bugs.webkit.org/show_bug.cgi?id=164539

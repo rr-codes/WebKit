@@ -59,8 +59,6 @@ namespace JSC {
     \
     macro(JSCellButterflyType, SpecCellOther) \
     macro(JSSourceCodeType, SpecCellOther) \
-    macro(JSScriptFetcherType, SpecCellOther) \
-    macro(JSScriptFetchParametersType, SpecCellOther) \
     macro(JSPromiseReactionType, SpecCellOther) \
     macro(JSPromiseCombinatorsContextType, SpecCellOther) \
     macro(JSPromiseCombinatorsGlobalContextType, SpecCellOther) \

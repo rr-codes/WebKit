@@ -60,8 +60,6 @@
 #include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSNativeStdFunction.h>
 #include <JavaScriptCore/JSPromise.h>
-#include <JavaScriptCore/JSScriptFetchParameters.h>
-#include <JavaScriptCore/JSScriptFetcher.h>
 #include <JavaScriptCore/JSSourceCode.h>
 #include <JavaScriptCore/JSString.h>
 #include <JavaScriptCore/ObjectConstructor.h>
@@ -120,7 +118,7 @@ static URL parseURLLikeModuleSpecifier(const String& specifier, const URL& baseU
     return URL { specifier };
 }
 
-JSC::Identifier ScriptModuleLoader::resolve(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleNameValue, JSC::JSValue importerModuleKey, JSC::JSValue, bool useImportMap)
+JSC::Identifier ScriptModuleLoader::resolve(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleNameValue, JSC::JSValue importerModuleKey, RefPtr<JSC::ScriptFetcher>, bool useImportMap)
 {
     JSC::VM& vm = jsGlobalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
@@ -195,10 +193,9 @@ static void rejectWithFetchError(ScriptExecutionContext& context, Ref<DeferredPr
     });
 }
 
-JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, JSC::JSValue parametersValue, JSC::JSValue scriptFetcher)
+JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, RefPtr<JSC::ScriptFetchParameters> parameters, RefPtr<JSC::ScriptFetcher> scriptFetcher)
 {
     JSC::VM& vm = jsGlobalObject->vm();
-    ASSERT(is<JSC::JSScriptFetcher>(scriptFetcher));
 
     auto& globalObject = *uncheckedDowncast<JSDOMGlobalObject>(jsGlobalObject);
     auto* jsPromise = JSC::JSPromise::create(vm, globalObject.promiseStructure());
@@ -225,12 +222,8 @@ JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, J
         return jsPromise;
     }
 
-    RefPtr<JSC::ScriptFetchParameters> parameters;
-    if (auto* scriptFetchParameters = dynamicDowncast<JSC::JSScriptFetchParameters>(parametersValue))
-        parameters = scriptFetchParameters->parameters();
-
     if (m_ownerType == OwnerType::Document) {
-        Ref loader = CachedModuleScriptLoader::create(*this, deferred.get(), *downcast<CachedScriptFetcher>(uncheckedDowncast<JSC::JSScriptFetcher>(scriptFetcher)->fetcher()), WTF::move(parameters));
+        Ref loader = CachedModuleScriptLoader::create(*this, deferred.get(), *downcast<CachedScriptFetcher>(scriptFetcher.get()), WTF::move(parameters));
         m_loaders.add(loader.copyRef());
 
         // Prevent non-normal worlds from loading with a service worker.
@@ -243,7 +236,7 @@ JSC::JSPromise* ScriptModuleLoader::fetch(JSC::JSGlobalObject* jsGlobalObject, J
             return jsPromise;
         }
     } else {
-        Ref loader = WorkerModuleScriptLoader::create(*this, deferred.get(), *downcast<WorkerScriptFetcher>(uncheckedDowncast<JSC::JSScriptFetcher>(scriptFetcher)->fetcher()), WTF::move(parameters));
+        Ref loader = WorkerModuleScriptLoader::create(*this, deferred.get(), *downcast<WorkerScriptFetcher>(scriptFetcher.get()), WTF::move(parameters));
         m_loaders.add(loader.copyRef());
         loader->load(*m_context, WTF::move(completedURL));
     }
@@ -287,7 +280,7 @@ URL ScriptModuleLoader::responseURLFromRequestURL(JSC::JSGlobalObject& jsGlobalO
     return result;
 }
 
-JSC::JSValue ScriptModuleLoader::evaluate(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, JSC::JSValue moduleRecordValue, JSC::JSValue, JSC::JSValue awaitedValue, JSC::JSValue resumeMode)
+JSC::JSValue ScriptModuleLoader::evaluate(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, JSC::JSValue moduleRecordValue, RefPtr<JSC::ScriptFetcher>, JSC::JSValue awaitedValue, JSC::JSValue resumeMode)
 {
     JSC::VM& vm = jsGlobalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
@@ -326,7 +319,7 @@ static JSC::JSPromise* rejectPromise(ScriptExecutionContext& context, JSDOMGloba
     return jsPromise;
 }
 
-JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSString* moduleName, JSC::JSValue parametersValue, const JSC::SourceOrigin& sourceOrigin)
+JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSString* moduleName, RefPtr<JSC::ScriptFetchParameters> fetchParameters, const JSC::SourceOrigin& sourceOrigin)
 {
     JSC::VM& vm = jsGlobalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
@@ -347,17 +340,7 @@ JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalOb
         return promise->rejectWithCaughtException(&globalObject, scope);
     };
 
-    auto getTypeFromAssertions = [&]() -> JSC::ScriptFetchParameters::Type {
-        auto scope = DECLARE_THROW_SCOPE(vm);
-
-        auto assertions = JSC::retrieveImportAttributesFromDynamicImportOptions(&globalObject, parametersValue, { vm.propertyNames->type.impl() });
-        RETURN_IF_EXCEPTION(scope, { });
-
-        auto type = JSC::retrieveTypeImportAttribute(&globalObject, assertions);
-        RETURN_IF_EXCEPTION(scope, { });
-
-        return type.value_or(JSC::ScriptFetchParameters::Type::JavaScript);
-    };
+    auto type = fetchParameters ? fetchParameters->type() : JSC::ScriptFetchParameters::Type::JavaScript;
 
     auto specifier = moduleName->value(jsGlobalObject);
     // If SourceOrigin and/or CachedScriptFetcher is null, we import the module with the default fetcher.
@@ -371,9 +354,6 @@ JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalOb
     RefPtr<JSC::ScriptFetcher> scriptFetcher;
     RefPtr<ModuleFetchParameters> parameters;
     if (sourceOrigin.isNull()) {
-        auto type = getTypeFromAssertions();
-        RETURN_IF_EXCEPTION(scope, reject(scope));
-
         parameters = ModuleFetchParameters::create(type, emptyString(), /* isTopLevelModule */ true);
 
         if (m_ownerType == OwnerType::Document) {
@@ -392,9 +372,6 @@ JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalOb
             scope.release();
             return rejectPromise(*m_context, globalObject, ExceptionCode::TypeError, "Importer module key is not a Symbol or a String."_s);
         }
-
-        auto type = getTypeFromAssertions();
-        RETURN_IF_EXCEPTION(scope, reject(scope));
 
         URL moduleURL = globalObject.importMap().resolve(specifier, baseURL);
         parameters = ModuleFetchParameters::create(type, globalObject.importMap().integrityForURL(moduleURL), /* isTopLevelModule */ true);
@@ -422,10 +399,10 @@ JSC::JSPromise* ScriptModuleLoader::importModule(JSC::JSGlobalObject* jsGlobalOb
     ASSERT(parameters);
 
     RETURN_IF_EXCEPTION(scope, reject(scope));
-    RELEASE_AND_RETURN(scope, JSC::importModule(jsGlobalObject, JSC::Identifier::fromString(vm, specifier), JSC::Identifier::fromString(vm, baseURL.string()), JSC::JSScriptFetchParameters::create(vm, parameters.releaseNonNull()), JSC::JSScriptFetcher::create(vm, WTF::move(scriptFetcher))));
+    RELEASE_AND_RETURN(scope, JSC::importModule(jsGlobalObject, JSC::Identifier::fromString(vm, specifier), JSC::Identifier::fromString(vm, baseURL.string()), WTF::move(parameters), WTF::move(scriptFetcher)));
 }
 
-JSC::JSObject* ScriptModuleLoader::createImportMetaProperties(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, JSC::JSModuleRecord*, JSC::JSValue)
+JSC::JSObject* ScriptModuleLoader::createImportMetaProperties(JSC::JSGlobalObject* jsGlobalObject, JSC::JSModuleLoader*, JSC::JSValue moduleKeyValue, JSC::JSModuleRecord*, RefPtr<JSC::ScriptFetcher>)
 {
     // https://html.spec.whatwg.org/multipage/webappapis.html#hostgetimportmetaproperties
 

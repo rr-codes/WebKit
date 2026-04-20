@@ -59,6 +59,7 @@
 #include "ModuleLoadingContext.h"
 #include "ModuleRegistryEntry.h"
 #include "ObjectConstructor.h"
+#include "ScriptFetcher.h"
 #include "ThrowScope.h"
 #include "TopExceptionScope.h"
 #include "VMTrapsInlines.h"
@@ -837,7 +838,7 @@ static void moduleRegistryFetchSettled(JSGlobalObject* globalObject, VM& vm, Thr
         JSValue errorValue = arguments[1];
         if (auto* error = dynamicDowncast<ErrorInstance>(errorValue))
             JSModuleLoader::attachErrorInfo(globalObject, error, nullptr, entry->key(), entry->moduleType(), JSModuleLoader::ModuleFailure::Kind::Instantiation);
-        entry->fetchError(globalObject, errorValue);
+        entry->setFetchError(globalObject, errorValue);
         modulePromise->reject(vm, globalObject, errorValue);
     }
 }
@@ -856,7 +857,7 @@ static void moduleRegistryModuleSettled(JSGlobalObject* globalObject, VM& vm, st
         modulePromise->fulfill(vm, globalObject, moduleRecord);
     } else {
         JSValue errorValue = arguments[1];
-        entry->evaluationError(globalObject, errorValue);
+        entry->setEvaluationError(globalObject, errorValue);
         modulePromise->reject(vm, globalObject, errorValue);
     }
 }
@@ -898,7 +899,7 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
                 loadPromise->rejectWithCaughtException(globalObject, scope);
                 return;
             }
-            context->step(ModuleLoadingContext::Step::Requested);
+            context->setStep(ModuleLoadingContext::Step::Requested);
             requestedPromise->performPromiseThenWithInternalMicrotask(vm, globalObject, InternalMicrotask::ModuleLoadStep, loadPromise, context);
         } else
             loadPromise->reject(vm, globalObject, arguments[1]);
@@ -920,15 +921,15 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
                 ASSERT(cyclic->status() != CyclicModuleRecord::Status::Linking);
                 loadPromise->fulfill(vm, globalObject, entry->record());
             } else {
-                entry->record(vm, module);
-                entry->status(ModuleRegistryEntry::Status::Fetched);
+                entry->setRecord(vm, module);
+                entry->setStatus(ModuleRegistryEntry::Status::Fetched);
                 loadPromise->fulfill(vm, globalObject, entry->record());
             }
         } else {
             // onRejected logic: store evaluation error on entry
             auto* entry = context->entry();
             JSValue errorValue = arguments[1];
-            entry->evaluationError(globalObject, errorValue);
+            entry->setEvaluationError(globalObject, errorValue);
             loadPromise->reject(vm, globalObject, errorValue);
         }
         return;
@@ -946,7 +947,7 @@ static void moduleLoadStep(JSGlobalObject* globalObject, VM& vm, ThrowScope& sco
         } else {
             auto* entry = context->entry();
             JSValue errorValue = arguments[1];
-            entry->evaluationError(globalObject, errorValue);
+            entry->setEvaluationError(globalObject, errorValue);
             loadPromise->reject(vm, globalObject, errorValue);
         }
         return;
@@ -970,7 +971,7 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
 
         const Identifier& specifier = context->moduleRequest().m_specifier;
         auto type = context->moduleRequest().type();
-        JSValue scriptFetcher = context->scriptFetcher();
+        ScriptFetcher* scriptFetcher = context->scriptFetcher();
 
         globalObject->moduleLoader()->provideFetch(globalObject, specifier, type, jsSourceCode);
         if (scope.exception()) {
@@ -1027,9 +1028,9 @@ static void moduleLoadTopSettled(JSGlobalObject* globalObject, VM& vm, ThrowScop
         if (auto* error = dynamicDowncast<ErrorInstance>(errorValue)) {
             auto failure = JSModuleLoader::getErrorInfo(globalObject, error);
             if (failure.isEvaluationError(specifier, type))
-                entry->evaluationError(globalObject, error);
+                entry->setEvaluationError(globalObject, error);
             else
-                entry->fetchError(globalObject, error);
+                entry->setFetchError(globalObject, error);
         }
         intermediatePromise->reject(vm, globalObject, errorValue);
     }
@@ -1067,7 +1068,7 @@ static void moduleLoadTopRejected(JSGlobalObject* globalObject, VM& vm, ThrowSco
             return;
         }
         JSValue error = arguments[1];
-        entry->evaluationError(globalObject, error);
+        entry->setEvaluationError(globalObject, error);
         resultPromise->reject(vm, globalObject, error);
     }
 }
@@ -1198,13 +1199,13 @@ static void moduleLoadStoreError(JSGlobalObject* globalObject, ThrowScope& scope
         if (auto* error = dynamicDowncast<ErrorInstance>(errorValue)) {
             auto failure = JSModuleLoader::getErrorInfo(globalObject, error);
             if (failure.isEvaluationError(specifier, type))
-                entry->evaluationError(globalObject, error);
+                entry->setEvaluationError(globalObject, error);
             else if (JSModuleLoader::isFetchError(globalObject, error))
-                entry->fetchError(globalObject, error);
+                entry->setFetchError(globalObject, error);
             else
-                entry->instantiationError(globalObject, error);
+                entry->setInstantiationError(globalObject, error);
         } else
-            entry->evaluationError(globalObject, errorValue);
+            entry->setEvaluationError(globalObject, errorValue);
     }
 }
 
@@ -1219,7 +1220,7 @@ static void dynamicImportLoadSettled(JSGlobalObject* globalObject, VM& vm, Throw
     auto status = static_cast<JSPromise::Status>(payload);
     if (status == JSPromise::Status::Fulfilled) {
         // linkAndEvaluate logic
-        module->link(globalObject, jsUndefined());
+        module->link(globalObject, nullptr);
         if (Exception* exception = scope.exception()) {
             JSModuleLoader::attachErrorInfo(globalObject, exception, module, module->moduleKey(), module->moduleType(), JSModuleLoader::ModuleFailure::Kind::Instantiation);
             capabilityPromise->rejectWithCaughtException(globalObject, scope);

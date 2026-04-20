@@ -77,7 +77,7 @@ void SyntheticModuleRecord::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 
 DEFINE_VISIT_CHILDREN(SyntheticModuleRecord);
 
-Synchronousness SyntheticModuleRecord::link(JSGlobalObject*, JSValue)
+Synchronousness SyntheticModuleRecord::link(JSGlobalObject*, RefPtr<ScriptFetcher>)
 {
     return Synchronousness::Sync;
 }

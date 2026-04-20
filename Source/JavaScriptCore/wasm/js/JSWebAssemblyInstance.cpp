@@ -230,7 +230,7 @@ void JSWebAssemblyInstance::initializeImports(JSGlobalObject* globalObject, JSOb
 
     m_moduleRecord->prepareLink(vm, this);
     if (creationMode == CreationMode::FromJS) {
-        m_moduleRecord->link(globalObject, jsNull());
+        m_moduleRecord->link(globalObject, nullptr);
         RETURN_IF_EXCEPTION(scope, void());
         m_moduleRecord->initializeImports(globalObject, importObject, creationMode);
         RETURN_IF_EXCEPTION(scope, void());

@@ -104,7 +104,7 @@ void WebAssemblyModuleRecord::prepareLink(VM& vm, JSWebAssemblyInstance* instanc
     m_instance.set(vm, this, instance);
 }
 
-Synchronousness WebAssemblyModuleRecord::link(JSGlobalObject* globalObject, JSValue)
+Synchronousness WebAssemblyModuleRecord::link(JSGlobalObject* globalObject, RefPtr<ScriptFetcher>)
 {
     VM& vm = globalObject->vm();
 

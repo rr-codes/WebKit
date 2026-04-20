@@ -57,7 +57,7 @@ public:
 
     static SyntheticModuleRecord* parseJSONModule(JSGlobalObject*, const Identifier& moduleKey, SourceCode&&);
 
-    Synchronousness NODELETE link(JSGlobalObject*, JSValue scriptFetcher);
+    Synchronousness link(JSGlobalObject*, RefPtr<ScriptFetcher> = nullptr);
     JS_EXPORT_PRIVATE JSValue NODELETE evaluate(JSGlobalObject*);
 
 private:

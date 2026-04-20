@@ -683,53 +683,53 @@ static ScriptModuleLoader* scriptModuleLoader(JSDOMGlobalObject* globalObject)
     return nullptr;
 }
 
-JSC::Identifier JSDOMGlobalObject::moduleLoaderResolve(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleName, JSC::JSValue importerModuleKey, JSC::JSValue scriptFetcher, bool useImportMap)
+JSC::Identifier JSDOMGlobalObject::moduleLoaderResolve(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleName, JSC::JSValue importerModuleKey, RefPtr<JSC::ScriptFetcher> scriptFetcher, bool useImportMap)
 {
     JSDOMGlobalObject* thisObject = uncheckedDowncast<JSDOMGlobalObject>(globalObject);
     if (auto* loader = scriptModuleLoader(thisObject))
-        return loader->resolve(globalObject, moduleLoader, moduleName, importerModuleKey, scriptFetcher, useImportMap);
+        return loader->resolve(globalObject, moduleLoader, moduleName, importerModuleKey, WTF::move(scriptFetcher), useImportMap);
     return { };
 }
 
-JSC::JSPromise* JSDOMGlobalObject::moduleLoaderFetch(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleKey, JSC::JSValue parameters, JSC::JSValue scriptFetcher)
+JSC::JSPromise* JSDOMGlobalObject::moduleLoaderFetch(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleKey, RefPtr<JSC::ScriptFetchParameters> parameters, RefPtr<JSC::ScriptFetcher> scriptFetcher)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
     JSDOMGlobalObject* thisObject = uncheckedDowncast<JSDOMGlobalObject>(globalObject);
     if (auto* loader = scriptModuleLoader(thisObject))
-        RELEASE_AND_RETURN(scope, loader->fetch(globalObject, moduleLoader, moduleKey, parameters, scriptFetcher));
+        RELEASE_AND_RETURN(scope, loader->fetch(globalObject, moduleLoader, moduleKey, WTF::move(parameters), WTF::move(scriptFetcher)));
     JSC::JSPromise* promise = JSC::JSPromise::create(vm, globalObject->promiseStructure());
     scope.release();
     promise->reject(vm, globalObject, jsUndefined());
     return promise;
 }
 
-JSC::JSValue JSDOMGlobalObject::moduleLoaderEvaluate(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleKey, JSC::JSValue moduleRecord, JSC::JSValue scriptFetcher, JSC::JSValue awaitedValue, JSC::JSValue resumeMode)
+JSC::JSValue JSDOMGlobalObject::moduleLoaderEvaluate(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleKey, JSC::JSValue moduleRecord, RefPtr<JSC::ScriptFetcher> scriptFetcher, JSC::JSValue awaitedValue, JSC::JSValue resumeMode)
 {
     JSDOMGlobalObject* thisObject = uncheckedDowncast<JSDOMGlobalObject>(globalObject);
     if (auto* loader = scriptModuleLoader(thisObject))
-        return loader->evaluate(globalObject, moduleLoader, moduleKey, moduleRecord, scriptFetcher, awaitedValue, resumeMode);
+        return loader->evaluate(globalObject, moduleLoader, moduleKey, moduleRecord, WTF::move(scriptFetcher), awaitedValue, resumeMode);
     return JSC::jsUndefined();
 }
 
-JSC::JSPromise* JSDOMGlobalObject::moduleLoaderImportModule(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSString* moduleName, JSC::JSValue parameters, const JSC::SourceOrigin& sourceOrigin)
+JSC::JSPromise* JSDOMGlobalObject::moduleLoaderImportModule(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSString* moduleName, RefPtr<JSC::ScriptFetchParameters> parameters, const JSC::SourceOrigin& sourceOrigin)
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
     JSDOMGlobalObject* thisObject = uncheckedDowncast<JSDOMGlobalObject>(globalObject);
     if (auto* loader = scriptModuleLoader(thisObject))
-        RELEASE_AND_RETURN(scope, loader->importModule(globalObject, moduleLoader, moduleName, parameters, sourceOrigin));
+        RELEASE_AND_RETURN(scope, loader->importModule(globalObject, moduleLoader, moduleName, WTF::move(parameters), sourceOrigin));
     JSC::JSPromise* promise = JSC::JSPromise::create(vm, globalObject->promiseStructure());
     scope.release();
     promise->reject(vm, globalObject, jsUndefined());
     return promise;
 }
 
-JSC::JSObject* JSDOMGlobalObject::moduleLoaderCreateImportMetaProperties(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleKey, JSC::JSModuleRecord* moduleRecord, JSC::JSValue scriptFetcher)
+JSC::JSObject* JSDOMGlobalObject::moduleLoaderCreateImportMetaProperties(JSC::JSGlobalObject* globalObject, JSC::JSModuleLoader* moduleLoader, JSC::JSValue moduleKey, JSC::JSModuleRecord* moduleRecord, RefPtr<JSC::ScriptFetcher> scriptFetcher)
 {
     JSDOMGlobalObject* thisObject = uncheckedDowncast<JSDOMGlobalObject>(globalObject);
     if (auto* loader = scriptModuleLoader(thisObject))
-        return loader->createImportMetaProperties(globalObject, moduleLoader, moduleKey, moduleRecord, scriptFetcher);
+        return loader->createImportMetaProperties(globalObject, moduleLoader, moduleKey, moduleRecord, WTF::move(scriptFetcher));
     return constructEmptyObject(globalObject->vm(), globalObject->nullPrototypeObjectStructure());
 }
 

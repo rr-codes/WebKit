@@ -881,12 +881,12 @@ void AbstractModuleRecord::setModuleEnvironment(JSGlobalObject* globalObject, JS
     m_moduleEnvironment.set(vm, this, moduleEnvironment);
 }
 
-void AbstractModuleRecord::link(JSGlobalObject* globalObject, JSValue scriptFetcher)
+void AbstractModuleRecord::link(JSGlobalObject* globalObject, RefPtr<ScriptFetcher> scriptFetcher)
 {
     if (auto* cyclicModuleRecord = dynamicDowncast<CyclicModuleRecord>(this))
-        cyclicModuleRecord->link(globalObject, scriptFetcher); // can throw
+        cyclicModuleRecord->link(globalObject, WTF::move(scriptFetcher)); // can throw
     else if (auto* moduleRecord = dynamicDowncast<SyntheticModuleRecord>(this))
-        moduleRecord->link(globalObject, scriptFetcher);
+        moduleRecord->link(globalObject, WTF::move(scriptFetcher));
     else
         RELEASE_ASSERT_NOT_REACHED();
 }
@@ -1099,7 +1099,7 @@ unsigned AbstractModuleRecord::innerModuleEvaluation(JSGlobalObject* globalObjec
     RELEASE_AND_RETURN(scope, index);
 }
 
-unsigned AbstractModuleRecord::innerModuleLinking(JSGlobalObject* globalObject, Vector<CyclicModuleRecord*, 8>& stack, unsigned index, JSValue scriptFetcher)
+unsigned AbstractModuleRecord::innerModuleLinking(JSGlobalObject* globalObject, Vector<CyclicModuleRecord*, 8>& stack, unsigned index, RefPtr<ScriptFetcher> scriptFetcher)
 {
     // InnerModuleLinking(module, stack, index)
     // https://tc39.es/ecma262/#sec-InnerModuleLinking

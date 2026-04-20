@@ -69,7 +69,7 @@ void CyclicModuleRecord::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 
 DEFINE_VISIT_CHILDREN(CyclicModuleRecord);
 
-void CyclicModuleRecord::initializeEnvironment(JSGlobalObject* globalObject, JSValue scriptFetcher)
+void CyclicModuleRecord::initializeEnvironment(JSGlobalObject* globalObject, RefPtr<ScriptFetcher> scriptFetcher)
 {
     // InitializeEnvironment
     // https://tc39.es/ecma262/#sec-source-text-module-record-initialize-environment
@@ -324,7 +324,7 @@ void CyclicModuleRecord::initializeEnvironment(JSGlobalObject* globalObject, JSV
     m_initialized = true;
 }
 
-void CyclicModuleRecord::link(JSGlobalObject* globalObject, JSValue scriptFetcher)
+void CyclicModuleRecord::link(JSGlobalObject* globalObject, RefPtr<ScriptFetcher> scriptFetcher)
 {
     // Link()
     // https://tc39.es/ecma262/#sec-moduledeclarationlinking
@@ -337,7 +337,7 @@ void CyclicModuleRecord::link(JSGlobalObject* globalObject, JSValue scriptFetche
     // 2. Let stack be a new empty List.
     Vector<CyclicModuleRecord*, 8> stack;
     // 3. Let result be Completion(InnerModuleLinking(module, stack, 0)).
-    innerModuleLinking(globalObject, stack, 0, scriptFetcher);
+    innerModuleLinking(globalObject, stack, 0, WTF::move(scriptFetcher));
     // 4. If result is an abrupt completion, then
     if (Exception* exception = scope.exception()) {
         // 4.a. For each Cyclic Module Record m of stack, do
