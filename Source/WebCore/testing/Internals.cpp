@@ -1954,6 +1954,16 @@ void Internals::clearPeerConnectionFactory()
         page->webRTCProvider().clearFactory();
 }
 
+void Internals::clearWebRTCCodecsConnection()
+{
+#if USE(LIBWEBRTC)
+    if (auto* page = contextDocument()->page()) {
+        auto& rtcProvider = downcast<LibWebRTCProvider>(page->webRTCProvider());
+        rtcProvider.clearCodecsConnectionForTesting();
+    }
+#endif
+}
+
 void Internals::applyRotationForOutgoingVideoSources(RTCPeerConnection& connection)
 {
     connection.applyRotationForOutgoingVideoSources();

@@ -816,6 +816,7 @@ public:
     void NODELETE setEnumeratingAllNetworkInterfacesEnabled(bool);
     void stopPeerConnection(RTCPeerConnection&);
     void clearPeerConnectionFactory();
+    void clearWebRTCCodecsConnection();
     void applyRotationForOutgoingVideoSources(RTCPeerConnection&);
     void setWebRTCH265Support(bool);
     void setWebRTCVP9Support(bool supportVP9Profile0, bool supportVP9Profile2);
