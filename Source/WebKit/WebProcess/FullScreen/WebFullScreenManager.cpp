@@ -555,6 +555,9 @@ void WebFullScreenManager::exitFullScreenForElement(WebCore::Element* element, C
 #if ENABLE(VIDEO)
     setMainVideoElement(nullptr);
 #endif
+#if ENABLE(IMAGE_ANALYSIS)
+    protect(m_page->playbackSessionManager())->cancelTextRecognition();
+#endif
 }
 
 void WebFullScreenManager::willEnterFullScreen(Element& element, CompletionHandler<void(ExceptionOr<void>)>&& willEnterFullscreenCallback, CompletionHandler<bool(bool)>&& didEnterFullscreenCallback, WebCore::HTMLMediaElementEnums::VideoFullscreenMode mode)
@@ -815,10 +818,8 @@ void WebFullScreenManager::handleEvent(WebCore::ScriptExecutionContext& context,
     if (&context != document.ptr() || !protect(document->fullscreen())->isFullscreen())
         return;
 
-    if (targetElement == m_element) {
+    if (targetElement == m_element)
         updateMainVideoElement();
-        return;
-    }
 
 #if ENABLE(IMAGE_ANALYSIS)
     if (targetElement == m_mainVideoElement.get()) {
@@ -846,8 +847,10 @@ void WebFullScreenManager::mainVideoElementTextRecognitionTimerFired()
     updateMainVideoElement();
 
     RefPtr mainVideoElement = m_mainVideoElement.get();
-    if (!mainVideoElement)
+    if (!mainVideoElement || !mainVideoElement->paused() || mainVideoElement->seeking()) {
+        endTextRecognitionForMainVideoIfNeeded();
         return;
+    }
 
     if (m_isPerformingTextRecognitionInMainVideo)
         m_page->cancelTextRecognitionForVideoInElementFullScreen();
