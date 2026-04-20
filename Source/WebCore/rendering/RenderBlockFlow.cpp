@@ -989,9 +989,25 @@ RenderBlockFlow::BlockPositionAndMargin RenderBlockFlow::layoutBlockChildFromInl
     // Render tree uses block height to track the child block layout position. Set it to the current position before calling layoutBlockChild.
     setLogicalHeight(contentHeight);
 
+    auto* layoutState = view().frameView().layoutContext().layoutState();
+    auto applyMarginTrimBlockStartIfApplicable = [&]() -> std::optional<bool> {
+        if (!style().marginTrim().contains(Style::MarginTrimSide::BlockStart))
+            return { };
+        if (!marginInfo.canCollapseMarginBeforeWithChildren())
+            return { };
+        auto previousMarginTrimBlockStart = layoutState->marginTrimBlockStart();
+        layoutState->setMarginTrimBlockStart(true);
+        return previousMarginTrimBlockStart;
+    };
+    auto previousMarginTrimBlockStart = applyMarginTrimBlockStartIfApplicable();
+
     auto previousFloatLogicalBottom = LayoutUnit { };
     auto maxFloatLogicalBottom = LayoutUnit { };
     layoutBlockChild(child, marginInfo, previousFloatLogicalBottom, maxFloatLogicalBottom);
+
+    if (previousMarginTrimBlockStart)
+        layoutState->setMarginTrimBlockStart(*previousMarginTrimBlockStart);
+
     return { child.logicalTop(), logicalHeight(), marginInfo };
 }
 
