@@ -325,6 +325,7 @@ public:
     JSValueRef mathRootRadicand(JSContextRef) override;
 
     JSRetainPtr<JSStringRef> pathDescription() const override;
+    JSRetainPtr<JSStringRef> pathAsBounds() const override;
 
     bool addNotificationListener(JSContextRef, JSValueRef functionCallback) override;
     bool removeNotificationListener() override;

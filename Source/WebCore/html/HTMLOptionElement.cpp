@@ -280,11 +280,15 @@ void HTMLOptionElement::setText(String&& text)
 bool HTMLOptionElement::accessKeyAction(bool)
 {
     RefPtr select = ownerSelectElement();
-    if (select) {
+    if (!select)
+        return false;
+
+    if (select->usesBaseAppearancePicker()) {
+        select->optionSelectedByUser(index(), true);
+        select->hidePickerPopoverElement();
+    } else
         select->accessKeySetSelectedIndex(index());
-        return true;
-    }
-    return false;
+    return true;
 }
 
 void HTMLOptionElement::defaultEventHandler(Event& event)

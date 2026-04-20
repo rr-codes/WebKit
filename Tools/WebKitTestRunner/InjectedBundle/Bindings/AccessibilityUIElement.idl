@@ -317,6 +317,13 @@ interface AccessibilityUIElement {
     readonly attribute object mathRootRadicand;
 
     readonly attribute DOMString pathDescription;
+    // Returns the bounding rect of the element's accessibility path as
+    // "{{x, y}, {w, h}}". pathDescription intentionally omits coordinates
+    // to avoid brittle tests, but that means it can't verify that a path is
+    // correctly *positioned* (e.g. that CSS transforms are applied to the
+    // path origin). pathAsBounds fills that gap: same shape, different position
+    // means different bounds.
+    readonly attribute DOMString pathAsBounds;
 
     // iOS specific accessibility methods.
     readonly attribute DOMString identifier;

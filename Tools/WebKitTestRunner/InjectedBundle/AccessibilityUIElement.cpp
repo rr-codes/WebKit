@@ -1029,6 +1029,11 @@ JSRetainPtr<JSStringRef> AccessibilityUIElement::pathDescription() const
     return nullptr;
 }
 
+JSRetainPtr<JSStringRef> AccessibilityUIElement::pathAsBounds() const
+{
+    return nullptr;
+}
+
 JSValueRef AccessibilityUIElement::performTextOperation(OpaqueJSContext const*, OpaqueJSString*, OpaqueJSValue const*, OpaqueJSValue const*, bool)
 {
     return nullptr;

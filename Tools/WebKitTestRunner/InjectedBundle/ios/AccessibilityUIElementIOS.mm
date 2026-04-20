@@ -1618,6 +1618,16 @@ JSRetainPtr<JSStringRef> AccessibilityUIElementIOS::pathDescription() const
     return [result createJSStringRef];
 }
 
+JSRetainPtr<JSStringRef> AccessibilityUIElementIOS::pathAsBounds() const
+{
+    CGPathRef pathRef = [m_element _accessibilityPath];
+    if (!pathRef)
+        return nullptr;
+
+    CGRect bounds = CGPathGetBoundingBox(pathRef);
+    return [[NSString stringWithFormat:@"{{%f, %f}, {%f, %f}}", bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height] createJSStringRef];
+}
+
 JSRetainPtr<JSStringRef> AccessibilityUIElementIOS::supportedActions() const
 {
     return nullptr;

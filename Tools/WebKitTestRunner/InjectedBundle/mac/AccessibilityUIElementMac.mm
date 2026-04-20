@@ -3135,6 +3135,20 @@ JSRetainPtr<JSStringRef> AccessibilityUIElementMac::pathDescription() const
     return nullptr;
 }
 
+JSRetainPtr<JSStringRef> AccessibilityUIElementMac::pathAsBounds() const
+{
+    BEGIN_AX_OBJC_EXCEPTIONS
+    auto bezierPath = attributeValue(NSAccessibilityPathAttribute);
+    if (!bezierPath)
+        return nullptr;
+
+    NSRect bounds = [bezierPath bounds];
+    return [[NSString stringWithFormat:@"{{%f, %f}, {%f, %f}}", bounds.origin.x, bounds.origin.y, bounds.size.width, bounds.size.height] createJSStringRef];
+    END_AX_OBJC_EXCEPTIONS
+
+    return nullptr;
+}
+
 NSArray *AccessibilityUIElementMac::actionNames() const
 {
     NSArray *actions = nil;

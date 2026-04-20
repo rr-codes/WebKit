@@ -297,6 +297,7 @@ public:
 
     // Path
     JSRetainPtr<JSStringRef> pathDescription() const override;
+    JSRetainPtr<JSStringRef> pathAsBounds() const override;
 
     // Supported actions
     JSRetainPtr<JSStringRef> supportedActions() const override;

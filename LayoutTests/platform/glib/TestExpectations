@@ -889,10 +889,14 @@ accessibility/password-notifications-timing.html [ Skip ]
 accessibility/base-select-basic.html [ Skip ]
 accessibility/base-select-complex-options.html [ Skip ]
 accessibility/base-select-focus-on-open.html [ Skip ]
+accessibility/base-select-option-press-closes-popover.html [ Skip ]
 accessibility/base-select-notifications.html [ Skip ]
 # This one fails because it leans on a Cocoa-specific API (AccessibilityUIElement::uiElementForSearchPredicate), so
 # may be a true skip.
 accessibility/base-select-search-predicate.html [ Skip ]
+# pathDescription is not implemented for this platform.
+accessibility/base-select-option-border-radius-path.html [ Skip ]
+accessibility/element-path-with-css-transforms.html [ Skip ]
 
 # Failing because the mtable cannot be found as an accessible element.
 accessibility/table-row-bounding-boxes.html [ Skip ]

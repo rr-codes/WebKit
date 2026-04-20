@@ -374,6 +374,7 @@ public:
     virtual JSValueRef mathRootRadicand(JSContextRef);
 
     virtual JSRetainPtr<JSStringRef> pathDescription() const;
+    virtual JSRetainPtr<JSStringRef> pathAsBounds() const;
 
     // Notifications
     // Function callback should take one argument, the name of the notification.

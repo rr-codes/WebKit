@@ -714,7 +714,7 @@ static Path computePathForRenderBox(const RenderBox& renderBox)
     auto path = borderShape.pathForOuterShape(renderBox.document().deviceScaleFactor());
     // borderBoxRect() is in local coordinates. Offset it to absolute document coordinates
     // to match the coordinate system used by SVG, RenderText, and RenderInline paths.
-    auto absoluteOrigin = flooredLayoutPoint(renderBox.localToAbsolute());
+    auto absoluteOrigin = flooredLayoutPoint(renderBox.localToAbsolute(FloatPoint(), MapCoordinatesMode::UseTransforms));
     path.transform(AffineTransform().translate(absoluteOrigin.x(), absoluteOrigin.y()));
     return path;
 }
@@ -836,7 +836,7 @@ Path AccessibilityRenderObject::elementPath() const
                 [&](const Style::BasicShapePath& clipPath) {
                     auto referenceBox = FloatRect(renderBox->borderBoxRect());
                     auto path = Style::path(clipPath.shape(), referenceBox, renderBox->style().usedZoomForLength());
-                    auto absoluteOrigin = flooredLayoutPoint(renderBox->localToAbsolute());
+                    auto absoluteOrigin = flooredLayoutPoint(renderBox->localToAbsolute(FloatPoint(), MapCoordinatesMode::UseTransforms));
                     path.transform(AffineTransform().translate(absoluteOrigin.x(), absoluteOrigin.y()));
                     clipPathResult = WTF::move(path);
                 },
