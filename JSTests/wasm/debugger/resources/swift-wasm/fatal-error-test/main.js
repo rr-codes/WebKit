@@ -42,6 +42,7 @@ print("Available exports:", Object.keys(instance.exports));
 
 let triggerFatalError = instance.exports.trigger_fatal_error;
 
+print("DEBUGGER_READY");
 let iteration = 0;
 for (;;) {
     try {
