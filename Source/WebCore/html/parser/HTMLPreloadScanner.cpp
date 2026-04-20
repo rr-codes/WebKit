@@ -271,7 +271,7 @@ private:
             if (match(attributeName, typeAttr) && m_typeAttribute.isNull()) {
                 // when multiple type attributes present: first value wins, ignore subsequent (to match ImageElement parser and Blink behaviours)
                 m_typeAttribute = attributeValue.toString();
-                m_typeMatched &= MIMETypeRegistry::isSupportedImageVideoOrSVGMIMEType(m_typeAttribute);
+                m_typeMatched &= HTMLImageElement::isSupportedImageSourceType(m_typeAttribute);
             }
             break;
         case TagId::Script:
