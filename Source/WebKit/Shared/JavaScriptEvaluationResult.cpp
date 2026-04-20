@@ -383,7 +383,7 @@ auto JavaScriptEvaluationResult::JSExtractor::jsValueToExtractedValue(JSGlobalCo
 
     if (auto* info = dynamicDowncast<JSWebKitJSHandle>(jsObject)) {
         RELEASE_ASSERT(globalObject->template inherits<WebCore::JSDOMGlobalObject>());
-        auto* domGlobalObject = jsCast<WebCore::JSDOMGlobalObject*>(globalObject);
+        auto* domGlobalObject = uncheckedDowncast<WebCore::JSDOMGlobalObject>(globalObject);
         RefPtr document = dynamicDowncast<Document>(domGlobalObject->scriptExecutionContext());
         RefPtr frame = WebFrame::webFrame(document->frameID());
         RefPtr world = InjectedBundleScriptWorld::get(domGlobalObject->world());
@@ -427,7 +427,7 @@ JSValueRef JavaScriptEvaluationResult::JSInserter::toJS(JSGlobalContextRef conte
     auto globalObjectTuple = [] (auto context) {
         auto* lexicalGlobalObject = ::toJS(context);
         RELEASE_ASSERT(lexicalGlobalObject->template inherits<WebCore::JSDOMGlobalObject>());
-        auto* domGlobalObject = jsCast<WebCore::JSDOMGlobalObject*>(lexicalGlobalObject);
+        auto* domGlobalObject = uncheckedDowncast<WebCore::JSDOMGlobalObject>(lexicalGlobalObject);
         RefPtr document = dynamicDowncast<WebCore::Document>(domGlobalObject->scriptExecutionContext());
         RELEASE_ASSERT(document);
         return std::make_tuple(lexicalGlobalObject, domGlobalObject, WTF::move(document));

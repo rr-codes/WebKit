@@ -6210,18 +6210,6 @@ class WebKitStyleTest(CppStyleTestBase):
             '',
             'foo.h')
 
-    def test_js_cast(self):
-        self.assert_lint(
-            'auto* foo = uncheckedDowncast<JSFoo>(bar);',
-            '',
-            'foo.cpp')
-
-        self.assert_lint(
-            'auto* foo = jsCast<JSFoo*>(bar);',
-            "Use 'downcast<T>()' (or 'uncheckedDowncast<T>()' in performance-sensitive code) instead of 'jsCast<T*>()'."
-            "  [runtime/js_cast] [4]",
-            'foo.cpp')
-
         # protectedFoo() getter with RefPtr should trigger error.
         self.assert_lint(
             'RefPtr<Foo> protectedFoo();',
