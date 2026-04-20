@@ -583,6 +583,7 @@ Modules/webxr/XRSessionEvent.cpp
 Modules/webxr/XRSubImage.cpp
 Modules/webxr/XRWebGLLayerBacking.cpp
 Modules/webxr/XRWebGLProjectionLayerBacking.cpp
+Modules/webxr/XRWebGLQuadLayerBacking.cpp
 Modules/webxr/WebXRTransientInputHitTestResult.cpp
 Modules/webxr/WebXRTransientInputHitTestSource.cpp
 Modules/webxr/XRWebGLBinding.cpp

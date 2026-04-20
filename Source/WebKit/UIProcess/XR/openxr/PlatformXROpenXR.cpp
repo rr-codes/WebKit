@@ -206,7 +206,7 @@ std::unique_ptr<OpenXRSwapchain> OpenXRCoordinator::createSwapchain(uint32_t wid
     return OpenXRSwapchain::create(m_session, info, alpha ? OpenXRSwapchain::HasAlpha::Yes : OpenXRSwapchain::HasAlpha::No);
 }
 
-void OpenXRCoordinator::createLayerProjection(uint32_t width, uint32_t height, bool alpha, CompletionHandler<void(std::optional<PlatformXR::LayerHandle>)>&& reply)
+void OpenXRCoordinator::createLayerProjection(uint32_t width, uint32_t height, bool alpha, CompletionHandler<void(std::optional<PlatformXR::LayerInfo>)>&& reply)
 {
     ASSERT(RunLoop::isMain());
     WTF::switchOn(m_state,
@@ -230,6 +230,7 @@ void OpenXRCoordinator::createLayerProjection(uint32_t width, uint32_t height, b
                     return;
                 }
 
+                auto imageCount = swapchain->imageCount();
                 if (auto layer = OpenXRLayerProjection::create(WTF::move(swapchain))) {
 #if USE(GBM)
                     if (m_gbmDevice)
@@ -237,13 +238,63 @@ void OpenXRCoordinator::createLayerProjection(uint32_t width, uint32_t height, b
 #endif
                     auto layerHandle = m_nextLayerHandle++;
                     m_layers.add(layerHandle, WTF::move(layer));
-                    callOnMainRunLoop([completion = WTF::move(completionHandler), handle = layerHandle] mutable {
-                        completion(handle);
+                    PlatformXR::LayerInfo layerInfo { layerHandle, imageCount };
+                    callOnMainRunLoop([completion = WTF::move(completionHandler), info = layerInfo] mutable {
+                        completion(info);
                     });
                 }
             });
         });
 }
+
+#if ENABLE(WEBXR_LAYERS)
+void OpenXRCoordinator::createQuadLayer(WebCore::IntSize size, PlatformXR::LayerLayout layout, CreateQuadCallback&& reply)
+{
+    WTF::switchOn(m_state,
+        [&](Idle&) { reply(std::nullopt); },
+        [&](Active& active) {
+            active.renderQueue->dispatch([this, size, layout, completionHandler = WTF::move(reply)] mutable {
+                if (!collectSwapchainFormatsIfNeeded()) {
+                    RELEASE_LOG(XR, "OpenXRCoordinator: no supported swapchain formats");
+                    callOnMainRunLoop([completion = WTF::move(completionHandler)] mutable {
+                        completion(std::nullopt);
+                    });
+                    return;
+                }
+
+                bool alpha = false;
+                auto swapchain = createSwapchain(size.width(), size.height(), alpha);
+                if (!swapchain) {
+                    RELEASE_LOG(XR, "OpenXRCoordinator: failed to create swapchain");
+                    callOnMainRunLoop([completion = WTF::move(completionHandler)] mutable {
+                        completion(std::nullopt);
+                    });
+                    return;
+                }
+
+                LOG(XR, "Created swapchain for quad layer with size %dx%d and format %ld", size.width(), size.height(), swapchain->format());
+                auto imageCount = swapchain->imageCount();
+                if (auto layer = OpenXRQuadLayer::create(WTF::move(swapchain), layout)) {
+#if USE(GBM)
+                    if (m_gbmDevice)
+                        layer->setGBMDevice(m_gbmDevice);
+#endif
+                    auto layerHandle = m_nextLayerHandle++;
+                    m_layers.add(layerHandle, WTF::move(layer));
+                    PlatformXR::LayerInfo layerInfo { layerHandle, imageCount };
+                    callOnMainRunLoop([completion = WTF::move(completionHandler), info = layerInfo] mutable {
+                        completion(info);
+                    });
+                } else {
+                    RELEASE_LOG(XR, "OpenXRCoordinator: failed to create quad layer");
+                    callOnMainRunLoop([completion = WTF::move(completionHandler)] mutable {
+                        completion(std::nullopt);
+                    });
+                }
+            });
+        });
+}
+#endif // ENABLE(WEBXR_LAYERS)
 
 void OpenXRCoordinator::startSession(WebPageProxy& page, WeakPtr<PlatformXRCoordinatorSessionEventClient>&& sessionEventClient, const WebCore::SecurityOriginData&, PlatformXR::SessionMode sessionMode, const PlatformXR::Device::FeatureList&, std::optional<WebCore::XRCanvasConfiguration>&&)
 {
@@ -1143,7 +1194,7 @@ void OpenXRCoordinator::endFrame(Box<RenderState> renderState, Vector<PlatformXR
 {
     ASSERT(!RunLoop::isMain());
 
-    Vector<const XrCompositionLayerBaseHeader*, 1> frameEndLayers;
+    Vector<XrCompositionLayerBaseHeader*> frameEndLayers;
     for (auto& layer : layers) {
         auto it = m_layers.find(layer.handle);
         if (it == m_layers.end()) {
@@ -1156,13 +1207,8 @@ void OpenXRCoordinator::endFrame(Box<RenderState> renderState, Vector<PlatformXR
                 fence->serverWait();
         }
 
-        auto header = it->value->endFrame(layer, m_localSpace, m_views);
-        if (!header) {
-            LOG(XR, "endFrame() call failed in OpenXRLayer with %d handle", layer.handle);
-            continue;
-        }
-
-        frameEndLayers.append(header);
+        auto headers = it->value->endFrame(layer, m_localSpace, m_views);
+        frameEndLayers.appendVector(WTF::move(headers));
     }
 
     XrFrameEndInfo frameEndInfo = createOpenXRStruct<XrFrameEndInfo, XR_TYPE_FRAME_END_INFO>();

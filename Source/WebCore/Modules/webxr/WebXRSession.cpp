@@ -137,6 +137,11 @@ const Vector<String> WebXRSession::enabledFeatures() const
     return enabledFeatureArray;
 }
 
+bool WebXRSession::supportsFeature(PlatformXR::SessionFeature feature) const
+{
+    return m_requestedFeatures.contains(feature);
+}
+
 // https://immersive-web.github.io/webxr/#dom-xrsession-updaterenderstate
 ExceptionOr<void> WebXRSession::updateRenderState(const XRRenderStateInit& newState)
 {

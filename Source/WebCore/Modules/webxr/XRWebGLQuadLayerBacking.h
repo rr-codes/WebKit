@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Apple, Inc. All rights reserved.
+ * Copyright (C) 2026 Igalia S.L. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -23,56 +23,33 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "config.h"
-#include "XRCompositionLayer.h"
+#pragma once
 
 #if ENABLE(WEBXR_LAYERS)
 
-#include "WebGLOpaqueTexture.h"
-#include "WebXRSession.h"
-#include "XRLayerBacking.h"
-#include <wtf/TZoneMallocInlines.h>
+#include "XRQuadLayerInit.h"
+#include "XRWebGLLayerBacking.h"
+#include <wtf/Ref.h>
+#include <wtf/RefPtr.h>
+#include <wtf/TZoneMalloc.h>
 
 namespace WebCore {
 
-WTF_MAKE_TZONE_ALLOCATED_IMPL(XRCompositionLayer);
+class WebGLRenderingContextBase;
+class WebXRWebGLSwapchain;
+class WebXRSession;
 
-XRCompositionLayer::XRCompositionLayer(ScriptExecutionContext* scriptExecutionContext, WebXRSession& session, Ref<XRLayerBacking>&& backing, const WebXRLayerInit& init)
-    : WebXRLayer(scriptExecutionContext)
-    , m_backing(WTF::move(backing))
-    , m_init(init)
-    , m_session(session)
-{
-}
+class XRWebGLQuadLayerBacking : public XRWebGLLayerBacking {
+    WTF_MAKE_TZONE_ALLOCATED(XRWebGLQuadLayerBacking);
+public:
+    static ExceptionOr<Ref<XRWebGLQuadLayerBacking>> create(WebXRSession&, WebGLRenderingContextBase&, const XRQuadLayerInit&);
 
-XRCompositionLayer::~XRCompositionLayer() = default;
+private:
+    XRWebGLQuadLayerBacking(PlatformXR::LayerHandle, std::unique_ptr<WebXRWebGLSwapchain>&& colorSwapchain, std::unique_ptr<WebXRWebGLSwapchain>&& depthSwapchain, const XRQuadLayerInit&);
 
-WebXRSession* XRCompositionLayer::session() const
-{
-    return m_session.get();
-}
-
-XRLayerBacking& XRCompositionLayer::backing()
-{
-    return m_backing;
-}
-
-void XRCompositionLayer::setColorTextures(Vector<RefPtr<WebGLOpaqueTexture>>&& colorTextures)
-{
-    m_colorTextures = WTF::move(colorTextures);
-}
-
-void XRCompositionLayer::setDepthStencilTextures(Vector<RefPtr<WebGLOpaqueTexture>>&& depthStencilTextures)
-{
-    m_depthStencilTextures = WTF::move(depthStencilTextures);
-}
-
-void XRCompositionLayer::fillInCommonDeviceLayerData(PlatformXR::DeviceLayer& data) const
-{
-    data.blendTextureSourceAlpha = m_blendTextureSourceAlpha;
-    data.forceMonoPresentation = m_forceMonoPresentation;
-}
+    XRQuadLayerInit m_init;
+};
 
 } // namespace WebCore
 
-#endif
+#endif // ENABLE(WEBXR_LAYERS)

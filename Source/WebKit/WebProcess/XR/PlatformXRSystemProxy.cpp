@@ -104,21 +104,32 @@ void PlatformXRSystemProxy::requestFrame(std::optional<PlatformXR::RequestData>&
     protect(m_page)->sendWithAsyncReply(Messages::PlatformXRSystem::RequestFrame(WTF::move(requestData)), WTF::move(callback));
 }
 
-std::optional<PlatformXR::LayerHandle> PlatformXRSystemProxy::createLayerProjection(uint32_t width, uint32_t height, bool alpha)
+std::optional<PlatformXR::LayerInfo> PlatformXRSystemProxy::createLayerProjection(uint32_t width, uint32_t height, bool alpha)
 {
 #if USE(OPENXR)
     auto result = protect(m_page)->sendSync(Messages::PlatformXRSystem::CreateLayerProjection(width, height, alpha));
     if (!result.succeeded())
         return std::nullopt;
-    auto [layerHandle] = result.takeReply();
-    return layerHandle;
+    auto [layerInfo] = result.takeReply();
+    return layerInfo;
 #else
     UNUSED_PARAM(width);
     UNUSED_PARAM(height);
     UNUSED_PARAM(alpha);
-    return PlatformXRCoordinator::defaultLayerHandle();
+    return PlatformXR::LayerInfo { PlatformXRCoordinator::defaultLayerHandle(), 1 };
 #endif
 }
+
+#if ENABLE(WEBXR_LAYERS)
+std::optional<PlatformXR::LayerInfo> PlatformXRSystemProxy::createQuadLayer(WebCore::IntSize size, PlatformXR::LayerLayout layout)
+{
+    auto result = protect(m_page)->sendSync(Messages::PlatformXRSystem::CreateQuadLayer(size, layout));
+    if (!result.succeeded())
+        return std::nullopt;
+    auto [layerInfo] = result.takeReply();
+    return layerInfo;
+}
+#endif
 
 #if USE(OPENXR)
 void PlatformXRSystemProxy::submitFrame(Vector<PlatformXR::DeviceLayer>&& layers)
