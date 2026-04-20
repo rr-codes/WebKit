@@ -1515,8 +1515,6 @@ enum class WebCore::WebLockMode : bool;
 
 using WebCore::AuthenticatorResponseDataSerializableForm = Variant<std::nullptr_t, WebCore::AuthenticatorResponseBaseData, WebCore::AuthenticatorAttestationResponseData, WebCore::AuthenticatorAssertionResponseData>;
 
-using WebCore::PointerID = uint32_t;
-
 struct WebCore::AuthenticatorResponseData {
     WebCore::AuthenticatorResponseDataSerializableForm getSerializableForm();
 };
