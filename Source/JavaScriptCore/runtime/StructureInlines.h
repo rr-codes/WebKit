@@ -55,7 +55,7 @@ inline Structure* Structure::create(VM& vm, Structure* previous, DeferredStructu
         return result;
     }
     case StructureVariant::Branded: {
-        auto* result = new (NotNull, allocateCell<BrandedStructure>(vm)) BrandedStructure(vm, jsCast<BrandedStructure*>(previous));
+        auto* result = new (NotNull, allocateCell<BrandedStructure>(vm)) BrandedStructure(vm, uncheckedDowncast<BrandedStructure>(previous));
         result->finishCreation(vm, previous, deferred);
         return result;
     }
@@ -210,7 +210,7 @@ inline bool Structure::hasIndexingHeader(const JSCell* cell) const
     if (!isTypedView(m_blob.type()))
         return false;
 
-    TypedArrayMode mode = jsCast<const JSArrayBufferView*>(cell)->mode();
+    TypedArrayMode mode = uncheckedDowncast<JSArrayBufferView>(cell)->mode();
     return isWastefulTypedArray(mode);
 }
 

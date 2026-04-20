@@ -351,7 +351,7 @@ JSArray* asArray(JSValue);
 inline JSArray* asArray(JSCell* cell)
 {
     ASSERT(cell->inherits<JSArray>());
-    return jsCast<JSArray*>(cell);
+    return uncheckedDowncast<JSArray>(cell);
 }
 
 inline JSArray* asArray(JSValue value)

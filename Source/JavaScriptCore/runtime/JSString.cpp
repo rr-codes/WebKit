@@ -67,7 +67,7 @@ void JSRopeString::RopeBuilder<RecordOverflow>::expand()
 
 void JSString::dumpToStream(const JSCell* cell, PrintStream& out)
 {
-    const JSString* thisObject = jsCast<const JSString*>(cell);
+    const JSString* thisObject = uncheckedDowncast<JSString>(cell);
     out.printf("<%p, %s, [%u], ", thisObject, thisObject->className().characters(), thisObject->length());
     uintptr_t pointer = thisObject->fiberConcurrently();
     if (pointer & isRopeInPointer) {

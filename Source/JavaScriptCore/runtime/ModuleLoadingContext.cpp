@@ -85,13 +85,13 @@ JSModuleLoader::ModuleReferrer ModuleLoadingContext::referrer() const
         return module;
     if (auto* exec = dynamicDowncast<ProgramExecutable>(ref))
         return exec;
-    return jsCast<JSGlobalObject*>(ref);
+    return uncheckedDowncast<JSGlobalObject>(ref);
 }
 
 template<typename Visitor>
 void ModuleLoadingContext::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    auto* thisObject = jsCast<ModuleLoadingContext*>(cell);
+    auto* thisObject = uncheckedDowncast<ModuleLoadingContext>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     visitor.append(thisObject->m_scriptFetcher);

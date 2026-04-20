@@ -2635,7 +2635,7 @@ template<typename UnlinkedCodeBlockType>
 void encodeCodeBlock(Encoder& encoder, const SourceCodeKey& key, const UnlinkedCodeBlock* codeBlock)
 {
     auto* entry = encoder.template malloc<CacheEntry<UnlinkedCodeBlockType>>(encoder);
-    entry->encode(encoder, { key, jsCast<const UnlinkedCodeBlockType*>(codeBlock) });
+    entry->encode(encoder, { key, uncheckedDowncast<UnlinkedCodeBlockType>(codeBlock) });
 }
 
 RefPtr<CachedBytecode> encodeCodeBlock(VM& vm, const SourceCodeKey& key, const UnlinkedCodeBlock* codeBlock, FileSystem::FileHandle& fileHandle, BytecodeCacheError& error)

@@ -1396,7 +1396,7 @@ void Structure::didTransitionFromThisStructure(DeferredStructureTransitionWatchp
 template<typename Visitor>
 void Structure::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    Structure* thisObject = jsCast<Structure*>(cell);
+    Structure* thisObject = uncheckedDowncast<Structure>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
 
     Base::visitChildren(thisObject, visitor);

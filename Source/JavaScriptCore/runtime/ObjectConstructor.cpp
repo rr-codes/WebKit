@@ -118,7 +118,7 @@ void ObjectConstructor::finishCreation(VM& vm, JSGlobalObject* globalObject, Obj
 static ALWAYS_INLINE JSObject* constructObjectWithNewTarget(JSGlobalObject* globalObject, CallFrame* callFrame, JSValue newTarget)
 {
     VM& vm = globalObject->vm();
-    ObjectConstructor* objectConstructor = jsCast<ObjectConstructor*>(callFrame->jsCallee());
+    ObjectConstructor* objectConstructor = uncheckedDowncast<ObjectConstructor>(callFrame->jsCallee());
     auto scope = DECLARE_THROW_SCOPE(vm);
 
     // We need to check newTarget condition in this caller side instead of InternalFunction::createSubclassStructure side.
@@ -1283,7 +1283,7 @@ JSArray* ownPropertyKeys(JSGlobalObject* globalObject, JSObject* object, Propert
     auto kind = inferCachedPropertyNamesKind(propertyNameMode, dontEnumPropertiesMode);
 
     if (object->inherits<ProxyObject>()) {
-        ProxyObject* proxy = jsCast<ProxyObject*>(object);
+        ProxyObject* proxy = uncheckedDowncast<ProxyObject>(object);
         if (proxy->forwardsGetOwnPropertyNamesToTarget(dontEnumPropertiesMode))
             object = proxy->target();
     }

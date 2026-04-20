@@ -153,7 +153,7 @@ ALWAYS_INLINE bool JSStringJoiner::appendWithoutSideEffects(JSGlobalObject* glob
             // Since getting the view didn't OOM, we know that the underlying String exists and isn't
             // a rope. Thus, `tryGetValue` on the owner JSString will succeed. Since jsString could be
             // a substring we make sure to get the owner's String not jsString's.
-            append(jsString, StringViewWithUnderlyingString(view, jsCast<const JSString*>(view.owner)->tryGetValue()));
+            append(jsString, StringViewWithUnderlyingString(view, uncheckedDowncast<JSString>(view.owner)->tryGetValue()));
             return true;
         }
         return false;
@@ -203,7 +203,7 @@ ALWAYS_INLINE bool JSStringJoiner::append(JSGlobalObject* globalObject, JSValue 
         auto view = jsString->view(globalObject);
         RETURN_IF_EXCEPTION(scope, false);
         scope.release();
-        append(jsString, StringViewWithUnderlyingString(view, jsCast<const JSString*>(view.owner)->tryGetValue()));
+        append(jsString, StringViewWithUnderlyingString(view, uncheckedDowncast<JSString>(view.owner)->tryGetValue()));
         return false;
     }
     return true;

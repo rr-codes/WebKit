@@ -165,7 +165,7 @@ inline JSObject* constructGenericTypedArrayViewWithArguments(JSGlobalObject* glo
 
         // https://tc39.es/proposal-resizablearraybuffer/#sec-initializetypedarrayfromtypedarray
         if (isTypedView(object->type())) {
-            auto* view = jsCast<JSArrayBufferView*>(object);
+            auto* view = uncheckedDowncast<JSArrayBufferView>(object);
 
             length = view->length();
 

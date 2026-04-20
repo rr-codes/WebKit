@@ -59,7 +59,7 @@ void ModuleRegistryEntry::finishCreation(VM& vm)
 template<typename Visitor>
 void ModuleRegistryEntry::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    auto* thisObject = jsCast<ModuleRegistryEntry*>(cell);
+    auto* thisObject = uncheckedDowncast<ModuleRegistryEntry>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     visitor.append(thisObject->m_scriptFetcher);

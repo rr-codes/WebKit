@@ -1336,7 +1336,7 @@ inline JSObject* asObject(JSCell* cell)
 {
     ASSERT(cell);
     ASSERT(cell->isObjectSlow());
-    return jsCast<JSObject*>(cell);
+    return uncheckedDowncast<JSObject>(cell);
 }
 
 inline JSObject* asObject(JSValue value)
@@ -1416,7 +1416,7 @@ ALWAYS_INLINE bool JSObject::getOwnNonIndexPropertySlot(VM& vm, Structure* struc
             return true;
         case CustomGetterSetterType:
             ASSERT(attributes & PropertyAttribute::CustomAccessorOrValue);
-            fillCustomGetterPropertySlot(slot, jsCast<CustomGetterSetter*>(cell), attributes, structure);
+            fillCustomGetterPropertySlot(slot, uncheckedDowncast<CustomGetterSetter>(cell), attributes, structure);
             return true;
         default:
             break;
@@ -1431,7 +1431,7 @@ ALWAYS_INLINE void JSObject::fillCustomGetterPropertySlot(PropertySlot& slot, Cu
 {
     ASSERT(attributes & PropertyAttribute::CustomAccessorOrValue);
     if (customGetterSetter->inherits<DOMAttributeGetterSetter>()) {
-        auto* domAttribute = jsCast<DOMAttributeGetterSetter*>(customGetterSetter);
+        auto* domAttribute = uncheckedDowncast<DOMAttributeGetterSetter>(customGetterSetter);
         if (structure->isUncacheableDictionary())
             slot.setCustom(this, attributes, domAttribute->getter(), domAttribute->setter(), domAttribute->domAttribute());
         else

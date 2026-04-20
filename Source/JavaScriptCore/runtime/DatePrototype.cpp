@@ -375,7 +375,7 @@ JSC_DEFINE_HOST_FUNCTION(dateProtoFuncToPrimitiveSymbol, (JSGlobalObject* global
     JSValue thisValue = callFrame->thisValue().toThis(globalObject, ECMAMode::strict());
     if (!thisValue.isObject())
         return throwVMTypeError(globalObject, scope, "Date.prototype[Symbol.toPrimitive] expected |this| to be an object."_s);
-    JSObject* thisObject = jsCast<JSObject*>(thisValue);
+    JSObject* thisObject = uncheckedDowncast<JSObject>(thisValue);
     Integrity::auditStructureID(thisObject->structureID());
 
     if (!callFrame->argumentCount())

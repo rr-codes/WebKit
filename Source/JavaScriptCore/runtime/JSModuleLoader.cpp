@@ -59,7 +59,7 @@ static constexpr unsigned maximumResolutionFailures = 128;
 static Identifier jsValueToSpecifier(JSGlobalObject* globalObject, JSValue value)
 {
     if (value.isSymbol())
-        return Identifier::fromUid(jsCast<Symbol*>(value)->privateName());
+        return Identifier::fromUid(uncheckedDowncast<Symbol>(value)->privateName());
     ASSERT(value.isString());
     return asString(value)->toIdentifier(globalObject);
 }
@@ -79,7 +79,7 @@ ErrorInstance* JSModuleLoader::duplicateTypeError(JSGlobalObject* globalObject, 
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto* copy = jsCast<ErrorInstance*>(createTypeErrorCopy(globalObject, error));
+    auto* copy = uncheckedDowncast<ErrorInstance>(createTypeErrorCopy(globalObject, error));
     RETURN_IF_EXCEPTION(scope, nullptr);
 
     auto copyField = [&](const Identifier& name) -> bool {
@@ -260,7 +260,7 @@ void JSModuleLoader::finishCreation(JSGlobalObject*, VM& vm)
 template<typename Visitor>
 void JSModuleLoader::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    JSModuleLoader* thisObject = jsCast<JSModuleLoader*>(cell);
+    JSModuleLoader* thisObject = uncheckedDowncast<JSModuleLoader>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     Locker locker { thisObject->cellLock() };
@@ -1012,7 +1012,7 @@ JSPromise* JSModuleLoader::makeModule(JSGlobalObject* globalObject, const Identi
 
 #if ENABLE(WEBASSEMBLY)
     if (sourceCode.provider()->sourceType() == SourceProviderSourceType::WebAssembly)
-        RELEASE_AND_RETURN(scope, jsCast<JSPromise*>(JSWebAssembly::instantiate(globalObject, promise, sourceCode.provider(), moduleKey, jsSourceCode)));
+        RELEASE_AND_RETURN(scope, uncheckedDowncast<JSPromise>(JSWebAssembly::instantiate(globalObject, promise, sourceCode.provider(), moduleKey, jsSourceCode)));
 #endif
 
     // https://tc39.es/proposal-json-modules/#sec-parse-json-module
@@ -1030,7 +1030,7 @@ JSPromise* JSModuleLoader::makeModule(JSGlobalObject* globalObject, const Identi
         vm, sourceCode, ImplementationVisibility::Public, JSParserBuiltinMode::NotBuiltin,
         StrictModeLexicallyScopedFeature, JSParserScriptMode::Module, SourceParseMode::ModuleAnalyzeMode, error);
     if (error.isValid()) {
-        auto* errorInstance = jsCast<ErrorInstance*>(error.toErrorObject(globalObject, sourceCode));
+        auto* errorInstance = uncheckedDowncast<ErrorInstance>(error.toErrorObject(globalObject, sourceCode));
         attachErrorInfo(globalObject, errorInstance, nullptr, moduleKey, ScriptFetchParameters::JavaScript, ModuleFailure::Kind::Evaluation);
         promise->reject(vm, globalObject, errorInstance);
         RELEASE_AND_RETURN(scope, promise);
@@ -1043,7 +1043,7 @@ JSPromise* JSModuleLoader::makeModule(JSGlobalObject* globalObject, const Identi
     auto result = moduleAnalyzer.analyze(*moduleProgramNode);
     if (!result) {
         auto [errorType, message] = WTF::move(result.error());
-        auto* errorInstance = jsCast<ErrorInstance*>(createError(globalObject, errorType, message));
+        auto* errorInstance = uncheckedDowncast<ErrorInstance>(createError(globalObject, errorType, message));
         attachErrorInfo(globalObject, errorInstance, nullptr, moduleKey, ScriptFetchParameters::JavaScript, ModuleFailure::Kind::Evaluation);
         promise->reject(vm, globalObject, errorInstance);
         RELEASE_AND_RETURN(scope, promise);

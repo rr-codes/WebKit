@@ -52,7 +52,7 @@ inline bool JSArrayBufferView::isShared()
     case ResizableNonSharedAutoLengthDataViewMode:
     case GrowableSharedDataViewMode:
     case GrowableSharedAutoLengthDataViewMode:
-        return jsCast<JSDataView*>(this)->possiblySharedBuffer()->isShared();
+        return uncheckedDowncast<JSDataView>(this)->possiblySharedBuffer()->isShared();
     default:
         return false;
     }
@@ -76,7 +76,7 @@ inline ArrayBuffer* JSArrayBufferView::possiblySharedBufferImpl()
     case ResizableNonSharedAutoLengthDataViewMode:
     case GrowableSharedDataViewMode:
     case GrowableSharedAutoLengthDataViewMode:
-        return jsCast<JSDataView*>(this)->possiblySharedBuffer();
+        return uncheckedDowncast<JSDataView>(this)->possiblySharedBuffer();
     case FastTypedArray:
     case OversizeTypedArray:
         return slowDownAndWasteMemory();
@@ -237,7 +237,7 @@ inline JSArrayBufferView* validateTypedArray(JSGlobalObject* globalObject, JSVal
         return nullptr;
     }
 
-    RELEASE_AND_RETURN(scope, validateTypedArray(globalObject, jsCast<JSArrayBufferView*>(typedArrayCell)));
+    RELEASE_AND_RETURN(scope, validateTypedArray(globalObject, uncheckedDowncast<JSArrayBufferView>(typedArrayCell)));
 }
 
 } // namespace JSC

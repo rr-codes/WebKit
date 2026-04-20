@@ -68,7 +68,7 @@ void InternalFunction::finishCreation(VM& vm, unsigned length, const String& nam
 template<typename Visitor>
 void InternalFunction::visitChildrenImpl(JSCell* cell, Visitor& visitor)
 {
-    InternalFunction* thisObject = jsCast<InternalFunction*>(cell);
+    InternalFunction* thisObject = uncheckedDowncast<InternalFunction>(cell);
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     Base::visitChildren(thisObject, visitor);
     
@@ -102,7 +102,7 @@ String InternalFunction::displayName(VM& vm)
 CallData InternalFunction::getCallData(JSCell* cell)
 {
     // Keep this function OK for invocation from concurrent compilers.
-    auto* function = jsCast<InternalFunction*>(cell);
+    auto* function = uncheckedDowncast<InternalFunction>(cell);
     ASSERT(function->m_functionForCall);
 
     CallData callData;
@@ -117,7 +117,7 @@ CallData InternalFunction::getConstructData(JSCell* cell)
 {
     // Keep this function OK for invocation from concurrent compilers.
     CallData constructData;
-    auto* function = jsCast<InternalFunction*>(cell);
+    auto* function = uncheckedDowncast<InternalFunction>(cell);
     if (function->m_functionForConstruct != callHostFunctionAsConstructor) {
         constructData.type = CallData::Type::Native;
         constructData.native.function = function->m_functionForConstruct;
@@ -198,16 +198,16 @@ JSGlobalObject* getFunctionRealm(JSGlobalObject* globalObject, JSObject* object)
 
     while (true) {
         if (object->inherits<JSBoundFunction>()) {
-            object = jsCast<JSBoundFunction*>(object)->targetFunction();
+            object = uncheckedDowncast<JSBoundFunction>(object)->targetFunction();
             continue;
         }
         if (object->inherits<JSRemoteFunction>()) {
-            object = jsCast<JSRemoteFunction*>(object)->targetFunction();
+            object = uncheckedDowncast<JSRemoteFunction>(object)->targetFunction();
             continue;
         }
 
         if (object->type() == ProxyObjectType) {
-            auto* proxy = jsCast<ProxyObject*>(object);
+            auto* proxy = uncheckedDowncast<ProxyObject>(object);
             if (proxy->isRevoked()) {
                 throwTypeError(globalObject, scope, "Cannot get function realm from revoked Proxy"_s);
                 return nullptr;

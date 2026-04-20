@@ -846,7 +846,7 @@ JSC_DEFINE_HOST_FUNCTION(globalFuncCopyDataProperties, (JSGlobalObject* globalOb
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    JSFinalObject* target = jsCast<JSFinalObject*>(callFrame->thisValue());
+    JSFinalObject* target = uncheckedDowncast<JSFinalObject>(callFrame->thisValue());
     ASSERT(target->isStructureExtensible());
 
     JSValue sourceValue = callFrame->uncheckedArgument(0);

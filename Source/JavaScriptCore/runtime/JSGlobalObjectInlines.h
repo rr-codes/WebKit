@@ -213,14 +213,14 @@ ALWAYS_INLINE Structure* JSGlobalObject::arrayStructureForIndexingTypeDuringAllo
     RELEASE_AND_RETURN(scope, InternalFunction::createSubclassStructure(globalObject, asObject(newTarget), functionGlobalObject->arrayStructureForIndexingTypeDuringAllocation(indexingType)));
 }
 
-inline JSFunction* JSGlobalObject::evalFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::evalFunction)); }
-inline JSFunction* JSGlobalObject::throwTypeErrorFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::throwTypeErrorFunction)); }
-inline JSFunction* JSGlobalObject::iteratorProtocolFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::performIteration)); }
-inline JSFunction* JSGlobalObject::promiseProtoThenFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::defaultPromiseThen)); }
-inline JSFunction* JSGlobalObject::promiseEmptyOnFulfilledFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::promiseEmptyOnFulfilled)); }
-inline JSFunction* JSGlobalObject::promiseEmptyOnRejectedFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::promiseEmptyOnRejected)); }
-inline JSFunction* JSGlobalObject::regExpProtoExecFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::regExpBuiltinExec)); }
-inline JSFunction* JSGlobalObject::stringProtoSubstringFunction() const { return jsCast<JSFunction*>(linkTimeConstant(LinkTimeConstant::stringSubstring)); }
+inline JSFunction* JSGlobalObject::evalFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::evalFunction)); }
+inline JSFunction* JSGlobalObject::throwTypeErrorFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::throwTypeErrorFunction)); }
+inline JSFunction* JSGlobalObject::iteratorProtocolFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::performIteration)); }
+inline JSFunction* JSGlobalObject::promiseProtoThenFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::defaultPromiseThen)); }
+inline JSFunction* JSGlobalObject::promiseEmptyOnFulfilledFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::promiseEmptyOnFulfilled)); }
+inline JSFunction* JSGlobalObject::promiseEmptyOnRejectedFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::promiseEmptyOnRejected)); }
+inline JSFunction* JSGlobalObject::regExpProtoExecFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::regExpBuiltinExec)); }
+inline JSFunction* JSGlobalObject::stringProtoSubstringFunction() const { return uncheckedDowncast<JSFunction>(linkTimeConstant(LinkTimeConstant::stringSubstring)); }
 inline JSFunction* JSGlobalObject::performProxyObjectHasFunction() const { return m_performProxyObjectHasFunction.get(); }
 inline JSFunction* JSGlobalObject::performProxyObjectHasFunctionConcurrently() const { return performProxyObjectHasFunction(); }
 inline JSFunction* JSGlobalObject::performProxyObjectHasByValFunction() const { return m_performProxyObjectHasByValFunction.get(); }
@@ -697,7 +697,7 @@ template<typename Type> inline Type JSGlobalObject::linkTimeConstantConcurrently
     JSCell* result = m_linkTimeConstants[static_cast<unsigned>(value)].getConcurrently();
     if (!result)
         return nullptr;
-    return jsCast<Type>(result);
+    return uncheckedDowncast<std::remove_pointer_t<Type>>(result);
 }
 
 } // namespace JSC

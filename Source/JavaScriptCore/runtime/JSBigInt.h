@@ -639,7 +639,7 @@ private:
 inline JSBigInt* asHeapBigInt(JSValue value)
 {
     ASSERT(value.asCell()->isHeapBigInt());
-    return jsCast<JSBigInt*>(value.asCell());
+    return uncheckedDowncast<JSBigInt>(value.asCell());
 }
 
 inline JSBigInt::Digit JSBigInt::digit(unsigned n)

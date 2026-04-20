@@ -210,7 +210,7 @@ public:
         JSValue* value = slot(storage, aliveEntryCountIndex());
         if (!value->isInt32()) {
             ASSERT(is<Storage>(*value));
-            return jsCast<Storage*>(*value);
+            return uncheckedDowncast<Storage>(*value);
         }
         return nullptr;
     }

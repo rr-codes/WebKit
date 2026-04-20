@@ -158,7 +158,7 @@ ALWAYS_INLINE T JSValue::getAs(JSGlobalObject* globalObject, PropertyNameType pr
     if (vm.exceptionForInspection())
         return nullptr;
 #endif
-    return jsCast<T>(value);
+    return uncheckedDowncast<std::remove_pointer_t<T>>(value);
 }
 
 inline JSString* JSValue::toString(JSGlobalObject* globalObject) const

@@ -63,7 +63,7 @@ std::optional<JSValue> arrayBufferSpeciesConstructorSlow(JSGlobalObject* globalO
     JSValue constructor = thisObject->get(globalObject, vm.propertyNames->constructor);
     RETURN_IF_EXCEPTION(scope, std::nullopt);
     if (constructor.isConstructor()) {
-        JSObject* constructorObject = jsCast<JSObject*>(constructor);
+        JSObject* constructorObject = uncheckedDowncast<JSObject>(constructor);
         JSGlobalObject* globalObjectFromConstructor = constructorObject->realm();
         bool isAnyArrayBufferConstructor = constructorObject == globalObjectFromConstructor->arrayBufferConstructor(mode);
         if (isAnyArrayBufferConstructor)

@@ -104,7 +104,7 @@ ALWAYS_INLINE bool isThisValueAltered(const PutPropertySlot& slot, JSObject* bas
         return true;
     JSObject* thisObject = asObject(thisValue);
     // Only GlobalProxyType can be seen as the same to the original target object.
-    if (thisObject->type() == GlobalProxyType && static_cast<void*>(jsCast<JSGlobalProxy*>(thisObject)->target()) == static_cast<void*>(baseObject))
+    if (thisObject->type() == GlobalProxyType && static_cast<void*>(uncheckedDowncast<JSGlobalProxy>(thisObject)->target()) == static_cast<void*>(baseObject))
         return false;
     return true;
 }

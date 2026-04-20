@@ -82,13 +82,13 @@ JSC_DEFINE_HOST_FUNCTION(functionProtoFuncToString, (JSGlobalObject* globalObjec
 
     JSValue thisValue = callFrame->thisValue();
     if (thisValue.inherits<JSFunction>()) {
-        JSFunction* function = jsCast<JSFunction*>(thisValue);
+        JSFunction* function = uncheckedDowncast<JSFunction>(thisValue);
         Integrity::auditStructureID(function->structureID());
         RELEASE_AND_RETURN(scope, JSValue::encode(function->toString(globalObject)));
     }
 
     if (thisValue.inherits<InternalFunction>()) {
-        InternalFunction* function = jsCast<InternalFunction*>(thisValue);
+        InternalFunction* function = uncheckedDowncast<InternalFunction>(thisValue);
         Integrity::auditStructureID(function->structureID());
         RELEASE_AND_RETURN(scope, JSValue::encode(jsMakeNontrivialString(globalObject, "function "_s, function->name(), "() {\n    [native code]\n}"_s)));
     }
@@ -259,7 +259,7 @@ public:
             if (callee->inherits<JSBoundFunction>() || callee->inherits<JSRemoteFunction>() || callee->type() == ProxyObjectType)
                 return IterationStatus::Continue;
             if (callee->inherits<JSFunction>()) {
-                if (jsCast<JSFunction*>(callee)->executable()->implementationVisibility() != ImplementationVisibility::Public)
+                if (uncheckedDowncast<JSFunction>(callee)->executable()->implementationVisibility() != ImplementationVisibility::Public)
                     return IterationStatus::Continue;
             }
 

@@ -450,7 +450,7 @@ IterationMode getIterationMode(VM&, JSGlobalObject* globalObject, JSValue iterab
     if (!isJSArray(iterable))
         return IterationMode::Generic;
 
-    JSArray* array = jsCast<JSArray*>(iterable);
+    JSArray* array = uncheckedDowncast<JSArray>(iterable);
     Structure* structure = array->structure();
     // FIXME: We want to support broader JSArrays as long as array[@@iterator] is not defined.
     if (!globalObject->isOriginalArrayStructure(structure))

@@ -48,7 +48,7 @@ inline void JSObject::didBecomePrototype(VM& vm)
     }
 
     if (type() == GlobalProxyType) [[unlikely]]
-        jsCast<JSGlobalProxy*>(this)->target()->didBecomePrototype(vm);
+        uncheckedDowncast<JSGlobalProxy>(this)->target()->didBecomePrototype(vm);
 }
 
 template<typename CellType, SubspaceAccess>

@@ -154,7 +154,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseProtoFuncCatch, (JSGlobalObject* globalObject, C
 
 JSC_DEFINE_HOST_FUNCTION(promiseFinallyValueThunkFunc, (JSGlobalObject*, CallFrame* callFrame))
 {
-    auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
+    auto* callee = uncheckedDowncast<JSFunctionWithFields>(callFrame->jsCallee());
     JSValue value = callee->getField(JSFunctionWithFields::Field::ResolvingPromise);
     return JSValue::encode(value);
 }
@@ -163,7 +163,7 @@ JSC_DEFINE_HOST_FUNCTION(promiseFinallyThrowerFunc, (JSGlobalObject* globalObjec
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
-    auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
+    auto* callee = uncheckedDowncast<JSFunctionWithFields>(callFrame->jsCallee());
     JSValue reason = callee->getField(JSFunctionWithFields::Field::ResolvingPromise);
     return throwVMError(globalObject, scope, reason);
 }
@@ -173,9 +173,9 @@ JSC_DEFINE_HOST_FUNCTION(promiseFinallyThenFinallyFunc, (JSGlobalObject* globalO
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
+    auto* callee = uncheckedDowncast<JSFunctionWithFields>(callFrame->jsCallee());
     JSValue onFinally = callee->getField(JSFunctionWithFields::Field::ResolvingPromise);
-    JSObject* constructor = jsCast<JSObject*>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
+    JSObject* constructor = uncheckedDowncast<JSObject>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
     JSValue value = callFrame->argument(0);
 
     JSValue result = call(globalObject, onFinally, jsUndefined(), ArgList { }, "onFinally is not a function"_s);
@@ -205,9 +205,9 @@ JSC_DEFINE_HOST_FUNCTION(promiseFinallyCatchFinallyFunc, (JSGlobalObject* global
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
 
-    auto* callee = jsCast<JSFunctionWithFields*>(callFrame->jsCallee());
+    auto* callee = uncheckedDowncast<JSFunctionWithFields>(callFrame->jsCallee());
     JSValue onFinally = callee->getField(JSFunctionWithFields::Field::ResolvingPromise);
-    JSObject* constructor = jsCast<JSObject*>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
+    JSObject* constructor = uncheckedDowncast<JSObject>(callee->getField(JSFunctionWithFields::Field::ResolvingOther));
     JSValue reason = callFrame->argument(0);
 
     JSValue result = call(globalObject, onFinally, jsUndefined(), ArgList { }, "onFinally is not a function"_s);

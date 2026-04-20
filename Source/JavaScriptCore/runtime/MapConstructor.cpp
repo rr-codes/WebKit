@@ -138,7 +138,7 @@ JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapIterationNext, (JSGlobalObject* global
     if (cell == vm.orderedHashTableSentinel())
         return JSValue::encode(vm.orderedHashTableSentinel());
 
-    JSMap::Storage& storage = *jsCast<JSMap::Storage*>(cell);
+    JSMap::Storage& storage = *uncheckedDowncast<JSMap::Storage>(cell);
     JSMap::Helper::Entry entry = JSMap::Helper::toNumber(callFrame->uncheckedArgument(1));
     return JSValue::encode(JSMap::Helper::nextAndUpdateIterationEntry(vm, storage, entry));
 }
@@ -151,7 +151,7 @@ JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapIterationEntry, (JSGlobalObject* globa
     JSCell* cell = callFrame->uncheckedArgument(0).asCell();
     ASSERT_UNUSED(vm, cell != vm.orderedHashTableSentinel());
 
-    JSMap::Storage& storage = *jsCast<JSMap::Storage*>(cell);
+    JSMap::Storage& storage = *uncheckedDowncast<JSMap::Storage>(cell);
     return JSValue::encode(JSMap::Helper::getIterationEntry(storage));
 }
 
@@ -163,7 +163,7 @@ JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapIterationEntryKey, (JSGlobalObject* gl
     JSCell* cell = callFrame->uncheckedArgument(0).asCell();
     ASSERT_UNUSED(vm, cell != vm.orderedHashTableSentinel());
 
-    JSMap::Storage& storage = *jsCast<JSMap::Storage*>(cell);
+    JSMap::Storage& storage = *uncheckedDowncast<JSMap::Storage>(cell);
     return JSValue::encode(JSMap::Helper::getIterationEntryKey(storage));
 }
 
@@ -175,14 +175,14 @@ JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapIterationEntryValue, (JSGlobalObject* 
     JSCell* cell = callFrame->uncheckedArgument(0).asCell();
     ASSERT_UNUSED(vm, cell != vm.orderedHashTableSentinel());
 
-    JSMap::Storage& storage = *jsCast<JSMap::Storage*>(cell);
+    JSMap::Storage& storage = *uncheckedDowncast<JSMap::Storage>(cell);
     return JSValue::encode(JSMap::Helper::getIterationEntryValue(storage));
 }
 
 JSC_DEFINE_HOST_FUNCTION(mapPrivateFuncMapStorage, (JSGlobalObject* globalObject, CallFrame* callFrame))
 {
     ASSERT(is<JSMap>(callFrame->argument(0)));
-    JSMap* map = jsCast<JSMap*>(callFrame->uncheckedArgument(0));
+    JSMap* map = uncheckedDowncast<JSMap>(callFrame->uncheckedArgument(0));
     return JSValue::encode(map->storageOrSentinel(getVM(globalObject)));
 }
 

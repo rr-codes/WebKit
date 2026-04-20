@@ -118,7 +118,7 @@ static inline JSValue regExpExec(JSGlobalObject* globalObject, JSValue thisValue
         auto callData = JSC::getCallDataInline(regExpExec);
         ASSERT(callData.type != CallData::Type::None);
         if (callData.type == CallData::Type::JS) [[likely]] {
-            CachedCall cachedCall(globalObject, jsCast<JSFunction*>(regExpExec), 1);
+            CachedCall cachedCall(globalObject, uncheckedDowncast<JSFunction>(regExpExec), 1);
             RETURN_IF_EXCEPTION(scope, { });
             match = cachedCall.callWithArguments(globalObject, thisValue, str);
             RETURN_IF_EXCEPTION(scope, { });
@@ -192,8 +192,8 @@ JSC_DEFINE_HOST_FUNCTION(regExpProtoFuncExec, (JSGlobalObject* globalObject, Cal
 
 JSC_DEFINE_HOST_FUNCTION(regExpProtoFuncMatchFast, (JSGlobalObject* globalObject, CallFrame* callFrame))
 {
-    RegExpObject* thisObject = jsCast<RegExpObject*>(callFrame->thisValue());
-    JSString* string = jsCast<JSString*>(callFrame->uncheckedArgument(0));
+    RegExpObject* thisObject = uncheckedDowncast<RegExpObject>(callFrame->thisValue());
+    JSString* string = uncheckedDowncast<JSString>(callFrame->uncheckedArgument(0));
     if (!thisObject->regExp()->global())
         return JSValue::encode(thisObject->exec(globalObject, string));
     return JSValue::encode(thisObject->matchGlobal(globalObject, string));
@@ -625,7 +625,7 @@ JSC_DEFINE_HOST_FUNCTION(regExpProtoFuncSplitFast, (JSGlobalObject* globalObject
     // 1. [handled by JS builtin] Let rx be the this value.
     // 2. [handled by JS builtin] If Type(rx) is not Object, throw a TypeError exception.
     JSValue thisValue = callFrame->thisValue();
-    RegExp* regexp = jsCast<RegExpObject*>(thisValue)->regExp();
+    RegExp* regexp = uncheckedDowncast<RegExpObject>(thisValue)->regExp();
 
     // 3. [handled by JS builtin] Let S be ? ToString(string).
     JSString* inputString = callFrame->argument(0).toString(globalObject);

@@ -796,7 +796,7 @@ inline StringImpl* JSString::tryGetValueImpl() const
 inline JSString* asString(JSValue value)
 {
     ASSERT(value.isStringSlow());
-    return jsCast<JSString*>(value.asCell());
+    return uncheckedDowncast<JSString>(value.asCell());
 }
 
 // This MUST NOT GC.

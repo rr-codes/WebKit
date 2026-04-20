@@ -220,7 +220,7 @@ String StackFrame::functionName(VM& vm) const
             }
             String name;
             if (jsFrame.callee && jsFrame.callee->isObject())
-                name = getCalculatedDisplayName(vm, jsCast<JSObject*>(jsFrame.callee.get())).impl();
+                name = getCalculatedDisplayName(vm, uncheckedDowncast<JSObject>(jsFrame.callee.get())).impl();
             else if (jsFrame.codeBlock) {
                 if (auto* executable = dynamicDowncast<FunctionExecutable>(jsFrame.codeBlock->ownerExecutable()))
                     name = executable->ecmaName().impl();

@@ -396,7 +396,7 @@ JSObject* createURIError(JSGlobalObject* globalObject, const String& message)
 JSObject* createOutOfMemoryError(JSGlobalObject* globalObject)
 {
     auto* error = createRangeError(globalObject, "Out of memory"_s, nullptr);
-    jsCast<ErrorInstance*>(error)->setOutOfMemoryError();
+    uncheckedDowncast<ErrorInstance>(error)->setOutOfMemoryError();
     return error;
 }
 
@@ -405,7 +405,7 @@ JSObject* createOutOfMemoryError(JSGlobalObject* globalObject, const String& mes
     if (message.isEmpty())
         return createOutOfMemoryError(globalObject);
     auto* error = createRangeError(globalObject, makeString("Out of memory: "_s, message), nullptr);
-    jsCast<ErrorInstance*>(error)->setOutOfMemoryError();
+    uncheckedDowncast<ErrorInstance>(error)->setOutOfMemoryError();
     return error;
 }
 

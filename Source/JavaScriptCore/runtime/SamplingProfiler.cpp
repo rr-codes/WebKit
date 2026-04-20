@@ -594,12 +594,12 @@ void SamplingProfiler::processUnverifiedStackTraces()
                 return;
             }
 
-            addCallee(jsCast<JSFunction*>(calleeCell));
+            addCallee(uncheckedDowncast<JSFunction>(calleeCell));
 
             if (alreadyHasExecutable)
                 return;
 
-            ExecutableBase* executable = jsCast<JSFunction*>(calleeCell)->executable();
+            ExecutableBase* executable = uncheckedDowncast<JSFunction>(calleeCell)->executable();
             if (!executable) {
                 setFallbackFrameType();
                 return;
