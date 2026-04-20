@@ -42,11 +42,11 @@
 #if defined(BUILDING_WITH_CMAKE)
 
 // CMake path
-#if defined(BUILDING_TestJSC) || defined(BUILDING_TestJavaScriptCore)
+#if defined(BUILDING_TestJSC) || defined(BUILDING_TestJavaScriptCore) || defined(BUILDING_TEST_WGSL)
 #include <JavaScriptCore/JSExportMacros.h>
 #endif
 
-#if defined(BUILDING_TestWebCore)
+#if defined(BUILDING_TestWebCore) || defined(BUILDING_TEST_IPC)
 #include <JavaScriptCore/JSExportMacros.h>
 #include <WebCore/PlatformExportMacros.h>
 #include <pal/ExportMacros.h>
@@ -57,6 +57,10 @@
 #include <WebCore/PlatformExportMacros.h>
 #include <pal/ExportMacros.h>
 #include <WebKit/WebKit2_C.h>
+#endif
+
+#if defined(BUILDING_TestWebKit) && !defined(TestWebKitAPIInjectedBundle_EXPORTS) && PLATFORM(COCOA) && defined(__OBJC__)
+#import <WebKit/WebKit.h>
 #endif
 
 #else

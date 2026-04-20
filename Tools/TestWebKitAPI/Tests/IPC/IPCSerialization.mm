@@ -36,7 +36,7 @@
 #import "CoreIPCPlistDictionary.h"
 #import "Encoder.h"
 #import "MessageSenderInlines.h"
-#import "test.h"
+#import "Helpers/Test.h"
 #import <CoreVideo/CoreVideo.h>
 #import <Foundation/NSValue.h>
 #import <Security/Security.h>

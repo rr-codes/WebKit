@@ -61,6 +61,7 @@ list(APPEND TestWebKit_PRIVATE_INCLUDE_DIRECTORIES
     ${bmalloc_FRAMEWORK_HEADERS_DIR}
     ${WebKit_FRAMEWORK_HEADERS_DIR}
     ${WebKitLegacy_FRAMEWORK_HEADERS_DIR}
+    ${WEBKITLEGACY_DIR}
 )
 
 list(APPEND TestWebKit_LIBRARIES
@@ -74,6 +75,55 @@ WEBKIT_ADD_TARGET_CXX_FLAGS(TestWebKit -Wno-deprecated-declarations)
 
 # run-api-tests expects the binary to be named TestWebKitAPI.
 set_target_properties(TestWebKit PROPERTIES OUTPUT_NAME TestWebKitAPI)
+
+# TestIPC
+list(APPEND TestIPC_SOURCES
+    ${_test_main_SOURCES}
+    Helpers/cocoa/UtilitiesCocoa.mm
+
+    Tests/IPC/IPCSerialization.mm
+    Tests/IPC/TransferStringObjCTests.mm
+)
+
+list(APPEND TestIPC_PRIVATE_INCLUDE_DIRECTORIES
+    ${WTF_FRAMEWORK_HEADERS_DIR}
+    ${bmalloc_FRAMEWORK_HEADERS_DIR}
+    ${WEBKIT_DIR}/Platform/cocoa
+    ${WEBKIT_DIR}/Platform/IPC/darwin
+    ${WEBKIT_DIR}/Platform/IPC/cocoa
+    ${WEBKIT_DIR}/Shared/Cocoa
+    ${WEBKIT_DIR}/Shared/cf
+)
+
+list(APPEND TestIPC_LIBRARIES
+    ${CARBON_LIBRARY}
+    "-framework CoreServices"
+    "-framework CoreVideo"
+    "-framework IOSurface"
+    "-framework UniformTypeIdentifiers"
+    WTF
+)
+
+WEBKIT_ADD_TARGET_CXX_FLAGS(TestIPC -Wno-deprecated-declarations)
+
+# TestWGSL
+if (ENABLE_WEBGPU)
+    list(APPEND TestWGSL_SOURCES
+        ${_test_main_SOURCES}
+        Tests/WGSL/MetalCompilationTests.mm
+        Tests/WGSL/TypeCheckingTests.mm
+    )
+
+    list(APPEND TestWGSL_PRIVATE_INCLUDE_DIRECTORIES
+        ${WTF_FRAMEWORK_HEADERS_DIR}
+        ${bmalloc_FRAMEWORK_HEADERS_DIR}
+    )
+
+    list(APPEND TestWGSL_LIBRARIES
+        ${CARBON_LIBRARY}
+        "-framework Metal"
+    )
+endif ()
 
 # Common framework header directories needed by config.h (<wtf/Platform.h>, <WebKit/WebKit2_C.h>, etc.)
 set(_testapi_framework_headers
@@ -138,7 +188,7 @@ WEBKIT_COPY_FILES(TestWebKitAPIResources
     FLATTENED
 )
 # Ensure all test targets depend on the resources bundle.
-foreach (_test_target TestWTF TestJavaScriptCore TestWebCore TestWebKitLegacy TestWebKit)
+foreach (_test_target TestWTF TestJavaScriptCore TestWebCore TestWebKitLegacy TestWebKit TestIPC TestWGSL)
     if (TARGET ${_test_target})
         add_dependencies(${_test_target} TestWebKitAPIResources)
     endif ()
