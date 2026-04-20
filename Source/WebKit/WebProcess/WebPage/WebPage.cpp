@@ -2283,6 +2283,11 @@ void WebPage::loadRequest(LoadParameters&& loadParameters)
 
     localFrame->loader().setNavigationUpgradeToHTTPSBehavior(loadParameters.navigationUpgradeToHTTPSBehavior);
     localFrame->loader().setRequiredCookiesVersion(loadParameters.requiredCookiesVersion);
+
+    std::optional<UserGestureIndicator> userGestureIndicator;
+    if (loadParameters.hadUserGesture && loadParameters.shouldTreatAsContinuingLoad != ShouldTreatAsContinuingLoad::No)
+        userGestureIndicator.emplace(IsProcessingUserGesture::Yes);
+
     localFrame->loader().load(WTF::move(frameLoadRequest), WTF::move(loadParameters.requester));
 
     ASSERT(!m_pendingNavigationID);

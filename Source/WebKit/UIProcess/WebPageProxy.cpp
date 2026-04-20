@@ -2258,8 +2258,10 @@ void WebPageProxy::loadRequestWithNavigationShared(Ref<WebProcessProxy>&& proces
     loadParameters.isHandledByAboutSchemeHandler = m_aboutSchemeHandler->canHandleURL(url);
     loadParameters.requiredCookiesVersion = websiteDataStore().cookiesVersion();
     loadParameters.originatingFrame = navigation.lastNavigationAction() ? std::optional(navigation.lastNavigationAction()->originatingFrameInfoData) : std::nullopt;
-    if (auto& action = navigation.lastNavigationAction())
+    if (auto& action = navigation.lastNavigationAction()) {
+        loadParameters.hadUserGesture = action->userGestureTokenIdentifier.has_value();
         loadParameters.requester = action->requester;
+    }
     if (shouldTreatAsContinuingLoad == ShouldTreatAsContinuingLoad::YesAfterNavigationPolicyDecision)
         loadParameters.originalRequest = navigation.originalRequest();
 
@@ -2787,6 +2789,11 @@ void WebPageProxy::didChangeBackForwardList(WebBackForwardListItem* added, Vecto
     if (!m_navigationClient->didChangeBackForwardList(*this, added, removed) && m_loaderClient)
         m_loaderClient->didChangeBackForwardList(*this, added, WTF::move(removed));
 
+    updateCanGoBackAndForward();
+}
+
+void WebPageProxy::updateCanGoBackAndForward()
+{
     Ref pageLoadState = internals().pageLoadState;
     auto transaction = pageLoadState->transaction();
 
@@ -2819,7 +2826,7 @@ void WebPageProxy::goToBackForwardItemAtIndex(int32_t steps, FrameLoadType frame
 {
     WEBPAGEPROXY_RELEASE_LOG(Loading, "goToBackForwardItemAtIndex: steps=%d", steps);
 
-    RefPtr item = backForwardListWrapper().itemAtDeltaFromCurrentIndex(steps);
+    RefPtr item = backForwardListWrapper().itemAtDeltaFromCurrentIndex(steps, AllowSkippingBackForwardItems::No);
     if (!item)
         return;
 
@@ -5453,6 +5460,7 @@ void WebPageProxy::receivedNavigationActionPolicyDecision(WebProcessProxy& proce
             loadParameters.shouldTreatAsContinuingLoad = navigation->currentRequestIsRedirect() ? ShouldTreatAsContinuingLoad::YesAfterProvisionalLoadStarted : ShouldTreatAsContinuingLoad::YesAfterNavigationPolicyDecision;
             loadParameters.frameIdentifier = frame->frameID();
             loadParameters.isRequestFromClientOrUserInput = navigationAction->data().isRequestFromClientOrUserInput;
+            loadParameters.hadUserGesture = navigationAction->data().userGestureTokenIdentifier.has_value();
             loadParameters.navigationID = navigation->navigationID();
             loadParameters.ownerPermissionsPolicy = navigation->ownerPermissionsPolicy();
             loadParameters.navigationUpgradeToHTTPSBehavior = navigationAction->data().navigationUpgradeToHTTPSBehavior;
@@ -5787,8 +5795,10 @@ void WebPageProxy::continueNavigationInNewProcess(API::Navigation& navigation, W
         loadParameters.ownerPermissionsPolicy = navigation.ownerPermissionsPolicy();
         loadParameters.navigationUpgradeToHTTPSBehavior = navigationUpgradeToHTTPSBehavior;
         loadParameters.isHandledByAboutSchemeHandler = m_aboutSchemeHandler->canHandleURL(loadParameters.request.url());
-        if (auto& action = navigation.lastNavigationAction())
+        if (auto& action = navigation.lastNavigationAction()) {
             loadParameters.requester = action->requester;
+            loadParameters.hadUserGesture = action->userGestureTokenIdentifier.has_value();
+        }
 
         if (isPendingInitialHistoryItem)
             frame.setIsPendingInitialHistoryItem(true);
