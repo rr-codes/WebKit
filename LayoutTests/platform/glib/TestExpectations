@@ -69,6 +69,7 @@
 # * XML
 # * XHR
 # * EME feature
+# * IPC Testing
 # * UNSUPPORTED tests
 #   * Things we do not test. (i.e. Skipped)
 # * NEEDS TRIAGING
@@ -2628,7 +2629,6 @@ webkit.org/b/251195 webgl/1.0.x/conformance/extensions/ext-color-buffer-half-flo
 
 # Not applicable.
 webgl/webgl-backend-type.html [ Skip ]
-ipc/restrictedendpoints/allow-access-webGPU.html  [ Skip ]
 
 # Failing with ANGLE backend
 fast/canvas/webgl/oes-texture-float-linear.html [ Failure ]
@@ -3561,6 +3561,65 @@ imported/w3c/web-platform-tests/encrypted-media/clearkey-update-non-ascii-input.
 # End of EME feature
 #////////////////////////////////////////////////////////////////////////////////////////
 
+#////////////////////////////////////////////////////////////////////////////////////////
+# IPC testing
+#////////////////////////////////////////////////////////////////////////////////////////
+
+### TESTS TO BE SKIPPED
+
+# Specific to Cocoa-ports.
+ipc/networksessioncocoa-empty-resource-request.html [ Skip ]
+ipc/send-invalid-message.html [ Skip ]
+ipc/pasteboard-write-custom-data.html [ Skip ]
+ipc/remotedisplaylistrecorder-drawcontrolpart-slidertrackpart-crash.html [ Skip ]
+http/tests/ipc/gpu-load-error-empty-user-info-crssh.html [ Skip ]
+
+# ATTACHMENT_ELEMENT is disabled in glib ports.
+ipc/restrictedendpoints/allow-access-attachmentElement.html [ Skip ]
+
+# libwebrtc-specific.
+ipc/videoEncode.html [ Skip ]
+
+# WebAuthn not enabled
+ipc/web-authenticator-get-assertion.html [ Skip ]
+
+# These tests require UseGPUProcessForMediaEnabled
+ipc/restrictedendpoints/allow-access-testOnlyIPC.html [ Skip ]
+
+# Assorted crashes
+ipc/convert-to-luminance-mask-float16.html [ Crash ]
+ipc/empty-svgfilterrenderer-expression-crash.html [ Crash ]
+ipc/send-gpu-GetShareableBitmap-RemoteRenderingBackend.html [ Crash ]
+
+### FAILING TESTS
+
+# Read-Only shared-memory handle not supported, see https://bugs.webkit.org/show_bug.cgi?id=131542
+ipc/stream-sync-reply-shared-memory.html [ Failure ]
+
+
+### NEEDS PROPER TRIAGGING/GARDENING
+
+ipc/decode-feConvolveMatrix-kernelSize-overflow.html [ Failure ]
+ipc/invalid-addSourceBuffer-to-GPU-process-crash.html [ Failure ]
+ipc/invalid-message-to-web-process-crash.html [ Failure ]
+ipc/restore-empty-stack-crash.html [ Failure ]
+ipc/restrictedendpoints/deny-access-attachmentElement.html [ Failure ]
+ipc/serialized-type-info.html [ Failure ]
+http/tests/ipc/null-port-on-sharedmemoryhandle-creation.html [ Failure ]
+
+ipc/restrictedendpoints/deny-access-testOnlyIPC.html [ Crash ]
+ipc/restrictedendpoints/deny-access-webGPU.html [ Crash ]
+ipc/validate-message-check-in-networkconnectiontowebproces-crash.html [ Crash ]
+
+ipc/insufficient-svgfilter-inputs-crash.html [ Timeout ]
+ipc/invalid-feConvolveMatrix-crash.html [ Timeout ]
+ipc/invalid-svgfilter-expression-crash.html [ Timeout ]
+ipc/restrictedendpoints/deny-access-updateQuotaBasedOnSpaceUsageForTesting.html [ Timeout ]
+ipc/restrictedendpoints/deny-access-webPush.html [ Timeout ]
+
+#////////////////////////////////////////////////////////////////////////////////////////
+# End of IPC testing
+#////////////////////////////////////////////////////////////////////////////////////////
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # UNSUPPORTED tests. Things we must skip.

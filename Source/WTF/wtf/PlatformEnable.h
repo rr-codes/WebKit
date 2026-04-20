@@ -301,8 +301,10 @@
 #endif
 
 #if !defined(ENABLE_IPC_TESTING_API)
-/* Enable IPC testing on all ASAN builds and debug builds. */
-#if (ASAN_ENABLED || !defined(NDEBUG)) && PLATFORM(COCOA)
+/* Enable IPC testing on all ASAN builds and debug builds. Enable it in GLib ports when assertions are enabled. */
+/* In GLib ports, only enable for GCC builds, as this is what we currently test in EWS and clang-18 is significantly */
+/* slow to build when IPC testing is enabled. */
+#if ((ASAN_ENABLED || !defined(NDEBUG)) && PLATFORM(COCOA)) || (ASSERT_ENABLED && (PLATFORM(GTK) || PLATFORM(WPE)) && COMPILER(GCC))
 #define ENABLE_IPC_TESTING_API 1
 #endif
 #endif
