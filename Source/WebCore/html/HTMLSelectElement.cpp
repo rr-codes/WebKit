@@ -80,6 +80,7 @@
 #include <JavaScriptCore/ConsoleTypes.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/text/MakeString.h>
+#include <wtf/text/StringBuilder.h>
 
 #if !PLATFORM(IOS_FAMILY)
 #include <WebCore/PopupMenu.h>
@@ -502,6 +503,19 @@ String HTMLSelectElement::value() const
         }
     }
     return emptyString();
+}
+
+String HTMLSelectElement::collectOptionInnerText() const
+{
+    StringBuilder builder;
+    for (auto& item : listItems()) {
+        if (RefPtr option = dynamicDowncast<HTMLOptionElement>(item.get())) {
+            if (!builder.isEmpty())
+                builder.append('\n');
+            builder.append(option->text());
+        }
+    }
+    return builder.toString();
 }
 
 void HTMLSelectElement::setValue(const String& value)

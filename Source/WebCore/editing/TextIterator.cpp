@@ -46,8 +46,6 @@
 #include "HTMLLegendElement.h"
 #include "HTMLMeterElement.h"
 #include "HTMLNames.h"
-#include "HTMLOptGroupElement.h"
-#include "HTMLOptionElement.h"
 #include "HTMLParagraphElement.h"
 #include "HTMLProgressElement.h"
 #include "HTMLSelectElement.h"
@@ -800,25 +798,6 @@ void TextIterator::handleTextNodeFirstLetter(RenderTextFragment& renderer)
     m_handledFirstLetter = true;
 }
 
-static String collectSelectInnerText(const HTMLSelectElement& selectElement)
-{
-    StringBuilder builder;
-    for (Ref child : childrenOfType<HTMLElement>(selectElement)) {
-        if (auto* option = dynamicDowncast<HTMLOptionElement>(child.get())) {
-            if (!builder.isEmpty())
-                builder.append('\n');
-            builder.append(option->text());
-        } else if (auto* optgroup = dynamicDowncast<HTMLOptGroupElement>(child.get())) {
-            for (Ref option : childrenOfType<HTMLOptionElement>(*optgroup)) {
-                if (!builder.isEmpty())
-                    builder.append('\n');
-                builder.append(option->text());
-            }
-        }
-    }
-    return builder.toString();
-}
-
 bool TextIterator::handleReplacedElement()
 {
     if (m_fullyClippedStack.top())
@@ -917,7 +896,7 @@ bool TextIterator::handleReplacedElement()
     if (m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec)) {
         if (RefPtr selectElement = dynamicDowncast<HTMLSelectElement>(m_currentNode)) {
             m_handledChildren = true;
-            if (String selectText = collectSelectInnerText(*selectElement); !selectText.isEmpty()) {
+            if (String selectText = selectElement->collectOptionInnerText(); !selectText.isEmpty()) {
                 m_hasEmitted = true;
                 m_lastCharacter = selectText[selectText.length() - 1];
                 m_copyableText.set(WTF::move(selectText));

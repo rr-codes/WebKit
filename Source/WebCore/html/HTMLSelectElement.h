@@ -95,6 +95,8 @@ public:
     WEBCORE_EXPORT String value() const;
     WEBCORE_EXPORT void setValue(const String&);
 
+    String collectOptionInnerText() const;
+
     WEBCORE_EXPORT Ref<HTMLOptionsCollection> options();
     Ref<HTMLCollection> selectedOptions();
 
