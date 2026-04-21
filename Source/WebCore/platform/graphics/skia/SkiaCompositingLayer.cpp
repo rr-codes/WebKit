@@ -70,6 +70,7 @@ void SkiaCompositingLayer::invalidate()
 {
     m_backingStore = nullptr;
     m_animatedBackingStoreClient = nullptr;
+    m_maskImage = nullptr;
     m_imageBackingStore = nullptr;
     m_contentsBuffer = nullptr;
 
@@ -142,6 +143,7 @@ void SkiaCompositingLayer::setUseBackingStore(bool useBackingStore, CoordinatedA
     if (!useBackingStore) {
         m_backingStore = nullptr;
         m_animatedBackingStoreClient = nullptr;
+        m_maskImage = nullptr;
         return;
     }
 
@@ -160,6 +162,10 @@ void SkiaCompositingLayer::updateBackingStore(CoordinatedBackingStoreProxy::Upda
         m_backingStore->removeTile(tileID);
     for (const auto& tileUpdate : update.tilesToUpdate())
         m_backingStore->updateTile(tileUpdate.tileID, tileUpdate.dirtyRect, tileUpdate.tileRect, tileUpdate.buffer.copyRef(), { });
+
+    if (m_maskImage && !update.isEmpty())
+        m_maskImage = nullptr;
+
     m_backingStore->processPendingUpdates();
 }
 
@@ -510,8 +516,6 @@ void SkiaCompositingLayer::paintSelf(SkCanvas& canvas, PaintContext& context)
     paint.setStyle(SkPaint::kFill_Style);
     paint.setAntiAlias(true);
     paint.setAlphaf(context.opacity);
-    if (context.isMask)
-        paint.setBlendMode(SkBlendMode::kDstIn);
     if (context.colorFilter)
         paint.setColorFilter(context.colorFilter);
 
@@ -723,6 +727,38 @@ IntRect SkiaCompositingLayer::clipBounds(const SkCanvas& canvas, const PaintCont
     return clip;
 }
 
+sk_sp<SkImage> SkiaCompositingLayer::maskImage()
+{
+    if (m_maskImage)
+        return m_maskImage;
+
+    if (!m_backingStore)
+        return nullptr;
+
+    // Paint the mask at the same scale the tiles were painted.
+    auto scale = m_backingStore->scale();
+    auto rect = effectiveLayerRect();
+    rect.scale(scale);
+
+    auto* grContext = PlatformDisplay::sharedDisplay().skiaGrContext();
+    auto imageInfo = SkImageInfo::Make(rect.width(), rect.height(), kRGBA_8888_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+    auto surface = SkSurfaces::RenderTarget(grContext, skgpu::Budgeted::kNo, imageInfo, 0, kTopLeft_GrSurfaceOrigin, nullptr);
+    if (!surface)
+        return nullptr;
+
+    auto* surfaceCanvas = surface->getCanvas();
+    if (!surfaceCanvas)
+        return nullptr;
+
+    surfaceCanvas->clear(SK_ColorTRANSPARENT);
+    SkPaint paint;
+    surfaceCanvas->scale(scale, scale);
+    m_backingStore->paintToCanvas(*surfaceCanvas, paint);
+    grContext->flushAndSubmit(surface.get(), GrSyncCpu::kNo);
+    m_maskImage = surface->makeImageSnapshot();
+    return m_maskImage;
+}
+
 void SkiaCompositingLayer::paintWithIntermediateSurface(SkCanvas& canvas, PaintContext& context, const IntRect& contentsRect, SkPaint* paint, PaintFunction&& paintFunction)
 {
     auto* grContext = PlatformDisplay::sharedDisplay().skiaGrContext();
@@ -746,35 +782,41 @@ void SkiaCompositingLayer::paintWithIntermediateSurface(SkCanvas& canvas, PaintC
 
 void SkiaCompositingLayer::paintSelfAndChildrenWithFilterAndMask(SkCanvas& canvas, PaintContext& context)
 {
-    auto mask = m_mask;
-    const bool shouldClipPath = mask && !mask->m_clipPath.isEmpty();
-    SkAutoCanvasRestore autoRestore(&canvas, shouldClipPath);
-    if (shouldClipPath) {
-        canvas.clipPath(mask->m_clipPath.makeTransform(SkM44(mask->m_transforms.combined).asM33()), true);
-        mask = nullptr;
+    const bool shouldClipPath = m_mask && !m_mask->m_clipPath.isEmpty();
+    sk_sp<SkImage> maskImage = m_mask && !shouldClipPath ? m_mask->maskImage() : nullptr;
+    SkAutoCanvasRestore autoRestore(&canvas, shouldClipPath || maskImage);
+    if (shouldClipPath || maskImage) {
+        TransformationMatrix transform(context.accumulatedReplicaTransform);
+        transform.multiply(m_mask->m_transforms.combined);
+        if (maskImage)
+            transform = transform.scale(1 / m_mask->m_backingStore->scale());
+        auto matrix = SkM44(transform).asM33();
+
+        if (shouldClipPath)
+            canvas.clipPath(m_mask->m_clipPath.makeTransform(matrix), true);
+        else if (auto maskShader = maskImage->makeShader({ SkFilterMode::kLinear, SkMipmapMode::kNone }, &matrix))
+            canvas.clipShader(maskShader);
     }
 
     auto filter = this->filter();
-    if (!filter && !mask) {
+    if (!filter) {
         paintSelfAndChildren(canvas, context);
         return;
     }
 
-    if (filter && !mask) {
-        SkColorFilter* colorFilterPtr = nullptr;
-        if (filter->filter->asAColorFilter(&colorFilterPtr)) {
-            // If we have a filter (and no mask) that can be simplified as a color filter
-            // we don't need to create an intermediate surface.
-            sk_sp<SkColorFilter> colorFilter(colorFilterPtr);
-            SetForScope scopedColorFilter(context.colorFilter, colorFilter);
-            paintSelfAndChildren(canvas, context);
-            return;
-        }
+    // If we have a filter that can be simplified as a color filter
+    // we don't need to create an intermediate surface.
+    SkColorFilter* colorFilterPtr = nullptr;
+    if (filter->filter->asAColorFilter(&colorFilterPtr)) {
+        sk_sp<SkColorFilter> colorFilter(colorFilterPtr);
+        SetForScope scopedColorFilter(context.colorFilter, colorFilter);
+        paintSelfAndChildren(canvas, context);
+        return;
     }
 
     // Restrict intermediate surface size to the consolidated overlap region rects,
     // matching TextureMapperLayer::paintSelfChildrenFilterAndMask behavior.
-    auto mode = mask ? ComputeOverlapRegionMode::Mask : ComputeOverlapRegionMode::Union;
+    auto mode = m_mask ? ComputeOverlapRegionMode::Mask : ComputeOverlapRegionMode::Union;
     auto overlapRects = computeConsolidatedOverlapRegionRects(canvas, context, mode);
 
 #if ENABLE(DAMAGE_TRACKING)
@@ -782,8 +824,7 @@ void SkiaCompositingLayer::paintSelfAndChildrenWithFilterAndMask(SkCanvas& canva
 #endif
 
     SkPaint paint;
-    if (filter)
-        paint.setImageFilter(filter->filter);
+    paint.setImageFilter(filter->filter);
 
     for (const auto& rect : overlapRects) {
 #if ENABLE(DAMAGE_TRACKING)
@@ -795,24 +836,17 @@ void SkiaCompositingLayer::paintSelfAndChildrenWithFilterAndMask(SkCanvas& canva
             m_accumulatedOverlapRegionFrameDamage.unite(damageRect);
         }
 #endif
-        if (mask && filter) {
+
+        if (m_mask) {
             // Mask and filter: the filter should be applied first and then the mask on the result.
             paintWithIntermediateSurface(canvas, context, rect, nullptr, [&](SkCanvas& canvas, PaintContext& context) {
                 paintWithIntermediateSurface(canvas, context, rect, &paint, [&](SkCanvas& canvas, PaintContext& context) {
                     paintSelfAndChildren(canvas, context);
                 });
-
-                SetForScope scopedMask(context.isMask, true);
-                mask->paintSelf(canvas, context);
             });
         } else {
             paintWithIntermediateSurface(canvas, context, rect, &paint, [&](SkCanvas& canvas, PaintContext& context) {
                 paintSelfAndChildren(canvas, context);
-
-                if (mask) {
-                    SetForScope scopedMask(context.isMask, true);
-                    mask->paintSelf(canvas, context);
-                }
             });
         }
     }
