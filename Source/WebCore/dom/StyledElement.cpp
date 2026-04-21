@@ -219,14 +219,7 @@ void StyledElement::inlineStyleChanged()
     
 bool StyledElement::setInlineStyleProperty(CSSPropertyID propertyID, CSSValueID identifier, IsImportant important)
 {
-    ensureMutableInlineStyle()->setProperty(propertyID, CSSPrimitiveValue::create(identifier), important);
-    inlineStyleChanged();
-    return true;
-}
-
-bool StyledElement::setInlineStyleProperty(CSSPropertyID propertyID, CSSPropertyID identifier, IsImportant important)
-{
-    ensureMutableInlineStyle()->setProperty(propertyID, CSSPrimitiveValue::create(identifier), important);
+    ensureMutableInlineStyle()->setProperty(propertyID, CSSKeywordValue::create(identifier), important);
     inlineStyleChanged();
     return true;
 }
@@ -372,7 +365,7 @@ void StyledElement::rebuildPresentationalHintStyle()
 
 void StyledElement::addPropertyToPresentationalHintStyle(MutableStyleProperties& style, CSSPropertyID propertyID, CSSValueID identifier)
 {
-    style.setProperty(propertyID, CSSPrimitiveValue::create(identifier));
+    style.setProperty(propertyID, CSSKeywordValue::create(identifier));
 }
 
 void StyledElement::addPropertyToPresentationalHintStyle(MutableStyleProperties& style, CSSPropertyID propertyID, double value, CSSUnitType unit)

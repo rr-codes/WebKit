@@ -1516,10 +1516,10 @@ float ApplyStyleCommand::computedFontSize(Node* node)
     if (!node)
         return 0;
 
-    auto value = Style::Extractor(node).propertyValue(CSSPropertyFontSize);
+    RefPtr value = dynamicDowncast<CSSPrimitiveValue>(Style::Extractor(node).propertyValue(CSSPropertyFontSize));
     if (!value)
         return 0;
-    return downcast<CSSPrimitiveValue>(*value).resolveAsLengthDeprecated();
+    return value->resolveAsLengthDeprecated();
 }
 
 void ApplyStyleCommand::joinChildTextNodes(Node* node, const Position& start, const Position& end)

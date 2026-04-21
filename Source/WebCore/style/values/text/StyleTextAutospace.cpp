@@ -25,6 +25,7 @@
 #include "config.h"
 #include "StyleTextAutospace.h"
 
+#include "CSSKeywordValue.h"
 #include "StyleBuilderChecking.h"
 
 namespace WebCore {
@@ -34,8 +35,8 @@ namespace Style {
 
 auto CSSValueConversion<TextAutospace>::operator()(BuilderState& state, const CSSValue& value) -> TextAutospace
 {
-    if (auto* primitiveValue = dynamicDowncast<CSSPrimitiveValue>(value)) {
-        switch (primitiveValue->valueID()) {
+    if (auto* keywordValue = dynamicDowncast<CSSKeywordValue>(value)) {
+        switch (keywordValue->valueID()) {
         case CSSValueNormal:
             return CSS::Keyword::Normal { };
         case CSSValueAuto:
@@ -48,7 +49,7 @@ auto CSSValueConversion<TextAutospace>::operator()(BuilderState& state, const CS
         }
     }
 
-    auto list = requiredListDowncast<CSSValueList, CSSPrimitiveValue>(state, value);
+    auto list = requiredListDowncast<CSSValueList, CSSKeywordValue>(state, value);
     if (!list)
         return CSS::Keyword::NoAutospace { };
 

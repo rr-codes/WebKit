@@ -9128,7 +9128,7 @@ sub GetSharedSyntheticAttribute
             return $syntheticAttribute;
         }
     }
-    
+
     return undef;
 }
 

@@ -1072,12 +1072,13 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     css/CSSGridIntegerRepeatValue.h
     css/CSSGroupingRule.h
     css/CSSImportRule.h
+    css/CSSKeywordValue.h
+    css/CSSKeywordValueInlines.h
     css/CSSMediaRule.h
     css/CSSNamespacePrefixMap.h
     css/CSSPageDescriptors.h
     css/CSSPageRule.h
     css/CSSPrimitiveValue.h
-    css/CSSPrimitiveValueMappings.h
     css/CSSProperty.h
     css/CSSPropertyInitialValues.h
     css/CSSQuadValue.h
@@ -1155,8 +1156,8 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     css/query/GenericMediaQueryTypes.h
     css/query/MediaQuery.h
 
-    css/typedom/CSSKeywordValue.h
     css/typedom/CSSNumericValue.h
+    css/typedom/CSSOMKeywordValue.h
     css/typedom/CSSStyleValue.h
     css/typedom/numeric/CSSNumericBaseType.h
     css/typedom/numeric/CSSNumericType.h
@@ -1187,9 +1188,10 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     css/values/motion/CSSRayFunction.h
 
     css/values/primitives/CSSCustomIdent.h
+    css/values/primitives/CSSKeyword.h
+    css/values/primitives/CSSKeywordList.h
     css/values/primitives/CSSPosition.h
     css/values/primitives/CSSPrimitiveData.h
-    css/values/primitives/CSSPrimitiveKeywordList.h
     css/values/primitives/CSSPrimitiveNumeric.h
     css/values/primitives/CSSPrimitiveNumericCategory.h
     css/values/primitives/CSSPrimitiveNumericConcepts.h
@@ -3357,8 +3359,6 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     style/values/primitives/StyleLengthWrapper.h
     style/values/primitives/StyleLengthWrapperData.h
     style/values/primitives/StylePosition.h
-    style/values/primitives/StylePrimitiveKeyword+Serialization.h
-    style/values/primitives/StylePrimitiveKeyword+ValueRepresentationNeeded.h
     style/values/primitives/StylePrimitiveNumeric+Forward.h
     style/values/primitives/StylePrimitiveNumeric.h
     style/values/primitives/StylePrimitiveNumericConcepts.h

@@ -26,6 +26,7 @@
 #include "config.h"
 #include "StyleWillChange.h"
 
+#include "CSSKeywordValue.h"
 #include "CSSPropertyIdentifierValue.h"
 #include "Settings.h"
 #include "StyleBuilderChecking.h"
@@ -197,8 +198,8 @@ auto CSSValueConversion<WillChange>::operator()(BuilderState& state, const CSSVa
 {
     // FIXME: This should also be storing <custom-ident> values that aren't valid CSSPropertyIDs for computed value serialization.
 
-    if (RefPtr primitiveValue = dynamicDowncast<CSSPrimitiveValue>(value)) {
-        switch (primitiveValue->valueID()) {
+    if (auto* keywordValue = dynamicDowncast<CSSKeywordValue>(value)) {
+        switch (keywordValue->valueID()) {
         case CSSValueAuto:
             return CSS::Keyword::Auto { };
         case CSSValueScrollPosition:
@@ -225,8 +226,8 @@ auto CSSValueConversion<WillChange>::operator()(BuilderState& state, const CSSVa
     auto result = WillChangeAnimatableFeatures { };
 
     for (Ref item : *list) {
-        if (RefPtr primitiveValue = dynamicDowncast<CSSPrimitiveValue>(item)) {
-            switch (primitiveValue->valueID()) {
+        if (RefPtr keywordValue = dynamicDowncast<CSSKeywordValue>(item)) {
+            switch (keywordValue->valueID()) {
             case CSSValueScrollPosition:
                 result.addFeature(WillChangeAnimatableFeature::Feature::ScrollPosition);
                 break;

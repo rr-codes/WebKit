@@ -29,10 +29,10 @@
 
 #include "StyleBuilderChecking.h"
 #include "StyleCustomIdent.h"
-#include "StylePrimitiveKeyword+CSSValueConversion.h"
-#include "StylePrimitiveKeyword+CSSValueCreation.h"
-#include "StylePrimitiveKeyword+Logging.h"
-#include "StylePrimitiveKeyword+Serialization.h"
+#include "StyleKeyword+CSSValueConversion.h"
+#include "StyleKeyword+CSSValueCreation.h"
+#include "StyleKeyword+Logging.h"
+#include "StyleKeyword+Serialization.h"
 #include "StylePropertiesInlines.h"
 #include "StyleValueTypes+CSSValueConversion.h"
 
@@ -86,34 +86,40 @@ auto CSSValueConversion<PositionTryFallback>::operator()(BuilderState& state, co
         auto tactics = SpaceSeparatedVector<PositionTryFallbackTactic> { };
 
         for (Ref item : *valueList) {
-            switch (item->valueID()) {
-            case CSSValueFlipBlock:
-                tactics.value.append(PositionTryFallbackTactic::FlipBlock);
-                break;
-            case CSSValueFlipInline:
-                tactics.value.append(PositionTryFallbackTactic::FlipInline);
-                break;
-            case CSSValueFlipStart:
-                tactics.value.append(PositionTryFallbackTactic::FlipStart);
-                break;
-            case CSSValueFlipX:
-                tactics.value.append(PositionTryFallbackTactic::FlipX);
-                break;
-            case CSSValueFlipY:
-                tactics.value.append(PositionTryFallbackTactic::FlipY);
-                break;
-            case CSSValueInvalid:
-                if (!rule) {
-                    auto customIdent = toStyleFromCSSValue<CustomIdent>(state, item.get());
-                    if (!customIdent.value.isNull()) {
-                        rule = ScopedName { WTF::move(customIdent.value), state.styleScopeOrdinal() };
-                        break;
-                    }
+            if (RefPtr keywordValue = dynamicDowncast<CSSKeywordValue>(item)) {
+                switch (keywordValue->valueID()) {
+                case CSSValueFlipBlock:
+                    tactics.value.append(PositionTryFallbackTactic::FlipBlock);
+                    break;
+                case CSSValueFlipInline:
+                    tactics.value.append(PositionTryFallbackTactic::FlipInline);
+                    break;
+                case CSSValueFlipStart:
+                    tactics.value.append(PositionTryFallbackTactic::FlipStart);
+                    break;
+                case CSSValueFlipX:
+                    tactics.value.append(PositionTryFallbackTactic::FlipX);
+                    break;
+                case CSSValueFlipY:
+                    tactics.value.append(PositionTryFallbackTactic::FlipY);
+                    break;
+                default:
+                    state.setCurrentPropertyInvalidAtComputedValueTime();
+                    return { };
                 }
-                [[fallthrough]];
-            default:
-                state.setCurrentPropertyInvalidAtComputedValueTime();
-                return { };
+            } else {
+                if (rule) {
+                    state.setCurrentPropertyInvalidAtComputedValueTime();
+                    return { };
+                }
+
+                auto customIdent = toStyleFromCSSValue<CustomIdent>(state, item.get());
+                if (!customIdent.value.isNull())
+                    rule = ScopedName { WTF::move(customIdent.value), state.styleScopeOrdinal() };
+                else {
+                    state.setCurrentPropertyInvalidAtComputedValueTime();
+                    return { };
+                }
             }
         }
 

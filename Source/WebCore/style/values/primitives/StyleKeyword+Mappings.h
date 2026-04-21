@@ -30,11 +30,10 @@
 
 #pragma once
 
-#include "CSSFontFaceSrcValue.h"
-#include "StyleBuilderState.h"
 #include "AnchorPositionEvaluator.h"
 #include "CSSCalcSymbolTable.h"
-#include "CSSPrimitiveValue.h"
+#include "CSSFontFaceSrcValue.h"
+#include "CSSKeywordValueInlines.h"
 #include "CSSToLengthConversionData.h"
 #include "CSSValueKeywords.h"
 #include "CompositeOperation.h"
@@ -43,6 +42,7 @@
 #include "RenderStyleConstants.h"
 #include "ScrollAxis.h"
 #include "ScrollTypes.h"
+#include "StyleBuilderState.h"
 #include "StyleContain.h"
 #include "StyleDisplay.h"
 #include "StyleHangingPunctuation.h"
@@ -83,7 +83,14 @@
 
 namespace WebCore {
 
+template<typename TargetType> constexpr TargetType fromCSSValueID(CSSValueID);
+
 template<typename TargetType> TargetType fromCSSValue(const CSSValue& value)
+{
+    return fromCSSValueID<TargetType>(valueID(value));
+}
+
+template<typename TargetType> TargetType fromCSSValue(const CSSKeywordValue& value)
 {
     return fromCSSValueID<TargetType>(value.valueID());
 }

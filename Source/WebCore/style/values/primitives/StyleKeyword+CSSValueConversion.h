@@ -24,18 +24,27 @@
 
 #pragma once
 
-#include "CSSPrimitiveValueMappings.h"
-#include "StylePrimitiveKeyword+ValueRepresentationNeeded.h"
+#include "CSSKeywordValue.h"
+#include "StyleBuilderChecking.h"
+#include "StyleKeyword+Mappings.h"
 #include "StyleValueTypes.h"
 
 namespace WebCore {
 namespace Style {
 
-template<EnumWithValueRepresentation T> TextStream& operator<<(TextStream& ts, const T& value)
-{
-    valueRepresentation(value, [&](const auto& alternative) { ts << alternative; });
-    return ts;
-}
+template<typename T> requires std::is_enum_v<T> struct CSSValueConversion<T> {
+    T operator()(BuilderState&, const CSSKeywordValue& value)
+    {
+        return fromCSSValueID<T>(value.valueID());
+    }
+    T operator()(BuilderState& state, const CSSValue& value)
+    {
+        RefPtr keywordValue = requiredDowncast<CSSKeywordValue>(state, value);
+        if (!keywordValue)
+            return static_cast<T>(0);
+        return fromCSSValueID<T>(keywordValue->valueID());
+    }
+};
 
 } // namespace Style
 } // namespace WebCore

@@ -27,7 +27,6 @@
 #include "config.h"
 #include "SVGElement.h"
 
-#include "CSSPrimitiveValueMappings.h"
 #include "CSSPropertyParser.h"
 #include "ContainerNodeInlines.h"
 #include "Document.h"
@@ -69,6 +68,7 @@
 #include "ShadowRoot.h"
 #include "StyleAdjuster.h"
 #include "StyleExtractor.h"
+#include "StyleKeyword+Mappings.h"
 #include "StyleResolver.h"
 #include "XMLNames.h"
 #include <wtf/HashMap.h>

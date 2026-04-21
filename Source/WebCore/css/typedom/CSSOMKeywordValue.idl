@@ -26,8 +26,9 @@
 // https://drafts.css-houdini.org/css-typed-om/#csskeywordvalue
 [
     Exposed=(Window,Worker,PaintWorklet),
+    InterfaceName=CSSKeywordValue,
     JSGenerateToNativeObject,
-] interface CSSKeywordValue : CSSStyleValue {
+] interface CSSOMKeywordValue : CSSStyleValue {
     constructor(USVString value);
     attribute USVString value;
 };

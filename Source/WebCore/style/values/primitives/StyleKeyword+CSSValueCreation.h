@@ -24,24 +24,25 @@
 
 #pragma once
 
-#include "CSSPrimitiveValueMappings.h"
-#include "StylePrimitiveKeyword+ValueRepresentationNeeded.h"
+#include "CSSValuePool.h"
+#include "StyleKeyword+Mappings.h"
+#include "StyleKeyword+ValueRepresentationNeeded.h"
 #include "StyleValueTypes.h"
 
 namespace WebCore {
 namespace Style {
 
-template<EnumWithoutValueRepresentation T> struct Serialize<T> {
-    void operator()(StringBuilder& builder, const CSS::SerializationContext&, const RenderStyle&, T value)
+template<EnumWithoutValueRepresentation T> struct CSSValueCreation<T> {
+    Ref<CSSValue> operator()(CSSValuePool&, const RenderStyle&, T value)
     {
-        builder.append(nameLiteralForSerialization(toCSSValueID(value)));
+        return CSSKeywordValue::create(toCSSValueID(value));
     }
 };
 
-template<EnumWithValueRepresentation T> struct Serialize<T> {
-    void operator()(StringBuilder& builder, const CSS::SerializationContext& context, const RenderStyle& style, const T& value)
+template<EnumWithValueRepresentation T> struct CSSValueCreation<T> {
+    Ref<CSSValue> operator()(CSSValuePool& pool, const RenderStyle& style, T value)
     {
-        return valueRepresentation(value, [&](const auto& alternative) { serializationForCSS(builder, context, style, alternative); });
+        return valueRepresentation(value, [&](const auto& alternative) -> Ref<CSSValue> { return createCSSValue(pool, style, alternative); });
     }
 };
 

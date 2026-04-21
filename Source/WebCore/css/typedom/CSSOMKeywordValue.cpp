@@ -28,7 +28,7 @@
  */
 
 #include "config.h"
-#include "CSSKeywordValue.h"
+#include "CSSOMKeywordValue.h"
 
 #include "CSSCustomIdentValue.h"
 #include "CSSMarkup.h"
@@ -40,50 +40,50 @@
 
 namespace WebCore {
 
-WTF_MAKE_TZONE_ALLOCATED_IMPL(CSSKeywordValue);
+WTF_MAKE_TZONE_ALLOCATED_IMPL(CSSOMKeywordValue);
 
-Ref<CSSKeywordValue> CSSKeywordValue::rectifyKeywordish(CSSKeywordish&& keywordish)
+Ref<CSSOMKeywordValue> CSSOMKeywordValue::rectifyKeywordish(CSSOMKeywordish&& keywordish)
 {
     // https://drafts.css-houdini.org/css-typed-om/#rectify-a-keywordish-value
     return WTF::switchOn(WTF::move(keywordish),
         [](String&& string) {
-            return adoptRef(*new CSSKeywordValue(string));
+            return adoptRef(*new CSSOMKeywordValue(string));
         },
-        [](Ref<CSSKeywordValue>&& value) {
+        [](Ref<CSSOMKeywordValue>&& value) {
             return value;
         }
     );
 }
 
-ExceptionOr<Ref<CSSKeywordValue>> CSSKeywordValue::create(const String& value)
+ExceptionOr<Ref<CSSOMKeywordValue>> CSSOMKeywordValue::create(const String& value)
 {
     if (value.isEmpty())
         return Exception { ExceptionCode::TypeError };
-    
-    return adoptRef(*new CSSKeywordValue(value));
+
+    return adoptRef(*new CSSOMKeywordValue(value));
 }
 
-ExceptionOr<void> CSSKeywordValue::setValue(const String& value)
+ExceptionOr<void> CSSOMKeywordValue::setValue(const String& value)
 {
     if (value.isEmpty())
         return Exception { ExceptionCode::TypeError };
-    
+
     m_value = value;
     return { };
 }
 
-void CSSKeywordValue::serialize(StringBuilder& builder, OptionSet<SerializationArguments>) const
+void CSSOMKeywordValue::serialize(StringBuilder& builder, OptionSet<SerializationArguments>) const
 {
     // https://drafts.css-houdini.org/css-typed-om/#keywordvalue-serialization
     serializeIdentifier(builder, m_value);
 }
 
-RefPtr<CSSValue> CSSKeywordValue::toCSSValue() const
+RefPtr<CSSValue> CSSOMKeywordValue::toCSSValue() const
 {
     auto keyword = cssValueKeywordID(m_value);
     if (keyword == CSSValueInvalid)
         return CSSCustomIdentValue::create(CSS::CustomIdent { AtomString { m_value } });
-    return CSSPrimitiveValue::create(keyword);
+    return CSSKeywordValue::create(CSS::Keyword { keyword });
 }
 
 } // namespace WebCore

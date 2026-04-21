@@ -933,6 +933,7 @@ css/CSSGridLineNamesValue.cpp
 css/CSSGridLineValue.cpp
 css/CSSGridTemplateAreasValue.cpp
 css/CSSGroupingRule.cpp
+css/CSSKeywordValue.cpp
 css/CSSImageSetOptionValue.cpp
 css/CSSImageSetValue.cpp
 css/CSSImageValue.cpp
@@ -1117,7 +1118,7 @@ css/query/GenericMediaQuerySerialization.cpp
 css/query/MediaQueryEvaluator.cpp
 css/query/MediaQueryFeatures.cpp
 css/query/MediaQueryParser.cpp
-css/typedom/CSSKeywordValue.cpp
+css/typedom/CSSOMKeywordValue.cpp
 css/typedom/CSSNumericFactory.cpp
 css/typedom/CSSNumericValue.cpp
 css/typedom/CSSOMVariableReferenceValue.cpp
@@ -1180,10 +1181,12 @@ css/values/color/CSSLightDarkColor.cpp
 css/values/color/CSSPlatformColorResolutionState.cpp
 css/values/color/CSSResolvedColor.cpp
 css/values/fonts/CSSFontFamilyName.cpp
+css/values/fonts/CSSFontStyleRange.cpp
 css/values/grid/CSSGridNamedAreaMap.cpp
 css/values/images/CSSGradient.cpp
 css/values/motion/CSSRayFunction.cpp
 css/values/primitives/CSSCustomIdent.cpp
+css/values/primitives/CSSKeyword.cpp
 css/values/primitives/CSSPosition.cpp
 css/values/primitives/CSSPrimitiveNumericCategory.cpp
 css/values/primitives/CSSPrimitiveNumericTypes+Canonicalization.cpp
@@ -3879,7 +3882,6 @@ JSCSSHWB.cpp
 JSCSSImportRule.cpp
 JSCSSKeyframeRule.cpp
 JSCSSKeyframesRule.cpp
-JSCSSKeywordValue.cpp
 JSCSSLCH.cpp
 JSCSSLab.cpp
 JSCSSLayerBlockRule.cpp
@@ -3906,6 +3908,7 @@ JSCSSOKLCH.cpp
 JSCSSOKLab.cpp
 JSCSSOMColor.cpp
 JSCSSOMColorValue.cpp
+JSCSSOMKeywordValue.cpp
 JSCSSOMVariableReferenceValue.cpp
 JSCSSPageDescriptors.cpp
 JSCSSPageRule.cpp

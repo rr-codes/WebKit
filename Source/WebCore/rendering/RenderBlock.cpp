@@ -437,7 +437,7 @@ bool RenderBlock::isSelfCollapsingBlock() const
                 return false;
             }
 #else
-            [](CSS::PrimitiveKeyword auto const&) {
+            [](CSS::SpecificKeyword auto const&) {
                 return false;
             }
 #endif

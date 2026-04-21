@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Samuel Weinig <sam@webkit.org>
+ * Copyright (C) 2025-2026 Samuel Weinig <sam@webkit.org>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -24,8 +24,7 @@
 
 #pragma once
 
-#include <WebCore/CSSPrimitiveNumericConcepts.h>
-#include <WebCore/CSSPrimitiveNumericRaw.h>
+#include <WebCore/CSSKeyword.h>
 #include <limits>
 #include <type_traits>
 #include <wtf/Brigand.h>
@@ -36,33 +35,29 @@ namespace CSS {
 
 // MARK: - Concepts
 
-// Concept for use in generic contexts to filter on Constant keyword CSS types.
-template<typename Keyword> concept PrimitiveKeyword
-    = std::same_as<Keyword, Constant<Keyword::value>>;
-
 // Concept for use in generic contexts to filter on keywords that are valid for the provided `Keywords` list.
 template<typename Keyword, typename KeywordsList> concept ValidKeywordForList
 #if COMPILER(GCC) && (__GNUC__ < 13)
-    = KeywordsList::isValidKeyword(Keyword()) && PrimitiveKeyword<Keyword>;
+    = KeywordsList::isValidKeyword(Keyword()) && SpecificKeyword<Keyword>;
 #else
-    = PrimitiveKeyword<Keyword> && KeywordsList::isValidKeyword(Keyword());
+    = SpecificKeyword<Keyword> && KeywordsList::isValidKeyword(Keyword());
 #endif
 
 // MARK: - Primitive Keywords List
 
-template<PrimitiveKeyword... Ks> struct PrimitiveKeywordList {
+template<SpecificKeyword... Ks> struct KeywordList {
     static constexpr auto count = sizeof...(Ks);
     static constexpr auto identifiers = std::array { Ks::value... };
     static constexpr auto tuple = std::tuple { Ks { }... };
 
-    static consteval bool isValidKeyword(PrimitiveKeyword auto keyword)
+    static consteval bool isValidKeyword(SpecificKeyword auto keyword)
     {
         return std::ranges::find(identifiers, keyword.value) != identifiers.end();
     }
 
-    static consteval size_t offsetForKeyword(PrimitiveKeyword auto keyword)
+    static consteval size_t offsetForKeyword(SpecificKeyword auto keyword)
     {
-         return std::distance(identifiers.begin(), std::ranges::find(identifiers, keyword.value));
+        return std::distance(identifiers.begin(), std::ranges::find(identifiers, keyword.value));
     }
 
     template<typename F> static constexpr decltype(auto) visitKeywordAtOffset(size_t offset, F&& f)
@@ -72,15 +67,15 @@ template<PrimitiveKeyword... Ks> struct PrimitiveKeywordList {
 };
 
 // Specialization for an empty keyword list.
-template<> struct PrimitiveKeywordList<> {
+template<> struct KeywordList<> {
     static constexpr auto count = 0;
 
-    static consteval bool isValidKeyword(PrimitiveKeyword auto)
+    static consteval bool isValidKeyword(SpecificKeyword auto)
     {
         return false;
     }
 
-    static consteval size_t offsetForKeyword(PrimitiveKeyword auto)
+    static consteval size_t offsetForKeyword(SpecificKeyword auto)
     {
         return 0;
     }
