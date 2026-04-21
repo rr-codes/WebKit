@@ -532,11 +532,12 @@ void WebAssemblyModuleRecord::initializeExports(JSGlobalObject* globalObject)
         // this point when we know which memory mode to use.
         Wasm::CalleeGroup* calleeGroup = m_instance->calleeGroup();
         if (!calleeGroup || !calleeGroup->runnable()) {
-            calleeGroup = m_instance->module().compileSync(vm, m_instance->memory()->mode()).unsafePtr();
+            auto compiledGroup = m_instance->module().compileSync(vm, m_instance->memory0Mode());
+            calleeGroup = compiledGroup.ptr();
             if (!calleeGroup->runnable())
                 return exception(createJSWebAssemblyLinkError(globalObject, vm, calleeGroup->errorMessage()));
         }
-        RELEASE_ASSERT(calleeGroup->isSafeToRun(m_instance->memory()->mode()));
+        RELEASE_ASSERT(calleeGroup->isSafeToRun(m_instance->memory0Mode()));
     }
 
     // This needs to be looked up after the memory is initialized, as the codeBlock depends on the memory mode.

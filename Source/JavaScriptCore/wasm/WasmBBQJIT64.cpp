@@ -3521,7 +3521,7 @@ void BBQJIT::restoreWebAssemblyGlobalState()
 
 void BBQJIT::restoreWebAssemblyGlobalStateAfterWasmCall()
 {
-    if (m_info.memoryCount() && (m_mode == MemoryMode::Signaling || m_info.theOnlyMemory().isShared())) {
+    if (m_info.memoryCount() && (m_mode == MemoryMode::Signaling || m_info.memory(0).isShared())) {
         // If memory is signaling or shared, then memoryBase and memorySize will not change. This means that only thing we should check here is GPRInfo::wasmContextInstancePointer is the same or not.
         // Let's consider the case, this was calling a JS function. So it can grow / modify memory whatever. But memoryBase and memorySize are kept the same in this case.
         m_jit.loadPtr(Address(GPRInfo::callFrameRegister, CallFrameSlot::codeBlock * sizeof(Register)), wasmScratchGPR);

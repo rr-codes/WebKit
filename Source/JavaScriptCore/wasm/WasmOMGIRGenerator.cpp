@@ -1080,7 +1080,7 @@ private:
         return set(m_currentBlock, dst, src);
     }
 
-    bool NODELETE useSignalingMemory() const
+    bool NODELETE useSignalingMemory0() const
     {
         return m_mode == MemoryMode::Signaling;
     }
@@ -1100,7 +1100,7 @@ private:
     const ModuleInformation& m_info;
     const IPIntCallee& m_profiledCallee;
     OptimizingJITCallee* m_callee;
-    const MemoryMode m_mode { MemoryMode::BoundsChecking };
+    const MemoryMode m_mode { MemoryMode::BoundsChecking }; // mode for memory 0; all other memories use bounds checking
     const CompilationMode m_compilationMode;
     const FunctionCodeIndex m_functionIndex;
     const unsigned m_loopIndexForOSREntry { UINT_MAX };
@@ -1346,7 +1346,7 @@ OMGIRGenerator::OMGIRGenerator(AbstractHeapRepository& heaps, CompilationContext
         m_vmValue->setReadsMutability(B3::Mutability::Immutable);
 
         if (m_info.memoryCount()) {
-            if (useSignalingMemory() || m_info.theOnlyMemory().isShared()) {
+            if (useSignalingMemory0() || m_info.memory(0).isShared()) {
                 // Capacity and basePointer will not be changed in this case.
                 if (m_mode == MemoryMode::BoundsChecking) {
                     B3::PatchpointValue* getBoundsCheckingSize = m_topLevelBlock->appendNew<B3::PatchpointValue>(m_proc, pointerType(), Origin());
@@ -1429,7 +1429,7 @@ void OMGIRGenerator::restoreWebAssemblyGlobalState(const Vector<MemoryInformatio
     restoreWasmContextInstance(block, instance);
 
     if (memories.size()) {
-        if (useSignalingMemory() || memories[0].isShared()) {
+        if (useSignalingMemory0() || memories[0].isShared()) {
             RegisterSet clobbers;
             clobbers.add(GPRInfo::wasmBaseMemoryPointer, IgnoreVectors);
             if (m_mode == MemoryMode::BoundsChecking)
@@ -2576,7 +2576,7 @@ inline uint32_t sizeOfLoadOp(LoadOpType op)
 
 inline B3::Kind OMGIRGenerator::memoryKind(B3::Opcode memoryOp)
 {
-    if (useSignalingMemory() || m_info.theOnlyMemory().isShared())
+    if (useSignalingMemory0() || m_info.memory(0).isShared())
         return trapping(memoryOp);
     return memoryOp;
 }
@@ -6057,7 +6057,7 @@ auto OMGIRGenerator::emitDirectCall(unsigned callProfileIndex, FunctionSpaceInde
     emitUnlinkedWasmToWasmCall(patchpoint, handle, prepareForCall);
     // We need to clobber the size register since the IPInt always bounds checks
     // FIXME(wasm-multimemory): is this the right way to handle a memoryCount of 0?
-    if (useSignalingMemory() || (m_info.memoryCount() && m_info.theOnlyMemory().isShared()))
+    if (useSignalingMemory0() || (m_info.memoryCount() && m_info.memory(0).isShared()))
         patchpoint->clobberLate(RegisterSet { GPRInfo::wasmBoundsCheckingSizeRegister });
 
     fillCallResults(patchpoint, signature, results);

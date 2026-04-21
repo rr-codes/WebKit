@@ -170,9 +170,9 @@ static inline RefPtr<Wasm::JITCallee> jitCompileAndSetHeuristics(Wasm::IPIntCall
         return nullptr;
     }
 
-    MemoryMode memoryMode = instance->memory()->mode();
+    MemoryMode memoryMode = instance->memory0Mode();
     Wasm::CalleeGroup& calleeGroup = *instance->calleeGroup();
-    ASSERT(instance->memoryMode() == memoryMode);
+    ASSERT(instance->memory0Mode() == memoryMode);
     ASSERT(memoryMode == calleeGroup.mode());
 
     Wasm::FunctionCodeIndex functionIndex = callee.functionIndex();
