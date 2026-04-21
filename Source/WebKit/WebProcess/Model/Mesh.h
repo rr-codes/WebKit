@@ -85,7 +85,7 @@ public:
     virtual void setStageMode(WebCore::StageModeOperation) { }
     virtual void setRotation(float, float = 0.f, float = 0.f) { }
     virtual void play(bool) = 0;
-    virtual void setEnvironmentMap(const WebModel::ImageAsset&) = 0;
+    virtual void setEnvironmentMap(const WebModel::UpdateTextureDescriptor&) = 0;
     virtual void updateContentsHeadroom(float) = 0;
 
     virtual void render(uint32_t textureIndex, Function<void(bool)>&&) = 0;
