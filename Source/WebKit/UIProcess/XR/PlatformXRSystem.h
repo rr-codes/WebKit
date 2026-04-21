@@ -105,6 +105,9 @@ private:
     void submitFrame(IPC::Connection&);
 #endif
 #if ENABLE(WEBXR_LAYERS)
+#if !USE(OPENXR)
+    [[noreturn]]
+#endif
     void NODELETE createQuadLayer(IPC::Connection&, WebCore::IntSize, PlatformXR::LayerLayout, CompletionHandler<void(std::optional<PlatformXR::LayerInfo>)>&&);
 #endif
 #if ENABLE(WEBXR_HIT_TEST)
