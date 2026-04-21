@@ -2984,7 +2984,7 @@ imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-add-track-no-deadlock.h
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addIceCandidate-connectionSetup.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addIceCandidate-timing.https.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addIceCandidate.html [ Skip ] # Timeout
-imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Failure ]
+webkit.org/b/312817 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Failure Crash ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addTrack.https.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addTransceiver-renegotiation.https.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-addTransceiver.https.html [ Pass ]
@@ -3002,12 +3002,12 @@ imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getStats-timestamp.http
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-getTransceivers.html [ Pass Failure Timeout ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-helper-test.html [ Pass ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-iceConnectionState-disconnected.https.html [ Skip ] # Timeout
-imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Failure ]
+webkit.org/b/312817 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-iceConnectionState.https.html [ Failure Crash ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-ondatachannel.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-onicecandidateerror.https.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-onnegotiationneeded.html [ Skip ] # Timeout
-imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-onsignalingstatechanged.https.html [ Pass ]
+webkit.org/b/312817 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-onsignalingstatechanged.https.html [ Pass Crash ]
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-ontrack.https.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-operations.https.html [ Skip ] # Timeout
 imported/w3c/web-platform-tests/webrtc/RTCPeerConnection-perfect-negotiation-stress-glare-linear.https.html [ Skip ] # Timeout
@@ -3086,7 +3086,7 @@ imported/w3c/web-platform-tests/webrtc/protocol/bundle.https.html [ Failure ]
 imported/w3c/web-platform-tests/webrtc/protocol/bundle.https.html?interop-2026 [ Failure ]
 imported/w3c/web-platform-tests/webrtc/protocol/bundle.https.html?rest [ Failure ]
 webkit.org/b/308364 imported/w3c/web-platform-tests/webrtc/protocol/dtls-fingerprint-validation.html [ Failure Crash ]
-imported/w3c/web-platform-tests/webrtc/protocol/dtls-setup.https.html [ Failure ]
+webkit.org/b/312269 imported/w3c/web-platform-tests/webrtc/protocol/dtls-setup.https.html [ Failure Crash ]
 imported/w3c/web-platform-tests/webrtc/protocol/rtp-payloadtypes.html [ Failure ]
 
 # Expected to pass when updating to GStreamer 1.30
