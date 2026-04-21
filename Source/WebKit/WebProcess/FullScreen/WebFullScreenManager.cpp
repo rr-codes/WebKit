@@ -88,9 +88,7 @@ static WebCore::IntRect screenRectOfContents(WebCore::Element& element)
         return { };
 
     IntRect contentsRect = renderer->absoluteBoundingBoxRect();
-    if (contentsRect.isEmpty()) {
-        // A zero-height element may contain visible overflow contents. If the element
-        // itself is empty, traverse its children to find its visual content area.
+    if (contentsRect.height() <= 1 || contentsRect.width() <= 1) {
         LayoutRect topLevelRect;
         contentsRect = snappedIntRect(renderer->paintingRootRect(topLevelRect));
     }
