@@ -82,8 +82,6 @@ private:
     BackForwardCache();
     ~BackForwardCache() = delete; // Make sure nobody accidentally calls delete -- WebCore does not delete singletons.
 
-    static bool canCachePageContainingThisFrame(LocalFrame&);
-
     enum class ForceSuspension : bool { No, Yes };
     std::unique_ptr<CachedPage> trySuspendPage(Page&, ForceSuspension);
     void prune(PruningReason);
