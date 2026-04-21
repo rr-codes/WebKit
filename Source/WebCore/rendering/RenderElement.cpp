@@ -2342,7 +2342,21 @@ bool RenderElement::isViewTransitionRoot() const
 
 bool RenderElement::checkForRepaintDuringLayout() const
 {
-    return everHadLayout() && !hasSelfPaintingLayer() && !document().view()->layoutContext().needsFullRepaint();
+    if (!everHadLayout() || hasSelfPaintingLayer() || document().view()->layoutContext().needsFullRepaint())
+        return false;
+
+    // Descendants of SVG hidden/resource containers (<defs>, <clipPath>, <mask>, <pattern>)
+    // are never painted directly under LBSE, and anonymous SVG containers delegate repaints
+    // to their children's self-painting layers. Tracking repaints during layout for either
+    // case is wasted work.
+    if (isSVGLayerAwareRenderer() && document().settings().layerBasedSVGEngineEnabled()) {
+        if (isRenderSVGContainer() && isAnonymous())
+            return false;
+        if (ancestorsOfType<RenderSVGHiddenContainer>(*this).first())
+            return false;
+    }
+
+    return true;
 }
 
 ImageOrientation RenderElement::imageOrientation() const
