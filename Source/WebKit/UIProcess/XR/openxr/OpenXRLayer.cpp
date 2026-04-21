@@ -18,6 +18,9 @@
  */
 
 #include "config.h"
+
+#if ENABLE(WEBXR) && USE(OPENXR)
+
 #include "OpenXRLayer.h"
 #include <openxr/openxr.h>
 #if USE(LIBEPOXY)
@@ -45,8 +48,6 @@
 #include <WebCore/GBMVersioning.h>
 #include <drm_fourcc.h>
 #endif
-
-#if ENABLE(WEBXR) && USE(OPENXR)
 
 namespace WebKit {
 
