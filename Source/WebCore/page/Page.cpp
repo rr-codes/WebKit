@@ -2483,6 +2483,12 @@ void Page::doAfterUpdateRendering()
     }
 #endif
 
+    // Check if focus is still inside an aria-hidden region after rAF callbacks
+    // have had a chance to run. This must happen after AnimationFrameCallbacks
+    // to give web developers a chance to move focus in a focus event handler.
+    if (CheckedPtr axObjectCache = existingAXObjectCache())
+        axObjectCache->onPostRenderingUpdate();
+
     DebugPageOverlays::doAfterUpdateRendering(*this);
 
     m_renderingUpdateRemainingSteps.last().remove(RenderingUpdateStep::PrepareCanvasesForDisplayOrFlush);

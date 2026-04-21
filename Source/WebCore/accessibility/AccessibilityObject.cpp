@@ -4005,6 +4005,9 @@ bool AccessibilityObject::isARIAHidden() const
     if (isFocused())
         return false;
 
+    if (shouldIgnoreARIAHidden())
+        return false;
+
     RefPtr node = this->node();
     RefPtr element = dynamicDowncast<Element>(node);
     AtomString tag = element ? element->localName() : nullAtom();
