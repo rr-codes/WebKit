@@ -113,7 +113,9 @@ AcceleratedSurface::AcceleratedSurface(WebPage& webPage, Function<void()>&& fram
     , m_useSkia(useSkia)
     , m_id(generateID())
     , m_renderingPurpose(renderingPurpose)
+#if PLATFORM(GTK) || ENABLE(WPE_PLATFORM)
     , m_hardwareAccelerationEnabled(webPage.corePage()->settings().hardwareAccelerationEnabled())
+#endif
     , m_backgroundColor(webPage.backgroundColor())
     , m_swapChain(*this)
     , m_isVisible(webPage.activityState().contains(ActivityState::IsVisible))

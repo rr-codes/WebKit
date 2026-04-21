@@ -119,6 +119,8 @@ public:
 
 #if PLATFORM(GTK) || ENABLE(WPE_PLATFORM)
     bool usesGL() const { return m_renderingPurpose == RenderingPurpose::Composited || m_hardwareAccelerationEnabled; }
+#elif PLATFORM(WPE)
+    constexpr bool usesGL() const { return true; }
 #endif
 
     SkCanvas* canvas();
@@ -149,7 +151,9 @@ private:
     AcceleratedSurface(WebPage&, Function<void()>&& frameCompleteHandler, RenderingPurpose, bool useSkia);
 
     RenderingPurpose renderingPurpose() const { return m_renderingPurpose; }
+#if PLATFORM(GTK) || ENABLE(WPE_PLATFORM)
     bool hardwareAccelerationEnabled() const { return m_hardwareAccelerationEnabled; }
+#endif
     bool useSkia() const { return m_useSkia; }
     bool isOpaque() const;
 
@@ -399,7 +403,9 @@ private:
     bool m_useSkia { false };
     uint64_t m_id { 0 };
     RenderingPurpose m_renderingPurpose { RenderingPurpose::Composited };
+#if PLATFORM(GTK) || ENABLE(WPE_PLATFORM)
     bool m_hardwareAccelerationEnabled { true };
+#endif
     Lock m_backgroundColorLock;
     std::optional<WebCore::Color> m_backgroundColor WTF_GUARDED_BY_LOCK(m_backgroundColorLock);
     SwapChain m_swapChain;

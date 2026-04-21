@@ -22,7 +22,6 @@
 #if USE(LIBWPE)
 
 #include "WebKitWebViewBackend.h"
-
 #include "WebKitWebViewBackendPrivate.h"
 
 /**
