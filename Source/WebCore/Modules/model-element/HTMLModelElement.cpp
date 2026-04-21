@@ -345,8 +345,10 @@ RenderPtr<RenderElement> HTMLModelElement::createElementRenderer(RenderStyle&& s
 void HTMLModelElement::didAttachRenderers()
 {
 #if ENABLE(MODEL_PROCESS)
-    if (RefPtr page = document().page())
+    if (RefPtr page = document().page()) {
         page->incrementModelElementCount();
+        m_didIncrementModelElementCount = true;
+    }
 #endif
 
     if (!m_shouldCreateModelPlayerUponRendererAttachment)
@@ -359,8 +361,9 @@ void HTMLModelElement::didAttachRenderers()
 void HTMLModelElement::willDetachRenderers()
 {
 #if ENABLE(MODEL_PROCESS)
-    if (RefPtr page = document().page())
+    if (RefPtr page = document().page(); m_didIncrementModelElementCount && page)
         page->decrementModelElementCount();
+    m_didIncrementModelElementCount = false;
 #endif
 }
 
@@ -826,6 +829,10 @@ bool HTMLModelElement::canSetEntityTransform() const
 
 bool HTMLModelElement::supportsStageModeInteraction() const
 {
+#if ENABLE(MODEL_ELEMENT_IMMERSIVE)
+    if (m_detachedForImmersive)
+        return false;
+#endif
     return canSetEntityTransform();
 }
 
@@ -1590,18 +1597,23 @@ void HTMLModelElement::exitImmersivePresentation(CompletionHandler<void()>&& com
         return;
     }
 
-    modelPlayer->exitImmersivePresentation([weakThis = WeakPtr { *this }, completion = WTF::move(completion)] mutable {
+    auto generation = m_immersiveDetachGeneration;
+    modelPlayer->exitImmersivePresentation([weakThis = WeakPtr { *this }, generation, completion = WTF::move(completion)] mutable {
         RefPtr protectedThis = weakThis.get();
         if (!protectedThis)
             return completion();
 
-        protectedThis->setDetachedForImmersive(false);
+        // Only reset if no new request has re-armed the flag since this exit started.
+        if (protectedThis->m_immersiveDetachGeneration == generation)
+            protectedThis->setDetachedForImmersive(false);
         completion();
     });
 }
 
 void HTMLModelElement::setDetachedForImmersive(bool detachedForImmersive)
 {
+    if (detachedForImmersive)
+        ++m_immersiveDetachGeneration;
     m_detachedForImmersive = detachedForImmersive;
     visibilityStateChanged();
     invalidateStyleAndLayerComposition();

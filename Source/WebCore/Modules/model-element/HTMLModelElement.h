@@ -341,6 +341,9 @@ private:
     bool m_isDragging { false };
     bool m_shouldCreateModelPlayerUponRendererAttachment { false };
     bool m_isIntersectingViewport { false };
+#if ENABLE(MODEL_PROCESS)
+    bool m_didIncrementModelElementCount { false };
+#endif
 
     RefPtr<ModelPlayer> m_modelPlayer;
     EventLoopTimerHandle m_loadModelTimer;
@@ -369,6 +372,7 @@ private:
 
 #if ENABLE(MODEL_ELEMENT_IMMERSIVE)
     bool m_detachedForImmersive { false };
+    unsigned m_immersiveDetachGeneration { 0 };
     void setDetachedForImmersive(bool);
 
     Vector<CompletionHandler<void(ExceptionOr<RefPtr<ModelPlayer>>)>> m_modelPlayerCreationCallbacks;
