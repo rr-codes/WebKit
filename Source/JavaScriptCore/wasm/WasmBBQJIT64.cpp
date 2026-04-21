@@ -4671,6 +4671,18 @@ void BBQJIT::emitVectorMul(SIMDInfo info, Location left, Location right, Locatio
         m_jit.vectorMin(info, leftLocation.asFPR(), rightLocation.asFPR(), resultLocation.asFPR());
 #endif
         return { };
+    case SIMDLaneOperation::RelaxedMin:
+        m_jit.vectorRelaxedMin(info, leftLocation.asFPR(), rightLocation.asFPR(), resultLocation.asFPR());
+        return { };
+    case SIMDLaneOperation::RelaxedMax:
+        m_jit.vectorRelaxedMax(info, leftLocation.asFPR(), rightLocation.asFPR(), resultLocation.asFPR());
+        return { };
+    case SIMDLaneOperation::RelaxedQ15Mulr:
+        m_jit.vectorRelaxedQ15Mulr(leftLocation.asFPR(), rightLocation.asFPR(), resultLocation.asFPR());
+        return { };
+    case SIMDLaneOperation::RelaxedDotI8x16I7x16:
+        m_jit.vectorRelaxedDotI8x16I7x16(leftLocation.asFPR(), rightLocation.asFPR(), resultLocation.asFPR(), wasmScratchFPR);
+        return { };
     default:
         RELEASE_ASSERT_NOT_REACHED();
         return { };
@@ -4705,6 +4717,9 @@ void BBQJIT::emitVectorMul(SIMDInfo info, Location left, Location right, Locatio
 #else
         m_jit.vectorFusedNegMulAdd(info, mul1Location.asFPR(), mul2Location.asFPR(), addendLocation.asFPR(), resultLocation.asFPR(), wasmScratchFPR);
 #endif
+    } else if (op == SIMDLaneOperation::RelaxedDotI8x16I7x16Add) {
+        ScratchScope<0, 1> scratches(*this, mul1Location, mul2Location, addendLocation, resultLocation);
+        m_jit.vectorRelaxedDotI8x16I7x16Add(mul1Location.asFPR(), mul2Location.asFPR(), addendLocation.asFPR(), resultLocation.asFPR(), wasmScratchFPR, scratches.fpr(0));
     } else
         RELEASE_ASSERT_NOT_REACHED();
     return { };

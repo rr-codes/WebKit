@@ -680,6 +680,10 @@ public:
         B3_OP_CASE(SubSat)
         B3_OP_CASE(Max)
         B3_OP_CASE(Min)
+        B3_OP_CASE(RelaxedMin)
+        B3_OP_CASE(RelaxedMax)
+        B3_OP_CASE(RelaxedQ15Mulr)
+        B3_OP_CASE(RelaxedDotI8x16I7x16)
 
         if (isX86() && b3Op == B3::VectorSwizzle) {
             result = push(fixupOutOfBoundsIndicesForSwizzle(get(a), get(b)));
@@ -696,6 +700,7 @@ public:
         B3_OP_CASES()
         B3_OP_CASE(RelaxedMAdd)
         B3_OP_CASE(RelaxedNMAdd)
+        B3_OP_CASE(RelaxedDotI8x16I7x16Add)
 
         result = push(m_currentBlock->appendNew<SIMDValue>(m_proc, origin(), b3Op, B3::V128, info,
             get(m1), get(m2), get(add)));

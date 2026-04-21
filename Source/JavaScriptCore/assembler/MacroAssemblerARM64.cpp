@@ -642,6 +642,10 @@ void MacroAssemblerARM64::collectCPUFeatures()
 #define HWCAP_SHA3 (1 << 17)
 #endif
 
+#if !defined(HWCAP_ASIMDDP)
+#define HWCAP_ASIMDDP (1 << 20)
+#endif
+
 #if !defined(HWCAP2_FRINT)
 #define HWCAP2_FRINT (1 << 8)
 #endif
@@ -651,6 +655,7 @@ void MacroAssemblerARM64::collectCPUFeatures()
         s_float16CheckState = ((hwcaps & HWCAP_FPHP) && (hwcaps & HWCAP_ASIMDHP)) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
         s_frintCheckState = (hwcaps2 & HWCAP2_FRINT) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
         s_sha3CheckState = (hwcaps & HWCAP_SHA3) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
+        s_dotProdCheckState = (hwcaps & HWCAP_ASIMDDP) ? CPUIDCheckState::Set : CPUIDCheckState::Clear;
     });
 #endif
 
@@ -669,6 +674,7 @@ void MacroAssemblerARM64::collectCPUFeatures()
         s_float16CheckState = checkCPU("hw.optional.arm.FEAT_FP16");
         s_frintCheckState = checkCPU("hw.optional.arm.FEAT_FRINTTS");
         s_sha3CheckState = checkCPU("hw.optional.arm.FEAT_SHA3");
+        s_dotProdCheckState = checkCPU("hw.optional.arm.FEAT_DotProd");
     });
 #endif
 
@@ -711,6 +717,14 @@ void MacroAssemblerARM64::collectCPUFeatures()
         s_sha3CheckState = CPUIDCheckState::Clear;
 #endif
     }
+
+    if (s_dotProdCheckState == CPUIDCheckState::NotChecked) {
+#if CPU(ARM64E)
+        s_dotProdCheckState = CPUIDCheckState::Set;
+#else
+        s_dotProdCheckState = CPUIDCheckState::Clear;
+#endif
+    }
 }
 
 MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_lseCheckState = CPUIDCheckState::NotChecked;
@@ -718,6 +732,7 @@ MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_jscvtCheckState = CP
 MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_float16CheckState = CPUIDCheckState::NotChecked;
 MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_frintCheckState = CPUIDCheckState::NotChecked;
 MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_sha3CheckState = CPUIDCheckState::NotChecked;
+MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_dotProdCheckState = CPUIDCheckState::NotChecked;
 
 } // namespace JSC
 

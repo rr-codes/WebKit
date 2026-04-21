@@ -1446,6 +1446,10 @@ void testVectorExtractLane0Float();
 void testVectorExtractLane0Double();
 void testVectorMulHigh();
 void testVectorMulLow();
+void testVectorRelaxedMinMax();
+void testVectorRelaxedQ15Mulr();
+void testVectorRelaxedDotI8x16I7x16();
+void testVectorRelaxedDotI8x16I7x16Add();
 
 void testConstDoubleMove();
 void testConstFloatMove();

@@ -5368,6 +5368,30 @@ private:
             return;
         }
 
+        case B3::VectorRelaxedMin: {
+            SIMDValue* value = m_value->as<SIMDValue>();
+            append(Air::VectorRelaxedMin, Arg::simdInfo(value->simdInfo()), tmp(m_value->child(0)), tmp(m_value->child(1)), tmp(m_value));
+            return;
+        }
+
+        case B3::VectorRelaxedMax: {
+            SIMDValue* value = m_value->as<SIMDValue>();
+            append(Air::VectorRelaxedMax, Arg::simdInfo(value->simdInfo()), tmp(m_value->child(0)), tmp(m_value->child(1)), tmp(m_value));
+            return;
+        }
+
+        case B3::VectorRelaxedQ15Mulr:
+            emitSIMDMonomorphicBinaryOp(Air::VectorRelaxedQ15Mulr);
+            return;
+
+        case B3::VectorRelaxedDotI8x16I7x16:
+            append(Air::VectorRelaxedDotI8x16I7x16, tmp(m_value->child(0)), tmp(m_value->child(1)), tmp(m_value), m_code.newTmp(FP));
+            return;
+
+        case B3::VectorRelaxedDotI8x16I7x16Add:
+            append(Air::VectorRelaxedDotI8x16I7x16Add, tmp(m_value->child(0)), tmp(m_value->child(1)), tmp(m_value->child(2)), tmp(m_value), m_code.newTmp(FP), m_code.newTmp(FP));
+            return;
+
         case Fence: {
             FenceValue* fence = m_value->as<FenceValue>();
             if (!fence->write && !fence->read)

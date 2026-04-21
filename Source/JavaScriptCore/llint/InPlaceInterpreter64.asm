@@ -3093,8 +3093,8 @@ end)
 ipintOp(_simd_prefix, macro()
     leap 1[PC], t4
     decodeLEBVarUInt(t0, t4, t1, t2)
-    # Security guarantee: always less than 256 (0x00 -> 0xff)
-    biaeq t0, 0x100, .ipint_simd_nonexistent
+    # Security guarantee: always less than 276 (0x00 -> 0x113, including relaxed SIMD)
+    biaeq t0, 0x114, .ipint_simd_nonexistent
     leap _os_script_config_storage, t1
     loadp JSC::LLInt::OpcodeConfig::ipint_simd_dispatch_base[t1], t1
     if ARM64 or ARM64E
@@ -8528,6 +8528,402 @@ ipintOp(_simd_f64x2_convert_low_i32x4_u, macro()
 
         # Subtract to get the correct unsigned values
         emit "vsubpd %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+    ###################################
+    ## Relaxed SIMD instructions     ##
+    ## Opcodes 0x100 - 0x113         ##
+    ###################################
+
+ipintOp(_simd_i8x16_relaxed_swizzle, macro()
+    # i8x16.relaxed_swizzle - swizzle bytes (relaxed semantics: out-of-range indices are implementation defined)
+    popVec(v1)  # indices
+    popVec(v0)  # table
+    if ARM64 or ARM64E
+        # ARM64 tbl instruction returns 0 for out-of-range indices
+        emit "tbl v16.16b, {v16.16b}, v17.16b"
+    elsif X86_64
+        # x86-64 vpshufb returns 0 for indices with bit 7 set
+        # For relaxed semantics, we can use it directly
+        emit "vpshufb %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i32x4_relaxed_trunc_f32x4_s, macro()
+    # i32x4.relaxed_trunc_f32x4_s - truncate f32 to signed i32 (relaxed: NaN/overflow is implementation defined)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fcvtzs v16.4s, v16.4s"
+    elsif X86_64
+        emit "vcvttps2dq %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i32x4_relaxed_trunc_f32x4_u, macro()
+    # i32x4.relaxed_trunc_f32x4_u - truncate f32 to unsigned i32 (relaxed semantics)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fcvtzu v16.4s, v16.4s"
+    elsif X86_64
+        # Relaxed semantics: vcvttps2dq converts to signed i32, so values >= 2^31
+        # produce 0x80000000 (implementation-defined under relaxed spec).
+        emit "vxorps %xmm1, %xmm1, %xmm1"
+        emit "vmaxps %xmm1, %xmm0, %xmm0"
+        emit "vcvttps2dq %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i32x4_relaxed_trunc_f64x2_s_zero, macro()
+    # i32x4.relaxed_trunc_f64x2_s_zero - truncate 2 f64 to signed i32, zero upper lanes
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fcvtzs v16.2d, v16.2d"
+        emit "sqxtn v16.2s, v16.2d"
+    elsif X86_64
+        emit "vcvttpd2dq %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i32x4_relaxed_trunc_f64x2_u_zero, macro()
+    # i32x4.relaxed_trunc_f64x2_u_zero - truncate 2 f64 to unsigned i32, zero upper lanes
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fcvtzu v16.2d, v16.2d"
+        emit "uqxtn v16.2s, v16.2d"
+    elsif X86_64
+        # Relaxed semantics: simpler unsigned conversion
+        emit "vxorpd %xmm1, %xmm1, %xmm1"
+        emit "vmaxpd %xmm1, %xmm0, %xmm0"
+        # Use magic number conversion
+        emit "movabsq $0x4330000000000000, %rax"
+        emit "vmovq %rax, %xmm1"
+        emit "vpunpcklqdq %xmm1, %xmm1, %xmm1"
+        emit "vroundpd $3, %xmm0, %xmm0"
+        emit "vaddpd %xmm1, %xmm0, %xmm0"
+        emit "vshufps $0x88, %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f32x4_relaxed_madd, macro()
+    # f32x4.relaxed_madd - fused multiply-add: a * b + c (or unfused)
+    popVec(v2)  # c (addend)
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        # fmla vd, vn, vm performs: vd = vd + vn * vm
+        # We want: a * b + c = v16 * v17 + v18
+        emit "fmla v18.4s, v16.4s, v17.4s"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        # Use FMA if available, otherwise mul+add
+        # vfmadd213ps does: dest = (dest * src1) + src2
+        # We have: xmm0=a, xmm1=b, xmm2=c, want: a*b+c
+        emit "vmulps %xmm1, %xmm0, %xmm0"
+        emit "vaddps %xmm2, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f32x4_relaxed_nmadd, macro()
+    # f32x4.relaxed_nmadd - fused negative multiply-add: -(a * b) + c (or unfused)
+    popVec(v2)  # c (addend)
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        # fmls vd, vn, vm performs: vd = vd - vn * vm
+        # We want: -(a * b) + c = c - (a * b) = v18 - v16 * v17
+        emit "fmls v18.4s, v16.4s, v17.4s"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        # vfnmadd213ps does: dest = -(dest * src1) + src2
+        emit "vmulps %xmm1, %xmm0, %xmm0"
+        emit "vsubps %xmm0, %xmm2, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f64x2_relaxed_madd, macro()
+    # f64x2.relaxed_madd - fused multiply-add for f64
+    popVec(v2)  # c (addend)
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        emit "fmla v18.2d, v16.2d, v17.2d"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        emit "vmulpd %xmm1, %xmm0, %xmm0"
+        emit "vaddpd %xmm2, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f64x2_relaxed_nmadd, macro()
+    # f64x2.relaxed_nmadd - fused negative multiply-add for f64
+    popVec(v2)  # c (addend)
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        emit "fmls v18.2d, v16.2d, v17.2d"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        emit "vmulpd %xmm1, %xmm0, %xmm0"
+        emit "vsubpd %xmm0, %xmm2, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i8x16_relaxed_laneselect, macro()
+    # i8x16.relaxed_laneselect - select lanes based on mask (relaxed: may use top bit only)
+    popVec(v2)  # mask (c)
+    popVec(v1)  # b (false lanes)
+    popVec(v0)  # a (true lanes)
+    if ARM64 or ARM64E
+        # bsl: dest = (dest & src1) | (~dest & src2)
+        # We want: (mask & a) | (~mask & b) = (c & a) | (~c & b)
+        # Put mask in dest, then bsl with a, b
+        emit "bsl v18.16b, v16.16b, v17.16b"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        # vpblendvb uses high bit of each byte in mask
+        emit "vpblendvb %xmm2, %xmm0, %xmm1, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i16x8_relaxed_laneselect, macro()
+    # i16x8.relaxed_laneselect - same as i8x16 (works on bits)
+    popVec(v2)  # mask
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        emit "bsl v18.16b, v16.16b, v17.16b"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        emit "vpblendvb %xmm2, %xmm0, %xmm1, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i32x4_relaxed_laneselect, macro()
+    # i32x4.relaxed_laneselect - same as i8x16 (works on bits)
+    popVec(v2)  # mask
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        emit "bsl v18.16b, v16.16b, v17.16b"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        emit "vpblendvb %xmm2, %xmm0, %xmm1, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i64x2_relaxed_laneselect, macro()
+    # i64x2.relaxed_laneselect - same as i8x16 (works on bits)
+    popVec(v2)  # mask
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64 or ARM64E
+        emit "bsl v18.16b, v16.16b, v17.16b"
+        emit "mov v16.16b, v18.16b"
+    elsif X86_64
+        emit "vpblendvb %xmm2, %xmm0, %xmm1, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f32x4_relaxed_min, macro()
+    # f32x4.relaxed_min - minimum (relaxed: NaN behavior is implementation defined)
+    popVec(v1)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fmin v16.4s, v16.4s, v17.4s"
+    elsif X86_64
+        emit "vminps %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f32x4_relaxed_max, macro()
+    # f32x4.relaxed_max - maximum (relaxed: NaN behavior is implementation defined)
+    popVec(v1)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fmax v16.4s, v16.4s, v17.4s"
+    elsif X86_64
+        emit "vmaxps %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f64x2_relaxed_min, macro()
+    # f64x2.relaxed_min - minimum for f64
+    popVec(v1)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fmin v16.2d, v16.2d, v17.2d"
+    elsif X86_64
+        emit "vminpd %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_f64x2_relaxed_max, macro()
+    # f64x2.relaxed_max - maximum for f64
+    popVec(v1)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "fmax v16.2d, v16.2d, v17.2d"
+    elsif X86_64
+        emit "vmaxpd %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i16x8_relaxed_q15mulr_s, macro()
+    # i16x8.relaxed_q15mulr_s - Q15 multiply with rounding (relaxed: saturation behavior is implementation defined)
+    popVec(v1)
+    popVec(v0)
+    if ARM64 or ARM64E
+        emit "sqrdmulh v16.8h, v16.8h, v17.8h"
+    elsif X86_64
+        emit "vpmulhrsw %xmm1, %xmm0, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i16x8_relaxed_dot_i8x16_i7x16_s, macro()
+    # i16x8.relaxed_dot_i8x16_i7x16_s - dot product of signed i8 and unsigned i7, producing i16
+    popVec(v1)  # b (interpreted as i7x16, which fits in unsigned byte)
+    popVec(v0)  # a (signed i8x16)
+    if ARM64 or ARM64E
+        # ARM64 doesn't have a direct equivalent, use multiply-add sequence
+        # smull: signed multiply long (lower half)
+        # smull2: signed multiply long (upper half)
+        # addp: pairwise add
+        emit "smull v18.8h, v16.8b, v17.8b"
+        emit "smull2 v19.8h, v16.16b, v17.16b"
+        emit "addp v16.8h, v18.8h, v19.8h"
+    elsif X86_64
+        # vpmaddubsw: treats first operand as unsigned, second as signed
+        # Swapped order: xmm0=signed, xmm1=unsigned-like
+        emit "vpmaddubsw %xmm0, %xmm1, %xmm0"
+    else
+        break # Not implemented
+    end
+    pushVec(v0)
+    move t4, PC
+    nextIPIntInstruction()
+end)
+
+ipintOp(_simd_i32x4_relaxed_dot_i8x16_i7x16_add_s, macro()
+    # i32x4.relaxed_dot_i8x16_i7x16_add_s - dot product + add
+    # Computes: sum of (a[i] * b[i]) for groups of 4, then adds c
+    popVec(v2)  # c (addend)
+    popVec(v1)  # b
+    popVec(v0)  # a
+    if ARM64E
+        emit "mov v19.16b, v18.16b"
+        emit "sdot v19.4s, v16.16b, v17.16b"
+        emit "mov v16.16b, v19.16b"
+    elsif ARM64
+        # Fallback for generic ARM64 without guaranteed DotProd
+        emit "smull v19.8h, v16.8b, v17.8b"
+        emit "smull2 v20.8h, v16.16b, v17.16b"
+        emit "addp v19.8h, v19.8h, v20.8h"
+        emit "saddlp v19.4s, v19.8h"
+        emit "add v16.4s, v19.4s, v18.4s"
+    elsif X86_64
+        # vpmaddubsw + vpmaddwd + vpaddd
+        emit "vpmaddubsw %xmm0, %xmm1, %xmm0"
+        # vpmaddwd to extend i16 pairs to i32
+        emit "vpcmpeqd %xmm3, %xmm3, %xmm3"
+        emit "vpsrlw $15, %xmm3, %xmm3"
+        emit "vpmaddwd %xmm3, %xmm0, %xmm0"
+        emit "vpaddd %xmm2, %xmm0, %xmm0"
     else
         break # Not implemented
     end
