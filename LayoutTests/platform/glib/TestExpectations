@@ -5486,6 +5486,9 @@ webkit.org/b/311929 fast/dom/access-key-iframe.html [ Failure Pass ]
 
 webkit.org/b/312267 imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-mixed-001.html [ ImageOnlyFailure ]
 
+webkit.org/b/307886 js/dom/promise-stack-overflow.html [ Pass Failure ]
+webkit.org/b/312893 http/tests/permissions/permissions-query-shared-worker.html [ Pass Failure ]
+
 # End: Common failures between GTK and WPE.
 
 #////////////////////////////////////////////////////////////////////////////////////////
