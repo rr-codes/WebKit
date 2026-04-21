@@ -297,13 +297,10 @@ struct RateMapDescription {
     Vector<float> verticalSamples;
 };
 
-#if ENABLE(WEBXR_LAYERS)
-// Returned when creating a non-projection compositor layer.
 struct LayerInfo {
     LayerHandle handle;
     size_t numImages { 1 };
 };
-#endif
 
 
 #if ENABLE(WEBXR_HIT_TEST)
