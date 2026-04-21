@@ -32,9 +32,24 @@
 #include <wtf/CompletionHandler.h>
 #include <wtf/StdLibExtras.h>
 #include <wtf/TZoneMallocInlines.h>
+#include <wtf/glib/GUniquePtr.h>
 #include <wtf/glib/RunLoopSourcePriority.h>
 #include <wtf/glib/WTFGType.h>
 #include <wtf/text/StringBuilder.h>
+
+struct SocketAllocationData {
+    ThreadSafeWeakPtr<WebKit::RiceBackend> backend;
+    unsigned streamId;
+    unsigned componentId;
+    WebCore::RTCIceProtocol protocol;
+    String from;
+    String to;
+};
+WEBKIT_DEFINE_ASYNC_DATA_STRUCT(SocketAllocationData);
+
+namespace WTF {
+WTF_DEFINE_GPTR_DELETER(SocketAllocationData, destroySocketAllocationData);
+}
 
 namespace WebKit {
 using namespace WebCore;
@@ -443,16 +458,6 @@ void RiceBackend::setSocketTypeOfService(unsigned streamId, unsigned value)
     rice_sockets_set_tos(sockets.get(), value);
 }
 
-struct SocketAllocationData {
-    ThreadSafeWeakPtr<RiceBackend> backend;
-    unsigned streamId;
-    unsigned componentId;
-    WebCore::RTCIceProtocol protocol;
-    String from;
-    String to;
-};
-WEBKIT_DEFINE_ASYNC_DATA_STRUCT(SocketAllocationData);
-
 void RiceBackend::allocateSocket(unsigned streamId, unsigned componentId, WebCore::RTCIceProtocol protocol, const String& from, const String& to)
 {
     if (protocol == WebCore::RTCIceProtocol::Udp)
@@ -469,23 +474,28 @@ void RiceBackend::allocateSocket(unsigned streamId, unsigned componentId, WebCor
     data->to = to;
 
     rice_tcp_connect(remoteAddress.get(), [](auto socket, void* userData) {
-        auto data = reinterpret_cast<SocketAllocationData*>(userData);
-        RefPtr backend = data->backend.get();
-        if (!backend) {
-            destroySocketAllocationData(data);
+        GUniquePtr<SocketAllocationData> data(reinterpret_cast<SocketAllocationData*>(userData));
+        if (!socket)
             return;
-        }
+
+        RefPtr backend = data->backend.get();
+        if (!backend)
+            return;
+
         auto sockets = backend->getSocketsForStream(data->streamId);
-        rice_sockets_add_tcp(sockets.get(), socket);
-        backend->configureSocketBufferSizes();
+        if (!sockets)
+            return;
 
         GUniquePtr<RiceAddress> localAddress(rice_tcp_socket_local_addr(socket));
         auto localAddressString = riceAddressToString(localAddress.get());
+
+        rice_sockets_add_tcp(sockets.get(), socket);
+        backend->configureSocketBufferSizes();
+
         callOnMainRunLoopAndWait([&, address = WTF::move(localAddressString)] mutable {
             if (RefPtr connection = backend->messageSenderConnection())
                 connection->send(Messages::RiceBackendProxy::AllocatedSocket { data->streamId, data->componentId, data->protocol, data->from, data->to, address }, backend->messageSenderDestinationID());
         });
-        destroySocketAllocationData(data);
     }, data, nullptr);
 }
 
