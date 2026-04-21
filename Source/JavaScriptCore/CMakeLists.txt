@@ -1088,6 +1088,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/DumpContext.h
     runtime/ECMAMode.h
     runtime/EmbedderArrayLike.h
+    runtime/EncodedValueDescriptor.h
     runtime/EnsureStillAliveHere.h
     runtime/EnumerationMode.h
     runtime/Error.h
@@ -1139,6 +1140,7 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/IndexingHeader.h
     runtime/IndexingHeaderInlines.h
     runtime/IndexingType.h
+    runtime/IndexingTypeInlines.h
     runtime/IndirectEvalExecutable.h
     runtime/InferredValue.h
     runtime/InitializeThreading.h
@@ -1164,19 +1166,19 @@ set(JavaScriptCore_PRIVATE_FRAMEWORK_HEADERS
     runtime/JSBoundFunction.h
     runtime/JSCBytecodeCacheVersion.h
     runtime/JSCConfig.h
+    runtime/JSCInlines.h
+    runtime/JSCJSValue.h
+    runtime/JSCJSValueBigInt.h
+    runtime/JSCJSValueCell.h
+    runtime/JSCJSValueInlines.h
+    runtime/JSCJSValuePropertyInlines.h
+    runtime/JSCJSValueStructure.h
     runtime/JSCallee.h
     runtime/JSCalleeInlines.h
     runtime/JSCast.h
     runtime/JSCell.h
     runtime/JSCellButterfly.h
     runtime/JSCellInlines.h
-    runtime/JSCInlines.h
-    runtime/JSCJSValue.h
-    runtime/JSCJSValueBigInt.h
-    runtime/JSCJSValueCell.h
-    runtime/JSCJSValueStructure.h
-    runtime/JSCJSValueInlines.h
-    runtime/JSCJSValuePropertyInlines.h
     runtime/JSPIContext.h
     runtime/JSPIContextInlines.h
     runtime/JSCPtrTag.h

@@ -25,6 +25,7 @@
 
 #include <JavaScriptCore/FunctionRareData.h>
 #include <JavaScriptCore/InternalFunction.h>
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/JSCallee.h>
 #include <JavaScriptCore/JSScope.h>
 

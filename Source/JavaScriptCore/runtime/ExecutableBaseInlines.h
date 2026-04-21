@@ -28,6 +28,7 @@
 #include <JavaScriptCore/ExecutableBase.h>
 #include <JavaScriptCore/FunctionExecutable.h>
 #include <JavaScriptCore/ImplementationVisibility.h>
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/NativeExecutable.h>
 #include <JavaScriptCore/ScriptExecutable.h>
 #include <JavaScriptCore/StructureInlines.h>

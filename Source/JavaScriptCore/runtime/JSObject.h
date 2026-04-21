@@ -34,6 +34,7 @@
 #include <JavaScriptCore/DeletePropertySlot.h>
 #include <JavaScriptCore/Heap.h>
 #include <JavaScriptCore/IndexingHeaderInlines.h>
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/JSCast.h>
 #include <JavaScriptCore/MathCommon.h>
 #include <JavaScriptCore/PropertySlot.h>

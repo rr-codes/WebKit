@@ -35,6 +35,7 @@
 #include "ArgList.h"
 #include "BuiltinExecutables.h"
 #include "BytecodeIntrinsicRegistry.h"
+#include "CallMode.h"
 #include "CheckpointOSRExitSideState.h"
 #include "CodeBlock.h"
 #include "CodeCache.h"
@@ -184,6 +185,11 @@
 namespace JSC {
 
 DEFINE_ALLOCATOR_WITH_HEAP_IDENTIFIER(VM);
+
+MicrotaskQueue& VM::defaultMicrotaskQueue() { return m_defaultMicrotaskQueue.get(); }
+
+bool VM::currentThreadIsHoldingAPILock() const { return m_apiLock->currentThreadIsHoldingLock(); }
+JSLock& VM::apiLock() { return m_apiLock.get(); }
 
 // Note: Platform.h will enforce that ENABLE(ASSEMBLER) is true if either
 // ENABLE(JIT) or ENABLE(YARR_JIT) or both are enabled. The code below
@@ -1514,6 +1520,11 @@ void VM::verifyExceptionCheckNeedIsSatisfied(unsigned recursionDepth, ExceptionE
         dataLog(out.toCString());
         RELEASE_ASSERT_NOT_REACHED_WITH_MESSAGE("exception check validation failed");
     }
+}
+
+void VM::clearNativeStackTraceOfLastThrow()
+{
+    m_nativeStackTraceOfLastThrow = nullptr;
 }
 #endif
 

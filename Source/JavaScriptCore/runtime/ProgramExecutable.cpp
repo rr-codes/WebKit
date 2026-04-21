@@ -24,6 +24,7 @@
  */
 
 #include "config.h"
+#include "ProgramExecutable.h"
 
 #include "BatchedTransitionOptimizer.h"
 #include "CodeCache.h"

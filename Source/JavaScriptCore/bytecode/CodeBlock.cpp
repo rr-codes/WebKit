@@ -29,6 +29,9 @@
 
 #include "config.h"
 #include "CodeBlock.h"
+#include "ModuleProgramExecutable.h"
+#include "Printer.h"
+#include "ProgramExecutable.h"
 
 #include "ArithProfile.h"
 #include "BaselineJITCode.h"

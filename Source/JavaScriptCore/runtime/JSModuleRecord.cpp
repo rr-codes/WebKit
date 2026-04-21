@@ -36,6 +36,7 @@
 #include "JSModuleLoader.h"
 #include "JSModuleNamespaceObject.h"
 #include "JSPromise.h"
+#include "ModuleProgramExecutable.h"
 #include "SourceProfiler.h"
 #include "UnlinkedModuleProgramCodeBlock.h"
 #include <wtf/text/MakeString.h>

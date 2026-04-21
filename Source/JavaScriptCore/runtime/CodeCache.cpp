@@ -28,6 +28,8 @@
 
 #include "BytecodeGenerator.h"
 #include "IndirectEvalExecutable.h"
+#include "ModuleProgramExecutable.h"
+#include "ProgramExecutable.h"
 #include <wtf/TZoneMallocInlines.h>
 
 namespace JSC {

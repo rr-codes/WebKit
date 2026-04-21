@@ -28,6 +28,7 @@
 #include <JavaScriptCore/Debugger.h>
 #include <JavaScriptCore/EntryFrame.h>
 #include <JavaScriptCore/FuzzerAgent.h>
+#include <JavaScriptCore/JSLock.h>
 #include <JavaScriptCore/ProfilerDatabase.h>
 #include <JavaScriptCore/SideDataRepository.h>
 #include <JavaScriptCore/VM.h>
@@ -119,5 +120,8 @@ Type& VM::ensureSideData(void* key, const Functor& functor)
     m_hasSideData = true;
     return sideDataRepository().ensure<Type>(this, key, functor);
 }
+
+inline std::optional<RefPtr<Thread>> VM::ownerThread() const { return m_apiLock->ownerThread(); }
+inline std::optional<uint64_t> VM::ownerThreadUID() const { return m_apiLock->ownerThreadUID(); }
 
 } // namespace JSC

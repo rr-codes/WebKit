@@ -34,6 +34,7 @@
 #include "JSArrayIterator.h"
 #include "JSCBuiltins.h"
 #include "JSCInlines.h"
+#include "IndexingTypeInlines.h"
 #include "JSCellButterfly.h"
 #include "JSEmbedderArrayLike.h"
 #include "JSStringJoiner.h"

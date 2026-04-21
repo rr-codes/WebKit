@@ -22,24 +22,16 @@
 
 #pragma once
 
-#include <JavaScriptCore/Concurrency.h>
-#include <JavaScriptCore/ECMAMode.h>
+#include <JavaScriptCore/EncodedValueDescriptor.h>
 #include <JavaScriptCore/JSExportMacros.h>
 #include <JavaScriptCore/PureNaN.h>
-#include <functional>
-#include <math.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <wtf/Assertions.h>
-#include <wtf/ForbidHeapAllocation.h>
+#include <atomic>
+#include <cmath>
 #include <wtf/Forward.h>
-#include <wtf/HashMap.h>
+#include <wtf/HashFunctions.h>
 #include <wtf/HashTraits.h>
-#include <wtf/MathExtras.h>
-#include <wtf/MediaTime.h>
+#include <wtf/Noncopyable.h>
 #include <wtf/Nonmovable.h>
-#include <wtf/StdIntExtras.h>
-#include <wtf/StdLibExtras.h>
 #include <wtf/TriState.h>
 
 namespace JSC {
@@ -76,8 +68,10 @@ class CLoop;
 
 struct ClassInfo;
 struct DumpContext;
+struct ECMAMode;
 struct MethodTable;
 enum class Unknown { };
+enum class Concurrency : uint8_t;
 
 template <class T, typename Traits> class WriteBarrierBase;
 template<class T>
@@ -89,34 +83,8 @@ enum PreferredPrimitiveType : uint8_t { NoPreference, PreferNumber, PreferString
 
 struct CallData;
 
-typedef int64_t EncodedJSValue;
-
 inline void updateEncodedJSValueConcurrent(EncodedJSValue&, EncodedJSValue);
 inline void clearEncodedJSValueConcurrent(EncodedJSValue&);
-
-union EncodedValueDescriptor {
-    int64_t asInt64;
-#if USE(JSVALUE32_64)
-    double asDouble;
-#elif USE(JSVALUE64)
-    JSCell* ptr;
-#endif
-        
-#if CPU(BIG_ENDIAN)
-    struct {
-        int32_t tag;
-        int32_t payload;
-    } asBits;
-#else
-    struct {
-        int32_t payload;
-        int32_t tag;
-    } asBits;
-#endif
-};
-
-#define TagOffset (offsetof(EncodedValueDescriptor, asBits.tag))
-#define PayloadOffset (offsetof(EncodedValueDescriptor, asBits.payload))
 
 #if USE(JSVALUE64)
 #define CellPayloadOffset 0
@@ -390,7 +358,7 @@ public:
     static constexpr const unsigned numberOfInt52Bits = 52;
     static constexpr const int64_t notInt52 = static_cast<int64_t>(1) << numberOfInt52Bits;
     static constexpr const unsigned int52ShiftAmount = 12;
-    
+
     static constexpr ptrdiff_t offsetOfPayload() { return OBJECT_OFFSETOF(JSValue, u.asBits.payload); }
     static constexpr ptrdiff_t offsetOfTag() { return OBJECT_OFFSETOF(JSValue, u.asBits.tag); }
 

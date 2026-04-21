@@ -26,6 +26,7 @@
 #pragma once
 
 #include <JavaScriptCore/CodeBlock.h>
+#include <JavaScriptCore/JSCJSValue.h>
 #include <JavaScriptCore/JSScope.h>
 #include <JavaScriptCore/Register.h>
 
@@ -84,6 +85,54 @@ ALWAYS_INLINE Register& Register::operator=(EncodedJSValue encodedJSValue)
 ALWAYS_INLINE JSScope* Register::scope() const
 {
     return uncheckedDowncast<JSScope>(unboxedCell());
+}
+
+ALWAYS_INLINE Register::Register()
+{
+#ifndef NDEBUG
+    *this = JSValue();
+#endif
+}
+
+ALWAYS_INLINE Register::Register(const JSValue& v)
+{
+    u.value = JSValue::encode(v);
+}
+
+SUPPRESS_ASAN ALWAYS_INLINE JSValue Register::asanUnsafeJSValue() const
+{
+    return JSValue::decode(u.value);
+}
+
+ALWAYS_INLINE JSValue Register::jsValue() const
+{
+    return JSValue::decode(u.value);
+}
+
+ALWAYS_INLINE EncodedJSValue Register::encodedJSValue() const
+{
+    return u.value;
+}
+
+ALWAYS_INLINE int32_t Register::i() const
+{
+    return jsValue().asInt32();
+}
+
+ALWAYS_INLINE int64_t Register::unboxedInt52() const
+{
+    return u.integer >> JSValue::int52ShiftAmount;
+}
+
+SUPPRESS_ASAN ALWAYS_INLINE int64_t Register::asanUnsafeUnboxedInt52() const
+{
+    return u.integer >> JSValue::int52ShiftAmount;
+}
+
+inline Register Register::withInt(int32_t i)
+{
+    Register r = jsNumber(i);
+    return r;
 }
 
 } // namespace JSC

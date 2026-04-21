@@ -28,6 +28,7 @@
 #include <JavaScriptCore/DebuggerPrimitives.h>
 #include <JavaScriptCore/JSCJSValue.h>
 #include <JavaScriptCore/JSRunLoopTimer.h>
+#include <JavaScriptCore/Microtask.h>
 #include <JavaScriptCore/Weak.h>
 #include <wtf/DoublyLinkedList.h>
 #include <wtf/Forward.h>

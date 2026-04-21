@@ -41,6 +41,7 @@
 #include "NativeCallee.h"
 #include "NativeCalleeRegistry.h"
 #include "NativeExecutable.h"
+#include "TopExceptionScope.h"
 #include "VM.h"
 #include "VMTrapsInlines.h"
 #include "WasmCallee.h"

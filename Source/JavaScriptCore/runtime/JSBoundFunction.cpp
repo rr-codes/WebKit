@@ -31,6 +31,7 @@
 #include "FunctionPrototype.h"
 #include "JSBoundFunctionInlines.h"
 #include "JSCInlines.h"
+#include "TopExceptionScope.h"
 #include "VMTrapsInlines.h"
 
 WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN

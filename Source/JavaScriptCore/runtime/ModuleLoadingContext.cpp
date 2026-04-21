@@ -30,6 +30,7 @@
 #include "JSCInlines.h"
 #include "ModuleLoaderPayload.h"
 #include "ModuleRegistryEntry.h"
+#include "ProgramExecutable.h"
 
 namespace JSC {
 

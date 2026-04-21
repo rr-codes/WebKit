@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "JITPlan.h"
+#include "DFGCommon.h"
 
 #if ENABLE(JIT)
 

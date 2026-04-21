@@ -28,6 +28,7 @@
 #include <JavaScriptCore/ArityCheckMode.h>
 #include <JavaScriptCore/CallFrame.h>
 #include <JavaScriptCore/CodeOrigin.h>
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/JSCJSValue.h>
 #include <JavaScriptCore/MacroAssemblerCodeRef.h>
 #include <JavaScriptCore/RegisterAtOffsetList.h>

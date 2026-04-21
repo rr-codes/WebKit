@@ -26,6 +26,7 @@
 #pragma once
 
 #include <JavaScriptCore/ExecutableBase.h>
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/ParserModes.h>
 #include <JavaScriptCore/ProfilerJettisonReason.h>
 

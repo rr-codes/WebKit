@@ -38,6 +38,7 @@
 #include "JSCast.h"
 #include "JSFunction.h"
 #include "JSPropertyNameEnumerator.h"
+#include "JumpTable.h"
 #include "LinkBuffer.h"
 #include "SuperSampler.h"
 #include "ThunkGenerators.h"

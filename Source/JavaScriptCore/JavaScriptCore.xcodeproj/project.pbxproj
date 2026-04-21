@@ -730,6 +730,7 @@
 		145722861437E140005FDE26 /* StrongInlines.h in Headers */ = {isa = PBXBuildFile; fileRef = 145722851437E140005FDE26 /* StrongInlines.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		145FF2C8243BB9D600569E71 /* ECMAMode.h in Headers */ = {isa = PBXBuildFile; fileRef = 145FF2C7243BB99A00569E71 /* ECMAMode.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1AB2A6FB9608AD5DF73332D4 /* EmbedderArrayLike.h in Headers */ = {isa = PBXBuildFile; fileRef = CC4EB98783FB499C6AD48B55 /* EmbedderArrayLike.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		145FF2CA243BB9D600569E71 /* EncodedValueDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = 145FF2C9243BB9D600569E71 /* EncodedValueDescriptor.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		146C384B2177ACDF0079F6D9 /* UnlinkedMetadataTable.h in Headers */ = {isa = PBXBuildFile; fileRef = 142D52BE21762958002DB086 /* UnlinkedMetadataTable.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		1471483020D323D30090E630 /* JSWrapperMapTests.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1471482F20D323650090E630 /* JSWrapperMapTests.mm */; };
 		147341CC1DC02D7200AA29BA /* ExecutableBase.h in Headers */ = {isa = PBXBuildFile; fileRef = 147341CB1DC02D7200AA29BA /* ExecutableBase.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -3860,6 +3861,7 @@
 		145FF2C6243BB99A00569E71 /* ECMAMode.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ECMAMode.cpp; sourceTree = "<group>"; };
 		145FF2C7243BB99A00569E71 /* ECMAMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ECMAMode.h; sourceTree = "<group>"; };
 		CC4EB98783FB499C6AD48B55 /* EmbedderArrayLike.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EmbedderArrayLike.h; sourceTree = "<group>"; };
+		145FF2C9243BB9D600569E71 /* EncodedValueDescriptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EncodedValueDescriptor.h; sourceTree = "<group>"; };
 		146AAB2A0B66A84900E55F16 /* JSStringRefCF.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = JSStringRefCF.h; sourceTree = "<group>"; };
 		146AAB370B66A94400E55F16 /* JSStringRefCF.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = JSStringRefCF.cpp; sourceTree = "<group>"; };
 		146B14DB12EB5B12001BEC1B /* ConservativeRoots.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConservativeRoots.cpp; sourceTree = "<group>"; };
@@ -8647,6 +8649,7 @@
 				145FF2C6243BB99A00569E71 /* ECMAMode.cpp */,
 				145FF2C7243BB99A00569E71 /* ECMAMode.h */,
 				CC4EB98783FB499C6AD48B55 /* EmbedderArrayLike.h */,
+				145FF2C9243BB9D600569E71 /* EncodedValueDescriptor.h */,
 				FE34EE2024398A9A00AA2E7C /* EnsureStillAliveHere.h */,
 				2AD2EDFA19799E38004D6478 /* EnumerationMode.h */,
 				BC337BEA0E1B00CB0076918A /* Error.cpp */,
@@ -11507,6 +11510,7 @@
 				145FF2C8243BB9D600569E71 /* ECMAMode.h in Headers */,
 				2A83638618D7D0EE0000EBCC /* EdenGCActivityCallback.h in Headers */,
 				1AB2A6FB9608AD5DF73332D4 /* EmbedderArrayLike.h in Headers */,
+				145FF2CA243BB9D600569E71 /* EncodedValueDescriptor.h in Headers */,
 				FE34EE2124398AAE00AA2E7C /* EnsureStillAliveHere.h in Headers */,
 				FE086BCA2123DEFB003F2929 /* EntryFrame.h in Headers */,
 				2AD2EDFB19799E38004D6478 /* EnumerationMode.h in Headers */,

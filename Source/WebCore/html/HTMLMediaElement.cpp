@@ -164,6 +164,7 @@
 #include <wtf/NativePromise.h>
 #include <wtf/Ref.h>
 #include <wtf/StdLibExtras.h>
+#include <wtf/Stopwatch.h>
 #include <wtf/TZoneMallocInlines.h>
 #include <wtf/text/CString.h>
 #include <wtf/text/MakeString.h>

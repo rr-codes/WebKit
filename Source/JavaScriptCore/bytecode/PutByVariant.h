@@ -27,6 +27,7 @@
 
 #include <JavaScriptCore/CacheableIdentifier.h>
 #include "CallLinkStatus.h"
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/ObjectPropertyConditionSet.h>
 #include <JavaScriptCore/PropertyOffset.h>
 #include <JavaScriptCore/StructureSet.h>

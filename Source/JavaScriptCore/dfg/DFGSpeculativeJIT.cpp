@@ -73,6 +73,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include "JSStringIterator.h"
 #include "JSWebAssemblyInstance.h"
 #include "JSWrapForValidIterator.h"
+#include "JumpTable.h"
 #include "LLIntEntrypoint.h"
 #include "LLIntThunks.h"
 #include "MaxFrameExtentForSlowPathCall.h"

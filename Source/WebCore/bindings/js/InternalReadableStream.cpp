@@ -31,6 +31,7 @@
 #include "JSDOMException.h"
 #include "WebCoreJSClientData.h"
 #include <JavaScriptCore/JSObjectInlines.h>
+#include <JavaScriptCore/TopExceptionScope.h>
 
 namespace WebCore {
 

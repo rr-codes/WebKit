@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <JavaScriptCore/Intrinsic.h>
 #include <JavaScriptCore/JSFunction.h>
 
 namespace JSC {

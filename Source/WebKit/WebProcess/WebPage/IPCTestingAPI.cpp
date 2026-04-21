@@ -56,6 +56,7 @@
 #include <JavaScriptCore/JSValueRef.h>
 #include <JavaScriptCore/JavaScript.h>
 #include <JavaScriptCore/OpaqueJSString.h>
+#include <JavaScriptCore/TopExceptionScope.h>
 #include <WebCore/DOMWrapperWorld.h>
 #include <WebCore/JSDOMGlobalObject.h>
 #include <WebCore/LocalFrame.h>

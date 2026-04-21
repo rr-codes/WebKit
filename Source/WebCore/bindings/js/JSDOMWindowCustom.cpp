@@ -58,6 +58,7 @@
 #include <JavaScriptCore/JSCellInlines.h>
 #include <JavaScriptCore/JSFunction.h>
 #include <JavaScriptCore/Lookup.h>
+#include <JavaScriptCore/MicrotaskQueue.h>
 #include <JavaScriptCore/Structure.h>
 
 #if ENABLE(USER_MESSAGE_HANDLERS)

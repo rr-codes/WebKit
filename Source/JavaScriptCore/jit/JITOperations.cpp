@@ -64,6 +64,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
 #include "JSPromise.h"
 #include "JSRemoteFunction.h"
 #include "JSWithScope.h"
+#include "JumpTable.h"
 #include "LLIntEntrypoint.h"
 #include "MegamorphicCache.h"
 #include "ObjectConstructor.h"

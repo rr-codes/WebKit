@@ -342,6 +342,8 @@
 
 namespace JSC {
 
+MicrotaskQueue& JSGlobalObject::microtaskQueue() const { return m_microtaskQueue.get(); }
+
 #define CHECK_FEATURE_FLAG_TYPE(capitalName, lowerName, properName, instanceType, jsName, prototypeBase, featureFlag) \
 static_assert(std::is_same_v<std::remove_cv_t<decltype(featureFlag)>, bool> || std::is_same_v<std::remove_cv_t<decltype(featureFlag)>, bool&>);
 

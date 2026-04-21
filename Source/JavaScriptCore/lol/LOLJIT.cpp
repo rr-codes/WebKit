@@ -45,6 +45,7 @@
 #include "JITLeftShiftGenerator.h"
 #include "JITSizeStatistics.h"
 #include "JITThunks.h"
+#include "JumpTable.h"
 #include "LLIntEntrypoint.h"
 #include "LLIntThunks.h"
 #include "LOLJITOperations.h"

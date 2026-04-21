@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <JavaScriptCore/CallMode.h>
 #include <JavaScriptCore/CodeBlock.h>
 #include <JavaScriptCore/CodeBlockHash.h>
 #include <JavaScriptCore/CodeOrigin.h>

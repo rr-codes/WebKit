@@ -33,6 +33,7 @@
 #include "CacheableIdentifierInlines.h"
 #include "ClonedArguments.h"
 #include "CodeBlock.h"
+#include "JumpTable.h"
 #include "CodeBlockInlines.h"
 #include "CommonSlowPathsInlines.h"
 #include "ConcatKeyAtomStringCacheInlines.h"

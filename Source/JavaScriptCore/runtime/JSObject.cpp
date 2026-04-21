@@ -32,6 +32,7 @@
 #include "HeapAnalyzer.h"
 #include "IndexingHeaderInlines.h"
 #include "JSCInlines.h"
+#include "IndexingTypeInlines.h"
 #include "JSCellButterfly.h"
 #include "JSCustomGetterFunction.h"
 #include "JSCustomSetterFunction.h"

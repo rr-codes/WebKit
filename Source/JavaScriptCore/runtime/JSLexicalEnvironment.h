@@ -29,6 +29,7 @@
 #pragma once
 
 #include <JavaScriptCore/CodeBlock.h>
+#include <JavaScriptCore/JSGlobalObject.h>
 #include <JavaScriptCore/JSSymbolTableObject.h>
 #include <JavaScriptCore/SymbolTable.h>
 

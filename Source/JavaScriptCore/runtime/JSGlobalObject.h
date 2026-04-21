@@ -113,6 +113,7 @@ class ObjectAdaptiveStructureWatchpoint;
 class ObjectConstructor;
 class ObjectPropertyCondition;
 class ObjectPrototype;
+class QueuedTask;
 class RegExpConstructor;
 class RegExpPrototype;
 class RegExpStringIteratorPrototype;
@@ -1241,7 +1242,7 @@ public:
     QueuedTaskResult microtaskRunnability() const { return m_microtaskRunnability; }
     void setMicrotaskRunnability(QueuedTaskResult runnability) { m_microtaskRunnability = runnability; }
 
-    MicrotaskQueue& microtaskQueue() const { return m_microtaskQueue.get(); }
+    MicrotaskQueue& microtaskQueue() const;
     JS_EXPORT_PRIVATE void setMicrotaskQueue(Ref<MicrotaskQueue>&&);
 
 protected:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2021 Apple Inc. All rights reserved.
+ * Copyright (C) 2011-2021 Apple Inc. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,29 +25,39 @@
 
 #pragma once
 
-#include <JavaScriptCore/ECMAMode.h>
-#include <JavaScriptCore/InternalFunction.h>
+#include <cstddef>
+#include <cstdint>
+#include <wtf/Platform.h>
 
 namespace JSC {
 
-class NullSetterFunction final : public InternalFunction {
-public:
-    typedef InternalFunction Base;
+class JSCell;
 
-    static NullSetterFunction* create(VM& vm, Structure* structure, ECMAMode ecmaMode)
-    {
-        NullSetterFunction* function = new (NotNull, allocateCell<NullSetterFunction>(vm))  NullSetterFunction(vm, structure, ecmaMode);
-        function->finishCreation(vm, 0, String());
-        return function;
-    }
+typedef int64_t EncodedJSValue;
 
-    DECLARE_EXPORT_INFO;
+union EncodedValueDescriptor {
+    int64_t asInt64;
+#if USE(JSVALUE32_64)
+    double asDouble;
+#elif USE(JSVALUE64)
+    JSCell* ptr;
+#endif
 
-    inline static Structure* createStructure(VM&, JSGlobalObject*, JSValue);
-
-private:
-    NullSetterFunction(VM&, Structure*, ECMAMode);
+#if CPU(BIG_ENDIAN)
+    struct {
+        int32_t tag;
+        int32_t payload;
+    } asBits;
+#else
+    struct {
+        int32_t payload;
+        int32_t tag;
+    } asBits;
+#endif
 };
-STATIC_ASSERT_ISO_SUBSPACE_SHARABLE(NullSetterFunction, InternalFunction);
+
+#define TagOffset (offsetof(EncodedValueDescriptor, asBits.tag))
+#define PayloadOffset (offsetof(EncodedValueDescriptor, asBits.payload))
 
 } // namespace JSC
+

@@ -34,6 +34,7 @@
 #include "JSValueInWrappedObjectInlines.h"
 #include "SecurityOrigin.h"
 #include <JavaScriptCore/JSCInlines.h>
+#include <JavaScriptCore/TopExceptionScope.h>
 #include <wtf/TZoneMallocInlines.h>
 
 template class mpark::variant<WTF::Ref<WebCore::WindowProxy>, WTF::Ref<WebCore::MessagePort>, WTF::Ref<WebCore::ServiceWorker>>;

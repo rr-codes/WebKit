@@ -32,7 +32,6 @@
 #include <JavaScriptCore/BytecodeIndex.h>
 #include <JavaScriptCore/JSCJSValue.h>
 #include <JavaScriptCore/MacroAssemblerCodeRef.h>
-#include <JavaScriptCore/NativeFunction.h>
 #include <JavaScriptCore/Opcode.h>
 #include <wtf/HashMap.h>
 #include <wtf/Platform.h>

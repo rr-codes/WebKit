@@ -26,6 +26,7 @@
 
 #include "config.h"
 #include "JSModuleLoader.h"
+#include "ProgramExecutable.h"
 
 #include "BuiltinNames.h"
 #include "Completion.h"

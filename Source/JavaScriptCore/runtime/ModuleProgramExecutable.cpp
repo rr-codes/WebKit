@@ -24,6 +24,7 @@
  */
 
 #include "config.h"
+#include "ModuleProgramExecutable.h"
 
 #include "CodeCache.h"
 #include "Debugger.h"

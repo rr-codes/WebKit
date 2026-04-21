@@ -32,6 +32,7 @@
 #include "JSLexicalEnvironment.h"
 #include "JSModuleEnvironment.h"
 #include "JSWithScope.h"
+#include "TopExceptionScope.h"
 #include "VMTrapsInlines.h"
 #include "VariableEnvironment.h"
 

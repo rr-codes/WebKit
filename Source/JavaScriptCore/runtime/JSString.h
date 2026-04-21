@@ -26,6 +26,7 @@
 #include <JavaScriptCore/CallFrame.h>
 #include <JavaScriptCore/CommonIdentifiers.h>
 #include <JavaScriptCore/EnsureStillAliveHere.h>
+#include <JavaScriptCore/ExceptionEventLocation.h>
 #include <JavaScriptCore/GCOwnedDataScope.h>
 #include <JavaScriptCore/GetVM.h>
 #include <JavaScriptCore/Identifier.h>
