@@ -394,9 +394,6 @@ void SVGImage::computeIntrinsicDimensions(float& intrinsicWidth, float& intrinsi
     intrinsicWidth = rootElement->intrinsicWidth();
     intrinsicHeight = rootElement->intrinsicHeight();
 
-    if (rootElement->preserveAspectRatio().align() == SVGPreserveAspectRatioValue::SVG_PRESERVEASPECTRATIO_NONE)
-        return;
-
     intrinsicRatio = rootElement->viewBox().size();
     if (intrinsicRatio.isEmpty())
         intrinsicRatio = FloatSize { intrinsicWidth, intrinsicHeight };
