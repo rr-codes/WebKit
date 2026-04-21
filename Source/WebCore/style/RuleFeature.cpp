@@ -31,6 +31,7 @@
 
 #include "CSSSelector.h"
 #include "CSSSelectorList.h"
+#include "CSSSelectorParser.h"
 #include "HTMLNames.h"
 #include "RuleSet.h"
 #include "StyleProperties.h"
@@ -272,7 +273,7 @@ DoesBreakScope RuleFeatureSet::recursivelyCollectFeaturesFromSelector(SelectorFe
                 auto pseudoClassDoesBreakScope = recursivelyCollectFeaturesFromSelector(selectorFeatures, subSelector, subResult, subSelectorIsNegation, canBreakScope);
 
                 if (selector->match() == CSSSelector::Match::PseudoClass && selector->pseudoClass() == CSSSelector::PseudoClass::Has)
-                    selectorFeatures.hasPseudoClasses.append({ &subSelector, subResult, isNegation, pseudoClassDoesBreakScope });
+                    selectorFeatures.hasPseudoClasses.append({ &subSelector, subResult, isNegation, pseudoClassDoesBreakScope, selector });
 
                 if (pseudoClassDoesBreakScope == DoesBreakScope::Yes)
                     doesBreakScope = DoesBreakScope::Yes;
@@ -462,7 +463,7 @@ void RuleFeatureSet::collectFeatures(CollectionContext& collectionContext, const
     }
 
     for (auto& entry : selectorFeatures.hasPseudoClasses) {
-        auto& [selector, matchElement, isNegation, doesBreakScope] = entry;
+        auto& [selector, matchElement, isNegation, doesBreakScope, hasPseudoClass] = entry;
         // The selector argument points to a selector inside :has() selector list instead of :has() itself.
         auto& featureVector = *hasPseudoClassRules.ensure(makePseudoClassInvalidationKey(CSSSelector::PseudoClass::Has, *selector), [] {
             return makeUnique<Vector<RuleFeatureWithInvalidationSelector>>();
@@ -472,7 +473,7 @@ void RuleFeatureSet::collectFeatures(CollectionContext& collectionContext, const
             ruleData,
             matchElement,
             isNegation,
-            CSSSelectorList::makeCopyingComplexSelector(*selector)
+            CSSSelectorParser::makeHasArgumentReplacingScope(*selector, *hasPseudoClass)
         });
 
         if (doesBreakScope == DoesBreakScope::Yes)

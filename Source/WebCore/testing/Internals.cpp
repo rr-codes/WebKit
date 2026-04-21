@@ -4364,6 +4364,20 @@ unsigned Internals::lastStyleUpdateSize() const
     return document->lastStyleUpdateSizeForTesting();
 }
 
+unsigned Internals::styleInvalidationTraversalCount() const
+{
+    Document* document = contextDocument();
+    if (!document)
+        return 0;
+    return document->styleInvalidationTraversalCountForTesting();
+}
+
+void Internals::resetStyleInvalidationTraversalCount()
+{
+    if (Document* document = contextDocument())
+        document->resetStyleInvalidationTraversalCountForTesting();
+}
+
 ExceptionOr<void> Internals::startTrackingLayoutUpdates()
 {
     Document* document = contextDocument();

@@ -59,6 +59,7 @@ public:
 
     static bool supportsComplexSelector(CSSParserTokenRange, const CSSSelectorParserContext&);
     static CSSSelectorList resolveNestingParent(const CSSSelectorList& nestedSelectorList, const CSSSelectorList* parentResolvedSelectorList, bool parentRuleIsScope = false);
+    static CSSSelectorList makeHasArgumentReplacingScope(const CSSSelector& hasArgument, const CSSSelector& hasPseudoClass);
     static std::optional<Style::PseudoElementIdentifier> parsePseudoElement(const String&, const CSSSelectorParserContext&);
 
 private:

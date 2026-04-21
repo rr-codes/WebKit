@@ -1538,4 +1538,62 @@ std::optional<Style::PseudoElementIdentifier> CSSSelectorParser::parsePseudoElem
     }
 }
 
+CSSSelectorList CSSSelectorParser::makeHasArgumentReplacingScope(const CSSSelector& hasArgument, const CSSSelector& hasPseudoClass)
+{
+    // Collect compound peers of :has() (other simple selectors in the same compound, excluding :has() itself).
+    Vector<const CSSSelector*> compoundPeers;
+    for (auto* selector = hasPseudoClass.lastInCompound(); selector; selector = selector->precedingInCompound()) {
+        if (selector != &hasPseudoClass)
+            compoundPeers.append(selector);
+    }
+
+    if (compoundPeers.isEmpty())
+        return CSSSelectorList::makeCopyingComplexSelector(hasArgument);
+
+    auto* firstInCompound = hasPseudoClass.firstInCompound();
+    auto compoundRelation = firstInCompound->relation();
+    auto* leftStart = firstInCompound->precedingInComplexSelector();
+
+    auto appendSelector = [](MutableCSSSelectorList& result, MutableCSSSelector*& leftmost, std::unique_ptr<MutableCSSSelector> selector) {
+        if (!leftmost) {
+            result.append(WTF::move(selector));
+            leftmost = result.last().get();
+        } else {
+            leftmost->setPrecedingInComplexSelector(WTF::move(selector));
+            leftmost = leftmost->precedingInComplexSelector();
+        }
+    };
+
+    MutableCSSSelector* leftmost = nullptr;
+    MutableCSSSelectorList result;
+
+    // Copy :has() argument selectors, stopping at HasScope.
+    for (auto* selector = &hasArgument; selector; selector = selector->precedingInComplexSelector()) {
+        if (selector->match() == CSSSelector::Match::HasScope)
+            break;
+        auto mutableSelector = makeUnique<MutableCSSSelector>(*selector, MutableCSSSelector::SimpleSelector);
+        mutableSelector->setRelation(selector->relation());
+        appendSelector(result, leftmost, WTF::move(mutableSelector));
+    }
+
+    // Copy compound peers.
+    for (auto* peer : compoundPeers) {
+        auto mutableSelector = makeUnique<MutableCSSSelector>(*peer, MutableCSSSelector::SimpleSelector);
+        mutableSelector->setRelation(peer->relation());
+        appendSelector(result, leftmost, WTF::move(mutableSelector));
+    }
+
+    // The leftmost peer adopts the compound's combinator to the left side.
+    leftmost->setRelation(compoundRelation);
+
+    // Copy remaining left-side selectors.
+    for (auto* selector = leftStart; selector; selector = selector->precedingInComplexSelector()) {
+        auto mutableSelector = makeUnique<MutableCSSSelector>(*selector, MutableCSSSelector::SimpleSelector);
+        mutableSelector->setRelation(selector->relation());
+        appendSelector(result, leftmost, WTF::move(mutableSelector));
+    }
+
+    return CSSSelectorList { WTF::move(result) };
+}
+
 } // namespace WebCore

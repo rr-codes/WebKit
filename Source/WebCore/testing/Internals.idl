@@ -957,6 +957,8 @@ enum ContentsFormat {
     undefined startTrackingStyleRecalcs();
     unsigned long styleRecalcCount();
     readonly attribute unsigned long lastStyleUpdateSize;
+    readonly attribute unsigned long styleInvalidationTraversalCount;
+    undefined resetStyleInvalidationTraversalCount();
 
     undefined startTrackingLayoutUpdates();
     unsigned long layoutUpdateCount();

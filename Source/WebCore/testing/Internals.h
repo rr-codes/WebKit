@@ -736,6 +736,8 @@ public:
     ExceptionOr<void> startTrackingStyleRecalcs();
     ExceptionOr<unsigned> styleRecalcCount();
     unsigned NODELETE lastStyleUpdateSize() const;
+    unsigned styleInvalidationTraversalCount() const;
+    void resetStyleInvalidationTraversalCount();
 
     ExceptionOr<void> startTrackingLayoutUpdates();
     ExceptionOr<unsigned> layoutUpdateCount();

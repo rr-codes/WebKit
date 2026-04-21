@@ -161,6 +161,7 @@ static void invalidateAssignedElements(HTMLSlotElement& slot)
 
 Invalidator::CheckDescendants Invalidator::invalidateIfNeeded(Element& element, SelectorMatchingState* selectorMatchingState)
 {
+    ++m_elementTraversalCount;
     invalidateInShadowTreeIfNeeded(element);
 
     if (m_ruleInformation.hasSlottedPseudoElementRules) {
@@ -550,6 +551,7 @@ void Invalidator::invalidateWithMatchElementRuleSets(Element& element, const Mat
     for (auto& matchElementAndRuleSet : matchElementRuleSets) {
         Invalidator invalidator(matchElementAndRuleSet.value);
         invalidator.invalidateStyleWithMatchElement(element, matchElementAndRuleSet.key.key());
+        element.document().incrementStyleInvalidationTraversalCountForTesting(invalidator.m_elementTraversalCount);
     }
 }
 

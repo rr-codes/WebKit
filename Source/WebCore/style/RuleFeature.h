@@ -167,7 +167,7 @@ struct RuleFeatureSet {
 private:
     struct SelectorFeatures {
         using InvalidationFeature = std::tuple<const CSSSelector*, MatchElement, IsNegation>;
-        using HasInvalidationFeature = std::tuple<const CSSSelector*, MatchElement, IsNegation, DoesBreakScope>;
+        using HasInvalidationFeature = std::tuple<const CSSSelector*, MatchElement, IsNegation, DoesBreakScope, const CSSSelector*>;
 
         Vector<InvalidationFeature> ids;
         Vector<InvalidationFeature> classes;
