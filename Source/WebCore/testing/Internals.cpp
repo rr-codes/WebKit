@@ -169,6 +169,7 @@
 #include "MediaUsageInfo.h"
 #include "MemoryCache.h"
 #include "MemoryInfo.h"
+#include "MemoryRelease.h"
 #include "MessagePort.h"
 #include "MockAudioDestinationCocoa.h"
 #include "MockLibWebRTCPeerConnection.h"
@@ -3322,6 +3323,12 @@ ExceptionOr<void> Internals::executeOpportunisticallyScheduledTasks() const
     if (!document || !document->page())
         return Exception { ExceptionCode::InvalidAccessError };
     document->page()->performOpportunisticallyScheduledTasks(MonotonicTime::now());
+    return { };
+}
+
+ExceptionOr<void> Internals::releaseMemoryNow() const
+{
+    WebCore::releaseMemory(Critical::Yes, Synchronous::Yes);
     return { };
 }
 
