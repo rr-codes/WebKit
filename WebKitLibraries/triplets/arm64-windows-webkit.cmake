@@ -1,4 +1,4 @@
-set(VCPKG_TARGET_ARCHITECTURE x64)
+set(VCPKG_TARGET_ARCHITECTURE arm64)
 set(VCPKG_CRT_LINKAGE dynamic)
 set(VCPKG_LIBRARY_LINKAGE dynamic)
 
@@ -30,11 +30,11 @@ if (CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
     # Pass compiler/linker flags so vcpkg port builds find the Windows SDK/CRT
     set(VCPKG_C_FLAGS "-imsvc ${CRT_INC} -imsvc ${SDK_INC}/ucrt -imsvc ${SDK_INC}/um -imsvc ${SDK_INC}/shared -imsvc ${SDK_INC}/winrt")
     set(VCPKG_CXX_FLAGS "${VCPKG_C_FLAGS}")
-    set(VCPKG_LINKER_FLAGS "/LIBPATH:${CRT_LIB}/x64 /LIBPATH:${SDK_LIB}/ucrt/x64 /LIBPATH:${SDK_LIB}/um/x64")
+    set(VCPKG_LINKER_FLAGS "/LIBPATH:${CRT_LIB}/arm64 /LIBPATH:${SDK_LIB}/ucrt/arm64 /LIBPATH:${SDK_LIB}/um/arm64")
 
     # Also set INCLUDE/LIB env vars (used by some ports' build systems directly)
     set(ENV{INCLUDE} "${CRT_INC};${SDK_INC}/ucrt;${SDK_INC}/um;${SDK_INC}/shared;${SDK_INC}/winrt")
-    set(ENV{LIB} "${CRT_LIB}/x64;${SDK_LIB}/ucrt/x64;${SDK_LIB}/um/x64")
+    set(ENV{LIB} "${CRT_LIB}/arm64;${SDK_LIB}/ucrt/arm64;${SDK_LIB}/um/arm64")
 
     # Prevent pkg-config from finding host system packages during cross-compilation.
     # set(ENV{...}) in the triplet only affects cmake's own process, not port build

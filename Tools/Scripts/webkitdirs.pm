@@ -2872,8 +2872,8 @@ sub generateBuildSystemFromCMakeProject
 
     if (shouldUseVcpkg()) {
         push @args, '-DCMAKE_TOOLCHAIN_FILE="' . $ENV{VCPKG_ROOT} . '\\scripts\\buildsystems\\vcpkg.cmake"';
-        if (architecture() eq "ARM64") {
-            push @args, '-DVCPKG_TARGET_TRIPLET=arm64-windows-static-md';
+        if (architecture() eq "arm64") {
+            push @args, '-DVCPKG_TARGET_TRIPLET=arm64-windows-webkit';
         } else {
             push @args, '-DVCPKG_TARGET_TRIPLET=x64-windows-webkit'
         }
@@ -2900,7 +2900,8 @@ sub generateBuildSystemFromCMakeProject
             # Set linker library paths
             my $sdkLib = "$sysroot/sdk/lib";
             my $crtLib = "$sysroot/crt/lib";
-            my $linkFlags = "-libpath:$crtLib/x64 -libpath:$sdkLib/ucrt/x64 -libpath:$sdkLib/um/x64";
+            my $libArch = (architecture() eq "arm64") ? "arm64" : "x64";
+            my $linkFlags = "-libpath:$crtLib/$libArch -libpath:$sdkLib/ucrt/$libArch -libpath:$sdkLib/um/$libArch";
             push @args, "-DCMAKE_EXE_LINKER_FLAGS_INIT=\"$linkFlags\"";
             push @args, "-DCMAKE_SHARED_LINKER_FLAGS_INIT=\"$linkFlags\"";
             push @args, "-DCMAKE_MODULE_LINKER_FLAGS_INIT=\"$linkFlags\"";
