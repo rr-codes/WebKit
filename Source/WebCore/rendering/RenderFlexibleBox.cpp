@@ -829,17 +829,12 @@ LayoutUnit RenderFlexibleBox::crossAxisContentExtent() const
     return isHorizontalFlow() ? contentBoxHeight() : contentBoxWidth();
 }
 
-LayoutUnit RenderFlexibleBox::mainAxisContentExtent(LayoutUnit contentLogicalHeight)
+LayoutUnit RenderFlexibleBox::columnInnerMainSize(LayoutUnit hypotheticalMainSize)
 {
-    if (!isColumnFlow())
-        return contentBoxLogicalWidth();
-
-    LayoutUnit borderPaddingAndScrollbar = borderAndPaddingLogicalHeight() + scrollbarLogicalHeight();
-    LayoutUnit borderBoxLogicalHeight = contentLogicalHeight + borderPaddingAndScrollbar;
-    auto computedValues = computeLogicalHeight(borderBoxLogicalHeight, logicalTop());
-    if (computedValues.extent == LayoutUnit::max())
-        return computedValues.extent;
-    return std::max(0_lu, computedValues.extent - borderPaddingAndScrollbar);
+    ASSERT(isColumnFlow());
+    auto borderPaddingAndScrollbar = borderAndPaddingLogicalHeight() + scrollbarLogicalHeight();
+    auto logicalHeight = computeLogicalHeight(hypotheticalMainSize + borderPaddingAndScrollbar, logicalTop()).extent;
+    return logicalHeight == LayoutUnit::max() ? logicalHeight : std::max(0_lu, logicalHeight - borderPaddingAndScrollbar);
 }
 
 LayoutUnit RenderFlexibleBox::mainAxisAvailableSpace()
@@ -1590,7 +1585,7 @@ void RenderFlexibleBox::performFlexLayout(RelayoutChildren relayoutChildren)
                     trimCrossAxisMarginEnd(flexLayoutItem);
             }
         }
-        auto containerMainInnerSize = mainAxisContentExtent(lineData->sumHypotheticalMainSize);
+        auto containerMainInnerSize = isColumnFlow() ? columnInnerMainSize(lineData->sumHypotheticalMainSize) : contentBoxLogicalWidth();
         auto remainingFreeSpace = resolveFlexibleLengthsForLineItems(lineItems, containerMainInnerSize, gapBetweenItems);
 
         // Recalculate the remaining free space. The adjustment for flex factors
@@ -2255,7 +2250,8 @@ void RenderFlexibleBox::setOverridingMainSizeForFlexItem(RenderBox& flexItem, La
 LayoutUnit RenderFlexibleBox::staticMainAxisPositionForPositionedFlexItem(const RenderBox& flexItem)
 {
     auto flexItemMainExtent = mainAxisMarginExtentForFlexItem(flexItem) + mainAxisExtentForFlexItem(flexItem);
-    auto availableSpace = mainAxisContentExtent(contentBoxLogicalHeight()) - flexItemMainExtent;
+    auto mainAxisContentSize = isColumnFlow() ? contentBoxLogicalHeight() : contentBoxLogicalWidth();
+    auto availableSpace = mainAxisContentSize - flexItemMainExtent;
     auto isReverse = isColumnOrRowReverse();
     LayoutUnit offset = initialJustifyContentOffset(style(), availableSpace, { }, isReverse);
     if (isReverse)

@@ -173,7 +173,7 @@ private:
     LayoutUnit NODELETE crossAxisExtent() const;
     LayoutUnit NODELETE mainAxisExtent() const;
     LayoutUnit crossAxisContentExtent() const;
-    LayoutUnit mainAxisContentExtent(LayoutUnit contentLogicalHeight);
+    LayoutUnit columnInnerMainSize(LayoutUnit hypotheticalMainSize);
     LayoutUnit mainAxisAvailableSpace();
     template<typename SizeType> std::optional<LayoutUnit> computeMainAxisExtentForFlexItem(RenderBox& flexItem, const SizeType&);
     FlowDirection NODELETE transformedBlockFlowDirection() const;
