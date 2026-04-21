@@ -586,7 +586,7 @@ ExceptionOr<Ref<XRWebGLSubImage>> XRWebGLBinding::getSubImage(XRCompositionLayer
             subImage->setImageIndex(init.textureType == XRTextureType::TextureArray ? index : 0);
 
             if (layer.backing().allColorTexturesAreBound()) {
-                ActiveDOMObject::queueTaskKeepingObjectAlive(m_session.get(), TaskSource::WebXR, [layerRef = Ref { layer }](auto&) {
+                ActiveDOMObject::queueTaskKeepingObjectAlive(m_session.get(), TaskSource::WebXR, [layerRef = protect(layer)](auto&) {
                     layerRef->setNeedsRedraw(false);
                 });
             }
