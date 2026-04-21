@@ -3583,7 +3583,6 @@ ipc/restrictedendpoints/allow-access-testOnlyIPC.html [ Skip ]
 # Assorted crashes
 ipc/convert-to-luminance-mask-float16.html [ Crash ]
 ipc/empty-svgfilterrenderer-expression-crash.html [ Crash ]
-ipc/send-gpu-GetShareableBitmap-RemoteRenderingBackend.html [ Crash ]
 
 ### FAILING TESTS
 
@@ -3595,11 +3594,9 @@ ipc/stream-sync-reply-shared-memory.html [ Failure ]
 
 ipc/decode-feConvolveMatrix-kernelSize-overflow.html [ Failure ]
 ipc/invalid-addSourceBuffer-to-GPU-process-crash.html [ Failure ]
-ipc/invalid-message-to-web-process-crash.html [ Failure ]
 ipc/restore-empty-stack-crash.html [ Failure ]
 ipc/restrictedendpoints/deny-access-attachmentElement.html [ Failure ]
 ipc/serialized-type-info.html [ Failure ]
-http/tests/ipc/null-port-on-sharedmemoryhandle-creation.html [ Failure ]
 
 ipc/restrictedendpoints/deny-access-testOnlyIPC.html [ Crash ]
 ipc/restrictedendpoints/deny-access-webGPU.html [ Crash ]
