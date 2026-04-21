@@ -95,7 +95,8 @@ public:
     WEBCORE_EXPORT String value() const;
     WEBCORE_EXPORT void setValue(const String&);
 
-    String collectOptionInnerText() const;
+    enum class EmitNewlineForEmptyItems : bool { No, Yes };
+    String collectOptionInnerText(EmitNewlineForEmptyItems = EmitNewlineForEmptyItems::No) const;
 
     WEBCORE_EXPORT Ref<HTMLOptionsCollection> options();
     Ref<HTMLCollection> selectedOptions();

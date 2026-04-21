@@ -896,7 +896,7 @@ bool TextIterator::handleReplacedElement()
     if (m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec)) {
         if (RefPtr selectElement = dynamicDowncast<HTMLSelectElement>(m_currentNode)) {
             m_handledChildren = true;
-            if (String selectText = selectElement->collectOptionInnerText(); !selectText.isEmpty()) {
+            if (String selectText = selectElement->collectOptionInnerText(HTMLSelectElement::EmitNewlineForEmptyItems::Yes); !selectText.isEmpty()) {
                 m_hasEmitted = true;
                 m_lastCharacter = selectText[selectText.length() - 1];
                 m_copyableText.set(WTF::move(selectText));

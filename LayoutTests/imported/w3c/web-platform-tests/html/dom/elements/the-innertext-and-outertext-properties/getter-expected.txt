@@ -134,8 +134,8 @@ PASS <select size='2'> contents of options preserved ("<select size='2'><option>
 PASS <select size='1'> contents of target option preserved ("<select size='1'><option id='target'>abc</option><option>def")
 PASS <select size='2'> contents of target option preserved ("<select size='2'><option id='target'>abc</option><option>def")
 PASS empty <select> ("<div>a<select></select>bc")
-FAIL empty <optgroup> in <select> ("<div>a<select><optgroup></select>bc") assert_equals: innerText expected "a\nbc" but got "abc"
-FAIL empty <option> in <select> ("<div>a<select><option></select>bc") assert_equals: innerText expected "a\nbc" but got "abc"
+PASS empty <optgroup> in <select> ("<div>a<select><optgroup></select>bc")
+PASS empty <option> in <select> ("<div>a<select><option></select>bc")
 PASS <select> containing text node child ("<select class='poke'></select>")
 PASS <optgroup> containing <optgroup> ("<select><optgroup class='poke-optgroup'></select>")
 PASS <optgroup> containing <option> ("<select><optgroup><option>abc</select>")

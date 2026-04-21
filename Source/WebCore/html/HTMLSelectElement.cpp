@@ -505,7 +505,7 @@ String HTMLSelectElement::value() const
     return emptyString();
 }
 
-String HTMLSelectElement::collectOptionInnerText() const
+String HTMLSelectElement::collectOptionInnerText(EmitNewlineForEmptyItems emitNewlineForEmptyItems) const
 {
     StringBuilder builder;
     for (auto& item : listItems()) {
@@ -515,6 +515,10 @@ String HTMLSelectElement::collectOptionInnerText() const
             builder.append(option->text());
         }
     }
+    // Even when options/optgroups have no text, their presence as block-level
+    // elements should generate a required line break per the innerText spec.
+    if (builder.isEmpty() && emitNewlineForEmptyItems == EmitNewlineForEmptyItems::Yes && !listItems().isEmpty())
+        return "\n"_s;
     return builder.toString();
 }
 
