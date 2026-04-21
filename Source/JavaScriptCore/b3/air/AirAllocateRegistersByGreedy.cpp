@@ -732,15 +732,33 @@ private:
     List m_instPoints;
 };
 
-// SplitMetadata tracks a Tmp that has been split into multiple Tmps in an effort
-// to either allocate the original Tmp or the split Tmps, depending on the split type.
-struct SplitMetadata {
-    enum class Type : uint8_t {
-        Invalid,
-        AroundClobbers,
-        IntraBlock,
+// AroundClobbersSplitMetadata tracks a Tmp that has been split to carry its value
+// across register-clobbering instructions.
+struct AroundClobbersSplitMetadata {
+    struct Split {
+        Tmp tmp;
+
+        void dump(PrintStream& out) const { out.print(tmp); }
     };
 
+    AroundClobbersSplitMetadata() = default;
+
+    AroundClobbersSplitMetadata(Tmp tmp)
+        : originalTmp(tmp) { }
+
+    void dump(PrintStream& out) const
+    {
+        out.print(originalTmp, " : AroundClobbers { ", listDump(splits), " } ");
+    }
+
+    Tmp originalTmp;
+    Vector<Split> splits;
+};
+
+// IntraBlockSplitMetadata tracks a Tmp that has been split into per-cluster Tmps
+// within basic blocks. The original Tmp is spilled and each cluster Tmp may get its
+// own register allocation for the duration of a cluster of uses/defs.
+struct IntraBlockSplitMetadata {
     struct Split {
         Tmp tmp;
         Point lastDefPoint;
@@ -753,19 +771,14 @@ struct SplitMetadata {
         }
     };
 
-    SplitMetadata()
-        : type(Type::Invalid) { }
-
-    SplitMetadata(Type t, Tmp tmp)
-        : type(t)
-        , originalTmp(tmp) { }
+    IntraBlockSplitMetadata(Tmp tmp)
+        : originalTmp(tmp) { }
 
     void dump(PrintStream& out) const
     {
-        out.print(originalTmp, " : ", type, " { ", listDump(splits), " } ");
+        out.print(originalTmp, " : IntraBlock { ", listDump(splits), " } ");
     }
 
-    Type type;
     Tmp originalTmp;
     Vector<Split> splits;
 };
@@ -778,7 +791,7 @@ public:
         , m_tailPoints(code.size())
         , m_map(code)
         , m_useDefLists()
-        , m_splitMetadata(1) // Sacrifice index 0.
+        , m_aroundClobbersMetadata(1) // Sacrifice index 0.
         , m_spillSlotTable(FillWith { }, 1, nullptr) // Sacrifice index 0.
         , m_regRanges(Reg::maxIndex() + 1)
         , m_insertionSets(code.size())
@@ -866,7 +879,8 @@ public:
         m_code.forEachTmp([&](Tmp tmp) {
             out.println("    ", tmp, ": ", m_map[tmp], " useWidth=", m_tmpWidth.useWidth(tmp));
         });
-        out.println("Splits:\n", listDump(m_splitMetadata, "\n"));
+        out.println("AroundClobbers splits:\n", listDump(m_aroundClobbersMetadata, "\n"));
+        out.println("IntraBlock splits:\n", listDump(m_intraBlockMetadata, "\n"));
         out.println("SpillSlotTable: ", pointerListDump(m_spillSlotTable));
         out.println("Stats (GP):", m_stats[GP]);
         out.println("Stats (FP):", m_stats[FP]);
@@ -2473,10 +2487,10 @@ private:
             });
 
         tmpData.liveRange = LiveRange::subtract(tmpData.liveRange, holeRange);
-        tmpData.splitAroundClobbersMetadataIndex = m_splitMetadata.size();
+        tmpData.splitAroundClobbersMetadataIndex = m_aroundClobbersMetadata.size();
         setStageAndEnqueue(tmp, tmpData, Stage::TryAllocate);
 
-        SplitMetadata metadata(SplitMetadata::Type::AroundClobbers, tmp);
+        AroundClobbersSplitMetadata metadata(tmp);
         // Create tmps to carry the value across register clobbering instructions. These tmps
         // might spill or be assigned another register.
         for (Interval hole : holeRange.intervals()) {
@@ -2494,11 +2508,11 @@ private:
             // analysis (see lowerAfterRegAlloc()), and that's unlikely to be worth it.
             Interval gapInterval = hole | Interval(hole.begin() - 1);
             Tmp gapTmp = addSplitTmp(tmp, UseDefCost(freq), gapInterval);
-            metadata.splits.append({ gapTmp, 0 });
+            metadata.splits.append({ gapTmp });
             setStageAndEnqueue(gapTmp, m_map.get<bank>(gapTmp), Stage::TryAllocate);
         }
         dataLogLnIf(verbose(), "Split (clobbers): reg = ", bestSplitReg, " spillCost = ", m_map.get<bank>(tmp).spillCost().value(), " splitCost = ", minSplitCost.value(), " split tmp = ", metadata);
-        m_splitMetadata.append(WTF::move(metadata));
+        m_aroundClobbersMetadata.append(WTF::move(metadata));
         m_stats[bank].numSplitAroundClobbers++;
         return true;
     }
@@ -2579,7 +2593,7 @@ private:
 
         ensureUseDefLists();
 
-        SplitMetadata* metadata = nullptr;
+        IntraBlockSplitMetadata* metadata = nullptr;
         Vector<Tmp*, 8> tmpPtrs;
         Vector<std::pair<Tmp*, Point>, 4> coldUsePtrs;
         size_t cursor = 0;
@@ -2616,8 +2630,8 @@ private:
                 if (tmpPtrs.size() > 1) {
                     ASSERT(cluster);
                     if (!metadata) {
-                        m_splitMetadata.constructAndAppend(SplitMetadata::Type::IntraBlock, tmp);
-                        metadata = &m_splitMetadata.last();
+                        m_intraBlockMetadata.constructAndAppend(tmp);
+                        metadata = &m_intraBlockMetadata.last();
                     }
                     Point pre = pointAtOffset(cluster.begin(), PointOffsets::Pre);
                     // If the Tmp is live into the cluster then cluster range is extended to model the fixup load from
@@ -2681,8 +2695,7 @@ private:
         dataLogLnIf(verbose(), "Spilled ", tmp);
 
         if (tmpData.splitAroundClobbersMetadataIndex) {
-            auto& metadata = m_splitMetadata[tmpData.splitAroundClobbersMetadataIndex];
-            ASSERT(metadata.type == SplitMetadata::Type::AroundClobbers);
+            auto& metadata = m_aroundClobbersMetadata[tmpData.splitAroundClobbersMetadataIndex];
             // Splitting didn't prevent originalTmp from spilling after all, so no point assigning
             // registers or stack slots to the gap tmps for this split.
             dataLogLnIf(verbose(), "   evicting tmps created during split");
@@ -2994,25 +3007,18 @@ private:
 
     void insertFixupCode()
     {
-        for (auto& metadata : m_splitMetadata) {
-            switch (metadata.type) {
-            case SplitMetadata::Type::Invalid:
-                break;
-            case SplitMetadata::Type::AroundClobbers:
-                insertSplitAroundClobbersFixupCode(metadata);
-                break;
-            case SplitMetadata::Type::IntraBlock:
-                insertSplitIntraBlockFixupCode(metadata);
-                break;
-            }
-        }
+        // Skip index 0 which is sacrificed so that splitAroundClobbersMetadataIndex == 0 means "none".
+        for (size_t i = 1; i < m_aroundClobbersMetadata.size(); i++)
+            insertSplitAroundClobbersFixupCode(m_aroundClobbersMetadata[i]);
+        for (auto& metadata : m_intraBlockMetadata)
+            insertSplitIntraBlockFixupCode(metadata);
         for (BasicBlock* block : m_code)
             m_insertionSets[block].execute(block);
     }
 
-    void insertSplitAroundClobbersFixupCode(SplitMetadata& metadata)
+    void insertSplitAroundClobbersFixupCode(AroundClobbersSplitMetadata& metadata)
     {
-        ASSERT(metadata.type == SplitMetadata::Type::AroundClobbers);
+        ASSERT(metadata.originalTmp);
 
         if (m_map[metadata.originalTmp].stage == Stage::Spilled) {
             m_stats[metadata.originalTmp.bank()].numSplitAroundClobberSpilled++;
@@ -3042,9 +3048,8 @@ private:
         }
     }
 
-    void insertSplitIntraBlockFixupCode(SplitMetadata& metadata)
+    void insertSplitIntraBlockFixupCode(IntraBlockSplitMetadata& metadata)
     {
-        ASSERT(metadata.type == SplitMetadata::Type::IntraBlock);
 
         Tmp originalTmp = metadata.originalTmp;
         Bank bank = originalTmp.bank();
@@ -3174,7 +3179,8 @@ private:
     Vector<Point> m_tailPoints;
     TmpMap<TmpData> m_map;
     TmpMap<UseDefList> m_useDefLists;
-    Vector<SplitMetadata> m_splitMetadata;
+    Vector<AroundClobbersSplitMetadata> m_aroundClobbersMetadata;
+    Vector<IntraBlockSplitMetadata> m_intraBlockMetadata;
     Vector<StackSlot*> m_spillSlotTable;
     IndexMap<Reg, RegisterRange> m_regRanges;
     GenerationalSet<uint8_t, SaVector> m_visited;
