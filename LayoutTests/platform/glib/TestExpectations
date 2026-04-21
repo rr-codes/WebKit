@@ -597,6 +597,8 @@ webkit.org/b/298491 media/media-vp9-reschange-webm.html [ Timeout ]
 webkit.org/b/307141 media/media-source/media-source-seek-and-play.html [ Failure Pass ]
 webkit.org/b/307141 media/media-source/media-controller-media-source-play-then-pause.html [ Failure Pass ]
 
+webkit.org/b/312871 media/media-source/media-source-seek-to-zero-then-play.html [ Failure ]
+
 # NOTIFICATION_EVENT tests
 http/tests/workers/service/shownotification-allowed-document.html [ Pass ]
 http/tests/workers/service/shownotification-invalid-data.html [ Pass ]
