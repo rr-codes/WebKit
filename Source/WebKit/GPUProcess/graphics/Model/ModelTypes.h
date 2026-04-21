@@ -415,7 +415,6 @@ NS_SWIFT_SENDABLE
 @property (nonatomic, readonly) long width;
 @property (nonatomic, readonly) long height;
 @property (nonatomic, readonly) long depth;
-@property (nonatomic, readonly) long bytesPerPixel;
 @property (nonatomic, readonly) MTLTextureType textureType;
 @property (nonatomic, readonly) MTLPixelFormat pixelFormat;
 @property (nonatomic, readonly) long mipmapLevelCount;
@@ -424,7 +423,7 @@ NS_SWIFT_SENDABLE
 @property (nonatomic, readonly) MTLTextureSwizzleChannels swizzle;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithData:(nullable NSData *)data width:(long)width height:(long)height depth:(long)depth bytesPerPixel:(long)bytesPerPixel textureType:(MTLTextureType)textureType pixelFormat:(MTLPixelFormat)pixelFormat mipmapLevelCount:(long)mipmapLevelCount arrayLength:(long)arrayLength textureUsage:(MTLTextureUsage)textureUsage swizzle:(MTLTextureSwizzleChannels)swizzle NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithData:(nullable NSData *)data width:(long)width height:(long)height depth:(long)depth textureType:(MTLTextureType)textureType pixelFormat:(MTLPixelFormat)pixelFormat mipmapLevelCount:(long)mipmapLevelCount arrayLength:(long)arrayLength textureUsage:(MTLTextureUsage)textureUsage swizzle:(MTLTextureSwizzleChannels)swizzle NS_DESIGNATED_INITIALIZER;
 
 @end
 
@@ -522,7 +521,6 @@ struct ImageAsset {
     long width { 0 };
     long height { 0 };
     long depth { 0 };
-    long bytesPerPixel { 0 };
     WebCore::WebGPU::TextureViewDimension textureType { WebCore::WebGPU::TextureViewDimension::_2d };
     WebCore::WebGPU::TextureFormat pixelFormat { WebCore::WebGPU::TextureFormat::R8unorm };
     long mipmapLevelCount { 0 };

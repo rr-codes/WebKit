@@ -188,7 +188,6 @@ header: <WebKit/ModelTypes.h>
     long width;
     long height;
     long depth;
-    long bytesPerPixel;
     WebCore::WebGPU::TextureViewDimension textureType;
     WebCore::WebGPU::TextureFormat pixelFormat;
     long mipmapLevelCount;

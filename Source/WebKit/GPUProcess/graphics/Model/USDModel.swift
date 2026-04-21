@@ -112,7 +112,7 @@ private func makeMTLTextureFromImageAsset(
         return nil
     }
     logInfo(
-        "imageAssetData = \(imageAssetData)  -  width = \(imageAsset.width)  -  height = \(imageAsset.height)  -  bytesPerPixel = \(imageAsset.bytesPerPixel) imageAsset.pixelFormat:  \(imageAsset.pixelFormat)"
+        "imageAssetData = \(imageAssetData)  -  width = \(imageAsset.width)  -  height = \(imageAsset.height)  - imageAsset.pixelFormat:  \(imageAsset.pixelFormat)"
     )
 
     let pixelFormat = imageAsset.pixelFormat
@@ -149,6 +149,10 @@ private func makeMTLTextureFromImageAsset(
 
     func mipDimension(_ base: Int, level: Int) -> Int {
         max(1, base >> level)
+    }
+
+    guard let bytesPerPixel = imageAsset.pixelFormat.bytesPerPixel else {
+        fatalError("unexpected pixel format \(imageAsset.pixelFormat)")
     }
 
     var mipLevelsInData = 0
@@ -198,7 +202,7 @@ private func makeMTLTextureFromImageAsset(
             for mipLevel in 0..<mtlTexture.mipmapLevelCount {
                 let mipWidth = mipDimension(imageAsset.width, level: mipLevel)
                 let mipHeight = mipDimension(imageAsset.height, level: mipLevel)
-                let mipBytes = mipWidth * imageAsset.bytesPerPixel * mipHeight * sliceCount
+                let mipBytes = mipWidth * bytesPerPixel * mipHeight * sliceCount
                 guard bytesAccounted + mipBytes <= textureBytes.count else { break }
                 bytesAccounted += mipBytes
                 mipLevelsInData += 1
@@ -207,7 +211,7 @@ private func makeMTLTextureFromImageAsset(
             guard mipLevelsInData > 0 else {
                 logError(
                     "imageAssetData too small: have \(textureBytes.count) bytes, "
-                        + "need at least \(mipDimension(imageAsset.width, level: 0) * imageAsset.bytesPerPixel * mipDimension(imageAsset.height, level: 0) * sliceCount) "
+                        + "need at least \(mipDimension(imageAsset.width, level: 0) * bytesPerPixel * mipDimension(imageAsset.height, level: 0) * sliceCount) "
                         + "for mip level 0"
                 )
                 return
@@ -228,7 +232,7 @@ private func makeMTLTextureFromImageAsset(
                 for mipLevel in 0..<mipLevelsInData {
                     let mipWidth = mipDimension(imageAsset.width, level: mipLevel)
                     let mipHeight = mipDimension(imageAsset.height, level: mipLevel)
-                    let bytesPerRow = mipWidth * imageAsset.bytesPerPixel
+                    let bytesPerRow = mipWidth * bytesPerPixel
                     let bytesPerImage = bytesPerRow * mipHeight
                     uploadSlice(
                         face: face,

@@ -877,7 +877,6 @@ static WebModel::ImageAsset convert(WKBridgeImageAsset *imageAsset)
         .width = imageAsset.width,
         .height = imageAsset.height,
         .depth = 1,
-        .bytesPerPixel = imageAsset.bytesPerPixel,
         .textureType = toTextureViewDimension(imageAsset.textureType),
         .pixelFormat = toTextureFormat(imageAsset.pixelFormat),
         .mipmapLevelCount = imageAsset.mipmapLevelCount,

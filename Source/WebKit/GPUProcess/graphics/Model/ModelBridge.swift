@@ -363,7 +363,6 @@ extension WKBridgeImageAsset {
     let width: Int
     let height: Int
     let depth: Int
-    let bytesPerPixel: Int
     let textureType: MTLTextureType
     let pixelFormat: MTLPixelFormat
     let mipmapLevelCount: Int
@@ -376,7 +375,6 @@ extension WKBridgeImageAsset {
         width: Int,
         height: Int,
         depth: Int,
-        bytesPerPixel: Int,
         textureType: MTLTextureType,
         pixelFormat: MTLPixelFormat,
         mipmapLevelCount: Int,
@@ -388,7 +386,6 @@ extension WKBridgeImageAsset {
         self.width = width
         self.height = height
         self.depth = depth
-        self.bytesPerPixel = bytesPerPixel
         self.textureType = textureType
         self.pixelFormat = pixelFormat
         self.mipmapLevelCount = mipmapLevelCount
@@ -840,7 +837,6 @@ extension WKBridgeImageAsset {
             width: asset.width,
             height: asset.height,
             depth: asset.depth,
-            bytesPerPixel: 0, // client calculates this
             textureType: asset.textureType,
             pixelFormat: asset.pixelFormat,
             mipmapLevelCount: asset.mipmapLevelCount,
