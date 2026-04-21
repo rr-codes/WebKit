@@ -2513,7 +2513,7 @@ void HTMLMediaElement::pauseSpeakingCueText()
     if (m_speechState != SpeechSynthesisState::Speaking && m_speechState != SpeechSynthesisState::CompletingExtendedDescription)
         return;
 
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(PauseSpeakingCueText);
     setSpeechSynthesisState(SpeechSynthesisState::Paused);
 #endif
 }

@@ -80,6 +80,7 @@ HTMLMediaElementMediaPlayerTimeChanged, "HTMLMediaElement::mediaPlayerTimeChange
 HTMLMediaElementMediaPlayerTimeChangedLooping, "HTMLMediaElement::mediaPlayerTimeChanged(%" PRIX64 ") current time (%f) is greater then duration (%f), looping", (uint64_t, double, double), DEFAULT, Media
 HTMLMediaElementPause, "HTMLMediaElement::pause(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPauseInternal, "HTMLMediaElement::pauseInternal(%" PRIX64 ")", (uint64_t), DEFAULT, Media
+HTMLMediaElementPauseSpeakingCueText, "HTMLMediaElement::pauseSpeakingCueText(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPlay, "HTMLMediaElement::play(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPlayDom, "HTMLMediaElement::play(%" PRIX64 ") (DOM)", (uint64_t), DEFAULT, Media
 HTMLMediaElementPlayInternal, "HTMLMediaElement::playInternal(%" PRIX64 ")", (uint64_t), DEFAULT, Media
