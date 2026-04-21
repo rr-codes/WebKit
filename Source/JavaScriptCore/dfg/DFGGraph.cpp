@@ -103,6 +103,8 @@ Graph::Graph(VM& vm, Plan& plan)
         auto passes = JSON::Array::create();
         m_ionGraphPasses = passes.get();
         m_ionGraphFunction->setString("name"_s, m_codeBlock->inferredNameWithHash());
+        m_ionGraphFunction->setString("tier"_s, m_plan.isFTL() ? "FTL"_s : "DFG"_s);
+        m_ionGraphFunction->setBoolean("osr"_s, m_plan.mode() == JITCompilationMode::FTLForOSREntry);
         m_ionGraphFunction->setArray("passes"_s, WTF::move(passes));
     }
 }
@@ -2126,8 +2128,11 @@ void Prefix::dump(PrintStream& out) const
 
 void Graph::dumpAndReleaseIonGraph()
 {
-    if (m_ionGraphFunction) [[unlikely]]
-        ProfilerSupport::dumpIonGraphFunction(m_codeBlock->inferredNameWithHash(), m_ionGraphFunction.releaseNonNull());
+    if (m_ionGraphFunction) [[unlikely]] {
+        ASCIILiteral tier = m_plan.isFTL() ? "FTL"_s : "DFG"_s;
+        bool osr = m_plan.mode() == JITCompilationMode::FTLForOSREntry;
+        ProfilerSupport::dumpIonGraphFunction(m_codeBlock->inferredNameWithHash(), tier, osr, m_ionGraphFunction.releaseNonNull());
+    }
 }
 
 void Graph::appendIonGraphPass(const String& passName)

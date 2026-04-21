@@ -6492,6 +6492,8 @@ Expected<std::unique_ptr<InternalFunction>, String> parseAndCompileOMG(Compilati
         auto passes = JSON::Array::create();
         ionGraphPasses = passes.get();
         ionGraphFunction->setString("name"_s, callee.nameWithHash());
+        ionGraphFunction->setString("tier"_s, "OMG"_s);
+        ionGraphFunction->setBoolean("osr"_s, compilationMode == CompilationMode::OMGForOSREntryMode);
         ionGraphFunction->setArray("passes"_s, WTF::move(passes));
     }
     auto result = makeUnique<InternalFunction>();
@@ -6571,7 +6573,7 @@ Expected<std::unique_ptr<InternalFunction>, String> parseAndCompileOMG(Compilati
     }
 
     if (ionGraphFunction) [[unlikely]]
-        ProfilerSupport::dumpIonGraphFunction(makeString("wasm-function-"_s, functionIndexSpace.rawIndex()), ionGraphFunction.releaseNonNull());
+        ProfilerSupport::dumpIonGraphFunction(makeString("wasm-function-"_s, functionIndexSpace.rawIndex()), "OMG"_s, compilationMode == CompilationMode::OMGForOSREntryMode, ionGraphFunction.releaseNonNull());
 
     return result;
 }
