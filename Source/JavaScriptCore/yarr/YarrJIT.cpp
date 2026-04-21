@@ -3332,7 +3332,6 @@ class YarrGenerator final : public YarrJITInfo {
 
         case PatternTerm::Type::NumberedForwardReference:
         case PatternTerm::Type::NamedForwardReference:
-            m_failureReason = JITFailureReason::ForwardReference;
             break;
 
         case PatternTerm::Type::ParenthesesSubpattern:
@@ -3415,7 +3414,6 @@ class YarrGenerator final : public YarrJITInfo {
 
         case PatternTerm::Type::NumberedForwardReference:
         case PatternTerm::Type::NamedForwardReference:
-            m_failureReason = JITFailureReason::ForwardReference;
             break;
 
         case PatternTerm::Type::ParenthesesSubpattern:
@@ -5694,9 +5692,11 @@ class YarrGenerator final : public YarrJITInfo {
 
         case PatternTerm::Type::NumberedBackReference:
         case PatternTerm::Type::NamedBackReference:
+            return std::nullopt;
+
         case PatternTerm::Type::NumberedForwardReference:
         case PatternTerm::Type::NamedForwardReference:
-            return std::nullopt;
+            return cursor;
 
         case PatternTerm::Type::ParenthesesSubpattern: {
             // Right now, we only support /(...)/ or /(...)?/ case.
@@ -7130,7 +7130,7 @@ public:
 
             case PatternTerm::Type::NumberedForwardReference:
             case PatternTerm::Type::NamedForwardReference:
-                out.printf("%sForwardReference <not handled> checked-offset:(%u)", term->type == PatternTerm::Type::NumberedForwardReference ? "Numbered" : "Named", op.m_checkedOffset.value());
+                out.printf("%sForwardReference checked-offset:(%u)", term->type == PatternTerm::Type::NumberedForwardReference ? "Numbered" : "Named", op.m_checkedOffset.value());
                 break;
 
             case PatternTerm::Type::ParenthesesSubpattern:
@@ -7496,9 +7496,6 @@ static void dumpCompileFailure(JITFailureReason failure)
         break;
     case JITFailureReason::BackReference:
         dataLog("Can't JIT some patterns containing back references\n");
-        break;
-    case JITFailureReason::ForwardReference:
-        dataLog("Can't JIT some patterns containing forward references\n");
         break;
     case JITFailureReason::Lookbehind:
         dataLog("Can't JIT a pattern containing lookbehinds\n");
