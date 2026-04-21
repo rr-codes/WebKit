@@ -940,9 +940,7 @@ RefPtr<WebBackForwardListItem> WebBackForwardListWrapper::forwardItem() const
 
 RefPtr<WebBackForwardListItem> WebBackForwardListWrapper::itemAtDeltaFromCurrentIndex(int index, AllowSkippingBackForwardItems allowSkipping) const
 {
-    // FIXME: Update the Swift interface and pass this value through.
-    UNUSED_PARAM(allowSkipping);
-    return m_impl->itemAtDeltaFromCurrentIndex(index);
+    return m_impl->itemAtDeltaFromCurrentIndex(index, allowSkipping == AllowSkippingBackForwardItems::Yes ? true : false);
 }
 
 unsigned WebBackForwardListWrapper::backListCount() const
