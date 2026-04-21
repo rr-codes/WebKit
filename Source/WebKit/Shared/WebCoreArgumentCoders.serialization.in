@@ -7650,7 +7650,7 @@ header: <WebCore/Filter.h>
     Vector<Ref<WebCore::FilterFunction>> functions();
     WebCore::FilterGeometry geometry();
     OptionSet<WebCore::FilterRenderingMode> filterRenderingModes();
-    bool isShowingDebugOverlay();
+    OptionSet<WebCore::FilterRenderingOption> renderingOptions();
 }
 
 [AdditionalEncoder=StreamConnectionEncoder, RefCounted] class WebCore::SVGFilterRenderer {
@@ -7659,7 +7659,7 @@ header: <WebCore/Filter.h>
     [Validator='WebCore::SVGFilterRenderer::isValidSVGFilterExpression(*expression, *effects)'] Vector<Ref<WebCore::FilterEffect>> effects();
     WebCore::FilterGeometry geometry();
     OptionSet<WebCore::FilterRenderingMode> filterRenderingModes();
-    bool isShowingDebugOverlay();
+    OptionSet<WebCore::FilterRenderingOption> renderingOptions();
     std::optional<WebCore::RenderingResourceIdentifier> renderingResourceIdentifierIfExists();
 }
 
@@ -8456,6 +8456,11 @@ header: <WebCore/FilterRenderingMode.h>
     Software,
     Accelerated,
     GraphicsContext
+};
+
+header: <WebCore/Filter.h>
+[OptionSet] enum class WebCore::FilterRenderingOption : uint8_t {
+    ShowDebugOverlay
 };
 
 header: <WebCore/FEComponentTransfer.h>
