@@ -8554,6 +8554,36 @@ void WebPage::setIsSuspended(bool suspended, CompletionHandler<void(std::optiona
     suspendForProcessSwap(WTF::move(completionHandler));
 }
 
+void WebPage::setSubframesSuspended(bool suspended, BackForwardFrameItemIdentifier identifier, CompletionHandler<void(bool)>&& completionHandler)
+{
+    if (m_isSuspended == suspended)
+        return completionHandler(true);
+    m_isSuspended = suspended;
+
+    if (!suspended) {
+        // FIXME: Restore path (follow-up patch).
+        return completionHandler(true);
+    }
+
+    freezeLayerTree(LayerTreeFreezeReason::PageSuspended);
+    unfreezeLayerTree(LayerTreeFreezeReason::BackgroundApplication);
+    flushDeferredDidReceiveMouseEvent();
+
+    RefPtr page = corePage();
+    if (!page) {
+        WEBPAGE_RELEASE_LOG_ERROR(ProcessSwapping, "setSubframesSuspended: No corePage");
+        return completionHandler(false);
+    }
+
+    if (!BackForwardCache::singleton().addIfCacheable(identifier, *page)) {
+        WEBPAGE_RELEASE_LOG_ERROR(ProcessSwapping, "setSubframesSuspended: addIfCacheable failed");
+        return completionHandler(false);
+    }
+
+    WEBPAGE_RELEASE_LOG(ProcessSwapping, "setSubframesSuspended: Successfully cached page");
+    completionHandler(true);
+}
+
 void WebPage::hasStorageAccess(RegistrableDomain&& subFrameDomain, RegistrableDomain&& topFrameDomain, WebFrame& frame, CompletionHandler<void(bool)>&& completionHandler)
 {
     if (hasPageLevelStorageAccess(topFrameDomain, subFrameDomain)) {
