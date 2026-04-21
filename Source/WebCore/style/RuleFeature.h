@@ -105,9 +105,10 @@ struct RuleFeature : public RuleAndSelector {
 static_assert(sizeof(RuleFeature) <= 16, "RuleFeature is a frequently allocated object. Keep it small.");
 
 struct RuleFeatureWithInvalidationSelector : public RuleFeature {
-    RuleFeatureWithInvalidationSelector(const RuleData&, MatchElement, IsNegation, CSSSelectorList&& invalidationSelector);
+    RuleFeatureWithInvalidationSelector(const RuleData&, MatchElement, IsNegation, CSSSelectorList&& invalidationSelector, CSSSelectorList&& scopeSelector = { });
 
     CSSSelectorList invalidationSelector;
+    CSSSelectorList scopeSelector;
 };
 #pragma pack(pop)
 

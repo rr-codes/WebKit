@@ -2262,7 +2262,7 @@ webkit.org/b/288133 imported/w3c/web-platform-tests/scroll-to-text-fragment/find
 
 webkit.org/b/287990 [ Sonoma+ ] fast/canvas/webgl/drawingbuffer-test.html [ Pass Failure ]
 
-webkit.org/b/260320 imported/w3c/web-platform-tests/css/selectors/invalidation/nth-child-in-shadow-root.html [ ImageOnlyFailure ]
+webkit.org/b/260320 imported/w3c/web-platform-tests/css/selectors/invalidation/nth-child-in-shadow-root.html [ Pass ImageOnlyFailure ]
 
 webkit.org/b/289275 media/media-garbage-collection.html [ Pass Failure Timeout ]
 

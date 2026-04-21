@@ -30,6 +30,7 @@
 #include "StyleScopeRuleSets.h"
 
 #include "CSSPropertyParser.h"
+#include "CSSSelectorParser.h"
 #include "CSSStyleSheet.h"
 #include "CSSViewTransitionRule.h"
 #include "DeclarationOrigin.h"
@@ -317,6 +318,7 @@ static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const KeyType& ke
             MatchElement matchElement;
             IsNegation isNegation;
             const CSSSelectorList* invalidationSelector { nullptr };
+            const CSSSelectorList* scopeSelector { nullptr };
 
             unsigned hash() const
             {
@@ -324,13 +326,16 @@ static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const KeyType& ke
                 add(hasher, matchElement.relation, matchElement.hasRelation, isNegation);
                 if (invalidationSelector)
                     add(hasher, *invalidationSelector);
+                if (scopeSelector)
+                    add(hasher, *scopeSelector);
                 return hasher.hash();
             }
             bool operator==(const RuleSetKey& other) const
             {
                 return matchElement == other.matchElement
                     && isNegation == other.isNegation
-                    && arePointingToEqualData(invalidationSelector, other.invalidationSelector);
+                    && arePointingToEqualData(invalidationSelector, other.invalidationSelector)
+                    && arePointingToEqualData(scopeSelector, other.scopeSelector);
             }
         };
 
@@ -339,7 +344,7 @@ static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const KeyType& ke
         for (auto& feature : *features) {
             auto key = [&] {
                 if constexpr (std::is_same_v<typename RuleFeatureVectorType::ValueType, RuleFeatureWithInvalidationSelector>)
-                    return GenericHashKey<RuleSetKey> { { feature.matchElement, feature.isNegation, &feature.invalidationSelector } };
+                    return GenericHashKey<RuleSetKey> { { feature.matchElement, feature.isNegation, &feature.invalidationSelector, &feature.scopeSelector } };
                 else
                     return GenericHashKey<RuleSetKey> { { feature.matchElement, feature.isNegation } };
             }();
@@ -354,11 +359,19 @@ static Vector<InvalidationRuleSet>* ensureInvalidationRuleSets(const KeyType& ke
         return makeUnique<Vector<InvalidationRuleSet>>(WTF::map(ruleSetMap, [](auto& entry) {
             auto& key = entry.key.key();
             entry.value->shrinkToFit();
+            auto invalidationSelector = [&] {
+                if (key.invalidationSelector && key.scopeSelector && !key.scopeSelector->isEmpty())
+                    return CSSSelectorParser::makeHasArgumentWithScope(key.invalidationSelector->first(), key.scopeSelector->first());
+                if (key.invalidationSelector)
+                    return CSSSelectorList { *key.invalidationSelector };
+                return CSSSelectorList { };
+            }();
             return InvalidationRuleSet {
                 WTF::move(entry.value),
-                key.invalidationSelector ? *key.invalidationSelector : CSSSelectorList { },
+                WTF::move(invalidationSelector),
                 key.matchElement,
-                key.isNegation
+                key.isNegation,
+                key.scopeSelector ? *key.scopeSelector : CSSSelectorList { }
             };
         }));
     }).iterator->value.get();

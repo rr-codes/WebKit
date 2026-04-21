@@ -101,9 +101,10 @@ RuleFeature::RuleFeature(const RuleData& ruleData, MatchElement matchElement, Is
 {
 }
 
-RuleFeatureWithInvalidationSelector::RuleFeatureWithInvalidationSelector(const RuleData& data, MatchElement matchElement, IsNegation isNegation, CSSSelectorList&& invalidationSelector)
+RuleFeatureWithInvalidationSelector::RuleFeatureWithInvalidationSelector(const RuleData& data, MatchElement matchElement, IsNegation isNegation, CSSSelectorList&& invalidationSelector, CSSSelectorList&& scopeSelector)
     : RuleFeature(data, matchElement, isNegation)
     , invalidationSelector(WTF::move(invalidationSelector))
+    , scopeSelector(WTF::move(scopeSelector))
 {
 }
 
@@ -473,7 +474,8 @@ void RuleFeatureSet::collectFeatures(CollectionContext& collectionContext, const
             ruleData,
             matchElement,
             isNegation,
-            CSSSelectorParser::makeHasArgumentReplacingScope(*selector, *hasPseudoClass)
+            CSSSelectorList::makeCopyingComplexSelector(*selector),
+            CSSSelectorParser::makeHasScopeSelector(*hasPseudoClass)
         });
 
         if (doesBreakScope == DoesBreakScope::Yes)

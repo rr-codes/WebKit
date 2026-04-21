@@ -14,6 +14,8 @@
 .c5:has(+ .trigger) { color: green; }
 /* :has() with :is() wrapping */
 .c6:has(:is(.trigger + .other)) > .target { color: green; }
+/* Non-subject :has() with descendant — scope-bounded traversal */
+.c7:has(.trigger) .target { color: green; }
 </style>
 <script>
 if (window.testRunner)
@@ -104,6 +106,12 @@ runTest(":has(:is(.trigger + .other)) with compound peer .c6", "c6", function(co
     var trigger = document.createElement("div");
     trigger.className = "trigger";
     container.insertBefore(trigger, container.querySelector(".other"));
+}, true);
+
+runTest(":has(.trigger) non-subject with scope-bounded traversal .c7", "c7", function(container) {
+    var trigger = document.createElement("div");
+    trigger.className = "trigger";
+    container.appendChild(trigger);
 }, true);
 </script>
 </body>
