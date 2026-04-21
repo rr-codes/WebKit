@@ -6320,14 +6320,10 @@ public:
 
     ALWAYS_INLINE static bool supportsDotProd()
     {
-#if CPU(ARM64E)
-        return true;
-#else
         if (s_dotProdCheckState == CPUIDCheckState::NotChecked)
             collectCPUFeatures();
 
         return s_dotProdCheckState == CPUIDCheckState::Set;
-#endif
     }
 
     ALWAYS_INLINE static bool supportsLSE()

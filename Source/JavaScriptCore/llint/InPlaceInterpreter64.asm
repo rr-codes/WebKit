@@ -8905,11 +8905,7 @@ ipintOp(_simd_i32x4_relaxed_dot_i8x16_i7x16_add_s, macro()
     popVec(v2)  # c (addend)
     popVec(v1)  # b
     popVec(v0)  # a
-    if ARM64E
-        emit "mov v19.16b, v18.16b"
-        emit "sdot v19.4s, v16.16b, v17.16b"
-        emit "mov v16.16b, v19.16b"
-    elsif ARM64
+    if ARM64E or ARM64
         # Fallback for generic ARM64 without guaranteed DotProd
         emit "smull v19.8h, v16.8b, v17.8b"
         emit "smull2 v20.8h, v16.16b, v17.16b"

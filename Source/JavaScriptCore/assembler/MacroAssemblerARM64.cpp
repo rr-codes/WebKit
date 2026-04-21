@@ -717,14 +717,6 @@ void MacroAssemblerARM64::collectCPUFeatures()
         s_sha3CheckState = CPUIDCheckState::Clear;
 #endif
     }
-
-    if (s_dotProdCheckState == CPUIDCheckState::NotChecked) {
-#if CPU(ARM64E)
-        s_dotProdCheckState = CPUIDCheckState::Set;
-#else
-        s_dotProdCheckState = CPUIDCheckState::Clear;
-#endif
-    }
 }
 
 MacroAssemblerARM64::CPUIDCheckState MacroAssemblerARM64::s_lseCheckState = CPUIDCheckState::NotChecked;
