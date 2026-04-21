@@ -238,6 +238,20 @@ void CoordinatedPlatformLayerBufferYUV::paintToCanvas(SkCanvas& canvas, const Fl
             RELEASE_ASSERT_NOT_REACHED();
         }
         break;
+    case 4:
+        RELEASE_ASSERT(m_format == Format::A420);
+        planeConfig = SkYUVAInfo::PlaneConfig::kY_U_V_A;
+        subsampling = SkYUVAInfo::Subsampling::k420;
+        externalTexture.fFormat = GL_R8;
+        externalTexture.fID = m_planes[m_yuvPlane[0]];
+        backendTextures[0] = GrBackendTextures::MakeGL(m_size.width(), m_size.height(), skgpu::Mipmapped::kNo, externalTexture);
+        externalTexture.fID = m_planes[m_yuvPlane[1]];
+        backendTextures[1] = GrBackendTextures::MakeGL(m_size.width() / 2, m_size.height() / 2, skgpu::Mipmapped::kNo, externalTexture);
+        externalTexture.fID = m_planes[m_yuvPlane[2]];
+        backendTextures[2] = GrBackendTextures::MakeGL(m_size.width() / 2, m_size.height() / 2, skgpu::Mipmapped::kNo, externalTexture);
+        externalTexture.fID = m_planes[m_yuvPlane[3]];
+        backendTextures[3] = GrBackendTextures::MakeGL(m_size.width(), m_size.height(), skgpu::Mipmapped::kNo, externalTexture);
+        break;
     }
 
     if (planeConfig == SkYUVAInfo::PlaneConfig::kUnknown)
