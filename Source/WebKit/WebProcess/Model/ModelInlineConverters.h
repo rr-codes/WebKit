@@ -423,7 +423,7 @@ static WebCore::WebGPU::TextureUsageFlags toTextureUsageFlags(MTLTextureUsage te
     return flags;
 }
 
-static WebModel::VertexAttributeFormat convert(WKBridgeVertexAttributeFormat *format)
+static WebModel::VertexAttributeFormat toCpp(WKBridgeVertexAttributeFormat *format)
 {
     return WebModel::VertexAttributeFormat {
         .semantic = toVertexSemantic(format.semantic),
@@ -433,15 +433,15 @@ static WebModel::VertexAttributeFormat convert(WKBridgeVertexAttributeFormat *fo
     };
 }
 
-static Vector<WebModel::VertexAttributeFormat> convert(NSArray<WKBridgeVertexAttributeFormat *> *formats)
+static Vector<WebModel::VertexAttributeFormat> toCpp(NSArray<WKBridgeVertexAttributeFormat *> *formats)
 {
     Vector<WebModel::VertexAttributeFormat> result;
     for (WKBridgeVertexAttributeFormat *f in formats)
-        result.append(convert(f));
+        result.append(toCpp(f));
     return result;
 }
 
-static WebModel::VertexLayout convert(WKBridgeVertexLayout *layout)
+static WebModel::VertexLayout toCpp(WKBridgeVertexLayout *layout)
 {
     return WebModel::VertexLayout {
         .bufferIndex = layout.bufferIndex,
@@ -449,15 +449,15 @@ static WebModel::VertexLayout convert(WKBridgeVertexLayout *layout)
         .bufferStride = layout.bufferStride,
     };
 }
-static Vector<WebModel::VertexLayout> convert(NSArray<WKBridgeVertexLayout *> *layouts)
+static Vector<WebModel::VertexLayout> toCpp(NSArray<WKBridgeVertexLayout *> *layouts)
 {
     Vector<WebModel::VertexLayout> result;
     for (WKBridgeVertexLayout *l in layouts)
-        result.append(convert(l));
+        result.append(toCpp(l));
     return result;
 }
 
-static WebModel::MeshPart convert(WKBridgeMeshPart *part)
+static WebModel::MeshPart toCpp(WKBridgeMeshPart *part)
 {
     return WebModel::MeshPart {
         static_cast<uint32_t>(part.indexOffset),
@@ -469,27 +469,27 @@ static WebModel::MeshPart convert(WKBridgeMeshPart *part)
     };
 }
 
-static Vector<WebModel::MeshPart> convert(NSArray<WKBridgeMeshPart *> *parts)
+static Vector<WebModel::MeshPart> toCpp(NSArray<WKBridgeMeshPart *> *parts)
 {
     Vector<WebModel::MeshPart> result;
     for (WKBridgeMeshPart *p in parts)
-        result.append(convert(p));
+        result.append(toCpp(p));
     return result;
 }
 
-static WebModel::MeshDescriptor convert(WKBridgeMeshDescriptor *descriptor)
+static WebModel::MeshDescriptor toCpp(WKBridgeMeshDescriptor *descriptor)
 {
     return WebModel::MeshDescriptor {
         .vertexBufferCount = descriptor.vertexBufferCount,
         .vertexCapacity = descriptor.vertexCapacity,
-        .vertexAttributes = convert(descriptor.vertexAttributes),
-        .vertexLayouts = convert(descriptor.vertexLayouts),
+        .vertexAttributes = toCpp(descriptor.vertexAttributes),
+        .vertexLayouts = toCpp(descriptor.vertexLayouts),
         .indexCapacity = descriptor.indexCapacity,
         .indexType = toIndexType(descriptor.indexType)
     };
 }
 
-static Vector<Vector<uint8_t>> convert(NSArray<NSData *> *dataVector)
+static Vector<Vector<uint8_t>> toCpp(NSArray<NSData *> *dataVector)
 {
     Vector<Vector<uint8_t>> result;
     for (NSData *data in dataVector)
@@ -499,73 +499,73 @@ static Vector<Vector<uint8_t>> convert(NSArray<NSData *> *dataVector)
 }
 
 template<typename T>
-static Vector<T> convert(NSData *data)
+static Vector<T> toCpp(NSData *data)
 {
     return Vector<T> { unsafeMakeSpan(static_cast<const T*>(data.bytes), data.length / sizeof(T)) };
 }
 
 template<typename T>
-static Vector<Vector<T>> convert(NSArray<NSData *> *dataVector)
+static Vector<Vector<T>> toCpp(NSArray<NSData *> *dataVector)
 {
     Vector<Vector<T>> result;
     for (NSData *d in dataVector)
-        result.append(convert<T>(d));
+        result.append(toCpp<T>(d));
 
     return result;
 }
 
-static std::optional<WebModel::SkinningData> convert(WKBridgeSkinningData* data)
+static std::optional<WebModel::SkinningData> toCpp(WKBridgeSkinningData* data)
 {
     if (!data)
         return std::nullopt;
 
     return WebModel::SkinningData {
         .influencePerVertexCount = data.influencePerVertexCount,
-        .jointTransforms = convert<WebModel::Float4x4>(data.jointTransformsData),
-        .inverseBindPoses = convert<WebModel::Float4x4>(data.inverseBindPosesData),
-        .influenceJointIndices = convert<uint32_t>(data.influenceJointIndicesData),
-        .influenceWeights = convert<float>(data.influenceWeightsData),
+        .jointTransforms = toCpp<WebModel::Float4x4>(data.jointTransformsData),
+        .inverseBindPoses = toCpp<WebModel::Float4x4>(data.inverseBindPosesData),
+        .influenceJointIndices = toCpp<uint32_t>(data.influenceJointIndicesData),
+        .influenceWeights = toCpp<float>(data.influenceWeightsData),
         .geometryBindTransform = data.geometryBindTransform
     };
 }
 
-static std::optional<WebModel::BlendShapeData> convert(WKBridgeBlendShapeData* data)
+static std::optional<WebModel::BlendShapeData> toCpp(WKBridgeBlendShapeData* data)
 {
     if (!data)
         return std::nullopt;
 
     return WebModel::BlendShapeData {
-        .weights = convert<float>(data.weightsData),
-        .positionOffsets = convert<WebModel::Float3>(data.positionOffsetsData),
-        .normalOffsets = convert<WebModel::Float3>(data.normalOffsetsData)
+        .weights = toCpp<float>(data.weightsData),
+        .positionOffsets = toCpp<WebModel::Float3>(data.positionOffsetsData),
+        .normalOffsets = toCpp<WebModel::Float3>(data.normalOffsetsData)
     };
 }
 
-static std::optional<WebModel::RenormalizationData> convert(WKBridgeRenormalizationData* data)
+static std::optional<WebModel::RenormalizationData> toCpp(WKBridgeRenormalizationData* data)
 {
     if (!data)
         return std::nullopt;
 
     return WebModel::RenormalizationData {
-        .vertexIndicesPerTriangle = convert<uint32_t>(data.vertexIndicesPerTriangleData),
-        .vertexAdjacencies = convert<uint32_t>(data.vertexAdjacenciesData),
-        .vertexAdjacencyEndIndices = convert<uint32_t>(data.vertexAdjacencyEndIndicesData)
+        .vertexIndicesPerTriangle = toCpp<uint32_t>(data.vertexIndicesPerTriangleData),
+        .vertexAdjacencies = toCpp<uint32_t>(data.vertexAdjacenciesData),
+        .vertexAdjacencyEndIndices = toCpp<uint32_t>(data.vertexAdjacencyEndIndicesData)
     };
 }
 
-static std::optional<WebModel::DeformationData> convert(WKBridgeDeformationData* data)
+static std::optional<WebModel::DeformationData> toCpp(WKBridgeDeformationData* data)
 {
     if (!data)
         return std::nullopt;
 
     return WebModel::DeformationData {
-        .skinningData = convert(data.skinningData),
-        .blendShapeData = convert(data.blendShapeData),
-        .renormalizationData = convert(data.renormalizationData)
+        .skinningData = toCpp(data.skinningData),
+        .blendShapeData = toCpp(data.blendShapeData),
+        .renormalizationData = toCpp(data.renormalizationData)
     };
 }
 
-static WebModel::TypedResourceId convert(WKBridgeTypedResourceId *update)
+static WebModel::TypedResourceId toCpp(WKBridgeTypedResourceId *update)
 {
     return WebModel::TypedResourceId {
         .value = update.value,
@@ -575,7 +575,7 @@ static WebModel::TypedResourceId convert(WKBridgeTypedResourceId *update)
 }
 
 
-static WebModel::NodeType convert(WKBridgeNodeType nodeType)
+static WebModel::NodeType toCpp(WKBridgeNodeType nodeType)
 {
     switch (nodeType) {
     case WKBridgeNodeTypeBuiltin:
@@ -590,7 +590,7 @@ static WebModel::NodeType convert(WKBridgeNodeType nodeType)
     }
 }
 
-static WebModel::Builtin convert(WKBridgeBuiltin *builtin)
+static WebModel::Builtin toCpp(WKBridgeBuiltin *builtin)
 {
     return WebModel::Builtin {
         .definition = builtin.definition,
@@ -598,7 +598,7 @@ static WebModel::Builtin convert(WKBridgeBuiltin *builtin)
     };
 }
 
-static WebModel::Constant convert(WKBridgeConstant constant)
+static WebModel::Constant toCpp(WKBridgeConstant constant)
 {
     switch (constant) {
     case WKBridgeConstantBool:
@@ -681,7 +681,7 @@ static WebModel::Constant convert(WKBridgeConstant constant)
     }
 }
 
-static Vector<WebModel::NumberOrString> convert(NSArray<WKBridgeValueString *> *constantValues)
+static Vector<WebModel::NumberOrString> toCpp(NSArray<WKBridgeValueString *> *constantValues)
 {
     Vector<WebModel::NumberOrString> result;
     result.reserveCapacity(constantValues.count);
@@ -695,25 +695,25 @@ static Vector<WebModel::NumberOrString> convert(NSArray<WKBridgeValueString *> *
     return result;
 }
 
-static WebModel::ConstantContainer convert(WKBridgeConstantContainer *container)
+static WebModel::ConstantContainer toCpp(WKBridgeConstantContainer *container)
 {
     return WebModel::ConstantContainer {
-        .constant = convert(container.constant),
-        .constantValues = convert(container.constantValues),
+        .constant = toCpp(container.constant),
+        .constantValues = toCpp(container.constantValues),
         .name = String(container.name)
     };
 }
 
-static WebModel::Node convert(WKBridgeNode *node)
+static WebModel::Node toCpp(WKBridgeNode *node)
 {
     return WebModel::Node {
-        .bridgeNodeType = convert(node.bridgeNodeType),
-        .builtin = convert(node.builtin),
-        .constant = convert(node.constant)
+        .bridgeNodeType = toCpp(node.bridgeNodeType),
+        .builtin = toCpp(node.builtin),
+        .constant = toCpp(node.constant)
     };
 }
 
-static WebModel::Edge convert(WKBridgeEdge *edge)
+static WebModel::Edge toCpp(WKBridgeEdge *edge)
 {
     return WebModel::Edge {
         .outputNode = String(edge.outputNode),
@@ -723,7 +723,7 @@ static WebModel::Edge convert(WKBridgeEdge *edge)
     };
 }
 
-static WebModel::DataType convert(WKBridgeDataType type)
+static WebModel::DataType toCpp(WKBridgeDataType type)
 {
     switch (type) {
     case WKBridgeDataTypeBool:
@@ -795,68 +795,59 @@ static WebModel::DataType convert(WKBridgeDataType type)
     }
 }
 
-static WebModel::InputOutput convert(WKBridgeInputOutput *inputOutput)
+static WebModel::InputOutput toCpp(WKBridgeInputOutput *inputOutput)
 {
     std::optional<WebModel::DataType> semanticType;
     if (inputOutput.hasSemanticType)
-        semanticType = convert(inputOutput.semanticType);
+        semanticType = toCpp(inputOutput.semanticType);
 
     std::optional<WebModel::ConstantContainer> defaultValue;
     if (inputOutput.defaultValue)
-        defaultValue = convert(inputOutput.defaultValue);
+        defaultValue = toCpp(inputOutput.defaultValue);
 
     return WebModel::InputOutput {
-        .type = convert(inputOutput.type),
+        .type = toCpp(inputOutput.type),
         .name = String(inputOutput.name),
         .semanticType = semanticType,
         .defaultValue = defaultValue
     };
 }
 
-static WebModel::TextureLevelInfo convert(WKBridgeTextureLevelInfo *layout)
-{
-    return WebModel::TextureLevelInfo {
-        .dataOffset = layout.dataOffset,
-        .byteCountPerRow = layout.byteCountPerRow,
-        .byteCountPerImage = layout.byteCountPerImage,
-    };
-}
-
 template<typename T, typename U>
-static Vector<U> convert(NSArray<T *> *nsArray)
+static Vector<U> toCpp(NSArray<T *> *nsArray)
 {
     Vector<U> result;
     result.reserveCapacity(nsArray.count);
     for (T *v in nsArray)
-        result.append(convert(v));
+        result.append(toCpp(v));
 
     return result;
 }
 
-static WebModel::UpdateMeshDescriptor convert(WKBridgeUpdateMesh *update)
+static WebModel::UpdateMeshDescriptor toCpp(WKBridgeUpdateMesh *update)
 {
     return WebModel::UpdateMeshDescriptor {
-        .identifier = convert(update.identifier),
+        .identifier = toCpp(update.identifier),
         .updateType = static_cast<uint8_t>(update.updateType),
-        .descriptor = convert(update.descriptor),
-        .parts = convert(update.parts),
+        .descriptor = toCpp(update.descriptor),
+        .parts = toCpp(update.parts),
         .indexData = makeVector(update.indexData),
-        .vertexData = convert(update.vertexData),
-        .instanceTransforms = convert<WebModel::Float4x4>(update.instanceTransformsData),
-        .assignedMaterials = convert<WKBridgeTypedResourceId, WebModel::TypedResourceId>(update.assignedMaterials),
-        .deformationData = convert(update.deformationData)
+        .vertexData = toCpp(update.vertexData),
+        .instanceTransforms = toCpp<WebModel::Float4x4>(update.instanceTransformsData),
+        .assignedMaterials = toCpp<WKBridgeTypedResourceId, WebModel::TypedResourceId>(update.assignedMaterials),
+        .deformationData = toCpp(update.deformationData)
     };
 }
 
-static WebModel::MaterialGraph convert(WKBridgeMaterialGraph *materialGraph)
+static WebModel::MaterialGraph toCpp(WKBridgeMaterialGraph *materialGraph)
 {
     return WebModel::MaterialGraph {
-        .nodes = convert<WKBridgeNode, WebModel::Node>(materialGraph.nodes),
-        .edges = convert<WKBridgeEdge, WebModel::Edge>(materialGraph.edges),
-        .arguments = convert(materialGraph.arguments),
-        .results = convert(materialGraph.results),
-        .inputs = convert<WKBridgeInputOutput, WebModel::InputOutput>(materialGraph.inputs),
-        .outputs = convert<WKBridgeInputOutput, WebModel::InputOutput>(materialGraph.outputs),
+        .nodes = toCpp<WKBridgeNode, WebModel::Node>(materialGraph.nodes),
+        .edges = toCpp<WKBridgeEdge, WebModel::Edge>(materialGraph.edges),
+        .arguments = toCpp(materialGraph.arguments),
+        .results = toCpp(materialGraph.results),
+        .inputs = toCpp<WKBridgeInputOutput, WebModel::InputOutput>(materialGraph.inputs),
+        .outputs = toCpp<WKBridgeInputOutput, WebModel::InputOutput>(materialGraph.outputs),
     };
 }
 
@@ -877,6 +868,7 @@ static WebModel::ImageAsset convert(WKBridgeImageAsset *imageAsset)
         .width = imageAsset.width,
         .height = imageAsset.height,
         .depth = 1,
+        .bytesPerPixel = imageAsset.bytesPerPixel,
         .textureType = toTextureViewDimension(imageAsset.textureType),
         .pixelFormat = toTextureFormat(imageAsset.pixelFormat),
         .mipmapLevelCount = imageAsset.mipmapLevelCount,
@@ -886,21 +878,20 @@ static WebModel::ImageAsset convert(WKBridgeImageAsset *imageAsset)
     };
 }
 
-static WebModel::UpdateTextureDescriptor convert(WKBridgeUpdateTexture *update)
+static WebModel::UpdateTextureDescriptor toCpp(WKBridgeUpdateTexture *update)
 {
     return WebModel::UpdateTextureDescriptor {
         .imageAsset = convert(update.imageAsset),
-        .identifier = convert(update.identifier),
-        .hashString = update.hashString,
-        .layout = convert<WKBridgeTextureLevelInfo, WebModel::TextureLevelInfo>(update.layout)
+        .identifier = toCpp(update.identifier),
+        .hashString = update.hashString
     };
 }
 
-static WebModel::UpdateMaterialDescriptor convert(WKBridgeUpdateMaterial *update)
+static WebModel::UpdateMaterialDescriptor toCpp(WKBridgeUpdateMaterial *update)
 {
     return WebModel::UpdateMaterialDescriptor {
-        .materialGraph = convert(update.materialGraph),
-        .identifier = convert(update.identifier)
+        .materialGraph = toCpp(update.materialGraph),
+        .identifier = toCpp(update.identifier)
     };
 }
 

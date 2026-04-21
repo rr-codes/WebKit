@@ -98,7 +98,7 @@ void MeshImpl::play(bool play)
     m_backing->play(play);
 }
 
-void MeshImpl::setEnvironmentMap(const WebModel::UpdateTextureDescriptor& imageAsset)
+void MeshImpl::setEnvironmentMap(const WebModel::ImageAsset& imageAsset)
 {
     m_backing->setEnvironmentMap(imageAsset);
 }

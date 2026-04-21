@@ -39,7 +39,7 @@ messages -> RemoteMesh Stream {
     void SetFOV(float fovY)
     void SetBackgroundColor(struct WebModel::Float3 color)
     void Play(bool playing)
-    void SetEnvironmentMap(struct WebModel::UpdateTextureDescriptor imageAsset)
+    void SetEnvironmentMap(struct WebModel::ImageAsset imageAsset)
     void UpdateContentsHeadroom(float headroom)
     void UpdateRenderBuffers(unsigned width, unsigned height) -> (Vector<MachSendRight> renderBuffers) NotStreamEncodableReply
 }

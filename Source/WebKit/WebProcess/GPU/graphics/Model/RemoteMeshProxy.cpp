@@ -226,7 +226,7 @@ void RemoteMeshProxy::play(bool playing)
 #endif
 }
 
-void RemoteMeshProxy::setEnvironmentMap(const WebModel::UpdateTextureDescriptor& imageAsset)
+void RemoteMeshProxy::setEnvironmentMap(const WebModel::ImageAsset& imageAsset)
 {
 #if ENABLE(GPU_PROCESS_MODEL)
     auto sendResult = send(Messages::RemoteMesh::SetEnvironmentMap(imageAsset));

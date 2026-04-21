@@ -114,7 +114,7 @@ private:
     void computeTransform();
     void setRotation(float yaw, float pitch, float roll) final;
 #endif
-    void setEnvironmentMap(const WebModel::UpdateTextureDescriptor&) final;
+    void setEnvironmentMap(const WebModel::ImageAsset&) final;
     void updateContentsHeadroom(float) final;
 
     const WebModelIdentifier m_backing;

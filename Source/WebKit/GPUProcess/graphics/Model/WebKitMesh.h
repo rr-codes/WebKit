@@ -70,7 +70,7 @@ public:
     void NODELETE setTransform(const simd_float4x4&);
     void NODELETE setFOV(float);
     void NODELETE setBackgroundColor(const simd_float3&);
-    void NODELETE setEnvironmentMap(const WebModel::UpdateTextureDescriptor&);
+    void NODELETE setEnvironmentMap(const WebModel::ImageAsset&);
     void NODELETE play(bool);
     void NODELETE updateRenderBuffers(const WebModel::ResizeMeshDescriptor&);
 
