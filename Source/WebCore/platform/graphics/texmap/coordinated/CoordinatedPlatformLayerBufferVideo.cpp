@@ -168,6 +168,8 @@ static std::optional<CoordinatedPlatformLayerBufferYUV::Format> yuvFormatFromGst
         return CoordinatedPlatformLayerBufferYUV::Format::YUV422;
     case GST_VIDEO_FORMAT_P010_10LE:
         return CoordinatedPlatformLayerBufferYUV::Format::P010;
+    case GST_VIDEO_FORMAT_A420:
+        return CoordinatedPlatformLayerBufferYUV::Format::A420;
     default:
         break;
     }
@@ -205,8 +207,12 @@ std::unique_ptr<CoordinatedPlatformLayerBuffer> CoordinatedPlatformLayerBufferVi
         }
 
         auto format = yuvFormatFromGstVideoFormat(GST_VIDEO_INFO_FORMAT(m_mappedVideoFrame->info()));
-        if (!format)
+        if (!format) {
+            // If format is not supported clear the GstMappedFrame holder, otherwise it will be considered
+            // as main memory mapped buffer and we will try to upload it later.
+            m_mappedVideoFrame = std::nullopt;
             return nullptr;
+        }
 
         unsigned numberOfPlanes = GST_VIDEO_INFO_N_PLANES(m_mappedVideoFrame->info());
         std::array<GLuint, 4> planes;
@@ -255,28 +261,29 @@ void CoordinatedPlatformLayerBufferVideo::createBufferFromMappedFrameIfNeeded()
     }
 #endif
 
-    if (!m_buffer) {
-        OptionSet<BitmapTexture::Flags> textureFlags;
-        if (GST_VIDEO_INFO_HAS_ALPHA(m_mappedVideoFrame->info()))
-            textureFlags.add(BitmapTexture::Flags::SupportsAlpha);
-        auto texture = BitmapTexturePool::singleton().acquireTexture(m_size, textureFlags);
+    if (m_buffer)
+        return;
 
-        auto* meta = gst_buffer_get_video_gl_texture_upload_meta(m_mappedVideoFrame->get()->buffer);
-        if (meta && meta->n_textures == 1) {
-            guint ids[4] = { texture->id(), 0, 0, 0 };
-            if (gst_video_gl_texture_upload_meta_upload(meta, ids))
-                m_buffer = CoordinatedPlatformLayerBufferRGB::create(WTF::move(texture), m_flags, nullptr);
-        }
+    OptionSet<BitmapTexture::Flags> textureFlags;
+    if (GST_VIDEO_INFO_HAS_ALPHA(m_mappedVideoFrame->info()))
+        textureFlags.add(BitmapTexture::Flags::SupportsAlpha);
+    auto texture = BitmapTexturePool::singleton().acquireTexture(m_size, textureFlags);
 
-        if (!m_buffer) {
-            int stride = m_mappedVideoFrame->planeStride(0);
-            auto srcData = m_mappedVideoFrame->planeData(0);
-            IntPoint origin { 0, 0 };
-            texture->updateContents(srcData.data(), IntRect(origin, m_size), origin, stride, PixelFormat::BGRA8);
+    auto* meta = gst_buffer_get_video_gl_texture_upload_meta(m_mappedVideoFrame->get()->buffer);
+    if (meta && meta->n_textures == 1) {
+        guint ids[4] = { texture->id(), 0, 0, 0 };
+        if (gst_video_gl_texture_upload_meta_upload(meta, ids)) {
             m_buffer = CoordinatedPlatformLayerBufferRGB::create(WTF::move(texture), m_flags, nullptr);
-            m_mappedVideoFrame = std::nullopt;
+            return;
         }
     }
+
+    int stride = m_mappedVideoFrame->planeStride(0);
+    auto srcData = m_mappedVideoFrame->planeData(0);
+    IntPoint origin;
+    texture->updateContents(srcData.data(), IntRect(origin, m_size), origin, stride, PixelFormat::BGRA8);
+    m_buffer = CoordinatedPlatformLayerBufferRGB::create(WTF::move(texture), m_flags, nullptr);
+    m_mappedVideoFrame = std::nullopt;
 }
 
 void CoordinatedPlatformLayerBufferVideo::paintToTextureMapper(TextureMapper& textureMapper, const FloatRect& targetRect, const TransformationMatrix& modelViewMatrix, float opacity)
