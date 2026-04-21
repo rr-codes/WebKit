@@ -53,6 +53,7 @@
 #include <dlfcn.h>
 using WPEAndroidRuntimeGetJavaVMFunction = JavaVM* (*)();
 using WPEAndroidRuntimeGetActivityFunction = jobject (*)();
+using WPEAndroidRuntimeGetApplicationContextFunction = jobject (*)();
 #undef jobject
 #endif
 
@@ -567,6 +568,40 @@ void OpenXRCoordinator::createInstance()
     ASSERT(RunLoop::isMain());
     ASSERT(m_instance == XR_NULL_HANDLE);
 
+#if OS(ANDROID)
+    static WPEAndroidRuntimeGetJavaVMFunction s_wpeAndroidRuntimeGetJavaVM =
+        reinterpret_cast<WPEAndroidRuntimeGetJavaVMFunction>(dlsym(RTLD_DEFAULT, "wpe_android_runtime_get_current_java_vm"));
+    if (!s_wpeAndroidRuntimeGetJavaVM) [[unlikely]] {
+        RELEASE_LOG_ERROR(XR, "Cannot resolve wpe_android_runtime_get_current_java_vm(): %s.", dlerror());
+        return;
+    }
+
+    static WPEAndroidRuntimeGetActivityFunction s_wpeAndroidRuntimeGetActivity =
+        reinterpret_cast<WPEAndroidRuntimeGetActivityFunction>(dlsym(RTLD_DEFAULT, "wpe_android_runtime_get_current_activity"));
+    if (!s_wpeAndroidRuntimeGetActivity) [[unlikely]] {
+        RELEASE_LOG_ERROR(XR, "Cannot resolve wpe_android_runtime_get_current_activity(): %s.", dlerror());
+        return;
+    }
+
+    static WPEAndroidRuntimeGetApplicationContextFunction s_wpeAndroidRuntimeGetApplicationContext =
+        reinterpret_cast<WPEAndroidRuntimeGetApplicationContextFunction>(dlsym(RTLD_DEFAULT, "wpe_android_runtime_get_application_context"));
+    if (!s_wpeAndroidRuntimeGetApplicationContext) [[unlikely]] {
+        RELEASE_LOG_ERROR(XR, "Cannot resolve wpe_android_runtime_get_application_context(): %s.", dlerror());
+        return;
+    }
+
+    // Setup the OpenXR loader for Android. This MUST be done before calling any OpenXR method (except xrGetInstanceProcAddr).
+    PFN_xrInitializeLoaderKHR initializeLoaderKHR;
+    CHECK_XRCMD(xrGetInstanceProcAddr(nullptr, "xrInitializeLoaderKHR", reinterpret_cast<PFN_xrVoidFunction*>(&initializeLoaderKHR)));
+    XrLoaderInitInfoAndroidKHR loaderData;
+    zeroBytes(loaderData);
+    loaderData.type = XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR;
+    loaderData.next = nullptr;
+    loaderData.applicationVM = s_wpeAndroidRuntimeGetJavaVM();
+    loaderData.applicationContext = s_wpeAndroidRuntimeGetApplicationContext();
+    initializeLoaderKHR(reinterpret_cast<XrLoaderInitInfoBaseHeaderKHR*>(&loaderData));
+#endif
+
     Vector<char *> extensions;
 #if defined(XR_USE_PLATFORM_EGL)
     if (OpenXRExtensions::singleton().isExtensionSupported(XR_MNDX_EGL_ENABLE_EXTENSION_NAME ""_span))
@@ -604,20 +639,6 @@ void OpenXRCoordinator::createInstance()
     createInfo.enabledExtensionNames = extensions.mutableSpan().data();
 
 #if OS(ANDROID)
-    static WPEAndroidRuntimeGetJavaVMFunction s_wpeAndroidRuntimeGetJavaVM =
-        reinterpret_cast<WPEAndroidRuntimeGetJavaVMFunction>(dlsym(RTLD_DEFAULT, "wpe_android_runtime_get_current_java_vm"));
-    if (!s_wpeAndroidRuntimeGetJavaVM) [[unlikely]] {
-        RELEASE_LOG_ERROR(XR, "Cannot resolve wpe_android_runtime_get_current_java_vm(): %s.", dlerror());
-        return;
-    }
-
-    static WPEAndroidRuntimeGetActivityFunction s_wpeAndroidRuntimeGetActivity =
-        reinterpret_cast<WPEAndroidRuntimeGetActivityFunction>(dlsym(RTLD_DEFAULT, "wpe_android_runtime_get_current_activity"));
-    if (!s_wpeAndroidRuntimeGetActivity) [[unlikely]] {
-        RELEASE_LOG_ERROR(XR, "Cannot resolve wpe_android_runtime_get_current_activity(): %s.", dlerror());
-        return;
-    }
-
     auto java = createOpenXRStruct<XrInstanceCreateInfoAndroidKHR, XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR>();
     java.applicationVM = s_wpeAndroidRuntimeGetJavaVM();
     java.applicationActivity = s_wpeAndroidRuntimeGetActivity();
