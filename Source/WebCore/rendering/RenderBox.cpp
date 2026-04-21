@@ -2489,6 +2489,12 @@ void RenderBox::mapLocalToContainer(const RenderLayerModelObject* ancestorContai
     if (mode.contains(MapCoordinatesMode::IgnoreStickyOffsets) && isStickilyPositioned())
         containerOffset -= stickyPositionOffset();
 
+    // Clamp overscroll if requested, so we don't layout into it.
+    if (mode.contains(MapCoordinatesMode::ClampOverscroll)) {
+        if (CheckedPtr boxContainer = dynamicDowncast<RenderBox>(container); boxContainer && boxContainer->hasPotentiallyScrollableOverflow())
+            containerOffset += boxContainer->scrollPosition() - boxContainer->constrainedScrollPosition();
+    }
+
     pushOntoTransformState(transformState, mode, ancestorContainer, container, containerOffset, containerSkipped);
     if (containerSkipped)
         return;

@@ -52,6 +52,7 @@ class LayoutSize;
 class RenderBlock;
 class RenderBox;
 class RenderBoxModelObject;
+class RenderLayerModelObject;
 class RenderElement;
 class RenderStyle;
 class RenderView;
@@ -200,7 +201,7 @@ public:
     static void updateScrollAdjustments(RenderView&);
     static void updateAnchorPositionedStateForDefaultAnchorAndPositionVisibility(Element&, const RenderStyle&, AnchorPositionedStates&);
 
-    static LayoutRect computeAnchorRectRelativeToContainingBlock(CheckedRef<const RenderBoxModelObject> anchorBox, const RenderElement& containingBlock, const RenderBox& anchoredBox);
+    static LayoutRect computeAnchorRectRelativeToContainingBlock(CheckedRef<const RenderBoxModelObject> anchorBox, const RenderLayerModelObject& containingBlock, const RenderBox& anchoredBox);
     static void captureScrollSnapshots(RenderBox& anchored, bool invalidateStyleForScrollPositionChanges = true);
 
     static AnchorToAnchorPositionedMap makeAnchorPositionedForAnchorMap(AnchorPositionedToAnchorMap&);
