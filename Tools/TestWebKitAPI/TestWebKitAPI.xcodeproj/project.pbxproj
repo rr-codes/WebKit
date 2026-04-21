@@ -578,6 +578,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WebKit/WebPage/AppKitGesturesTests.swift,
+				WebKit/WebPage/EditingFontSizeTests.swift,
 				WebKit/WebPage/URLSchemeHandlerTests.swift,
 				WebKit/WebPage/WebPageNavigationTests.swift,
 				WebKit/WebPage/WebPageTests.swift,
@@ -1309,6 +1310,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				WebKit/WebPage/AppKitGesturesTests.swift,
+				WebKit/WebPage/EditingFontSizeTests.swift,
 				WebKit/WebPage/URLSchemeHandlerTests.swift,
 				WebKit/WebPage/WebPageNavigationTests.swift,
 				WebKit/WebPage/WebPageTests.swift,

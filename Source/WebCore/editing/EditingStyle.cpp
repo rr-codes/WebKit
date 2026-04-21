@@ -2050,7 +2050,13 @@ void StyleChange::extractTextStyles(Document& document, MutableStyleProperties& 
     if (RefPtr fontSize = style.getPropertyCSSValue(CSSPropertyFontSize)) {
         if (int legacyFontSize = legacyFontSizeFromCSSValue(document, *fontSize, shouldUseFixedFontDefaultSize, LegacyFontSizeMode::UseLegacyFontSizeOnlyIfPixelValuesMatch)) {
             m_applyFontSize = AtomString::number(legacyFontSize);
-            style.removeProperty(CSSPropertyFontSize);
+            // For CSS keyword values (e.g. "large"), the legacy <font size> is
+            // a lossless representation, so remove the CSS property.
+            // For explicit lengths (e.g. "13px"), keep the CSS property nested inside
+            // the legacy <font size> so that renderers that understand CSS use the exact value.
+            RefPtr primitiveValue = dynamicDowncast<CSSPrimitiveValue>(*fontSize);
+            if (!primitiveValue || !primitiveValue->isFontIndependentLength())
+                style.removeProperty(CSSPropertyFontSize);
         }
     }
 }

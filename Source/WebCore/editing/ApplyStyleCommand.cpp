@@ -1454,7 +1454,7 @@ void ApplyStyleCommand::applyInlineStyleChange(Node& passedStart, Node& passedEn
         startNode = startNodeFirstChild;
     }
 
-    // Font tags need to go outside of CSS so that CSS font sizes override leagcy font sizes.
+    // Font tags need to go outside of CSS so that CSS font sizes override legacy font sizes.
     if (styleChange.applyFontColor() || styleChange.applyFontFace() || styleChange.applyFontSize()) {
         if (fontContainer) {
             if (styleChange.applyFontColor())
