@@ -266,34 +266,6 @@ struct TypeCastTraits<To, From, false> {
     }
 };
 
-template<typename To, typename From>
-    requires (IsJSCellType<To> && (IsJSCellType<From> || std::is_same_v<From, JSC::JSCell>))
-inline match_constness_t<From, To>& uncheckedDowncast(From& source)
-{
-    static_assert(!std::same_as<From, To>, "Unnecessary cast to same type");
-#if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
-    if (!is<To>(source)) [[unlikely]]
-        JSC::reportZappedCellAndCrash(&source);
-#else
-    ASSERT_WITH_SECURITY_IMPLICATION(is<To>(source));
-#endif
-    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<match_constness_t<From, To>&>(source);
-}
-
-template<typename To, typename From>
-    requires (IsJSCellType<To> && (IsJSCellType<From> || std::is_same_v<From, JSC::JSCell>))
-inline match_constness_t<From, To>* uncheckedDowncast(From* source)
-{
-    static_assert(!std::same_as<From, To>, "Unnecessary cast to same type");
-#if (ASSERT_ENABLED || ENABLE(SECURITY_ASSERTIONS)) && CPU(X86_64)
-    if (source && !is<To>(*source)) [[unlikely]]
-        JSC::reportZappedCellAndCrash(source);
-#else
-    ASSERT_WITH_SECURITY_IMPLICATION(!source || is<To>(*source));
-#endif
-    SUPPRESS_MEMORY_UNSAFE_CAST return static_cast<match_constness_t<From, To>*>(source);
-}
-
 // JSValue overloads for is, dynamicDowncast, downcast, and uncheckedDowncast.
 // Uses explicit JSC::JSValue& parameter type which is more specialized than the
 // deduced From& in WTF's overloads, so these win in partial ordering.
