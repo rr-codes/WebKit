@@ -2073,13 +2073,13 @@ std::optional<TimeZoneID> intlResolveTimeZoneID(StringView name)
     return entry->value;
 }
 
-// https://tc39.es/ecma402/#sec-getavailablenamedtimezoneidentifier
-String availableNamedTimeZoneIdentifier(StringView timeZoneName)
+std::optional<AvailableNamedTimeZone> intlAvailableNamedTimeZone(StringView name)
 {
-    auto id = intlResolveTimeZoneID(timeZoneName);
-    if (!id)
-        return String();
-    return intlTimeZoneIDToString(*id);
+    const auto& index = intlAvailableTimeZoneIndex();
+    auto entry = index.find<ASCIICaseInsensitiveStringViewHashTranslator>(name);
+    if (entry == index.end())
+        return std::nullopt;
+    return AvailableNamedTimeZone { entry->value, entry->key };
 }
 
 String TimeZone::toString() const

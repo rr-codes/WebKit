@@ -123,18 +123,22 @@ inline CalendarID iso8601CalendarID()
 // forms collapse to the same TimeZoneID.
 JS_EXPORT_PRIVATE std::optional<TimeZoneID> intlResolveTimeZoneID(StringView);
 
+// Same lookup as intlResolveTimeZoneID, but additionally returns the
+// case-normalized accepted identifier (the [[Identifier]] in spec terms — for
+// Backward links such as "Asia/Calcutta" this is "Asia/Calcutta", not the
+// primary "Asia/Kolkata"). The identifier is an immortal static string.
+struct AvailableNamedTimeZone {
+    TimeZoneID id;
+    String identifier;
+};
+JS_EXPORT_PRIVATE std::optional<AvailableNamedTimeZone> intlAvailableNamedTimeZone(StringView);
+
 // Map a known-valid IANA time zone ID to its primary IANA zone identifier,
 // using ICU 74's ucal_getIanaTimeZoneID when available and falling back to
 // ucal_getCanonicalTimeZoneID otherwise. UTC-equivalent zones are normalized
 // to "UTC" per ECMA-402.
 JS_EXPORT_PRIVATE String toPrimaryIanaTimeZoneIdentifier(std::span<const char16_t> timeZone);
 JS_EXPORT_PRIVATE String toPrimaryIanaTimeZoneIdentifier(StringView timeZone);
-
-// https://tc39.es/ecma402/#sec-getavailablenamedtimezoneidentifier
-// Look up timeZoneName case-insensitively against ICU's full time zone list
-// (canonical + Backward links) and return the matched zone's IANA primary
-// identifier, or a null String if the name is not a recognized IANA zone.
-JS_EXPORT_PRIVATE String availableNamedTimeZoneIdentifier(StringView timeZoneName);
 
 TriState intlBooleanOption(JSGlobalObject*, JSObject* options, PropertyName);
 String intlStringOption(JSGlobalObject*, JSObject* options, PropertyName, std::initializer_list<ASCIILiteral> values, ASCIILiteral notFound, ASCIILiteral fallback);

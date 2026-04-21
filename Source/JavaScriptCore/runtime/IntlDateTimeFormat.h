@@ -135,6 +135,12 @@ private:
     String m_calendar;
     String m_numberingSystem;
     TimeZone m_timeZone;
+    // Time zone string returned by resolvedOptions().timeZone. Per spec this is
+    // [[Identifier]] (the case-normalized accepted form, e.g. "Asia/Calcutta"),
+    // not [[PrimaryIdentifier]] (e.g. "Asia/Kolkata"). For UTC offset inputs
+    // this is the canonical "+HH:MM" form. m_timeZone holds the canonicalized
+    // primary used for ICU formatting.
+    String m_timeZoneForResolvedOptions;
     HourCycle m_hourCycle { HourCycle::None };
     Weekday m_weekday { Weekday::None };
     Era m_era { Era::None };

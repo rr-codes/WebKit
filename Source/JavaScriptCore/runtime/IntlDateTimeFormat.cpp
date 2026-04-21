@@ -713,23 +713,30 @@ void IntlDateTimeFormat::initializeDateTimeFormat(JSGlobalObject* globalObject, 
         RETURN_IF_EXCEPTION(scope, void());
     }
     TimeZone tz;
+    String tzForResolvedOptions;
     if (!tzValue.isUndefined()) {
         String originalTz = tzValue.toWTFString(globalObject);
         RETURN_IF_EXCEPTION(scope, void());
-        if (auto minutesValue = ISO8601::parseUTCOffsetInMinutes(originalTz))
-            tz = TimeZone::fromUTCOffset(minutesValue.value() * 60LL * 1000 * 1000 * 1000);
-        else if (auto id = intlResolveTimeZoneID(originalTz))
-            tz = TimeZone::fromID(id.value());
-        else {
+        if (auto minutesValue = ISO8601::parseUTCOffsetInMinutes(originalTz)) {
+            int64_t nanoseconds = minutesValue.value() * 60LL * 1000 * 1000 * 1000;
+            tz = TimeZone::fromUTCOffset(nanoseconds);
+            tzForResolvedOptions = ISO8601::formatTimeZoneOffsetString(nanoseconds);
+        } else if (auto resolved = intlAvailableNamedTimeZone(originalTz)) {
+            tz = TimeZone::fromID(resolved->id);
+            tzForResolvedOptions = resolved->identifier;
+        } else {
             String message = tryMakeString("invalid time zone: "_s, originalTz);
             if (!message)
                 message = "invalid time zone"_s;
             throwRangeError(globalObject, scope, message);
             return;
         }
-    } else
+    } else {
         tz = vm.dateCache.defaultTimeZone();
+        tzForResolvedOptions = tz.toString();
+    }
     m_timeZone = tz;
+    m_timeZoneForResolvedOptions = WTF::move(tzForResolvedOptions);
 
     Weekday weekday = intlOption<Weekday>(globalObject, options, vm.propertyNames->weekday, { { "narrow"_s, Weekday::Narrow }, { "short"_s, Weekday::Short }, { "long"_s, Weekday::Long } }, "weekday must be \"narrow\", \"short\", or \"long\""_s, Weekday::None);
     RETURN_IF_EXCEPTION(scope, void());
@@ -1149,7 +1156,7 @@ JSObject* IntlDateTimeFormat::resolvedOptions(JSGlobalObject* globalObject) cons
     options->putDirect(vm, vm.propertyNames->locale, jsNontrivialString(vm, m_locale));
     options->putDirect(vm, vm.propertyNames->calendar, jsNontrivialString(vm, m_calendar));
     options->putDirect(vm, vm.propertyNames->numberingSystem, jsNontrivialString(vm, m_numberingSystem));
-    options->putDirect(vm, vm.propertyNames->timeZone, jsNontrivialString(vm, m_timeZone.toString()));
+    options->putDirect(vm, vm.propertyNames->timeZone, jsNontrivialString(vm, m_timeZoneForResolvedOptions));
 
     if (m_hourCycle != HourCycle::None) {
         options->putDirect(vm, vm.propertyNames->hourCycle, jsNontrivialString(vm, hourCycleString(m_hourCycle)));

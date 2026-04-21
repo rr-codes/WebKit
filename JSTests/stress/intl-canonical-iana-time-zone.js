@@ -1,8 +1,11 @@
 //@ skip if $hostOS == "windows" || $hostOS == "linux"
 //@ requireOptions("--useTemporal=1")
 // https://bugs.webkit.org/show_bug.cgi?id=310866
-// Linked time zones (IANA "Backward" file) must canonicalize to the IANA
-// primary identifier per https://tc39.es/ecma402/#sec-getavailablenamedtimezoneidentifier.
+// Per spec, Intl.DateTimeFormat.resolvedOptions().timeZone returns the
+// [[Identifier]] (case-normalized accepted form) — not [[PrimaryIdentifier]].
+// The canonicalization to the IANA primary still happens internally for ICU
+// formatting (so legacy aliases produce the same formatted output as their
+// primary), and it is observable through Temporal.TimeZone.id.
 
 function shouldBe(actual, expected) {
     if (actual !== expected)
@@ -16,26 +19,26 @@ function resolved(tz) {
     return new Intl.DateTimeFormat("en", { timeZone: tz }).resolvedOptions().timeZone;
 }
 
-// Backward links collapse onto IANA primary identifiers, regardless of the
-// caller's casing.
-shouldBe(resolved("Asia/Calcutta"), "Asia/Kolkata");
-shouldBe(resolved("asia/calcutta"), "Asia/Kolkata");
+// resolvedOptions().timeZone preserves the accepted identifier (case-normalized)
+// rather than collapsing onto the IANA primary.
+shouldBe(resolved("Asia/Calcutta"), "Asia/Calcutta");
+shouldBe(resolved("asia/calcutta"), "Asia/Calcutta");
 shouldBe(resolved("Asia/Kolkata"), "Asia/Kolkata");
 
-shouldBe(resolved("America/Buenos_Aires"), "America/Argentina/Buenos_Aires");
+shouldBe(resolved("America/Buenos_Aires"), "America/Buenos_Aires");
 shouldBe(resolved("America/Argentina/Buenos_Aires"), "America/Argentina/Buenos_Aires");
 
-shouldBe(resolved("Europe/Kiev"), "Europe/Kyiv");
+shouldBe(resolved("Europe/Kiev"), "Europe/Kiev");
 shouldBe(resolved("Europe/Kyiv"), "Europe/Kyiv");
 
-// UTC-equivalent zones normalize to "UTC", overriding IANA's "Etc/UTC" primary.
+// UTC-equivalent names are likewise preserved as the accepted identifier.
 shouldBe(resolved("UTC"), "UTC");
-shouldBe(resolved("Etc/UTC"), "UTC");
-shouldBe(resolved("GMT"), "UTC");
-shouldBe(resolved("Etc/GMT"), "UTC");
-shouldBe(resolved("Universal"), "UTC");
-shouldBe(resolved("Zulu"), "UTC");
-shouldBe(resolved("Greenwich"), "UTC");
+shouldBe(resolved("Etc/UTC"), "Etc/UTC");
+shouldBe(resolved("GMT"), "GMT");
+shouldBe(resolved("Etc/GMT"), "Etc/GMT");
+shouldBe(resolved("Universal"), "Universal");
+shouldBe(resolved("Zulu"), "Zulu");
+shouldBe(resolved("Greenwich"), "Greenwich");
 
 // Intl.supportedValuesOf("timeZone") exposes IANA primary identifiers, not the
 // older CLDR canonical aliases.
@@ -73,8 +76,6 @@ for (const t of [summer, winter]) {
 }
 
 // Concern (2): Legacy non-primary IANA names must still be accepted as input.
-// Internally JSC canonicalizes to the primary, but rejection would be a
-// compatibility regression.
 const legacy = [
     "Asia/Calcutta", "America/Buenos_Aires", "Europe/Kiev", "Asia/Katmandu",
     "US/Pacific", "US/Eastern", "GB", "Brazil/East", "Canada/Eastern",
@@ -87,7 +88,8 @@ for (const tz of legacy) {
 }
 
 // Temporal.TimeZone uses the same hashmap-backed TimeZoneID lookup as Intl, so
-// legacy aliases must also be accepted there and resolve to the same primary.
+// legacy aliases must also be accepted there. Unlike Intl.DateTimeFormat,
+// Temporal.TimeZone.id surfaces the canonicalized primary identifier.
 if (typeof Temporal !== "undefined") {
     const pairs = [
         ["Asia/Calcutta",          "Asia/Kolkata"],
