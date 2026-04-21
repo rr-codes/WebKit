@@ -35,6 +35,7 @@
 #include <JavaScriptCore/JSCell.h>
 #include <JavaScriptCore/MetadataTable.h>
 #include <JavaScriptCore/Operands.h>
+#include <JavaScriptCore/Printer.h>
 #include <JavaScriptCore/ScriptExecutable.h>
 #include <JavaScriptCore/UnlinkedCodeBlock.h>
 
