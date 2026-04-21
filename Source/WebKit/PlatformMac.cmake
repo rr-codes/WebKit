@@ -75,10 +75,19 @@ list(APPEND WebKit_SOURCES
     Shared/Cocoa/XPCEndpointClient.mm
 
     UIProcess/API/Cocoa/WKContentWorld.mm
+    UIProcess/API/Cocoa/_WKAuthenticationExtensionsClientInputs.mm
     UIProcess/API/Cocoa/_WKAuthenticationExtensionsClientOutputs.mm
     UIProcess/API/Cocoa/_WKAuthenticatorAssertionResponse.mm
     UIProcess/API/Cocoa/_WKAuthenticatorAttestationResponse.mm
     UIProcess/API/Cocoa/_WKAuthenticatorResponse.mm
+    UIProcess/API/Cocoa/_WKAuthenticatorSelectionCriteria.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialCreationOptions.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialDescriptor.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialEntity.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialParameters.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialRelyingPartyEntity.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialRequestOptions.mm
+    UIProcess/API/Cocoa/_WKPublicKeyCredentialUserEntity.mm
     UIProcess/API/Cocoa/_WKResourceLoadStatisticsFirstParty.mm
     UIProcess/API/Cocoa/_WKResourceLoadStatisticsThirdParty.mm
 
@@ -537,10 +546,20 @@ list(APPEND WebKit_PRIVATE_LIBRARIES
 list(APPEND WebKit_PRIVATE_LIBRARIES "-Wl,-undefined,dynamic_lookup")
 
 list(APPEND WebKit_PUBLIC_FRAMEWORK_HEADERS
+    Shared/WebPushDaemonConstants.h
+
     Shared/API/Cocoa/RemoteObjectInvocation.h
     Shared/API/Cocoa/RemoteObjectRegistry.h
     Shared/API/Cocoa/WKBrowsingContextHandle.h
     Shared/API/Cocoa/WKDataDetectorTypes.h
+
+    UIProcess/Cocoa/_WKCaptionStyleMenuController.h
+
+    UIProcess/Extensions/Cocoa/_WKWebExtensionDeclarativeNetRequestRule.h
+    UIProcess/Extensions/Cocoa/_WKWebExtensionDeclarativeNetRequestTranslator.h
+
+    WebProcess/Extensions/Cocoa/_WKWebExtensionWebNavigationURLFilter.h
+    WebProcess/Extensions/Cocoa/_WKWebExtensionWebRequestFilter.h
     Shared/API/Cocoa/WKDragDestinationAction.h
     Shared/API/Cocoa/WKFoundation.h
     Shared/API/Cocoa/WKMain.h

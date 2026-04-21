@@ -46,14 +46,57 @@ list(APPEND TestWebKitLegacy_LIBRARIES
 )
 
 # TestWebKit
+set(TestWebKit_DERIVED_SOURCES_DIR "${CMAKE_BINARY_DIR}/DerivedSources/TestWebKit")
+
+list(APPEND TestWebKit_UNIFIED_SOURCE_LIST_FILES
+    "SourcesCocoa.txt"
+)
+
+# Test files that reference ObjC classes from Swift-only helpers or private
+# frameworks unavailable in the CMake build
+set(TestWebKit_UNIFIED_SOURCE_EXCLUDES
+    "DrawingToPDF\\.mm"
+    "PDFSnapshot\\.mm"
+    "SOAuthorizationTests\\.mm"
+    "UnifiedPDFTests\\.mm"
+    "WKWebViewPrintFormatter\\.mm"
+    "WritingTools\\.mm"
+)
+
+# Files compiled outside unified sources (Xcode membershipExceptions).
 list(APPEND TestWebKit_SOURCES
     ${_test_main_SOURCES}
+    Helpers/Counters.cpp
+    Helpers/DeprecatedGlobalValues.cpp
+    Helpers/GraphicsTestUtilities.cpp
+    Helpers/TestNotificationProvider.cpp
+    Helpers/WebCoreTestUtilities.cpp
+
+    Helpers/cocoa/HTTPServer.mm
+    Helpers/cocoa/TestCocoaImageAndCocoaColor.mm
+    Helpers/cocoa/TestElementFullscreenDelegate.mm
     Helpers/cocoa/TestNSBundleExtras.m
     Helpers/cocoa/UtilitiesCocoa.mm
+    Helpers/cocoa/WebExtensionUtilities.mm
+    Helpers/cocoa/WebTransportServer.mm
 
+    Helpers/mac/DragAndDropSimulatorMac.mm
+    Helpers/mac/JavaScriptTestMac.mm
+    Helpers/mac/NSFontPanelTesting.mm
     Helpers/mac/OffscreenWindow.mm
     Helpers/mac/PlatformUtilitiesMac.mm
     Helpers/mac/PlatformWebViewMac.mm
+    Helpers/mac/SyntheticBackingScaleFactorWindow.m
+    Helpers/mac/TestBrowsingContextLoadDelegate.mm
+    Helpers/mac/TestDraggingInfo.mm
+    Helpers/mac/TestFilePromiseReceiver.mm
+    Helpers/mac/TestFontOptions.mm
+    Helpers/mac/TestInspectorBar.mm
+    Helpers/mac/VirtualGamepad.mm
+    Helpers/mac/WKWebViewForTestingImmediateActions.mm
+    Helpers/mac/WebKitAgnosticTest.mm
+
+    Tests/WebCore/ASN1Utilities.cpp
 )
 
 list(APPEND TestWebKit_PRIVATE_INCLUDE_DIRECTORIES
@@ -62,13 +105,36 @@ list(APPEND TestWebKit_PRIVATE_INCLUDE_DIRECTORIES
     ${WebKit_FRAMEWORK_HEADERS_DIR}
     ${WebKitLegacy_FRAMEWORK_HEADERS_DIR}
     ${WEBKITLEGACY_DIR}
+    ${TOOLS_DIR}/TestRunnerShared/cocoa
+    ${TOOLS_DIR}/TestRunnerShared/spi
+    ${WebCore_PRIVATE_FRAMEWORK_HEADERS_DIR}/WebCoreTestSupport
+    ${TESTWEBKITAPI_DIR}/Tests/WebCore
+    ${TESTWEBKITAPI_DIR}/Tests/WebCore/cocoa
+    ${TESTWEBKITAPI_DIR}/Tests/WebKit/WKWebView/ios
+    ${CMAKE_SOURCE_DIR}/Source/ThirdParty/libwebrtc/Source
+    ${WEBKIT_DIR}/Platform/spi/Cocoa
+    ${WEBKIT_DIR}/Platform/IPC
+    ${WEBKIT_DIR}/Platform/IPC/cocoa
+    ${WEBKIT_DIR}/Shared
+    ${WebKit_DERIVED_SOURCES_DIR}
+    ${WebKit_DERIVED_SOURCES_DIR}/IPC
+    ${WEBKIT_DIR}/Platform/cocoa
 )
 
 list(APPEND TestWebKit_LIBRARIES
+    "-framework AuthenticationServices"
+    "-framework LocalAuthentication"
+    "-framework Network"
+    "-framework QuartzCore"
+    "-framework UniformTypeIdentifiers"
     JavaScriptCore
+    WebCoreTestSupport
+    WebKitLegacy
     WTF
     ${CARBON_LIBRARY}
 )
+
+set_source_files_properties(Helpers/cocoa/WebExtensionUtilities.mm PROPERTIES COMPILE_FLAGS "-fobjc-arc")
 
 # NSWindow.autodisplay is deprecated since 10.14 but still used in OffscreenWindow.mm.
 WEBKIT_ADD_TARGET_CXX_FLAGS(TestWebKit -Wno-deprecated-declarations)

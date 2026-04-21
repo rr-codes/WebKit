@@ -565,6 +565,9 @@ endif ()
 
 # TestWebKit target
 if (ENABLE_WEBKIT)
+    if (TestWebKit_UNIFIED_SOURCE_LIST_FILES)
+        WEBKIT_COMPUTE_SOURCES(TestWebKit)
+    endif ()
     WEBKIT_TEST(TestWebKit)
     if (APPLE)
         WEBKIT_TEST(TestIPC)
