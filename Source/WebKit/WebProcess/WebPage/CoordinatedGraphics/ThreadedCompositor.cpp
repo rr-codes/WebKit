@@ -136,12 +136,12 @@ void ThreadedCompositor::invalidate()
         Locker locker { m_state.lock };
         stopRenderTimer();
         m_state.didCompositeRenderingUpdateFunction = nullptr;
-        m_state.state = State::Idle;
+        m_state.state = State::Invalidated;
     }
 
     m_didCompositeRunLoopObserver->invalidate();
     m_workQueue->dispatchSync([this] {
-        if (m_textureMapper && (!m_context || !m_context->makeContextCurrent()))
+        if (!m_useSkia && (!m_context || !m_context->makeContextCurrent()))
             return;
 
         // Update the scene at this point ensures the layers state are correctly propagated.
@@ -208,7 +208,7 @@ void ThreadedCompositor::resume()
 bool ThreadedCompositor::isActive() const
 {
     Locker locker { m_state.lock };
-    return m_state.state != State::Idle;
+    return m_state.state != State::Idle && m_state.state != State::Invalidated;
 }
 
 void ThreadedCompositor::backgroundColorDidChange()
@@ -281,10 +281,10 @@ void ThreadedCompositor::flushCompositingState(const OptionSet<CompositionReason
 
 void ThreadedCompositor::paintToCurrentGLContext(const TransformationMatrix& matrix, const IntSize& size, const OptionSet<CompositionReason>& reasons)
 {
-    if (m_textureMapper)
-        paintToTextureMapper(matrix, size, reasons);
-    else
+    if (m_useSkia)
         paintToSkiaCanvas(matrix, size, reasons);
+    else
+        paintToTextureMapper(matrix, size, reasons);
 }
 
 void ThreadedCompositor::paintToTextureMapper(const TransformationMatrix& matrix, const IntSize& size, const OptionSet<CompositionReason>& reasons)
@@ -431,6 +431,9 @@ void ThreadedCompositor::renderLayerTree()
     {
         Locker locker { m_state.lock };
 
+        if (m_state.state == State::Invalidated)
+            return;
+
         // The timer has been stopped.
         if (!m_state.isRenderTimerActive)
             return;
@@ -449,7 +452,7 @@ void ThreadedCompositor::renderLayerTree()
         m_state.state = State::InProgress;
     }
 
-    if (m_textureMapper && (!m_context || !m_context->makeContextCurrent()))
+    if (!m_useSkia && (!m_context || !m_context->makeContextCurrent()))
         return;
 
     // Retrieve the scene attributes in a thread-safe manner.
@@ -531,6 +534,8 @@ ASCIILiteral ThreadedCompositor::stateToString(ThreadedCompositor::State state)
         return "InProgress"_s;
     case State::ScheduledWhileInProgress:
         return "ScheduledWhileInProgress"_s;
+    case State::Invalidated:
+        return "Invalidated"_s;
     }
     RELEASE_ASSERT_NOT_REACHED();
 }
@@ -554,6 +559,7 @@ void ThreadedCompositor::scheduleUpdateLocked()
         m_state.state = State::ScheduledWhileInProgress;
         break;
     case State::ScheduledWhileInProgress:
+    case State::Invalidated:
         break;
     }
 }
@@ -568,6 +574,7 @@ void ThreadedCompositor::frameComplete()
     switch (m_state.state) {
     case State::Idle:
     case State::Scheduled:
+    case State::Invalidated:
         break;
     case State::InProgress:
         if (m_state.reasons.contains(CompositionReason::RenderingUpdate) && m_state.isWaitingForTiles)

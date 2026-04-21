@@ -133,7 +133,8 @@ private:
         Idle,
         Scheduled,
         InProgress,
-        ScheduledWhileInProgress
+        ScheduledWhileInProgress,
+        Invalidated
     };
     static ASCIILiteral stateToString(State);
 

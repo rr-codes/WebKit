@@ -4683,11 +4683,6 @@ imported/w3c/web-platform-tests/css/css-view-transitions/navigation/custom-scrol
 imported/w3c/web-platform-tests/css/css-view-transitions/navigation/auto-name-from-id.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-view-transitions/start-skip-start.html [ Pass Failure ]
 
-webkit.org/b/312629 imported/w3c/web-platform-tests/css/css-view-transitions/navigation/pageswap-push-with-redirect.html [ Crash Pass ]
-webkit.org/b/312629 imported/w3c/web-platform-tests/css/css-view-transitions/navigation/pageswap-skip-transition.html [ Crash Pass ]
-webkit.org/b/312629 imported/w3c/web-platform-tests/css/css-view-transitions/navigation/pageswap-replace-navigation.html [ Crash Pass ]
-webkit.org/b/312629 imported/w3c/web-platform-tests/css/css-view-transitions/navigation/pagereveal-with-view-transition.html [ Crash Pass ]
-
 imported/w3c/web-platform-tests/svg/text/reftests/transform-dynamic-change.html [ ImageOnlyFailure ]
 
 # Kerning for SVG not working as expected.
