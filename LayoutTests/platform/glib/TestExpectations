@@ -1758,7 +1758,7 @@ webkit.org/b/227934 media/media-source/media-webm-vorbis-partial.html [ Failure 
 webkit.org/b/265016 media/media-webm-opus-error.html [ Timeout Failure ]
 webkit.org/b/277327 media/media-vp8-webm-with-preload.html [ Skip ]
 webkit.org/b/303551 media/media-vp8-webm-error.html [ Pass Failure ]
-webkit.org/b/303551 media/media-vp8-webm-seek-to-start.html [ Pass ImageOnlyFailure ]
+webkit.org/b/303551 media/media-vp8-webm-seek-to-start.html [ Pass ImageOnlyFailure Timeout ]
 
 webkit.org/b/229973 media/track/in-band/track-in-band-srt-mkv-cues-added-once.html [ Failure Pass ]
 
@@ -2817,7 +2817,7 @@ fast/mediastream/image-capture-grabFrame.html [ Failure ]
 fast/mediastream/microphone-interruption-and-audio-session.html [ Skip ]
 http/tests/webrtc/audioSessionInFrames.html [ Failure ]
 
-webkit.org/b/309435 webrtc/video-mute.html [ Pass Failure ]
+webkit.org/b/309435 webrtc/video-mute.html [ Pass Failure Timeout ]
 
 webrtc/clone-audio-track.html [ Pass Failure ]
 
@@ -3197,7 +3197,7 @@ webkit.org/b/306207 imported/w3c/web-platform-tests/webrtc-stats/hardware-capabi
 # The main difference is that in this test an additional message is sent on the data-channel.
 webkit.org/b/264936 imported/w3c/web-platform-tests/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Failure ]
 
-webkit.org/b/276587 webrtc/video-av1.html [ Pass Failure ]
+webkit.org/b/276587 webrtc/video-av1.html [ Pass Failure Timeout ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of WebRTC-related bugs
@@ -5501,6 +5501,11 @@ webkit.org/b/313039 imported/w3c/web-platform-tests/speculation-rules/prefetch/n
 webkit.org/b/313040 imported/w3c/web-platform-tests/video-rvfc/request-video-frame-callback-webrtc.https.html [ Pass Failure Timeout ]
 webkit.org/b/313044 webgl/2.0.0/conformance2/textures/video/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ Pass Failure Timeout ]
 webkit.org/b/313045 webgl/2.0.0/conformance2/textures/video/tex-2d-rgba4-rgba-unsigned_byte.html [ Pass Failure Timeout ]
+
+webkit.org/b/313056 fullscreen/full-screen-enter-while-exiting-fully.html [ Pass Timeout ]
+webkit.org/b/313057 imported/w3c/web-platform-tests/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-seeking.html [ Pass Failure ]
+webkit.org/b/313058 media/media-vp8-webm.html [ Pass Timeout ImageOnlyFailure ]
+webkit.org/b/313059 webrtc/vp9.html [ Pass Failure Timeout ]
 
 # End: Common failures between GTK and WPE.
 
