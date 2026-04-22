@@ -1283,3 +1283,5 @@ webkit.org/b/312138 [ Debug ] media/track/webvtt-parser-does-not-leak.html [ Fai
 
 webkit.org/b/312138 [ Debug ] media/media-event-listeners.html [ Failure Pass ]
 webkit.org/b/312138 [ Debug ] media/video-background-playback.html [ Failure Pass ]
+
+webkit.org/b/313036 imported/w3c/web-platform-tests/editing/other/copy-elements-with-css-vars.tentative.html [ Pass Failure Crash ]

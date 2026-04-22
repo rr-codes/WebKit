@@ -596,7 +596,7 @@ webkit.org/b/298491 media/media-vp9-reschange-webm.html [ Timeout ]
 webkit.org/b/307141 media/media-source/media-source-seek-and-play.html [ Failure Pass ]
 webkit.org/b/307141 media/media-source/media-controller-media-source-play-then-pause.html [ Failure Pass ]
 
-webkit.org/b/312871 media/media-source/media-source-seek-to-zero-then-play.html [ Failure ]
+webkit.org/b/312871 media/media-source/media-source-seek-to-zero-then-play.html [ Failure Timeout ]
 
 # NOTIFICATION_EVENT tests
 http/tests/workers/service/shownotification-allowed-document.html [ Pass ]
@@ -5491,6 +5491,16 @@ webkit.org/b/312267 imported/w3c/web-platform-tests/css/css-text/text-autospace/
 
 webkit.org/b/307886 js/dom/promise-stack-overflow.html [ Pass Failure ]
 webkit.org/b/312893 http/tests/permissions/permissions-query-shared-worker.html [ Pass Failure ]
+
+webkit.org/b/313033 [ x86_64 ] fast/scrolling/scroll-animator-overlay-scrollbars-hovered.html [ Pass Failure ]
+webkit.org/b/313034 http/tests/resourceLoadStatistics/user-interaction-reported-after-website-data-removal.html [ Pass Failure ]
+webkit.org/b/313035 imported/w3c/web-platform-tests/css/css-shapes/shape-outside/shape-image/shape-image-022.html [ Pass ImageOnlyFailure ]
+webkit.org/b/313037 webgl/2.0.0/conformance2/textures/video/tex-2d-rgb9_e5-rgb-float.html [ Pass Failure Timeout ]
+webkit.org/b/313038 imported/w3c/web-platform-tests/cookies/attributes/expires.html [ Pass Failure ]
+webkit.org/b/313039 imported/w3c/web-platform-tests/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForResponse [ Pass Failure ]
+webkit.org/b/313040 imported/w3c/web-platform-tests/video-rvfc/request-video-frame-callback-webrtc.https.html [ Pass Failure Timeout ]
+webkit.org/b/313044 webgl/2.0.0/conformance2/textures/video/tex-2d-r11f_g11f_b10f-rgb-half_float.html [ Pass Failure Timeout ]
+webkit.org/b/313045 webgl/2.0.0/conformance2/textures/video/tex-2d-rgba4-rgba-unsigned_byte.html [ Pass Failure Timeout ]
 
 # End: Common failures between GTK and WPE.
 
