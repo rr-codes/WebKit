@@ -97,6 +97,7 @@ protected:
 private:
     void styleAttributeChanged(const AtomString& newStyleString, AttributeModificationReason);
     void synchronizeStyleAttributeInternalImpl();
+    void synchronizeStyleAttributeForSelectorInvalidation();
 
     void inlineStyleChanged();
     CSSStyleProperties* inlineStyleCSSOMWrapper();
