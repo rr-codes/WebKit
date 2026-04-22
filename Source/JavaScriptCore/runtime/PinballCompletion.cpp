@@ -148,7 +148,7 @@ extern "C" void SYSV_ABI pinballHandlerInitContextForFulfill(JSGlobalObject*, Ca
 extern "C" void SYSV_ABI pinballHandlerInitContextForReject(JSGlobalObject*, CallFrame*, PinballHandlerContext*);
 extern "C" void SYSV_ABI pinballHandlerImplantSlice(PinballHandlerContext*, Register*, CallFrame*, CallerFrameAndPC*);
 extern "C" UCPURegister SYSV_ABI pinballHandlerFulfillFunctionContinue(PinballHandlerContext*);
-extern "C" void pinballHandlerFinishReject(PinballHandlerContext*);
+extern "C" void SYSV_ABI pinballHandlerFinishReject(PinballHandlerContext*);
 
 static void pinballHandlerInitContext(JSGlobalObject* globalObject, CallFrame* callFrame, PinballHandlerContext* context)
 {
