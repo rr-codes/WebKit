@@ -265,16 +265,19 @@ RenderPtr<RenderElement> VTTCueBox::createElementRenderer(RenderStyle&& style, c
 
 // ----------------------------
 
-Ref<VTTCue> VTTCue::create(Document& document, double start, double end, String&& content)
+ExceptionOr<Ref<VTTCue>> VTTCue::create(Document& document, double start, double end, String&& content)
 {
-    auto cue = adoptRef(*new VTTCue(document, MediaTime::createWithDouble(start), MediaTime::createWithDouble(end), WTF::move(content)));
+    if (std::isnan(end) || end == -std::numeric_limits<double>::infinity())
+        return Exception { ExceptionCode::TypeError, "The provided endTime value is NaN or negative Infinity"_s };
+
+    Ref cue = adoptRef(*new VTTCue(document, MediaTime::createWithDouble(start), MediaTime::createWithDouble(end), WTF::move(content)));
     cue->suspendIfNeeded();
     return cue;
 }
 
 Ref<VTTCue> VTTCue::create(Document& document, Ref<WebVTTCueData>&& data)
 {
-    auto cue = adoptRef(*new VTTCue(document, WTF::move(data)));
+    Ref cue = adoptRef(*new VTTCue(document, WTF::move(data)));
     cue->suspendIfNeeded();
     return cue;
 }
