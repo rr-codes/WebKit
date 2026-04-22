@@ -323,8 +323,9 @@ if (ENABLE_SANITIZERS)
     endif ()
 endif ()
 
-# Dead-strip unused symbols and dylibs.
-add_link_options(-Wl,-dead_strip)
+# Dead-strip unused symbols and dylibs. Mirrors Xcode's DEAD_CODE_STRIPPING,
+# which is YES for release configs and NO for Debug.
+add_link_options("$<$<NOT:$<CONFIG:Debug>>:-Wl,-dead_strip>")
 add_link_options(-Wl,-dead_strip_dylibs)
 
 if (CMAKE_GENERATOR STREQUAL "Ninja")
