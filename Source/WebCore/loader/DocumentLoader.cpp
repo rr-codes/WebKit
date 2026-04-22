@@ -83,6 +83,7 @@
 #include "MemoryCache.h"
 #include "MixedContentChecker.h"
 #include "NavigationNavigationType.h"
+#include "NavigationRequester.h"
 #include "NavigationScheduler.h"
 #include "NetworkLoadMetrics.h"
 #include "NetworkStorageSession.h"
@@ -677,20 +678,17 @@ void DocumentLoader::willSendRequest(ResourceRequest&& newRequest, const Resourc
 
     RefPtr frame = m_frame.get();
     if (auto requester = m_triggeringAction.requester(); requester && requester->documentIdentifier) {
-        if (RefPtr requestingDocument = Document::allDocumentsMap().get(requester->documentIdentifier); requestingDocument && requestingDocument->frame()) {
-            if (frame && requestingDocument->isNavigationBlockedByThirdPartyIFrameRedirectBlocking(*frame, newRequest.url())) {
-                DOCUMENTLOADER_RELEASE_LOG("willSendRequest: canceling - cross-site redirect of top frame triggered by third-party iframe");
-                if (RefPtr document = frame->document()) {
-                    auto message = makeString("Unsafe JavaScript attempt to initiate navigation for frame with URL '"_s
-                        , document->url().string()
-                        , "' from frame with URL '"_s
-                        , requestingDocument->url().string()
-                        , "'. The frame attempting navigation of the top-level window is cross-origin or untrusted and the user has never interacted with the frame."_s);
-                    document->addConsoleMessage(MessageSource::Security, MessageLevel::Error, message);
-                }
-                cancelMainResourceLoad(protect(frameLoader())->cancelledError(newRequest));
-                return completionHandler(WTF::move(newRequest));
+        if (frame && Document::isNavigationBlockedByThirdPartyIFrameRedirectBlocking(*requester, *frame, newRequest.url())) {
+            if (RefPtr document = frame->document()) {
+                auto message = makeString("Unsafe JavaScript attempt to initiate navigation for frame with URL '"_s
+                    , document->url().string()
+                    , "' from frame with URL '"_s
+                    , requester->url.string()
+                    , "'. The frame attempting navigation of the top-level window is cross-origin or untrusted and the user has never interacted with the frame."_s);
+                document->addConsoleMessage(MessageSource::Security, MessageLevel::Error, message);
             }
+            cancelMainResourceLoad(protect(frameLoader())->cancelledError(newRequest));
+            return completionHandler(WTF::move(newRequest));
         }
     }
 

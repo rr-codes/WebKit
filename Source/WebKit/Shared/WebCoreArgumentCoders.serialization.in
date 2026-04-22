@@ -4794,9 +4794,15 @@ struct WebCore::NavigationRequester {
     Ref<WebCore::SecurityOrigin> topOrigin;
     WebCore::PolicyContainer policyContainer;
     std::optional<WebCore::FrameIdentifier> frameID;
+    std::optional<WebCore::FrameIdentifier> topFrameID;
     std::optional<WebCore::PageIdentifier> pageID;
     WebCore::ScriptExecutionContextIdentifier documentIdentifier;
     WebCore::SandboxFlags sandboxFlags;
+    WebCore::SandboxFlags frameSandboxFlags;
+    bool hasLoadedThirdPartyScript;
+    bool hasLoadedThirdPartyFrame;
+    bool hasHadUserInteraction;
+    RefPtr<WebCore::SecurityOrigin> parentFrameSecurityOrigin;
 };
 
 struct WebCore::PolicyContainer {

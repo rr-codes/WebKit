@@ -1673,6 +1673,8 @@ public:
 
     void willLoadScriptElement(const URL&);
     void willLoadFrameElement(const URL&);
+    bool hasLoadedThirdPartyScript() const { return m_hasLoadedThirdPartyScript; }
+    bool hasLoadedThirdPartyFrame() const { return m_hasLoadedThirdPartyFrame; }
 
     Ref<FontFaceSet> fonts();
 
@@ -2039,7 +2041,7 @@ public:
     String httpUserAgent() const final;
 
     virtual void didChangeViewSize() { }
-    bool isNavigationBlockedByThirdPartyIFrameRedirectBlocking(Frame& targetFrame, const URL& destinationURL);
+    static bool isNavigationBlockedByThirdPartyIFrameRedirectBlocking(const NavigationRequester&, Frame& targetFrame, const URL& destinationURL);
 
     enum UpdateLayoutIfContentVisibilityChanged : bool { No, Yes };
     DidUpdateAnyContentRelevancy updateRelevancyOfContentVisibilityElements(UpdateLayoutIfContentVisibilityChanged = UpdateLayoutIfContentVisibilityChanged::Yes);
