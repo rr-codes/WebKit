@@ -2179,14 +2179,10 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     WKFullScreenWindowController *controller = self;
     UIWindow *inWindow = enter ? _window.get() : _lastKnownParentWindow.get();
     UIWindow *outWindow = enter ? _lastKnownParentWindow.get() : _window.get();
-    CGRect inWindowBounds = [inWindow bounds];
-    CGRect outWindowBounds = [outWindow bounds];
     WKFullScreenParentWindowState *originalState = _parentWindowState.get();
 
     const BOOL shouldAnimateResizeScene = [self _shouldAnimateResizeScene];
 
-    CGFloat sceneWidthDifference = inWindowBounds.size.width - outWindowBounds.size.width;
-    CGFloat sceneHeightDifference = inWindowBounds.size.height - outWindowBounds.size.height;
     CGSize targetSceneSize = [inWindow bounds].size;
 
     if (shouldAnimateResizeScene && enter)
@@ -2249,7 +2245,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
             resizeCompletionBlock();
     });
 
-    auto animationBlock = makeBlockPtr([inWindow, outWindow, originalState, enter, allowSceneGeometryUpdates, sceneWidthDifference, sceneHeightDifference, shouldAnimateResizeScene, self, weakSelf = WTF::move(weakSelf), animationCompletionBlock = WTF::move(animationCompletionBlock)] mutable {
+    auto animationBlock = makeBlockPtr([inWindow, outWindow, originalState, enter, allowSceneGeometryUpdates, shouldAnimateResizeScene, self, weakSelf = WTF::move(weakSelf), animationCompletionBlock = WTF::move(animationCompletionBlock)] mutable {
         if (shouldAnimateResizeScene && !enter)
             [self _updateFullscreenWindowOrigin];
 
@@ -2276,23 +2272,6 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         [UIView animateWithDuration:kWindowTranslationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             inWindow.transform3D = originalState.transform3D;
         } completion:nil];
-
-        if (shouldAnimateResizeScene) {
-            [UIView animateWithDuration:kWindowTranslationDuration delay:0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-                if (enter) {
-                    for (MRUIPlatterOrnament *ornament in [originalState ornamentProperties]) {
-                        CGPoint originalOffset2D = [[[_parentWindowState ornamentProperties] objectForKey:ornament] offset2D];
-                        ornament.offset2D = CGPointMake(
-                            originalOffset2D.x + sceneWidthDifference * (0.5 - ornament.sceneAnchorPoint.x),
-                            originalOffset2D.y + sceneHeightDifference * (0.5 - ornament.sceneAnchorPoint.y)
-                        );
-                    }
-                } else {
-                    for (MRUIPlatterOrnament *ornament in [originalState ornamentProperties])
-                        ornament.offset2D = [[[originalState ornamentProperties] objectForKey:ornament] offset2D];
-                }
-            } completion:nil];
-        }
 
         for (MRUIPlatterOrnament *ornament in originalState.ornamentProperties) {
             CGFloat originalDepth = [[originalState.ornamentProperties objectForKey:ornament] depthDisplacement];
