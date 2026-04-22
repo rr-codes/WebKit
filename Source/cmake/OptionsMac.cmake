@@ -351,3 +351,14 @@ if (CMAKE_EXPORT_COMPILE_COMMANDS AND NOT EXISTS ${CMAKE_SOURCE_DIR}/compile_com
         ${CMAKE_SOURCE_DIR}/compile_commands.json
         SYMBOLIC)
 endif ()
+
+# Regenerate the Xcode debug wrapper on every (re)configure so its scheme paths
+# and lldbinit source-map track this binary directory. Runs at configure time
+# (not as a build target) to keep the no-op ninja build at zero actions.
+if (EXISTS ${TOOLS_DIR}/Scripts/generate-cmake-xcode-project)
+    execute_process(
+        COMMAND ${Python_EXECUTABLE}
+                ${TOOLS_DIR}/Scripts/generate-cmake-xcode-project
+                ${CMAKE_BINARY_DIR}
+        OUTPUT_QUIET)
+endif ()

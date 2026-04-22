@@ -32,7 +32,6 @@ include(Headers.cmake)
 
 list(APPEND WebKit_PRIVATE_LIBRARIES
     Accessibility
-    WebKitLegacy
     ${APPLICATIONSERVICES_LIBRARY}
     ${CORESERVICES_LIBRARY}
     ${DEVICEIDENTITY_LIBRARY}
@@ -1050,6 +1049,23 @@ set(ObjCForwardingHeaders
 
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -compatibility_version 1 -current_version ${WEBKIT_MAC_VERSION}")
 target_link_options(WebKit PRIVATE -lsandbox -framework AuthKit)
+
+# Match WebKit.xcconfig REEXPORTED_FRAMEWORK_NAMES / REEXPORTED_LIBRARY_NAMES so
+# the CMake-built framework exports the same ABI as the Xcode build. Without the
+# WebKitLegacy re-export, clients that link WebKit.framework expecting WK1
+# symbols (e.g. _OBJC_CLASS_$_WebView, used by Xcode's view-debugger support
+# dylib) fail at load when DYLD_FRAMEWORK_PATH points at this build.
+#
+# WebKitLegacy is intentionally absent from WebKit_PRIVATE_LIBRARIES above: ld64
+# resolves a dylib's load-command type by its last reference on the link line,
+# and a plain target_link_libraries entry would override this LC_REEXPORT_DYLIB
+# with LC_LOAD_DYLIB. Link it solely via -reexport_library here; the explicit
+# add_dependencies preserves build ordering.
+add_dependencies(WebKit WebKitLegacy)
+target_link_options(WebKit PRIVATE
+    "-Wl,-reexport_library,$<TARGET_LINKER_FILE:WebKitLegacy>"
+    "-Wl,-reexport-lobjc"
+)
 
 set(WebKit_OUTPUT_NAME WebKit)
 
