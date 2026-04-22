@@ -12,4 +12,10 @@
   Traversal count: 7
 :has(.trigger) non-subject with scope-bounded traversal .c7
   Traversal count: 14
+:not(:has(.trigger)) inside :not() with compound peer .c8
+  Traversal count: 14
+:is(:has(.trigger)) inside :is() with compound peer .c9
+  Traversal count: 14
+:is(.other :has(.trigger)) inside :is() with complex selector and compound peer .c10
+  Traversal count: 14
 

@@ -176,7 +176,9 @@ private:
         Vector<InvalidationFeature> pseudoClasses;
         Vector<HasInvalidationFeature> hasPseudoClasses;
     };
-    DoesBreakScope recursivelyCollectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, MatchElement = { MatchElement::Relation::Subject, { } }, IsNegation = IsNegation::No, CanBreakScope = CanBreakScope::No);
+    struct RecursiveCollectionContext;
+    void collectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, MatchElement = { MatchElement::Relation::Subject, { } });
+    DoesBreakScope recursivelyCollectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, const RecursiveCollectionContext&);
     void NODELETE collectPseudoElementFeatures(const RuleData&);
 };
 

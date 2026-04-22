@@ -16,6 +16,12 @@
 .c6:has(:is(.trigger + .other)) > .target { color: green; }
 /* Non-subject :has() with descendant — scope-bounded traversal */
 .c7:has(.trigger) .target { color: green; }
+/* :has() inside :not() with compound peer */
+.c8:not(:has(.trigger)) .target { color: green; }
+/* :has() inside :is() with compound peer */
+.c9:is(:has(.trigger)) .target { color: green; }
+/* :has() inside :is() with complex selector and compound peer */
+.c10:is(.other :has(.trigger)) .target { color: green; }
 </style>
 <script>
 if (window.testRunner)
@@ -113,6 +119,25 @@ runTest(":has(.trigger) non-subject with scope-bounded traversal .c7", "c7", fun
     trigger.className = "trigger";
     container.appendChild(trigger);
 }, true);
+
+runTest(":not(:has(.trigger)) inside :not() with compound peer .c8", "c8", function(container) {
+    var trigger = document.createElement("div");
+    trigger.className = "trigger";
+    container.appendChild(trigger);
+}, true);
+
+runTest(":is(:has(.trigger)) inside :is() with compound peer .c9", "c9", function(container) {
+    var trigger = document.createElement("div");
+    trigger.className = "trigger";
+    container.appendChild(trigger);
+}, true);
+
+runTest(":is(.other :has(.trigger)) inside :is() with complex selector and compound peer .c10", "c10", function(container) {
+    var trigger = document.createElement("div");
+    trigger.className = "trigger";
+    container.appendChild(trigger);
+}, true);
+</script>
 </script>
 </body>
 </html>

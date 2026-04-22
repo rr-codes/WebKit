@@ -233,31 +233,44 @@ static MatchElement computeSubSelectorMatchElement(MatchElement matchElement, co
     return matchElement;
 }
 
-DoesBreakScope RuleFeatureSet::recursivelyCollectFeaturesFromSelector(SelectorFeatures& selectorFeatures, const CSSSelector& firstSelector, MatchElement matchElement, IsNegation isNegation, CanBreakScope allComponentsCanBreakScope)
+struct RuleFeatureSet::RecursiveCollectionContext {
+    MatchElement matchElement { MatchElement::Relation::Subject, { } };
+    IsNegation isNegation { IsNegation::No };
+    CanBreakScope canBreakScope { CanBreakScope::No };
+    const CSSSelector* outerCompoundSelector { nullptr };
+};
+
+void RuleFeatureSet::collectFeaturesFromSelector(SelectorFeatures& selectorFeatures, const CSSSelector& selector, MatchElement matchElement)
 {
+    recursivelyCollectFeaturesFromSelector(selectorFeatures, selector, { matchElement });
+}
+
+DoesBreakScope RuleFeatureSet::recursivelyCollectFeaturesFromSelector(SelectorFeatures& selectorFeatures, const CSSSelector& firstSelector, const RecursiveCollectionContext& context)
+{
+    auto matchElement = context.matchElement;
     auto doesBreakScope = DoesBreakScope::No;
     const CSSSelector* selector = &firstSelector;
     while (true) {
-        auto canBreakScope = allComponentsCanBreakScope;
+        auto canBreakScope = context.canBreakScope;
         if (selector->match() == CSSSelector::Match::Id) {
             idsInRules.add(selector->value());
             if (matchElement.relation == MatchElement::Relation::Parent || matchElement.relation == MatchElement::Relation::Ancestor)
                 idsMatchingAncestorsInRules.add(selector->value());
             else if (matchElement.hasRelation || matchElement.relation == MatchElement::Relation::AnySibling || matchElement.relation == MatchElement::Relation::Host || matchElement.relation == MatchElement::Relation::HostChild)
-                selectorFeatures.ids.append({ selector, matchElement, isNegation });
+                selectorFeatures.ids.append({ selector, matchElement, context.isNegation });
         } else if (selector->match() == CSSSelector::Match::Class)
-            selectorFeatures.classes.append({ selector, matchElement, isNegation });
+            selectorFeatures.classes.append({ selector, matchElement, context.isNegation });
         else if (selector->isAttributeSelector()) {
             attributeLowercaseLocalNamesInRules.add(selector->attribute().localNameLowercase());
             attributeLocalNamesInRules.add(selector->attribute().localName());
-            selectorFeatures.attributes.append({ selector, matchElement, isNegation });
+            selectorFeatures.attributes.append({ selector, matchElement, context.isNegation });
         } else if (selector->match() == CSSSelector::Match::PseudoElement) {
             // Don't put anything here as selectors that differ by pseudo-element only are collected only once.
             // Pseudo-elements are handled in collectPseudoElementFeatures.
         } else if (selector->match() == CSSSelector::Match::PseudoClass) {
             bool isLogicalCombination = isLogicalCombinationPseudoClass(selector->pseudoClass());
             if (!isLogicalCombination)
-                selectorFeatures.pseudoClasses.append({ selector, matchElement, isNegation });
+                selectorFeatures.pseudoClasses.append({ selector, matchElement, context.isNegation });
 
             // Check for the :has(:is(foo bar)) case. In this case `foo` can match elements outside the :has() scope.
             if (isLogicalCombination && matchElement.hasRelation)
@@ -265,16 +278,28 @@ DoesBreakScope RuleFeatureSet::recursivelyCollectFeaturesFromSelector(SelectorFe
         }
 
         if (const CSSSelectorList* selectorList = selector->selectorList()) {
-            auto subSelectorIsNegation = isNegation;
+            auto subSelectorIsNegation = context.isNegation;
             if (selector->match() == CSSSelector::Match::PseudoClass && selector->pseudoClass() == CSSSelector::PseudoClass::Not)
-                subSelectorIsNegation = isNegation == IsNegation::No ? IsNegation::Yes : IsNegation::No;
+                subSelectorIsNegation = context.isNegation == IsNegation::No ? IsNegation::Yes : IsNegation::No;
 
             for (auto& subSelector : *selectorList) {
                 auto subResult = computeSubSelectorMatchElement(matchElement, *selector, subSelector);
-                auto pseudoClassDoesBreakScope = recursivelyCollectFeaturesFromSelector(selectorFeatures, subSelector, subResult, subSelectorIsNegation, canBreakScope);
 
-                if (selector->match() == CSSSelector::Match::PseudoClass && selector->pseudoClass() == CSSSelector::PseudoClass::Has)
-                    selectorFeatures.hasPseudoClasses.append({ &subSelector, subResult, isNegation, pseudoClassDoesBreakScope, selector });
+                RecursiveCollectionContext subContext { subResult, subSelectorIsNegation, canBreakScope, context.outerCompoundSelector };
+
+                // When entering a logical combination (not :has() itself), record the outer compound
+                // so nested :has() can use it for scope selector extraction.
+                if (selector->match() == CSSSelector::Match::PseudoClass && isLogicalCombinationPseudoClass(selector->pseudoClass()) && selector->pseudoClass() != CSSSelector::PseudoClass::Has) {
+                    if (!subContext.outerCompoundSelector)
+                        subContext.outerCompoundSelector = selector;
+                }
+
+                auto pseudoClassDoesBreakScope = recursivelyCollectFeaturesFromSelector(selectorFeatures, subSelector, subContext);
+
+                if (selector->match() == CSSSelector::Match::PseudoClass && selector->pseudoClass() == CSSSelector::PseudoClass::Has) {
+                    auto scopeSource = context.outerCompoundSelector ? context.outerCompoundSelector : selector;
+                    selectorFeatures.hasPseudoClasses.append({ &subSelector, subResult, context.isNegation, pseudoClassDoesBreakScope, scopeSource });
+                }
 
                 if (pseudoClassDoesBreakScope == DoesBreakScope::Yes)
                     doesBreakScope = DoesBreakScope::Yes;
@@ -290,7 +315,7 @@ DoesBreakScope RuleFeatureSet::recursivelyCollectFeaturesFromSelector(SelectorFe
         // Detect scope-breaking inside :has() arguments.
         // When inside :has() and a logical combinator like :is() allows scope breaking,
         // combinators can reach outside the :has() scope.
-        if (matchElement.hasRelation && *matchElement.hasRelation != MatchElement::HasRelation::ScopeBreaking && allComponentsCanBreakScope == CanBreakScope::Yes) {
+        if (matchElement.hasRelation && *matchElement.hasRelation != MatchElement::HasRelation::ScopeBreaking && context.canBreakScope == CanBreakScope::Yes) {
             if (relation == CSSSelector::Relation::DescendantSpace || relation == CSSSelector::Relation::Child) {
                 // For :has(> :is(.x > .y)), the child combinator inside :is() is still scoped to the direct child's tree.
                 // Only mark as scope-breaking if the has argument isn't a direct child, or the combinator is a descendant space.
@@ -374,7 +399,7 @@ void RuleFeatureSet::collectFeatures(CollectionContext& collectionContext, const
     auto& selector = ruleData.selector();
     bool firstSeen = collectionContext.selectorDeduplicationSet.add({ selector }).isNewEntry;
     if (firstSeen)
-        recursivelyCollectFeaturesFromSelector(selectorFeatures, selector);
+        collectFeaturesFromSelector(selectorFeatures, selector);
 
     if (ruleData.canMatchPseudoElement())
         collectPseudoElementFeatures(ruleData);
@@ -383,8 +408,8 @@ void RuleFeatureSet::collectFeatures(CollectionContext& collectionContext, const
         auto collectSelectorList = [&] (const auto& selectorList) {
             if (!selectorList.isEmpty()) {
                 for (auto& subSelector : selectorList) {
-                    recursivelyCollectFeaturesFromSelector(selectorFeatures, subSelector, { MatchElement::Relation::Ancestor, { } });
-                    recursivelyCollectFeaturesFromSelector(selectorFeatures, subSelector, { MatchElement::Relation::Subject, { } });
+                    collectFeaturesFromSelector(selectorFeatures, subSelector, { MatchElement::Relation::Ancestor, { } });
+                    collectFeaturesFromSelector(selectorFeatures, subSelector, { MatchElement::Relation::Subject, { } });
                 }
             }
         };
