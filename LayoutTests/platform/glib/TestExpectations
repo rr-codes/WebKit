@@ -5469,8 +5469,6 @@ webkit.org/b/310749 imported/w3c/web-platform-tests/media-source/mediasource-con
 http/wpt/service-workers/fetch-service-worker-preload-download.https.html [ Pass Timeout ]
 http/tests/workers/service/service-worker-download-octet-stream-nosniff.https.html [ Pass Failure ]
 
-webkit.org/b/312924 fast/webcodecs/resetting-audio-decoder-with-zero-size-crash.html [ Skip ]
-
 # Resource timing tests are flaky due to redirect timing variability
 webkit.org/b/197473 imported/w3c/web-platform-tests/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?include=waitingForRedirect [ Pass Failure ]
 
