@@ -1747,8 +1747,10 @@ static VisiblePosition updateAXLineStartForVisiblePosition(const VisiblePosition
     VisiblePosition startPosition = visiblePosition;
     while (true) {
         tempPosition = startPosition.previous();
-        if (tempPosition.isNull())
+        if (tempPosition.isNull() || tempPosition == startPosition) {
+            // Without the tempPosition == startPosition check, we would loop infinitely.
             break;
+        }
         Position p = tempPosition.deepEquivalent();
         CheckedPtr renderer = p.deprecatedNode()->renderer();
         if (!renderer || (renderer->isRenderBlock() && !p.deprecatedEditingOffset()))
@@ -1780,7 +1782,12 @@ VisiblePositionRange AccessibilityObject::leftLineVisiblePositionRange(const Vis
     // This check will reposition the marker before the floating object, to ensure we get a line start.
     if (startPosition.isNull()) {
         while (startPosition.isNull() && prevVisiblePos.isNotNull()) {
+            auto previousPosition = prevVisiblePos;
             prevVisiblePos = prevVisiblePos.previous();
+            if (prevVisiblePos == previousPosition) {
+                // Without this break, we would loop infinitely.
+                break;
+            }
             startPosition = startOfLine(prevVisiblePos);
         }
     } else
@@ -1815,7 +1822,12 @@ VisiblePositionRange AccessibilityObject::rightLineVisiblePositionRange(const Vi
     // return null for position by a floating object, since floating object doesn't really belong to any line.
     // This check will reposition the marker after the floating object, to ensure we get a line end.
     while (endPosition.isNull() && nextVisiblePos.isNotNull()) {
+        auto previousPosition = nextVisiblePos;
         nextVisiblePos = nextVisiblePos.next();
+        if (nextVisiblePos == previousPosition) {
+            // Without this break, we would loop infinitely.
+            break;
+        }
         endPosition = endOfLine(nextVisiblePos);
     }
 

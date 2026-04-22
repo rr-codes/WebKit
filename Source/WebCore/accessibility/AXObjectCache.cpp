@@ -4347,6 +4347,11 @@ CharacterOffset AXObjectCache::characterOffsetFromVisiblePosition(const VisibleP
         // can return a previous position, resulting in us looping infinitely. Iterating solely through
         // |nextVisuallyDistinctCandidate|s should guarantee forward progress.
         currentPosition = nextVisuallyDistinctCandidate(currentPosition, SkipDisplayContents::No);
+        if (currentPosition == previousPosition) {
+            // |nextVisuallyDistinctCandidate|s should guarantee forward progress, so this should be unreachable.
+            AX_ASSERT_NOT_REACHED();
+            break;
+        }
         visiblePosition = VisiblePosition(currentPosition, visiblePosition.affinity());
 
         characterOffset++;
@@ -4960,8 +4965,14 @@ CharacterOffset AXObjectCache::characterOffsetForBounds(const IntRect& rect, boo
         if (rect.contains(absoluteCaretBoundsForCharacterOffset(previousCharOffset).center()))
             return previousCharOffset;
 
+        auto priorNextCharOffset = nextCharOffset;
+        auto priorPreviousCharOffset = previousCharOffset;
         nextCharOffset = nextCharacterOffset(nextCharOffset, false);
         previousCharOffset = previousCharacterOffset(previousCharOffset, false);
+        if (nextCharOffset.isEqual(priorNextCharOffset) && previousCharOffset.isEqual(priorPreviousCharOffset)) {
+            // Without this break, we would loop infinitely.
+            break;
+        }
     }
 
     return CharacterOffset();
