@@ -464,7 +464,7 @@ void TokenPreloadScanner::scan(const HTMLToken& token, Vector<std::unique_ptr<Pr
     case HTMLToken::Type::Character:
         if (!m_inStyle)
             return;
-        m_cssScanner.scan(token.characters(), requests);
+        m_cssScanner.scan(token.characters(), requests, m_predictedBaseElementURL);
         return;
 
     case HTMLToken::Type::EndTag: {
