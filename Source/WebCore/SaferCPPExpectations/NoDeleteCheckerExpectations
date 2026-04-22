@@ -12,7 +12,6 @@ css/PropertySetCSSDescriptors.cpp
 css/StyleSheetList.cpp
 css/parser/CSSPropertyParserConsumer+String.cpp
 dom/Document.cpp
-dom/Node.cpp
 [ macOS ] inspector/InspectorFrontendHost.cpp
 loader/EmptyClients.cpp
 page/EventHandler.cpp

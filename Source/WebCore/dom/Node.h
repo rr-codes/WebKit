@@ -375,7 +375,7 @@ public:
     bool hasDidMutateSubtreeAfterSetInnerHTML() const { return hasStateFlag(StateFlag::DidMutateSubtreeAfterSetInnerHTML); }
     void setDidMutateSubtreeAfterSetInnerHTML() { setStateFlag(StateFlag::DidMutateSubtreeAfterSetInnerHTML); }
     void clearDidMutateSubtreeAfterSetInnerHTML() { clearStateFlag(StateFlag::DidMutateSubtreeAfterSetInnerHTML); }
-    void NODELETE setDidMutateSubtreeAfterSetInnerHTMLOnAncestors();
+    void setDidMutateSubtreeAfterSetInnerHTMLOnAncestors();
 
     bool hasWasParsedWithFastPath() const { return hasStateFlag(StateFlag::WasParsedWithFastPath); }
     void setWasParsedWithFastPath() { setStateFlag(StateFlag::WasParsedWithFastPath); }
