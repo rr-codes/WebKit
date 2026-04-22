@@ -92,8 +92,8 @@ JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationPopcount32, UCPUStrictInt32, (int32_
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationPopcount64, uint64_t, (int64_t));
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationGrowMemory, int64_t, (JSWebAssemblyInstance*, int64_t, uint8_t));
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemorySizeInPages, int64_t, (JSWebAssemblyInstance* instance, uint8_t memoryIndex));
-JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemoryFill, UCPUStrictInt32, (JSWebAssemblyInstance*, uint32_t dstAddress, uint32_t targetValue, uint32_t count, uint8_t memoryIndex));
-JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemoryCopy, UCPUStrictInt32, (JSWebAssemblyInstance*, uint32_t dstAddress, uint32_t srcAddress, uint32_t count, uint8_t dstMemoryIndex, uint8_t srcMemoryIndex));
+JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemoryFill, UCPUStrictInt32, (JSWebAssemblyInstance*, uint64_t dstAddress, uint32_t targetValue, uint64_t count, uint8_t memoryIndex));
+JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemoryCopy, UCPUStrictInt32, (JSWebAssemblyInstance*, uint64_t dstAddress, uint64_t srcAddress, uint64_t count, uint8_t dstMemoryIndex, uint8_t srcMemoryIndex));
 
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationGetWasmTableElement, EncodedJSValue, (JSWebAssemblyInstance*, unsigned, int32_t));
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationSetWasmTableElement, UCPUStrictInt32, (JSWebAssemblyInstance*, unsigned, uint32_t, EncodedJSValue encValue));
@@ -108,7 +108,7 @@ JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationGetWasmTableSize, UCPUStrictInt32, (
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationMemoryAtomicWait32, UCPUStrictInt32, (JSWebAssemblyInstance* instance, unsigned base, unsigned offset, int32_t value, int64_t timeout, uint8_t memoryIndex));
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationMemoryAtomicWait64, UCPUStrictInt32, (JSWebAssemblyInstance* instance, unsigned base, unsigned offset, int64_t value, int64_t timeout, uint8_t memoryIndex));
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationMemoryAtomicNotify, UCPUStrictInt32, (JSWebAssemblyInstance*, unsigned, unsigned, int32_t, uint8_t memoryIndex));
-JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemoryInit, UCPUStrictInt32, (JSWebAssemblyInstance*, unsigned dataSegmentIndex, uint32_t dstAddress, uint32_t srcAddress, uint32_t length, uint8_t memoryIndex));
+JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmMemoryInit, UCPUStrictInt32, (JSWebAssemblyInstance*, unsigned dataSegmentIndex, uint64_t dstAddress, uint32_t srcAddress, uint32_t length, uint8_t memoryIndex));
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmDataDrop, void, (JSWebAssemblyInstance*, unsigned dataSegmentIndex));
 
 JSC_DECLARE_NOEXCEPT_JIT_OPERATION(operationWasmStructNewEmpty, EncodedJSValue, (JSWebAssemblyInstance*, uint32_t));
