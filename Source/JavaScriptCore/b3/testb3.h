@@ -602,6 +602,8 @@ void testUbfx32ShiftAnd();
 void testUbfx32AndShift();
 void testUbfx64ShiftAnd();
 void testUbfx64AndShift();
+void testUbfx32ArithmeticShiftAnd();
+void testUbfx64ArithmeticShiftAnd();
 void testUbfiz32AndShiftValueMask();
 void testUbfiz32AndShiftMaskValue();
 void testUbfiz32ShiftAnd();
