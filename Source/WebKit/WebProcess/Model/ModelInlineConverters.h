@@ -156,7 +156,7 @@ static WebCore::WebGPU::VertexFormat toVertexFormat(MTLVertexFormat format)
     case MTLVertexFormatUChar4Normalized_BGRA:
         return WebCore::WebGPU::VertexFormat::Unorm8x4Bgra;
     default:
-        return WebCore::WebGPU::VertexFormat::Float32;
+        RELEASE_ASSERT_NOT_REACHED("%s - USD file is corrupt", __PRETTY_FUNCTION__);
     }
 }
 
@@ -174,7 +174,7 @@ static WebCore::WebGPU::PrimitiveTopology toPrimitiveTopology(MTLPrimitiveType t
     case MTLPrimitiveTypeTriangleStrip:
         return WebCore::WebGPU::PrimitiveTopology::TriangleStrip;
     default:
-        return WebCore::WebGPU::PrimitiveTopology::TriangleList;
+        RELEASE_ASSERT_NOT_REACHED("%s - USD file is corrupt", __PRETTY_FUNCTION__);
     }
 }
 
@@ -186,7 +186,7 @@ static WebModel::IndexType toIndexType(MTLIndexType indexType)
     case MTLIndexTypeUInt32:
         return WebModel::IndexType::UInt32;
     default:
-        return WebModel::IndexType::UInt16;
+        RELEASE_ASSERT_NOT_REACHED("%s - USD file is corrupt", __PRETTY_FUNCTION__);
     }
 }
 
@@ -206,7 +206,7 @@ static WebCore::WebGPU::TextureViewDimension toTextureViewDimension(MTLTextureTy
     case MTLTextureType3D:
         return WebCore::WebGPU::TextureViewDimension::_3d;
     default:
-        return WebCore::WebGPU::TextureViewDimension::_2d;
+        RELEASE_ASSERT_NOT_REACHED("%s - USD file is corrupt", __PRETTY_FUNCTION__);
     }
 }
 
@@ -401,9 +401,15 @@ static WebCore::WebGPU::TextureFormat toTextureFormat(MTLPixelFormat pixelFormat
     case MTLPixelFormatBC7_RGBAUnorm_sRGB:
         return WebCore::WebGPU::TextureFormat::Bc7RgbaUnormSRGB;
 #endif
+    case MTLPixelFormatR16Unorm:   return WebCore::WebGPU::TextureFormat::R16unorm;
+    case MTLPixelFormatR16Snorm:   return WebCore::WebGPU::TextureFormat::R16snorm;
+    case MTLPixelFormatRG16Unorm:  return WebCore::WebGPU::TextureFormat::Rg16unorm;
+    case MTLPixelFormatRG16Snorm:  return WebCore::WebGPU::TextureFormat::Rg16snorm;
+    case MTLPixelFormatRGBA16Unorm: return WebCore::WebGPU::TextureFormat::Rgba16unorm;
+    case MTLPixelFormatRGBA16Snorm: return WebCore::WebGPU::TextureFormat::Rgba16snorm;
     case MTLPixelFormatInvalid:
     default:
-        return WebCore::WebGPU::TextureFormat::R8unorm;
+        RELEASE_ASSERT_NOT_REACHED("%s - USD file is corrupt", __PRETTY_FUNCTION__);
     }
 }
 
@@ -418,7 +424,7 @@ static WebCore::WebGPU::TextureUsageFlags toTextureUsageFlags(MTLTextureUsage te
     if (textureUsage & MTLTextureUsageRenderTarget)
         flags.add(WebCore::WebGPU::TextureUsage::RenderAttachment);
     if (textureUsage & MTLTextureUsagePixelFormatView)
-        flags.add(WebCore::WebGPU::TextureUsage::TextureBinding);
+        flags.add(WebCore::WebGPU::TextureUsage::CopySource);
 
     return flags;
 }
@@ -584,9 +590,10 @@ static WebModel::NodeType convert(WKBridgeNodeType nodeType)
         return WebModel::NodeType::Constant;
     case WKBridgeNodeTypeArguments:
         return WebModel::NodeType::Arguments;
-    default:
     case WKBridgeNodeTypeResults:
         return WebModel::NodeType::Results;
+    default:
+        RELEASE_ASSERT_NOT_REACHED("%s - USD file is corrupt", __PRETTY_FUNCTION__);
     }
 }
 
@@ -662,14 +669,10 @@ static WebModel::Constant convert(WKBridgeConstant constant)
         return WebModel::Constant::kVector3f;
     case WKBridgeConstantVector3h:
         return WebModel::Constant::kVector3h;
-    case WKBridgeConstantColor3f:
+    case WKBridgeConstantCgColor3:
         return WebModel::Constant::kColor3f;
-    case WKBridgeConstantColor3h:
-        return WebModel::Constant::kColor3h;
-    case WKBridgeConstantColor4f:
+    case WKBridgeConstantCgColor4:
         return WebModel::Constant::kColor4f;
-    case WKBridgeConstantColor4h:
-        return WebModel::Constant::kColor4h;
     case WKBridgeConstantTexCoord2h:
         return WebModel::Constant::kTexCoord2h;
     case WKBridgeConstantTexCoord2f:
@@ -678,6 +681,14 @@ static WebModel::Constant convert(WKBridgeConstant constant)
         return WebModel::Constant::kTexCoord3h;
     case WKBridgeConstantTexCoord3f:
         return WebModel::Constant::kTexCoord3f;
+    case WKBridgeConstantColor4f:
+        return WebModel::Constant::kColor4f;
+    case WKBridgeConstantColor4h:
+        return WebModel::Constant::kColor4h;
+    case WKBridgeConstantColor3f:
+        return WebModel::Constant::kColor3f;
+    case WKBridgeConstantColor3h:
+        return WebModel::Constant::kColor3h;
     }
 }
 
@@ -742,11 +753,11 @@ static WebModel::DataType convert(WKBridgeDataType type)
         return WebModel::DataType::kInt4;
     case WKBridgeDataTypeFloat:
         return WebModel::DataType::kFloat;
-    case WKBridgeDataTypeColor3f:
+    case WKBridgeDataTypeCgColor3:
         return WebModel::DataType::kColor3f;
     case WKBridgeDataTypeColor3h:
         return WebModel::DataType::kColor3h;
-    case WKBridgeDataTypeColor4f:
+    case WKBridgeDataTypeCgColor4:
         return WebModel::DataType::kColor4f;
     case WKBridgeDataTypeColor4h:
         return WebModel::DataType::kColor4h;
@@ -790,16 +801,14 @@ static WebModel::DataType convert(WKBridgeDataType type)
         return WebModel::DataType::kToken;
     case WKBridgeDataTypeAsset:
         return WebModel::DataType::kAsset;
-    default:
-        RELEASE_ASSERT_NOT_REACHED("USD file is corrupt");
     }
 }
 
 static WebModel::InputOutput convert(WKBridgeInputOutput *inputOutput)
 {
-    std::optional<WebModel::DataType> semanticType;
-    if (inputOutput.hasSemanticType)
-        semanticType = convert(inputOutput.semanticType);
+    std::optional<String> semanticTypeName;
+    if (inputOutput.semanticTypeName)
+        semanticTypeName = String(inputOutput.semanticTypeName);
 
     std::optional<WebModel::ConstantContainer> defaultValue;
     if (inputOutput.defaultValue)
@@ -808,7 +817,7 @@ static WebModel::InputOutput convert(WKBridgeInputOutput *inputOutput)
     return WebModel::InputOutput {
         .type = convert(inputOutput.type),
         .name = String(inputOutput.name),
-        .semanticType = semanticType,
+        .semanticTypeName = semanticTypeName,
         .defaultValue = defaultValue
     };
 }
@@ -850,13 +859,26 @@ static WebModel::UpdateMeshDescriptor convert(WKBridgeUpdateMesh *update)
 
 static WebModel::MaterialGraph convert(WKBridgeMaterialGraph *materialGraph)
 {
+    Vector<String> primvarPrimvarNames;
+    for (NSString *s in materialGraph.primvarMappingPrimvarNames)
+        primvarPrimvarNames.append(String(s));
+    Vector<String> primvarTexcoordNames;
+    for (NSString *s in materialGraph.primvarMappingTexcoordNames)
+        primvarTexcoordNames.append(String(s));
+    Vector<String> functionConstantInputNames;
+    for (NSString *s in materialGraph.functionConstantInputNames)
+        functionConstantInputNames.append(String(s));
     return WebModel::MaterialGraph {
+        .graphName = String(materialGraph.graphName),
         .nodes = convert<WKBridgeNode, WebModel::Node>(materialGraph.nodes),
         .edges = convert<WKBridgeEdge, WebModel::Edge>(materialGraph.edges),
         .arguments = convert(materialGraph.arguments),
         .results = convert(materialGraph.results),
         .inputs = convert<WKBridgeInputOutput, WebModel::InputOutput>(materialGraph.inputs),
         .outputs = convert<WKBridgeInputOutput, WebModel::InputOutput>(materialGraph.outputs),
+        .primvarMappingPrimvarNames = WTF::move(primvarPrimvarNames),
+        .primvarMappingTexcoordNames = WTF::move(primvarTexcoordNames),
+        .functionConstantInputNames = WTF::move(functionConstantInputNames),
     };
 }
 
@@ -876,7 +898,7 @@ static WebModel::ImageAsset convert(WKBridgeImageAsset *imageAsset)
         .data = makeVector(imageAsset.data),
         .width = imageAsset.width,
         .height = imageAsset.height,
-        .depth = 1,
+        .depth = imageAsset.depth,
         .textureType = toTextureViewDimension(imageAsset.textureType),
         .pixelFormat = toTextureFormat(imageAsset.pixelFormat),
         .mipmapLevelCount = imageAsset.mipmapLevelCount,

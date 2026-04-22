@@ -27,7 +27,7 @@ import DirectResource
 import Metal
 import USDKit
 @_spi(UsdLoaderAPI) import _USDKit_RealityKit
-@_spi(RealityCoreRendererAPI) import RealityKit
+@_spi(Private) @_spi(RealityCoreRendererAPI) import RealityKit
 @_spi(SGInternal) import RealityKit
 
 final class MeshInstancePool {
@@ -294,6 +294,30 @@ internal func debugPrintShaderGraph(_ graph: _Proto_ShaderNodeGraph?, prefix: St
     for (index, edge) in graph.edges.enumerated() {
         logInfo("\(nextIndent)  [\(index)] \(edge.outputNode):\(edge.outputPort) -> \(edge.inputNode):\(edge.inputPort)")
     }
+
+    // Print underlying SGGraph
+    let sgGraph = graph.sgGraph
+    logInfo("\(nextIndent)SGGraph:")
+    let sgIndent = nextIndent + "  "
+    logInfo("\(sgIndent)Name: \(sgGraph.name)")
+    logInfo("\(sgIndent)Inputs (\(sgGraph.inputs.count)):")
+    for (index, input) in sgGraph.inputs.enumerated() {
+        logInfo("\(sgIndent)  [\(index)] name: \(input.name), type: \(input.type)")
+    }
+    logInfo("\(sgIndent)Outputs (\(sgGraph.outputs.count)):")
+    for (index, output) in sgGraph.outputs.enumerated() {
+        logInfo("\(sgIndent)  [\(index)] name: \(output.name), type: \(output.type)")
+    }
+    logInfo("\(sgIndent)Nodes (\(sgGraph.childNodes.count)):")
+    for node in sgGraph.childNodes {
+        let inputNames = node.inputs.map { "\($0.name): \($0.type)" }.joined(separator: ", ")
+        let outputNames = node.outputs.map { "\($0.name): \($0.type)" }.joined(separator: ", ")
+        logInfo("\(sgIndent)  \(node.name) inputs=[\(inputNames)] outputs=[\(outputNames)]")
+    }
+    logInfo("\(sgIndent)Edges (\(sgGraph.edges.count))")
+    if let dot = try? sgGraph.createDotRepresentation() {
+        logInfo("\(sgIndent)DOT representation:\n\(dot)")
+    }
 }
 
 private func debugPrintNode(_ node: _Proto_ShaderNodeGraph.Node, indent: String = "") {
@@ -361,15 +385,15 @@ private func debugPrintValue(_ value: _Proto_ShaderGraphValue, indent: String = 
         logInfo("\(indent)Value: int4(\(val.x), \(val.y), \(val.z), \(val.w))")
     case .cgColor3(let color):
         if let components = color.components {
-            logInfo("\(indent)Value: color3(r:\(components[0]), g:\(components[1]), b:\(components[2]))")
+            logInfo("\(indent)Value: cgColor3(\(components[0]), \(components[1]), \(components[2]))")
         } else {
-            logInfo("\(indent)Value: color3(invalid)")
+            fatalError("\(indent)Value: cgColor3(invalid)")
         }
     case .cgColor4(let color):
         if let components = color.components {
-            logInfo("\(indent)Value: color4(r:\(components[0]), g:\(components[1]), b:\(components[2]), a:\(components[3]))")
+            logInfo("\(indent)Value: cgColor4(\(components[0]), \(components[1]), \(components[2]), \(components[3]))")
         } else {
-            logInfo("\(indent)Value: color4(invalid)")
+            fatalError("\(indent)Value: cgColor4(invalid)")
         }
     case .float2x2(let col0, let col1):
         logInfo("\(indent)Value: float2x2(")
@@ -533,8 +557,8 @@ internal func compareShaderGraphs(
 
 private func nodeDataTypeString(_ data: _Proto_ShaderNodeGraph.Node.NodeData) -> String {
     switch data {
-    case .constant:
-        return "constant"
+    case .constant(let value):
+        return "constant(\(value))"
     case .definition(let def):
         return "definition(\(def.name))"
     case .graph:

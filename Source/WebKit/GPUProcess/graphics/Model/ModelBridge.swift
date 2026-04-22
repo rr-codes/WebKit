@@ -454,21 +454,18 @@ extension WKBridgeUpdateMaterial {
 extension WKBridgeInputOutput {
     let type: WKBridgeDataType
     let name: String
-    let semanticType: WKBridgeDataType
-    let hasSemanticType: Bool
+    let semanticTypeName: String?
     let defaultValue: WKBridgeConstantContainer?
 
     init(
         type: WKBridgeDataType,
         name: String,
-        semanticType: WKBridgeDataType,
-        hasSemanticType: Bool,
+        semanticTypeName: String?,
         defaultValue: WKBridgeConstantContainer?
     ) {
         self.type = type
         self.name = name
-        self.semanticType = semanticType
-        self.hasSemanticType = hasSemanticType
+        self.semanticTypeName = semanticTypeName
         self.defaultValue = defaultValue
     }
 }
@@ -572,27 +569,41 @@ extension WKBridgeNode {
 @objc
 @implementation
 extension WKBridgeMaterialGraph {
+    let graphName: String
     let nodes: [WKBridgeNode]
     let edges: [WKBridgeEdge]
     let arguments: WKBridgeNode
     let results: WKBridgeNode
     let inputs: [WKBridgeInputOutput]
     let outputs: [WKBridgeInputOutput]
+    // Parallel arrays for _Proto_ShaderNodeGraph.primvarMappings: maps primvar names to texcoord names.
+    let primvarMappingPrimvarNames: [String]
+    let primvarMappingTexcoordNames: [String]
+    // Names of graph inputs driven by runtime function constants (_Proto_ShaderNodeGraph.functionConstantInputs).
+    let functionConstantInputNames: [String]
 
     init(
+        graphName: String = "",
         nodes: [WKBridgeNode],
         edges: [WKBridgeEdge],
         arguments: WKBridgeNode,
         results: WKBridgeNode,
         inputs: [WKBridgeInputOutput],
-        outputs: [WKBridgeInputOutput]
+        outputs: [WKBridgeInputOutput],
+        primvarMappingPrimvarNames: [String] = [],
+        primvarMappingTexcoordNames: [String] = [],
+        functionConstantInputNames: [String] = []
     ) {
+        self.graphName = graphName
         self.nodes = nodes
         self.edges = edges
         self.arguments = arguments
         self.results = results
         self.inputs = inputs
         self.outputs = outputs
+        self.primvarMappingPrimvarNames = primvarMappingPrimvarNames
+        self.primvarMappingTexcoordNames = primvarMappingTexcoordNames
+        self.functionConstantInputNames = functionConstantInputNames
     }
 }
 
