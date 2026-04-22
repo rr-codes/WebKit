@@ -242,12 +242,13 @@ String replaceURLsInSrcsetAttribute(const Element& element, StringView attribute
         if (&candidate != &imageCandidates[0])
             result.append(", "_s);
 
-        auto resolvedURLString = element.resolveURLStringIfNeeded(candidate.string.toString());
+        auto candidateString = candidate.string.toString();
+        auto resolvedURLString = element.resolveURLStringIfNeeded(candidateString);
         auto replacementURLString = context.replacementURLStrings.get(resolvedURLString);
         if (!replacementURLString.isEmpty())
             result.append(replacementURLString);
         else
-            result.append(candidate.string.toString());
+            result.append(WTF::move(candidateString));
         if (candidate.density != UninitializedDescriptor)
             result.append(' ', candidate.density, 'x');
         if (candidate.resourceWidth != UninitializedDescriptor)
