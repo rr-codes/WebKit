@@ -57,6 +57,14 @@
         }
     },
 
+    "imported/selenium/py/test/selenium/webdriver/common/bidi_emulation_tests.py": {
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/303147"}}
+    },
+
+    "imported/selenium/py/test/selenium/webdriver/common/bidi_input_tests.py": {
+        "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/281949"}}
+    },
+
     "imported/selenium/py/test/selenium/webdriver/common/bidi_network_tests.py": {
         "subtests": {
             "test_add_intercept":  { "expected": { "all": { "status": ["FAIL"], "bug": "webkit.org/b/288087"}}},
