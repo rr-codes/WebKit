@@ -413,9 +413,8 @@ void HTMLOptionElement::attributeChanged(const QualifiedName& name, const AtomSt
         Style::PseudoClassChangeInvalidation defaultInvalidation(*this, CSSSelector::PseudoClass::Default, !newValue.isNull());
         m_isDefault = !newValue.isNull();
 
-        // FIXME: WebKit still need to implement 'dirtiness'. See: https://bugs.webkit.org/show_bug.cgi?id=258073
         // https://html.spec.whatwg.org/multipage/form-elements.html#concept-option-selectedness
-        if (oldValue.isNull() != newValue.isNull())
+        if (oldValue.isNull() != newValue.isNull() && !m_isDirty)
             setSelected(!newValue.isNull());
         break;
     }
@@ -459,6 +458,26 @@ void HTMLOptionElement::setSelected(bool selected)
 
     if (RefPtr select = ownerSelectElement())
         select->optionSelectionStateChanged(*this, selected);
+}
+
+bool HTMLOptionElement::selectedForBindings() const
+{
+    return selected();
+}
+
+void HTMLOptionElement::setSelectedForBindings(bool selected)
+{
+    bool wasSelected = m_isSelected;
+    setSelected(selected);
+
+    // https://html.spec.whatwg.org/multipage/form-elements.html#concept-option-dirtiness
+    // The spec says dirtiness becomes true unconditionally. However, for web
+    // compatibility, don't set dirtiness if the option is owned by a select
+    // element and selectedness did not actually change.
+    if (ownerSelectElement() && wasSelected == m_isSelected)
+        return;
+
+    m_isDirty = true;
 }
 
 void HTMLOptionElement::setSelectedState(bool selected, AllowStyleInvalidation allowStyleInvalidation)

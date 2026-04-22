@@ -1532,6 +1532,8 @@ void HTMLSelectElement::reset()
         if (!option)
             continue;
 
+        option->setDirty(false);
+
         if (option->hasAttributeWithoutSynchronization(selectedAttr)) {
             if (selectedOption && !m_multiple)
                 selectedOption->setSelectedState(false);
