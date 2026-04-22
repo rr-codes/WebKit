@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024, 2025 Igalia S.L.
+ * Copyright (C) 2024, 2025, 2026 Igalia S.L.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -30,6 +30,7 @@
 #include "GLDisplay.h"
 #include "IntSize.h"
 #include <wtf/OptionSet.h>
+#include <wtf/text/ASCIILiteral.h>
 #include <wtf/unix/UnixFileDescriptor.h>
 
 struct gbm_bo;
@@ -52,6 +53,17 @@ public:
         ForceVivanteSuperTiled = 1 << 1,
         UseBGRALayout = 1 << 2
     };
+
+    // On some non-Mesa stacks gbm_bo allocation and dma-buf export succeed but mmap still
+    // fails; the probe verifies all three once per session before committing to this path.
+    // Gates only MemoryMappedGPUBuffer::create() -- exportFDForPlane() remains usable for
+    // non-mmap callers (e.g. EGLImage wrapping) when export works but the FD isn't RDWR.
+    static bool isSupported();
+
+    // The returned FD may not be RDWR-mappable; callers that mmap must gate on isSupported().
+    static int exportFDForPlane(struct gbm_bo*, int plane);
+
+    static ASCIILiteral exportStrategyDescription();
 
     // Will only return a MemoryMappedGPUBuffer, if gbm_bo allocation + mapping to userland + EGLImage creation succeeded.
     static std::unique_ptr<MemoryMappedGPUBuffer> create(const IntSize&, OptionSet<BufferFlag>);

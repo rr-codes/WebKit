@@ -29,6 +29,7 @@
 #if USE(GBM)
 #include "DRMDeviceManager.h"
 #include "GBMDevice.h"
+#include "GBMUtilities.h"
 #include "GBMVersioning.h"
 #include "IntRect.h"
 #include "Logging.h"
@@ -39,15 +40,42 @@
 #include <linux/dma-buf.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 #include <wtf/SafeStrerror.h>
+#include <wtf/Scope.h>
 #include <wtf/StdLibExtras.h>
 
 #if USE(LIBDRM)
 #include <drm_fourcc.h>
-#include <xf86drm.h>
 #endif
 
 namespace WebCore {
+
+enum class DMABufExportStrategy : uint8_t {
+    Unsupported,
+    GBMCall,
+    DRMSystemCall
+};
+
+enum class SupportsReadWriteMemoryMapping : bool { No, Yes };
+
+struct DMABufExportCapabilities {
+    DMABufExportStrategy strategy { DMABufExportStrategy::Unsupported };
+    SupportsReadWriteMemoryMapping memoryMappable { SupportsReadWriteMemoryMapping::No };
+};
+
+static ASCIILiteral strategyName(DMABufExportStrategy strategy)
+{
+    switch (strategy) {
+    case DMABufExportStrategy::GBMCall:
+        return "gbm_bo_get_fd_for_plane()"_s;
+    case DMABufExportStrategy::DRMSystemCall:
+        return "drmPrimeHandleToFD(DRM_RDWR)"_s;
+    case DMABufExportStrategy::Unsupported:
+        return "Unavailable"_s;
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
 
 MemoryMappedGPUBuffer::MemoryMappedGPUBuffer(const IntSize& size, OptionSet<BufferFlag> flags)
     : m_size(size)
@@ -61,14 +89,133 @@ MemoryMappedGPUBuffer::~MemoryMappedGPUBuffer()
     unmapIfNeeded();
 }
 
+static bool probeReadWriteMappability(int fd, size_t length)
+{
+    int flags = fcntl(fd, F_GETFL);
+    if (flags < 0 || (flags & O_ACCMODE) != O_RDWR)
+        return false;
+
+    void* mapped = mmap(nullptr, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (mapped == MAP_FAILED)
+        return false;
+
+    munmap(mapped, length);
+    return true;
+}
+
+static DMABufExportCapabilities runCapabilityProbe()
+{
+    // The probe result is cached for the rest of the session; if we
+    // ran before DRM init, we'd remember Unsupported and silently
+    // disable the MemoryMappedGPUBuffer path on hardware where it works.
+    // Crash instead of hiding the ordering bug, if that happens.
+    auto& manager = WebCore::DRMDeviceManager::singleton();
+    RELEASE_ASSERT_WITH_MESSAGE(manager.isInitialized(), "MemoryMappedGPUBuffer capability probe ran before DRMDeviceManager initialization");
+
+    auto gbmDevice = manager.mainGBMDevice(WebCore::DRMDeviceManager::NodeType::Render);
+    if (!gbmDevice) {
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer capability probe: no GBM render device node");
+        return { };
+    }
+
+    struct ProbeResult {
+        bool exported { false };
+        bool mappable { false };
+    };
+
+    // mmap capability depends on the kernel dma-buf subsystem and the GBM backend, not on
+    // buffer size, format, or modifier -- so the single-plane linear probe generalizes.
+    static constexpr int probeSize = 16;
+    auto runProbe = [&](auto&& exportFD) -> ProbeResult {
+        struct gbm_bo* bo = gbm_bo_create(gbmDevice->device(), probeSize, probeSize, DRM_FORMAT_ARGB8888, GBM_BO_USE_LINEAR | GBM_BO_USE_RENDERING);
+        if (!bo) {
+            RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer capability probe: gbm_bo_create failed: %s", safeStrerror(errno).data());
+            return { };
+        }
+
+        auto cleanup = makeScopeExit([&] {
+            gbm_bo_destroy(bo);
+        });
+
+        UnixFileDescriptor fd { exportFD(bo), UnixFileDescriptor::Adopt };
+        if (!fd)
+            return { };
+
+        return { true, probeReadWriteMappability(fd.value(), gbm_bo_get_stride_for_plane(bo, 0) * probeSize) };
+    };
+
+    ProbeResult gbmCall;
+#if HAVE(GBM_BO_GET_FD_FOR_PLANE)
+    // Without HAVE(GBM_BO_GET_FD_FOR_PLANE) the GBMVersioning.h shim forwards to the
+    // DRMSystemCall path, so there's no point in probing GBMCall separately.
+    gbmCall = runProbe([](struct gbm_bo* bo) {
+        return gbm_bo_get_fd_for_plane(bo, 0);
+    });
+#endif
+
+    ProbeResult drmSystemCall = runProbe([](struct gbm_bo* bo) {
+        return gbmExportPlaneFDWithExplicitReadWriteMapping(bo, 0);
+    });
+
+    // Pick the first mmap-capable path. Otherwise keep any path that at
+    // least exports, so non-mmap callers (e.g. EGLImage wrapping) still work.
+    DMABufExportCapabilities caps;
+    if (gbmCall.mappable)
+        caps = { DMABufExportStrategy::GBMCall, SupportsReadWriteMemoryMapping::Yes };
+    else if (drmSystemCall.mappable)
+        caps = { DMABufExportStrategy::DRMSystemCall, SupportsReadWriteMemoryMapping::Yes };
+    else if (gbmCall.exported)
+        caps = { DMABufExportStrategy::GBMCall, SupportsReadWriteMemoryMapping::No };
+    else if (drmSystemCall.exported)
+        caps = { DMABufExportStrategy::DRMSystemCall, SupportsReadWriteMemoryMapping::No };
+
+    RELEASE_LOG(GraphicsBuffer, "MemoryMappedGPUBuffer capability probe: strategy=%s mmap-capable=%s",
+        strategyName(caps.strategy).characters(),
+        caps.memoryMappable == SupportsReadWriteMemoryMapping::Yes ? "yes" : "no");
+
+    return caps;
+}
+
+static const DMABufExportCapabilities& cachedExportCapabilities()
+{
+    static const DMABufExportCapabilities caps = runCapabilityProbe();
+    return caps;
+}
+
+bool MemoryMappedGPUBuffer::isSupported()
+{
+    return cachedExportCapabilities().memoryMappable == SupportsReadWriteMemoryMapping::Yes;
+}
+
+int MemoryMappedGPUBuffer::exportFDForPlane(struct gbm_bo* bo, int plane)
+{
+    switch (cachedExportCapabilities().strategy) {
+    case DMABufExportStrategy::GBMCall:
+        return gbm_bo_get_fd_for_plane(bo, plane);
+    case DMABufExportStrategy::DRMSystemCall:
+        return gbmExportPlaneFDWithExplicitReadWriteMapping(bo, plane);
+    case DMABufExportStrategy::Unsupported:
+        return -1;
+    }
+    RELEASE_ASSERT_NOT_REACHED();
+}
+
+ASCIILiteral MemoryMappedGPUBuffer::exportStrategyDescription()
+{
+    return strategyName(cachedExportCapabilities().strategy);
+}
+
 std::unique_ptr<MemoryMappedGPUBuffer> MemoryMappedGPUBuffer::create(const IntSize& size, OptionSet<BufferFlag> flags)
 {
+    if (!isSupported())
+        return nullptr;
+
     auto& manager = WebCore::DRMDeviceManager::singleton();
     ASSERT(manager.isInitialized());
 
     auto gbmDevice = manager.mainGBMDevice(WebCore::DRMDeviceManager::NodeType::Render);
     if (!gbmDevice) {
-        LOG_ERROR("MemoryMappedGPUBuffer::create(), failed to get GBM render device node");
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to get GBM render device node");
         return nullptr;
     }
 
@@ -116,19 +263,19 @@ std::unique_ptr<MemoryMappedGPUBuffer> MemoryMappedGPUBuffer::create(const IntSi
     }
 
     if (!bufferFormat.has_value()) {
-        LOG_ERROR("MemoryMappedGPUBuffer::create(), failed to negotiate buffer format");
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to negotiate buffer format");
         return nullptr;
     }
 
     auto buffer = std::unique_ptr<MemoryMappedGPUBuffer>(new MemoryMappedGPUBuffer(size, flags));
     auto* bo = buffer->allocate(gbmDevice->device(), bufferFormat.value());
     if (!bo) {
-        LOG_ERROR("MemoryMappedGPUBuffer::create(), failed to create GBM buffer of size %dx%d: %s", size.width(), size.height(), safeStrerror(errno).data());
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to create GBM buffer of size %dx%d: %s", size.width(), size.height(), safeStrerror(errno).data());
         return nullptr;
     }
 
     if (!buffer->createDMABufFromGBMBufferObject(bo)) {
-        LOG_ERROR("MemoryMappedGPUBuffer::create(), failed to create dma-buf from GBM buffer object");
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to create dma-buf from GBM buffer object");
         gbm_bo_destroy(bo);
         return nullptr;
     }
@@ -249,7 +396,7 @@ EGLImage MemoryMappedGPUBuffer::createEGLImageFromDMABuf()
     auto& display = WebCore::PlatformDisplay::sharedDisplay();
     auto eglImage = m_dmaBuf->createEGLImage(display.glDisplay());
     if (!eglImage)
-        LOG_ERROR("MemoryMappedGPUBuffer::createEGLImageFromDMABuf(), failed to export GBM buffer as EGLImage");
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::createEGLImageFromDMABuf(), failed to export GBM buffer as EGLImage");
 
     return eglImage;
 }
@@ -362,7 +509,7 @@ bool MemoryMappedGPUBuffer::performDMABufSyncSystemCall(OptionSet<DMABufSyncFlag
     } while (result == -1 && (errno == EAGAIN || errno == EINTR) && (counter++) < maxRetries);
 
     if (result < 0) {
-        LOG_ERROR("MemoryMappedGPUBuffer::performDMABufSyncSystemCall(), DMA_BUF_SYNC_IOCTL failed - may result in visual artifacts.");
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::performDMABufSyncSystemCall(), DMA_BUF_SYNC_IOCTL failed - may result in visual artifacts.");
         return false;
     }
 

@@ -42,6 +42,10 @@
 #include "SkiaRecordingResult.h"
 #include "SkiaReplayCanvas.h"
 #include "SkiaUtilities.h"
+
+#if USE(GBM)
+#include "MemoryMappedGPUBuffer.h"
+#endif
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
 #include <skia/core/SkColorSpace.h>
 #include <skia/core/SkPictureRecorder.h>
@@ -373,6 +377,12 @@ bool SkiaPaintingEngine::shouldUseDMABufAtlasTextures()
             if (envStringView == "1"_s)
                 shouldUseDMABufAtlas = false;
         }
+
+        // On systems where allocating/exporting a gbm_bo succeeds but mmap'ing its dma-buf FD
+        // does not, stay on the pure-OpenGL path from the start rather than tripping the
+        // RELEASE_ASSERT in SkiaGPUAtlas::uploadImages() later.
+        if (shouldUseDMABufAtlas && !MemoryMappedGPUBuffer::isSupported())
+            shouldUseDMABufAtlas = false;
     });
 
     return shouldUseDMABufAtlas;

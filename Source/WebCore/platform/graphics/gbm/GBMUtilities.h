@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Igalia S.L.
+ * Copyright (C) 2026 Igalia S.L.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -25,28 +25,23 @@
 
 #pragma once
 
-#include "RendererBufferFormat.h"
-#include <wtf/text/WTFString.h>
+#if USE(GBM)
 
-namespace WebKit {
+#include <fcntl.h>
+#include <gbm.h>
+#include <xf86drm.h>
 
-struct RenderProcessInfo {
-    String platform;
-    String drmVersion;
-    String glRenderer;
-    String glVendor;
-    String glVersion;
-    String glShadingVersion;
-    String glExtensions;
-    String eglVersion;
-    String eglVendor;
-    String eglExtensions;
-    unsigned cpuPaintingThreadsCount { 0 };
-    unsigned gpuPaintingThreadsCount { 0 };
-    unsigned msaaSampleCount { 0 };
-    Vector<RendererBufferFormat::Format> supportedBufferFormats;
-    String dmabufExportStrategy;
-    bool memoryMappedGPUBufferSupported { false };
-};
+// Forces DRM_RDWR so callers that mmap(PROT_WRITE) on the returned FD don't SIGBUS
+// on backends where gbm_bo_get_fd_for_plane() silently returns O_RDONLY.
+static inline int gbmExportPlaneFDWithExplicitReadWriteMapping(struct gbm_bo* bo, int plane)
+{
+    auto handle = gbm_bo_get_handle_for_plane(bo, plane);
+    if (handle.s32 == -1)
+        return -1;
 
-} // namespace WebKit
+    int fd;
+    int ret = drmPrimeHandleToFD(gbm_device_get_fd(gbm_bo_get_device(bo)), handle.u32, DRM_CLOEXEC | DRM_RDWR, &fd);
+    return ret < 0 ? -1 : fd;
+}
+
+#endif // USE(GBM)
