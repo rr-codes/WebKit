@@ -150,6 +150,7 @@ private:
     Ref<WebCore::MediaTimePromise> prepareToSeek(const MediaTime&) final;
     Ref<GenericPromise> finishSeek(const MediaTime&) final;
     bool seeking() const final;
+    void setScreenReserved(bool) final;
 
     void setPreferences(WebCore::VideoRendererPreferences) final;
     void setHasProtectedVideoContent(bool) final;

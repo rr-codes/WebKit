@@ -1909,6 +1909,13 @@ void MediaPlayerPrivateRemote::destroyResourceLoader(RemoteMediaResourceLoaderId
     m_mediaResourceLoaders.remove(identifier);
 }
 
+#if PLATFORM(MAC)
+void MediaPlayerPrivateRemote::screenReservedChanged(bool reserved)
+{
+    protect(connection())->send(Messages::RemoteMediaPlayerProxy::ScreenReservedChanged(reserved), m_id);
+}
+#endif
+
 void MediaPlayerPrivateRemote::gpuProcessConnectionDidClose()
 {
     assertIsMainRunLoop();
