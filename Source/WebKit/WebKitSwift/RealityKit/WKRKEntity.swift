@@ -168,8 +168,7 @@ extension WKRKEntity {
             animationPlaybackController?.speed ?? backingPlaybackRate
         }
         set {
-            // FIXME (280081): Support negative playback rate
-            backingPlaybackRate = max(newValue, 0)
+            backingPlaybackRate = newValue
             guard let animationPlaybackController else {
                 return
             }
