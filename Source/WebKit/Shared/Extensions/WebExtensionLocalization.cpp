@@ -313,7 +313,7 @@ String WebExtensionLocalization::stringByReplacingNamedPlaceholdersInString(Stri
 
         localizedString = makeStringByReplacingAll(localizedString, originalKey, localizedReplacement);
 
-        index += localizedReplacement.length();
+        index += std::max(0, static_cast<int>(localizedReplacement.length()) - 1);
     }
 
     return localizedString;
@@ -350,7 +350,7 @@ String WebExtensionLocalization::stringByReplacingPositionalPlaceholdersInString
         if (!matchLength)
             break;
 
-        index += replacement.length();
+        index += std::max(0, static_cast<int>(replacement.length()) - 1);
     }
 
     return localizedString;
