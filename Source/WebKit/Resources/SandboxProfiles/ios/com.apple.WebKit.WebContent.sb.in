@@ -143,10 +143,7 @@
         (literal "/private/var/run/syslog")))
 
 #if !PLATFORM(IOS_SIMULATOR)
-#if ENABLE(NOTIFY_BLOCKING)
-(with-filter (require-not (notify-blocking))
-    (allow-notifyd))
-#else
+#if !ENABLE(NOTIFY_BLOCKING)
 (allow-notifyd)
 #endif
 #endif
