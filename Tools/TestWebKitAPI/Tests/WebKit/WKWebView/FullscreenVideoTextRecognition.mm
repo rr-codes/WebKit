@@ -483,7 +483,12 @@ TEST(FullscreenVideoTextRecognition, NoOverlayInstalledAfterExitingNativeVideoFu
     Util::run(&doneWaiting);
 }
 
+// FIXME when webkit.org/b/312934 is resolved for Release.
+#if PLATFORM(IOS) && defined(NDEBUG)
+TEST(FullscreenVideoTextRecognition, DISABLED_NoOverlayInstalledAfterSeekAndExitingNativeVideoFullscreen)
+#else
 TEST(FullscreenVideoTextRecognition, NoOverlayInstalledAfterSeekAndExitingNativeVideoFullscreen)
+#endif
 {
     auto configuration = [WKWebViewConfiguration _test_configurationWithTestPlugInClassName:@"WebProcessPlugInWithInternals" configureJSCForTesting:YES];
     RetainPtr webView = adoptNS([[FullscreenVideoTextRecognitionWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 568) configuration:configuration]);
