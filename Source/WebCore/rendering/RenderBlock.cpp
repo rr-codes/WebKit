@@ -511,16 +511,38 @@ std::optional<ScrollbarUpdateScope> RenderBlock::updateScrollInfoAfterLayout()
     return { };
 }
 
+static bool needsToTrackDescendantScrollbarChanges(const RenderBlock& renderBlock, const LocalFrameViewLayoutContext& layoutContext)
+{
+    auto computedLogicalWidth = renderBlock.style().logicalWidth();
+    return computedLogicalWidth.isIntrinsic() && !layoutContext.subtreeScrollbarChangesState();
+}
+
+static bool canContainDescendantScrollbarChanges(const RenderBlock& renderBlock, const LocalFrameViewLayoutContext& layoutContext)
+{
+    return layoutContext.subtreeScrollbarChangesState().has_value() && renderBlock.style().logicalWidth().isFixed();
+}
+
 void RenderBlock::layout()
 {
     StackStats::LayoutCheckPoint layoutCheckPoint;
 
+    auto& layoutContext = this->layoutContext();
+
     // Table cells call layoutBlock directly, so don't add any logic here. Put code into layoutBlock().
     {
+        std::optional<SubtreeScrollbarChangesStateScope> subtreeScrollbarChangesStateScope;
+        if (needsToTrackDescendantScrollbarChanges(*this, layoutContext))
+            subtreeScrollbarChangesStateScope.emplace(layoutContext, *this);
+
+        bool willHandleDescendantScrollbarChanges = subtreeScrollbarChangesStateScope.has_value() || canContainDescendantScrollbarChanges(*this, layoutContext);
         auto scope = LayoutScope { *this };
-        layoutBlock(RelayoutChildren::No);
+        if (willHandleDescendantScrollbarChanges) {
+            SubtreeScrollbarChangesHandler descendantScrollbarChangesHandler(*this);
+            layoutBlock(RelayoutChildren::No);
+        } else
+            layoutBlock(RelayoutChildren::No);
     }
-    
+
     // It's safe to check for control clip here, since controls can never be table cells.
     // If we have a lightweight clip, there can never be any overflow from children.
     if (hasControlClip() && m_overflow && !isDelayingUpdateScrollInfoAfterLayout(*this))

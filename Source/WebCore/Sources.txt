@@ -3008,6 +3008,7 @@ rendering/RenderVideo.cpp
 rendering/RenderView.cpp
 rendering/RenderViewTransitionCapture.cpp
 rendering/RenderWidget.cpp
+rendering/SubtreeScrollbarChangesState.cpp
 rendering/StyledMarkedText.cpp
 rendering/TableLayout.cpp
 rendering/TextBoxPainter.cpp

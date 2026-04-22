@@ -158,6 +158,11 @@ LocalFrameViewLayoutContext::LocalFrameViewLayoutContext(LocalFrameView& frameVi
 
 LocalFrameViewLayoutContext::~LocalFrameViewLayoutContext() = default;
 
+void LocalFrameViewLayoutContext::setSubtreeScrollbarChangesState(std::optional<SubtreeScrollbarChangesState> state)
+{
+    m_subtreeScrollbarChangesState = state;
+}
+
 UpdateScrollInfoAfterLayoutTransaction& LocalFrameViewLayoutContext::updateScrollInfoAfterLayoutTransaction()
 {
     if (!m_updateScrollInfoAfterLayoutTransaction)
