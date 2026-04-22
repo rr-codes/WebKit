@@ -49,8 +49,6 @@ class SerializedScriptValue;
 class NavigationActivation;
 class NavigationDestination;
 
-enum class FrameLoadType : uint8_t;
-
 // https://html.spec.whatwg.org/multipage/nav-history-apis.html#navigation-api-method-tracker
 class NavigationAPIMethodTracker : public RefCounted<NavigationAPIMethodTracker> {
     WTF_MAKE_TZONE_ALLOCATED(NavigationAPIMethodTracker);

@@ -28,7 +28,6 @@
 #include "Navigation.h"
 
 #include "AbortController.h"
-#include "BackForwardController.h"
 #include "CallbackResult.h"
 #include "CommonVM.h"
 #include "DOMFormData.h"
@@ -36,7 +35,6 @@
 #include "DocumentLoader.h"
 #include "DocumentPage.h"
 #include "DocumentSecurityOrigin.h"
-#include "DocumentView.h"
 #include "ErrorEvent.h"
 #include "EventNames.h"
 #include "EventTargetInterfaces.h"
@@ -71,7 +69,6 @@
 #include "SecurityOrigin.h"
 #include "SerializedScriptValue.h"
 #include "Settings.h"
-#include "ShouldTreatAsContinuingLoad.h"
 #include "UserGestureIndicator.h"
 #include <JavaScriptCore/JSGlobalObjectInlines.h>
 #include <JavaScriptCore/StrongInlines.h>
