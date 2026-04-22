@@ -808,12 +808,7 @@
         (global-name "com.apple.trustd.agent")))
 #endif
 
-#if ENABLE(LOGD_BLOCKING_IN_WEBCONTENT)
-(with-filter (require-not (logd-blocking))
-    (allow mach-lookup (global-name
-        "com.apple.logd"
-        "com.apple.logd.events")))
-#else
+#if !ENABLE(LOGD_BLOCKING_IN_WEBCONTENT) || !USE(APPLE_INTERNAL_SDK)
 (allow mach-lookup (global-name
     "com.apple.logd"
     "com.apple.logd.events"))
