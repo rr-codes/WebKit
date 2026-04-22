@@ -1702,7 +1702,6 @@ imported/w3c/web-platform-tests/css/css-flexbox/aspect-ratio-intrinsic-size-009.
 imported/w3c/web-platform-tests/css/css-flexbox/multiline-shrink-to-fit.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-flexbox/align-content-007.htm
 imported/w3c/web-platform-tests/css/css-flexbox/align-self-016.html
-imported/w3c/web-platform-tests/css/css-flexbox/percentage-size-quirks-003.html
 
 # grid layout tests
 webkit.org/b/191508 fast/css-grid-layout/crash-large-positions.html [ Skip ]
