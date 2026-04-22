@@ -357,6 +357,8 @@ private:
     String brailleRoleDescription() const final { return stringAttributeValue(AXProperty::BrailleRoleDescription); }
     String embeddedImageDescription() const final { return stringAttributeValue(AXProperty::EmbeddedImageDescription); }
     std::optional<AccessibilityChildrenVector> imageOverlayElements() final { return std::nullopt; }
+    FloatSize imageDataSize() const final;
+    RefPtr<SharedBuffer> imageData(const AXImageDataParameters&) const final;
     String extendedDescription() const final { return stringAttributeValue(AXProperty::ExtendedDescription); }
     String computedRoleString() const final;
     bool isValueAutofillAvailable() const final { return boolAttributeValue(AXProperty::IsValueAutofillAvailable); }

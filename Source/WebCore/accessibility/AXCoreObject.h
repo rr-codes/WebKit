@@ -107,6 +107,7 @@ class Path;
 class QualifiedName;
 class RenderObject;
 class ScrollView;
+class SharedBuffer;
 
 struct AccessibilitySearchCriteria;
 struct AccessibilityText;
@@ -127,6 +128,17 @@ enum class ClickHandlerFilter : bool {
 };
 
 enum class PreSortedObjectType : uint8_t { LiveRegion, WebArea };
+
+struct AXImageDataParameters {
+    static constexpr unsigned maxDimension = 2000;
+
+    unsigned resizeWidth { 0 };
+    unsigned resizeHeight { 0 };
+    unsigned left { 0 };
+    unsigned top { 0 };
+    unsigned width { 0 };
+    unsigned height { 0 };
+};
 
 enum class DateComponentsType : uint8_t;
 
@@ -748,6 +760,8 @@ public:
     virtual String brailleRoleDescription() const = 0;
     virtual String embeddedImageDescription() const = 0;
     virtual std::optional<AccessibilityChildrenVector> imageOverlayElements() = 0;
+    virtual FloatSize imageDataSize() const = 0;
+    virtual RefPtr<SharedBuffer> imageData(const AXImageDataParameters&) const = 0;
     virtual String extendedDescription() const = 0;
 
     bool NODELETE supportsActiveDescendant() const;
@@ -1796,6 +1810,7 @@ constexpr Seconds GeneralPropertyTimeout = 25_ms;
 constexpr Seconds VisibilityCheckTimeout = 50_ms;
 constexpr Seconds SpellCheckTimeout = 100_ms;
 constexpr Seconds InteractiveTimeout = 250_ms;
+constexpr Seconds ImageDataTimeout = 250_ms;
 
 template<typename U>
 inline DidTimeout performFunctionOnMainThreadAndWaitWithTimeout(U&& lambda, Seconds timeout)

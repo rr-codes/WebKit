@@ -123,6 +123,7 @@ interface AccessibilityUIElement {
     readonly attribute DOMString classList;
     readonly attribute DOMString embeddedImageDescription;
     readonly attribute object imageOverlayElements;
+    readonly attribute DOMString imageDataSize;
     readonly attribute boolean isInsertion;
     readonly attribute boolean isDeletion;
     readonly attribute boolean isFirstItemInSuggestion;
@@ -219,6 +220,9 @@ interface AccessibilityUIElement {
 
     // Paramaterized attributes.
     DOMString parameterizedAttributeNames();
+    DOMString imageDataForParameters(long resizeWidth, long resizeHeight);
+    DOMString imageDataForParametersWithFormat(long resizeWidth, long resizeHeight, DOMString format);
+    DOMString imageDataForSubrect(long resizeWidth, long resizeHeight, long left, long top, long width, long height);
     long lineForIndex(long index);
     DOMString rangeForLine(long index);
     DOMString rangeForPosition(long x, long y);

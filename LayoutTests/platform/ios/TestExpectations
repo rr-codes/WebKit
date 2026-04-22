@@ -7193,6 +7193,7 @@ accessibility/img-with-empty-alt-is-ignored-without-fallbacks.html [ Pass ]
 accessibility/insert-newline.html [ Pass ]
 accessibility/keyevents-posted-for-dismiss-action.html [ Pass ]
 accessibility/embedded-image-description.html [ Pass ]
+accessibility/image-data.html [ Pass ]
 accessibility/aria-description.html [ Pass ]
 fast/multicol/flexbox-rows.html [ Skip ]
 
