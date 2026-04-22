@@ -81,6 +81,7 @@ private:
     void updateContentsHeadroom(float) final;
 
     void render(uint32_t textureIndex, Function<void(bool)>&&) final;
+    void processRemovals(Vector<WebModel::TypedResourceId>&& meshRemovals, Vector<WebModel::TypedResourceId>&& materialRemovals, Vector<WebModel::TypedResourceId>&& textureRemovals, CompletionHandler<void(bool)>&&) final;
 
     Ref<WebMesh> m_backing;
 #if PLATFORM(COCOA)

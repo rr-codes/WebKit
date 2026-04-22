@@ -115,6 +115,11 @@
     (subpath "/Library/Apple/System/Library/PrivateFrameworks")
     (subpath "/System/Library/Frameworks")
     (subpath "/System/Library/PrivateFrameworks")
+    (subpath "/System/Library/SubFrameworks/RealityCoreRenderer.framework")
+    (subpath "/System/Library/SubFrameworks/RealityCoreDeformation.framework")
+    (subpath "/System/Library/SubFrameworks/RealityFoundationCloth.framework")
+    (subpath "/System/Library/SubFrameworks/ShaderGraph.framework")
+    (subpath "/System/Library/SubFrameworks/RealityCoreTextureProcessing.framework")
     (subpath "/usr/lib")
     (subpath "/usr/local/lib/sanitizers") ;; FIXME(209820)
     (subpath "/usr/appleinternal/lib") ;; <rdar://problem/72317112>

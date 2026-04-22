@@ -155,6 +155,11 @@ void RemoteMesh::updateRenderBuffers(unsigned width, unsigned height, Completion
     completionHandler(m_backing->ioSurfaceHandles());
 }
 
+void RemoteMesh::processRemovals(Vector<WebModel::TypedResourceId>&& meshRemovals, Vector<WebModel::TypedResourceId>&& materialRemovals, Vector<WebModel::TypedResourceId>&& textureRemovals, CompletionHandler<void(bool)>&& completionHandler)
+{
+    m_backing->processRemovals(WTF::move(meshRemovals), WTF::move(materialRemovals), WTF::move(textureRemovals), WTF::move(completionHandler));
+}
+
 } // namespace WebKit
 
 #undef MESSAGE_CHECK

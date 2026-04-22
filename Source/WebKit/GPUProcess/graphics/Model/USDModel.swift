@@ -41,21 +41,6 @@ extension _USDKit_RealityKit._Proto_MeshDataUpdate_v1 {
     internal func instanceTransformsCompat() -> [simd_float4x4]
 }
 
-extension _USDKit_RealityKit._Proto_DeformationData_v1.SkinningData {
-    @_silgen_name("$s18_USDKit_RealityKit25_Proto_DeformationData_v1V08SkinningF0V21geometryBindTransformSo13simd_float4x4avg")
-    internal func geometryBindTransformCompat() -> simd_float4x4
-}
-
-extension _USDKit_RealityKit._Proto_DeformationData_v1.SkinningData {
-    @_silgen_name("$s18_USDKit_RealityKit25_Proto_DeformationData_v1V08SkinningF0V15jointTransformsSaySo13simd_float4x4aGvg")
-    internal func jointTransformsCompat() -> [simd_float4x4]
-}
-
-extension _USDKit_RealityKit._Proto_DeformationData_v1.SkinningData {
-    @_silgen_name("$s18_USDKit_RealityKit25_Proto_DeformationData_v1V08SkinningF0V16inverseBindPosesSaySo13simd_float4x4aGvg")
-    internal func inverseBindPosesCompat() -> [simd_float4x4]
-}
-
 extension MTLCaptureDescriptor {
     fileprivate convenience init(from device: (any MTLDevice)?) {
         self.init()
@@ -69,34 +54,6 @@ extension MTLCaptureDescriptor {
         let dateString = dateFormatter.string(from: now)
 
         outputURL = URL.temporaryDirectory.appending(path: "capture_\(dateString).gputrace").standardizedFileURL
-    }
-}
-
-actor FrameUpdateQueue {
-    private var isProcessing = false
-    private var pendingContinuation: CheckedContinuation<Bool, Never>?
-
-    // Check if there is already a frame update being processed and wait until it finishes, replacing any previous pending update
-    func acquireUpdateSlot() async -> Bool {
-        guard isProcessing else {
-            isProcessing = true
-            return true
-        }
-
-        // Discard any prior pending render and become the latest pending render
-        return await withCheckedContinuation { continuation in
-            pendingContinuation?.resume(returning: false)
-            pendingContinuation = continuation
-        }
-    }
-
-    // If we successfully acquired the update slot above we must release it
-    func releaseUpdateSlot() {
-        let next = pendingContinuation
-        pendingContinuation = nil
-        if next == nil { isProcessing = false }
-
-        next?.resume(returning: true)
     }
 }
 
@@ -450,12 +407,6 @@ extension WKBridgeUSDConfiguration {
     }
 }
 
-struct DeformationContext {
-    let deformation: _Proto_Deformation_v1
-    var description: _Proto_LowLevelDeformationDescription_v1
-    var dirty: Bool
-}
-
 @objc
 @implementation
 extension WKBridgeReceiver {
@@ -746,6 +697,41 @@ extension WKBridgeReceiver {
         }
     }
 
+    @objc
+    func processRemovals(
+        _ meshRemovals: [WKBridgeTypedResourceId],
+        materialRemovals: [WKBridgeTypedResourceId],
+        textureRemovals: [WKBridgeTypedResourceId]
+    ) -> Bool {
+        do {
+            for meshId in meshRemovals {
+                logInfo("mesh destroyed: \(meshId)")
+                if let meshInstancesToRemove = meshToMeshInstances.removeValue(forKey: meshId) {
+                    for meshInstanceToRemove in meshInstancesToRemove {
+                        try meshInstancePool.remove(meshInstanceToRemove)
+                    }
+                }
+                meshResources.removeValue(forKey: meshId)
+                meshResourceToMaterials.removeValue(forKey: meshId)
+                meshResourceToDeformationContext.removeValue(forKey: meshId)
+            }
+
+            for materialId in materialRemovals {
+                logInfo("material destroyed: \(materialId)")
+                materialsAndParams.removeValue(forKey: materialId)
+            }
+
+            for textureId in textureRemovals {
+                logInfo("texture destroyed: \(textureId)")
+                textureHashesAndResources.removeValue(forKey: textureId)
+            }
+        } catch {
+            logError("\(error)")
+            return false
+        }
+        return true
+    }
+
     @objc(updateMesh:completionHandler:)
     func updateMesh(_ updates: [WKBridgeUpdateMesh]) async {
         do {
@@ -760,9 +746,14 @@ extension WKBridgeReceiver {
                     // swift-format-ignore: NeverForceUnwrap
                     let meshDescriptor = meshData.descriptor!
                     let descriptor = _Proto_LowLevelMeshResource_v1.Descriptor.fromLlmDescriptor(meshDescriptor)
-                    meshResource = try renderContext.makeMeshResource(descriptor: descriptor)
+                    if let cachedMeshResource = meshResources[identifier] {
+                        meshResource = cachedMeshResource
+                    } else {
+                        meshResource = try renderContext.makeMeshResource(descriptor: descriptor)
+                    }
                     meshResource.replaceData(indexData: meshData.indexData, vertexData: meshData.vertexData)
                     meshResources[identifier] = meshResource
+                    meshResourceToDeformationContext.removeValue(forKey: identifier)
                 } else {
                     guard let cachedMeshResource = meshResources[identifier] else {
                         fatalError("Mesh resource should already be created from previous update")
@@ -1991,12 +1982,9 @@ final class USDModelLoader {
     @nonobjc
     fileprivate var loop: Bool = false
 
-    @nonobjc
-    let frameUpdateQueue: FrameUpdateQueue = .init()
-
-    init(objcInstance: WKBridgeModelLoader) {
+    init(objcInstance: WKBridgeModelLoader, gpuFamily: MTLGPUFamily) {
         objcLoader = objcInstance
-        usdStageSession = _Proto_UsdStageSession_v1.noMetalSessionWithSynchronizedUpdate(gpuFamily: MTLGPUFamily.apple7)
+        usdStageSession = _Proto_UsdStageSession_v1.noMetalSessionWithSynchronizedUpdate(gpuFamily: gpuFamily)
     }
 
     func loadModel(from url: Foundation.URL) {
@@ -2040,6 +2028,7 @@ final class USDModelLoader {
         timeCodePerSecond = stage.timeCodesPerSecond > 0 ? stage.timeCodesPerSecond : 1
         startTime = stage.startTimeCode / timeCodePerSecond
         endTime = stage.endTimeCode / timeCodePerSecond
+        time = 0
     }
 
     func duration() -> Double {
@@ -2057,9 +2046,7 @@ final class USDModelLoader {
     func loadModel(from data: Data) {
     }
 
-    func update(deltaTime: TimeInterval) async {
-        // Fetch all pending prim updates for this frame in one synchronous call,
-        // replacing the delegate callback pattern used in UsdSample.
+    func update(deltaTime: TimeInterval) {
         let frameUpdate = usdStageSession.updateAndFetchFrameData(time: time * timeCodePerSecond)
 
         let newTime = currentTime() + deltaTime
@@ -2096,23 +2083,10 @@ final class USDModelLoader {
         // Each phase completes before the next begins so that:
         //   - textureHashesAndResources is fully populated before makeParameters reads it inside material Tasks
         //   - materialsAndParams has Task entries for all new materials before mesh processing looks them up
-
-        // Acquire an update slot before processing frame update to avoid racing between different updates
-        // If there's already a frame update being processed, discard the current update
-        guard await frameUpdateQueue.acquireUpdateSlot() else {
-            return
-        }
-
-        do {
-            try processRemovals(meshRemovals: meshRemovals, materialRemovals: materialRemovals, textureRemovals: textureRemovals)
-            try processTextureUpdates(textureUpdates)
-            processMaterialUpdates(materialUpdates)
-            try await processMeshUpdates(meshUpdates)
-        } catch {
-            fatalError(error.localizedDescription)
-        }
-
-        await frameUpdateQueue.releaseUpdateSlot()
+        processRemovals(meshRemovals: meshRemovals, materialRemovals: materialRemovals, textureRemovals: textureRemovals)
+        processTextureUpdates(textureUpdates)
+        processMaterialUpdates(materialUpdates)
+        processMeshUpdates(meshUpdates)
     }
 
     private func processErrors(_ errors: _Proto_UsdStageSession_v1.FrameUpdate.Errors) {
@@ -2131,11 +2105,18 @@ final class USDModelLoader {
         meshRemovals: [_Proto_MeshId],
         materialRemovals: [_Proto_MaterialId],
         textureRemovals: [_Proto_TextureId]
-    ) throws {
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=311113
+    ) {
+        self.objcLoader.processRemovals(
+            removals:
+                WKBridgeRemovals(
+                    meshRemovals: meshRemovals.map { .init(value: $0.value, path: $0.path, hashValue: $0.hashValue) },
+                    materialRemovals: materialRemovals.map { .init(value: $0.value, path: $0.path, hashValue: $0.hashValue) },
+                    textureRemovals: textureRemovals.map { .init(value: $0.value, path: $0.path, hashValue: $0.hashValue) }
+                )
+        )
     }
 
-    private func processTextureUpdates(_ updates: [_Proto_TextureDataUpdate_v1]) throws {
+    private func processTextureUpdates(_ updates: [_Proto_TextureDataUpdate_v1]) {
         self.objcLoader.updateTexture(webRequest: updates.map { webUpdateTextureRequestFromUpdateTextureRequest($0) })
     }
 
@@ -2143,7 +2124,7 @@ final class USDModelLoader {
         self.objcLoader.updateMaterial(webRequest: updates.map { webUpdateMaterialRequestFromUpdateMaterialRequest($0) })
     }
 
-    private func processMeshUpdates(_ updates: [_Proto_MeshDataUpdate_v1]) async throws {
+    private func processMeshUpdates(_ updates: [_Proto_MeshDataUpdate_v1]) {
         self.objcLoader.updateMesh(webRequest: updates.map { webUpdateMeshRequestFromUpdateMeshRequest($0) })
     }
 }
@@ -2159,29 +2140,35 @@ extension WKBridgeModelLoader {
     var textureUpdatedCallback: (([WKBridgeUpdateTexture]) -> (Void))?
     @nonobjc
     var materialUpdatedCallback: (([WKBridgeUpdateMaterial]) -> (Void))?
+    @nonobjc
+    var processRemovalsCallback: ((WKBridgeRemovals) -> (Void))?
 
     @nonobjc
     fileprivate var retainedRequests: Set<NSObject> = []
 
-    override init() {
+    @objc(initWithGPUFamily:)
+    init(gpuFamily: MTLGPUFamily) {
         super.init()
 
-        self.loader = USDModelLoader(objcInstance: self)
+        self.loader = USDModelLoader(objcInstance: self, gpuFamily: gpuFamily)
     }
 
     @objc(
         setCallbacksWithModelUpdatedCallback:
         textureUpdatedCallback:
         materialUpdatedCallback:
+        processRemovalsCallback:
     )
     func setCallbacksWithModelUpdatedCallback(
         _ modelUpdatedCallback: @escaping (([WKBridgeUpdateMesh]) -> (Void)),
         textureUpdatedCallback: @escaping (([WKBridgeUpdateTexture]) -> (Void)),
-        materialUpdatedCallback: @escaping (([WKBridgeUpdateMaterial]) -> (Void))
+        materialUpdatedCallback: @escaping (([WKBridgeUpdateMaterial]) -> (Void)),
+        processRemovalsCallback: @escaping ((WKBridgeRemovals) -> (Void))
     ) {
         self.modelUpdated = modelUpdatedCallback
         self.textureUpdatedCallback = textureUpdatedCallback
         self.materialUpdatedCallback = materialUpdatedCallback
+        self.processRemovalsCallback = processRemovalsCallback
     }
 
     func loadModel(from url: Foundation.URL) {
@@ -2192,14 +2179,12 @@ extension WKBridgeModelLoader {
         self.loader?.loadModel(data: data)
     }
 
-    @objc
     func loadEnvironmentMap(_ data: Foundation.Data) -> WKBridgeUpdateTexture? {
         self.loader?.loadEnvironmentMap(data)
     }
 
-    @objc(update:completionHandler:)
-    func update(_ deltaTime: Double) async {
-        await self.loader?.update(deltaTime: deltaTime)
+    func update(_ deltaTime: Double) {
+        self.loader?.update(deltaTime: deltaTime)
     }
 
     func setLoop(_ loop: Bool) {
@@ -2257,6 +2242,16 @@ extension WKBridgeModelLoader {
             materialUpdatedCallback(webRequest)
         }
     }
+    fileprivate func processRemovals(removals: WKBridgeRemovals) {
+        if removals.isEmpty() {
+            return
+        }
+
+        if let processRemovalsCallback {
+            retainedRequests.insert(removals)
+            processRemovalsCallback(removals)
+        }
+    }
 }
 
 private func makeFallBackTextureResource(
@@ -2311,505 +2306,6 @@ private func makeFallBackTextureResource(
     return fallbackTexture
 }
 
-func configureDeformation(
-    identifier: WKBridgeTypedResourceId,
-    deformationData: WKBridgeDeformationData,
-    commandBuffer: any MTLCommandBuffer,
-    device: any MTLDevice,
-    meshResource: _Proto_LowLevelMeshResource_v1,
-    meshResourceToDeformationContext: inout [WKBridgeTypedResourceId: DeformationContext],
-    deformationSystem: _Proto_LowLevelDeformationSystem_v1,
-    memoryOwner: task_id_token_t
-) {
-    meshResourceToDeformationContext[identifier] = buildDeformationContext(
-        meshResource: meshResource,
-        deformationData: deformationData,
-        commandBuffer: commandBuffer,
-        device: device,
-        deformationSystem: deformationSystem,
-        existingContext: meshResourceToDeformationContext[identifier],
-        identifierDescription: identifier.description,
-        memoryOwner: memoryOwner
-    )
-}
-
-func buildDeformationContext(
-    meshResource: _Proto_LowLevelMeshResource_v1,
-    deformationData: WKBridgeDeformationData,
-    commandBuffer: any MTLCommandBuffer,
-    device: any MTLDevice,
-    deformationSystem: _Proto_LowLevelDeformationSystem_v1,
-    existingContext: DeformationContext?,
-    identifierDescription: String,
-    memoryOwner: task_id_token_t
-) -> DeformationContext {
-    var deformers: [any _Proto_LowLevelDeformerDescription_v1] = []
-
-    if let skinningData = deformationData.skinningData {
-        let skinningDeformer = skinningData.makeDeformerDescription(device: device, memoryOwner: memoryOwner)
-        deformers.append(skinningDeformer)
-    }
-
-    if let blendShapeData = deformationData.blendShapeData {
-        do {
-            let blendShapeDeformer = try blendShapeData.makeDeformerDescription(device: device, memoryOwner: memoryOwner)
-            deformers.append(blendShapeDeformer)
-        } catch {
-            print("Error creating blend shape deformer for \(identifierDescription): \(error.localizedDescription)")
-        }
-    }
-
-    // TODO: add tangent frame data to input
-    if let renormalizationData = deformationData.renormalizationData {
-        do {
-            let renormalization = try renormalizationData.makeDeformerDescription(device: device, memoryOwner: memoryOwner)
-            deformers.append(renormalization)
-        } catch {
-            print("Error creating renormalization deformer for \(identifierDescription): \(error.localizedDescription)")
-        }
-    }
-
-    assert(!deformers.isEmpty)
-
-    let inputMeshDescription: _Proto_LowLevelDeformationDescription_v1.MeshDescription?
-    if let existingContext {
-        inputMeshDescription = existingContext.description.input
-    } else {
-        inputMeshDescription = makeInputMeshDescriptionForDeformation(
-            meshResource: meshResource,
-            deformationData: deformationData,
-            commandBuffer: commandBuffer,
-            device: device
-        )
-    }
-
-    let outputMeshDescription = makeOutputMeshDescriptionForDeformation(
-        meshResource: meshResource,
-        deformationData: deformationData,
-        commandBuffer: commandBuffer,
-        device: device
-    )
-
-    // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-    // swift-format-ignore: NeverForceUnwrap
-    let deformationDescription =
-        try? _Proto_LowLevelDeformationDescription_v1.make(
-            input: inputMeshDescription!,
-            deformers: deformers,
-            output: outputMeshDescription!
-        )
-        .get()
-
-    // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-    // swift-format-ignore: NeverForceUnwrap
-    let deformation = try? deformationSystem.make(description: deformationDescription!).get()
-    // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-    // swift-format-ignore: NeverForceUnwrap
-    return DeformationContext(deformation: deformation!, description: deformationDescription!, dirty: true)
-}
-
-struct DeformationMeshDescriptionData {
-    var vertexAttributes: [_Proto_LowLevelDeformationDescription_v1.VertexAttribute] = []
-    var vertexLayouts: [_Proto_LowLevelDeformationDescription_v1.VertexLayout] = []
-    var mtlBuffers: [any MTLBuffer] = []
-}
-
-extension _Proto_LowLevelMeshResource_v1.VertexSemantic {
-    func toDeformationVertexSemantic() -> _Proto_LowLevelDeformationDescription_v1.MeshSemantic? {
-        switch self {
-        case .position:
-            return .position
-        case .normal:
-            return .normal
-        case .tangent:
-            return .tangent
-        case .bitangent:
-            return .bitangent
-        case .uv0:
-            return .uv0
-        case .uv1:
-            return .uv1
-        case .uv2:
-            return .uv2
-        case .uv3:
-            return .uv3
-        case .uv4:
-            return .uv4
-        case .uv5:
-            return .uv5
-        case .uv6:
-            return .uv6
-        case .uv7:
-            return .uv7
-        default:
-            return nil
-        }
-    }
-}
-
-func makeMeshDescriptionForDeformation(
-    meshResource: _Proto_LowLevelMeshResource_v1,
-    deformationData: WKBridgeDeformationData,
-    commandBuffer: any MTLCommandBuffer,
-    isInput: Bool,
-    device: any MTLDevice
-) -> DeformationMeshDescriptionData {
-    var deformationMeshDescriptionData = DeformationMeshDescriptionData()
-
-    // Table to map mesh resource buffer index to deformation buffer index
-    // They can be different because deformation may not require all vertex buffers
-    // e.g. if position data is in mesh resource buffer 1, its deformation buffer index could be 0
-    // if that's the only attribute data require by deformation
-    var meshResourceBufferIndexToDeformationBufferIndex: [Int: Int] = [:]
-    // Similar usage as the buffer index table. See comment above
-    var meshResourceLayoutIndexToDeformationLayoutIndex: [Int: Int] = [:]
-
-    var inputAttributeSemantics: [_Proto_LowLevelMeshResource_v1.VertexSemantic] = [.position]
-    if deformationData.renormalizationData != nil {
-        inputAttributeSemantics.append(contentsOf: [.normal, .tangent, .bitangent])
-    }
-
-    for attribute in meshResource.descriptor.vertexAttributes where inputAttributeSemantics.contains(attribute.semantic) {
-        guard let deformationMeshSemantic = attribute.semantic.toDeformationVertexSemantic() else {
-            fatalError("Invalid semantic for deformation input: \(attribute.semantic)")
-        }
-
-        let layoutIndex = attribute.layoutIndex
-        let layout = meshResource.descriptor.vertexLayouts[layoutIndex]
-        let bufferIndex = layout.bufferIndex
-
-        var deformationBufferIndex = deformationMeshDescriptionData.mtlBuffers.count
-        if let cachedDeformationBufferIndex = meshResourceBufferIndexToDeformationBufferIndex[bufferIndex] {
-            deformationBufferIndex = cachedDeformationBufferIndex
-        } else {
-            meshResourceBufferIndexToDeformationBufferIndex[bufferIndex] = deformationBufferIndex
-
-            // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-            // swift-format-ignore: NeverForceUnwrap
-            let vertexBuffer = meshResource.readVertices(at: bufferIndex, using: commandBuffer)!
-            if isInput {
-                // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-                // swift-format-ignore: NeverForceUnwrap
-                let mtlBuffer = device.makeBuffer(length: vertexBuffer.length, options: .storageModeShared)!
-                // Copy data from vertexPositionsBuffer to inputPositionsBuffer
-                // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-                // swift-format-ignore: NeverForceUnwrap
-                let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
-                blitEncoder.copy(from: vertexBuffer, sourceOffset: 0, to: mtlBuffer, destinationOffset: 0, size: vertexBuffer.length)
-                deformationMeshDescriptionData.mtlBuffers.append(mtlBuffer)
-                blitEncoder.endEncoding()
-            } else {
-                deformationMeshDescriptionData.mtlBuffers.append(vertexBuffer)
-            }
-        }
-
-        var deformationLayoutIndex = deformationMeshDescriptionData.vertexLayouts.count
-        if let cachedDeformationLayoutIndex = meshResourceLayoutIndexToDeformationLayoutIndex[layoutIndex] {
-            deformationLayoutIndex = cachedDeformationLayoutIndex
-        } else {
-            meshResourceLayoutIndexToDeformationLayoutIndex[layoutIndex] = deformationLayoutIndex
-            deformationMeshDescriptionData.vertexLayouts.append(
-                .init(bufferIndex: deformationBufferIndex, bufferOffset: layout.bufferOffset, bufferStride: layout.bufferStride)
-            )
-        }
-
-        // Hardcode elementType for now the inputs could only be position or tangent
-        // frame data which are all .float3
-        // TODO: fix this when uv is required for deformation
-        deformationMeshDescriptionData.vertexAttributes.append(
-            .init(elementType: .float3, offset: attribute.offset, layoutIndex: deformationLayoutIndex, semantic: deformationMeshSemantic)
-        )
-    }
-
-    return deformationMeshDescriptionData
-}
-
-func makeInputMeshDescriptionForDeformation(
-    meshResource: _Proto_LowLevelMeshResource_v1,
-    deformationData: WKBridgeDeformationData,
-    commandBuffer: any MTLCommandBuffer,
-    device: any MTLDevice
-) -> _Proto_LowLevelDeformationDescription_v1.MeshDescription? {
-    var inputMeshDescriptionData = makeMeshDescriptionForDeformation(
-        meshResource: meshResource,
-        deformationData: deformationData,
-        commandBuffer: commandBuffer,
-        isInput: true,
-        device: device
-    )
-
-    if let renormalizationData = deformationData.renormalizationData {
-        let vertexIndices = renormalizationData.vertexIndicesPerTriangle
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let inputIndexBuffer = unsafe device.makeBuffer(
-            bytes: vertexIndices,
-            length: vertexIndices.count * MemoryLayout<UInt32>.stride,
-            options: .storageModeShared
-        )!
-
-        inputMeshDescriptionData.vertexAttributes.append(
-            .init(elementType: .uint, offset: 0, layoutIndex: inputMeshDescriptionData.vertexLayouts.count, semantic: .index)
-        )
-        inputMeshDescriptionData.vertexLayouts.append(
-            .init(bufferIndex: inputMeshDescriptionData.mtlBuffers.count, bufferOffset: 0, bufferStride: MemoryLayout<UInt32>.stride)
-        )
-
-        inputMeshDescriptionData.mtlBuffers.append(inputIndexBuffer)
-    }
-
-    let result = _Proto_LowLevelDeformationDescription_v1.MeshDescription.make(
-        buffers: inputMeshDescriptionData.mtlBuffers,
-        attributes: inputMeshDescriptionData.vertexAttributes,
-        layouts: inputMeshDescriptionData.vertexLayouts,
-        vertexCount: meshResource.descriptor.vertexCapacity,
-        indexCount: meshResource.descriptor.indexCapacity
-    )
-
-    switch result {
-    case .success(let meshDescription):
-        return meshDescription
-    case .failure(let error):
-        print(error)
-        return nil
-    }
-}
-
-func makeOutputMeshDescriptionForDeformation(
-    meshResource: _Proto_LowLevelMeshResource_v1,
-    deformationData: WKBridgeDeformationData,
-    commandBuffer: any MTLCommandBuffer,
-    device: any MTLDevice
-) -> _Proto_LowLevelDeformationDescription_v1.MeshDescription? {
-    let outputMeshDescriptionData = makeMeshDescriptionForDeformation(
-        meshResource: meshResource,
-        deformationData: deformationData,
-        commandBuffer: commandBuffer,
-        isInput: false,
-        device: device
-    )
-
-    let result = _Proto_LowLevelDeformationDescription_v1.MeshDescription.make(
-        buffers: outputMeshDescriptionData.mtlBuffers,
-        attributes: outputMeshDescriptionData.vertexAttributes,
-        layouts: outputMeshDescriptionData.vertexLayouts,
-        vertexCount: meshResource.descriptor.vertexCapacity
-    )
-
-    switch result {
-    case .success(let meshDescription):
-        return meshDescription
-    case .failure(let error):
-        print(error)
-        return nil
-    }
-}
-
-extension WKBridgeSkinningData {
-    fileprivate func makeDeformerDescription(
-        device: any MTLDevice,
-        memoryOwner: task_id_token_t
-    ) -> any _Proto_LowLevelDeformerDescription_v1 {
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let jointTransformsBuffer = unsafe device.makeBuffer(
-            bytes: self.jointTransforms,
-            length: self.jointTransforms.count * MemoryLayout<simd_float4x4>.size,
-            options: .storageModeShared
-        )!
-        jointTransformsBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let jointTransformsDescription = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            jointTransformsBuffer,
-            offset: 0,
-            occupiedLength: jointTransformsBuffer.length,
-            elementType: .float4x4
-        )!
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let inverseBindPosesBuffer = unsafe device.makeBuffer(
-            bytes: self.inverseBindPoses,
-            length: self.inverseBindPoses.count * MemoryLayout<simd_float4x4>.size,
-            options: .storageModeShared
-        )!
-        inverseBindPosesBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let inverseBindPosesDescription = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            inverseBindPosesBuffer,
-            offset: 0,
-            occupiedLength: inverseBindPosesBuffer.length,
-            elementType: .float4x4
-        )!
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let jointIndicesBuffer = unsafe device.makeBuffer(
-            bytes: self.influenceJointIndices,
-            length: self.influenceJointIndices.count * MemoryLayout<UInt32>.size,
-            options: .storageModeShared
-        )!
-        jointIndicesBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let jointIndicesDescription = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            jointIndicesBuffer,
-            offset: 0,
-            occupiedLength: jointIndicesBuffer.length,
-            elementType: .uint
-        )!
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let influenceWeightsBuffer = unsafe device.makeBuffer(
-            bytes: self.influenceWeights,
-            length: self.influenceWeights.count * MemoryLayout<Float>.size,
-            options: .storageModeShared
-        )!
-        influenceWeightsBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let influenceWeightsDescription = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            influenceWeightsBuffer,
-            offset: 0,
-            occupiedLength: influenceWeightsBuffer.length,
-            elementType: .float
-        )!
-
-        let deformerDescription = _Proto_LowLevelSkinningDescription_v1(
-            jointTransforms: jointTransformsDescription,
-            inverseBindPoses: inverseBindPosesDescription,
-            influenceJointIndices: jointIndicesDescription,
-            influenceWeights: influenceWeightsDescription,
-            geometryBindTransform: self.geometryBindTransform,
-            influencePerVertexCount: self.influencePerVertexCount
-        )
-
-        return deformerDescription
-    }
-}
-
-extension WKBridgeBlendShapeData {
-    func makeDeformerDescription(device: any MTLDevice, memoryOwner: task_id_token_t) throws -> any _Proto_LowLevelDeformerDescription_v1 {
-        var weights: [Float] = []
-
-        var debugWeights = self.weights
-        var debugPositionOffsets = self.positionOffsets
-
-        let blendTargetCount = self.weights.count
-        let positionCount = self.positionOffsets[0].count
-        for i in 0..<blendTargetCount {
-            weights += Array(repeating: debugWeights[i], count: positionCount)
-        }
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let blendWeightsBuffer = unsafe device.makeBuffer(
-            bytes: weights,
-            length: weights.count * MemoryLayout<Float>.size,
-            options: .storageModeShared
-        )!
-        blendWeightsBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let blendWeightsDescription = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            blendWeightsBuffer,
-            offset: 0,
-            occupiedLength: blendWeightsBuffer.length,
-            elementType: .float
-        )!
-
-        let positionOffsets = debugPositionOffsets.flatMap(\.self)
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let positionOffsetsBuffer = unsafe device.makeBuffer(
-            bytes: positionOffsets,
-            length: positionOffsets.count * MemoryLayout<SIMD3<Float>>.size,
-            options: .storageModeShared
-        )!
-        positionOffsetsBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let positionOffsetsDescription = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            positionOffsetsBuffer,
-            offset: 0,
-            occupiedLength: positionOffsetsBuffer.length,
-            elementType: .float3
-        )!
-
-        let deformerDescriptionResult = _Proto_LowLevelBlendShapeDescription_v1.make(
-            weights: blendWeightsDescription,
-            positionOffsets: positionOffsetsDescription,
-            sparseIndices: nil,
-            normalOffsets: nil,
-            tangentOffsets: nil,
-            blendBitangents: false
-        )
-
-        return try deformerDescriptionResult.get()
-    }
-}
-
-extension WKBridgeRenormalizationData {
-    func makeDeformerDescription(device: any MTLDevice, memoryOwner: task_id_token_t) throws -> any _Proto_LowLevelDeformerDescription_v1 {
-        // Create adjacency buffer
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let adjacenciesMetalBuffer = unsafe device.makeBuffer(
-            bytes: vertexAdjacencies,
-            length: vertexAdjacencies.count * MemoryLayout<UInt32>.size,
-            options: .storageModeShared
-        )!
-        adjacenciesMetalBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let adjacenciesBuffer = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            adjacenciesMetalBuffer,
-            offset: 0,
-            occupiedLength: adjacenciesMetalBuffer.length,
-            elementType: .uint
-        )!
-
-        // Create adjacency end indices buffer
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let adjacencyEndIndicesMetalBuffer = unsafe device.makeBuffer(
-            bytes: vertexAdjacencyEndIndices,
-            length: vertexAdjacencyEndIndices.count * MemoryLayout<UInt32>.size,
-            options: .storageModeShared
-        )!
-        adjacencyEndIndicesMetalBuffer.__setOwnerWithIdentity(memoryOwner)
-
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        let adjacencyEndIndicesBuffer = _Proto_LowLevelDeformationDescription_v1.Buffer.make(
-            adjacencyEndIndicesMetalBuffer,
-            offset: 0,
-            occupiedLength: adjacencyEndIndicesMetalBuffer.length,
-            elementType: .uint
-        )!
-
-        let deformerDescription = _Proto_LowLevelRenormalizationDescription_v1.make(
-            recalculateNormals: true,
-            recalculateTangents: false,
-            recalculateBitangents: false,
-            adjacencies: adjacenciesBuffer,
-            adjacencyEndIndices: adjacencyEndIndicesBuffer
-        )
-
-        return deformerDescription
-    }
-}
-
 #else
 @objc
 @implementation
@@ -2852,6 +2348,15 @@ extension WKBridgeReceiver {
     func updateMesh(_ data: [WKBridgeUpdateMesh]) async {
     }
 
+    @objc
+    func processRemovals(
+        _ meshRemovals: [WKBridgeTypedResourceId],
+        materialRemovals: [WKBridgeTypedResourceId],
+        textureRemovals: [WKBridgeTypedResourceId]
+    ) -> Bool {
+        false
+    }
+
     @objc(setTransform:)
     func setTransform(_ transform: simd_float4x4) {
     }
@@ -2872,7 +2377,8 @@ extension WKBridgeReceiver {
 @objc
 @implementation
 extension WKBridgeModelLoader {
-    override init() {
+    @objc(initWithGPUFamily:)
+    init(gpuFamily: MTLGPUFamily) {
         super.init()
     }
 
@@ -2880,11 +2386,13 @@ extension WKBridgeModelLoader {
         setCallbacksWithModelUpdatedCallback:
         textureUpdatedCallback:
         materialUpdatedCallback:
+        processRemovalsCallback:
     )
     func setCallbacksWithModelUpdatedCallback(
         _ modelUpdatedCallback: @escaping (([WKBridgeUpdateMesh]) -> (Void)),
         textureUpdatedCallback: @escaping (([WKBridgeUpdateTexture]) -> (Void)),
-        materialUpdatedCallback: @escaping (([WKBridgeUpdateMaterial]) -> (Void))
+        materialUpdatedCallback: @escaping (([WKBridgeUpdateMaterial]) -> (Void)),
+        processRemovalsCallback: @escaping ((WKBridgeRemovals) -> (Void))
     ) {
     }
 
@@ -2898,7 +2406,7 @@ extension WKBridgeModelLoader {
         nil
     }
 
-    func update(_ deltaTime: Double) async {
+    func update(_ deltaTime: Double) {
     }
 
     func setLoop(_ loop: Bool) {

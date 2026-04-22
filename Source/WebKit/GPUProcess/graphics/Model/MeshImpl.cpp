@@ -128,6 +128,11 @@ void MeshImpl::updateRenderBuffers(WebModel::ResizeMeshDescriptor&& descriptor)
 }
 #endif
 
+void MeshImpl::processRemovals(Vector<WebModel::TypedResourceId>&& meshRemovals, Vector<WebModel::TypedResourceId>&& materialRemovals, Vector<WebModel::TypedResourceId>&& textureRemovals, CompletionHandler<void(bool)>&& completion)
+{
+    m_backing->processRemovals(WTF::move(meshRemovals), WTF::move(materialRemovals), WTF::move(textureRemovals), WTF::move(completion));
+}
+
 }
 
 #endif

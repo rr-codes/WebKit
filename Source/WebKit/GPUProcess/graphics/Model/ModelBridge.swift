@@ -242,6 +242,28 @@ extension WKBridgeTypedResourceId {
 
 @objc
 @implementation
+extension WKBridgeRemovals {
+    let meshRemovals: [WKBridgeTypedResourceId]
+    let materialRemovals: [WKBridgeTypedResourceId]
+    let textureRemovals: [WKBridgeTypedResourceId]
+
+    func isEmpty() -> Bool {
+        meshRemovals.isEmpty && materialRemovals.isEmpty && textureRemovals.isEmpty
+    }
+
+    init(
+        meshRemovals: [WKBridgeTypedResourceId],
+        materialRemovals: [WKBridgeTypedResourceId],
+        textureRemovals: [WKBridgeTypedResourceId]
+    ) {
+        self.meshRemovals = meshRemovals
+        self.materialRemovals = materialRemovals
+        self.textureRemovals = textureRemovals
+    }
+}
+
+@objc
+@implementation
 extension WKBridgeUpdateMesh {
     let identifier: WKBridgeTypedResourceId
     let updateType: WKBridgeDataUpdateType

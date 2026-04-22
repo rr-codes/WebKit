@@ -350,6 +350,20 @@ void RemoteMeshProxy::setStageMode(WebCore::StageModeOperation stageMode)
 #endif
 }
 
+void RemoteMeshProxy::processRemovals(Vector<WebModel::TypedResourceId>&& meshRemovals, Vector<WebModel::TypedResourceId>&& materialRemovals, Vector<WebModel::TypedResourceId>&& textureRemovals, CompletionHandler<void(bool)>&& completion)
+{
+#if ENABLE(GPU_PROCESS_MODEL)
+    auto sendResult = sendWithAsyncReply(Messages::RemoteMesh::ProcessRemovals(WTF::move(meshRemovals), WTF::move(materialRemovals), WTF::move(textureRemovals)), [completion = WTF::move(completion)](bool success) mutable {
+        completion(success);
+    });
+    UNUSED_VARIABLE(sendResult);
+#else
+    UNUSED_PARAM(meshRemovals);
+    UNUSED_PARAM(materialRemovals);
+    UNUSED_PARAM(textureRemovals);
+    completion(false);
+#endif
+}
 
 #if ENABLE(GPU_PROCESS_MODEL)
 void RemoteMeshProxy::computeTransform()

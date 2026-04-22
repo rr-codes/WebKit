@@ -221,7 +221,7 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
     });
     m_currentModel->setViewportSize(cssSize.width().toFloat(), cssSize.height().toFloat());
 
-    m_modelLoader = adoptNS([allocWKBridgeModelLoaderInstance() init]);
+    m_modelLoader = adoptNS([allocWKBridgeModelLoaderInstance() initWithGPUFamily:MTLGPUFamilyApple7]);
     Ref protectedThis { *this };
     [m_modelLoader setCallbacksWithModelUpdatedCallback:^(NSArray<WKBridgeUpdateMesh *> *updateRequest) {
         ensureOnMainThreadWithProtectedThis([updateRequest] (Ref<WebModelPlayer> protectedThis) {
@@ -270,6 +270,16 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
                 }));
 
             [protectedThis->m_modelLoader requestCompleted:updateMaterial];
+            protectedThis->startUpdateLoopIfNeeded();
+        });
+    } processRemovalsCallback:^(WKBridgeRemovals *removals) {
+        ensureOnMainThreadWithProtectedThis([removals] (Ref<WebModelPlayer> protectedThis) {
+            if (protectedThis->m_currentModel) {
+                protectedThis->m_currentModel->processRemovals(convert<WKBridgeTypedResourceId, WebModel::TypedResourceId>(removals.meshRemovals), convert<WKBridgeTypedResourceId, WebModel::TypedResourceId>(removals.materialRemovals), convert<WKBridgeTypedResourceId, WebModel::TypedResourceId>(removals.textureRemovals), [] (bool) {
+                });
+            }
+
+            [protectedThis->m_modelLoader requestCompleted:removals];
             protectedThis->startUpdateLoopIfNeeded();
         });
     }];
@@ -552,15 +562,7 @@ void WebModelPlayer::update()
 
     auto timeDelta = paused() ? 0.f : (m_playbackRate * elapsedTime);
 
-    BinarySemaphore completion;
-    [m_modelLoader update:timeDelta completionHandler:[&completion] mutable {
-        completion.signal();
-    }];
-    if (!completion.waitFor(500_ms)) {
-        m_isUpdating = false;
-        return;
-    }
-
+    [m_modelLoader update:timeDelta];
     if (!m_isLooping && !paused() && [m_modelLoader currentTime] >= [m_modelLoader duration])
         m_pauseState = PauseState::Paused;
 

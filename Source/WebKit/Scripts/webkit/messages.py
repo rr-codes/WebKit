@@ -1200,6 +1200,7 @@ def headers_for_type(type, for_implementation_file=False):
         'WebModel::ImageAssetSwizzle': ['"ModelTypes.h"'],
         'WebModel::UpdateTextureDescriptor': ['"ModelTypes.h"'],
         'WebModel::UpdateMaterialDescriptor': ['"ModelTypes.h"'],
+        'WebModel::TypedResourceId': ['"ModelTypes.h"'],
         'WebModel::MeshPart': ['"ModelTypes.h"'],
         'WebModel::VertexAttributeFormat': ['"ModelTypes.h"'],
         'WebModel::VertexLayout': ['"ModelTypes.h"'],

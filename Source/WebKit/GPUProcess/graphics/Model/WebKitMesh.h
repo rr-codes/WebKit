@@ -45,6 +45,7 @@ struct WebModelCreateMeshDescriptor;
 namespace WebModel {
 struct ImageAsset;
 struct ResizeMeshDescriptor;
+struct TypedResourceId;
 struct UpdateMaterialDescriptor;
 struct UpdateMeshDescriptor;
 struct UpdateTextureDescriptor;
@@ -73,18 +74,16 @@ public:
     void NODELETE setEnvironmentMap(const WebModel::UpdateTextureDescriptor&);
     void NODELETE play(bool);
     void NODELETE updateRenderBuffers(const WebModel::ResizeMeshDescriptor&);
+    void processRemovals(Vector<WebModel::TypedResourceId>&& meshRemovals, Vector<WebModel::TypedResourceId>&& materialRemovals, Vector<WebModel::TypedResourceId>&& textureRemovals, CompletionHandler<void(bool)>&&);
 
 private:
     WebMesh(const WebModelCreateMeshDescriptor&);
-
-    void NODELETE processUpdates() const;
 
     RetainPtr<NSMutableArray> m_textures;
 
 #if ENABLE(GPU_PROCESS_MODEL)
     RetainPtr<WKBridgeReceiver> m_receiver;
     RetainPtr<NSUUID> m_meshIdentifier;
-    RetainPtr<NSMutableDictionary> m_batchedUpdates;
     mutable bool m_meshDataExists { false };
     std::optional<simd_float4x4> m_transform;
 #endif

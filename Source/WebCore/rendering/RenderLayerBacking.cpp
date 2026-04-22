@@ -1320,9 +1320,17 @@ bool RenderLayerBacking::updateConfiguration(const RenderLayer* compositingAnces
     }
 #if ENABLE(MODEL_ELEMENT)
     else if (is<RenderModel>(renderer())) {
+#if ENABLE(GPU_PROCESS_MODEL)
+        auto modelBackgroundColor = rendererBackgroundColor();
+        modelBackgroundColor = modelBackgroundColor.isValid() ? modelBackgroundColor.opaqueColor() : Color::black;
+        m_graphicsLayer->setBackgroundColor(modelBackgroundColor);
+#else
+        auto modelBackgroundColor = rendererBackgroundColor();
+#endif
+
         RefPtr element = downcast<HTMLModelElement>(renderer().element());
 
-        element->configureGraphicsLayer(*m_graphicsLayer, rendererBackgroundColor());
+        element->configureGraphicsLayer(*m_graphicsLayer, modelBackgroundColor);
         element->sizeMayHaveChanged();
 
         layerConfigChanged = true;

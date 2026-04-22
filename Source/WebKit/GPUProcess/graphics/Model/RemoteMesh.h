@@ -103,6 +103,7 @@ private:
     void updateRenderBuffers(unsigned, unsigned, CompletionHandler<void(Vector<MachSendRight>&&)>&&);
 
     void render(uint32_t textureIndex, CompletionHandler<void(bool)>&&);
+    void processRemovals(Vector<WebModel::TypedResourceId>&& meshRemovals, Vector<WebModel::TypedResourceId>&& materialRemovals, Vector<WebModel::TypedResourceId>&& textureRemovals, CompletionHandler<void(bool)>&&);
 
     const Ref<WebKit::Mesh> m_backing;
     WeakRef<ModelObjectHeap> m_objectHeap;
