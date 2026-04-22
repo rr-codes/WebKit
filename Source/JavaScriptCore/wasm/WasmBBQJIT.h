@@ -27,6 +27,7 @@
 
 #if ENABLE(WEBASSEMBLY_BBQJIT)
 
+#include "MathCommon.h"
 #include "PCToCodeOriginMap.h"
 #include "SimpleRegisterAllocator.h"
 #include "WasmCallingConvention.h"
@@ -1677,17 +1678,12 @@ public:
     void emitFloatingPointMinOrMax(FPRReg left, FPRReg right, FPRReg result);
 
     template<MinOrMax IsMinOrMax, typename FloatType>
-    constexpr FloatType computeFloatingPointMinOrMax(FloatType left, FloatType right)
+    FloatType computeFloatingPointMinOrMax(FloatType left, FloatType right)
     {
-        if (std::isnan(left))
-            return left;
-        if (std::isnan(right))
-            return right;
-
         if constexpr (IsMinOrMax == MinOrMax::Min)
-            return std::min<FloatType>(left, right);
+            return Math::fMin<FloatType>(left, right);
         else
-            return std::max<FloatType>(left, right);
+            return Math::fMax<FloatType>(left, right);
     }
 
     [[nodiscard]] PartialResult addF32Min(Value lhs, Value rhs, Value& result);
