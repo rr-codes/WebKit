@@ -216,7 +216,7 @@ LiveRegionSnapshot AXLiveRegionManager::buildLiveRegionSnapshot(AccessibilityObj
         }
 
         if (shouldIncludeInSnapshot(object))
-            snapshot.objects.append({ object.objectID(), object.announcementText(), object.languageIncludingAncestors(), { } });
+            snapshot.objects.append({ object.objectID(), object.announcementText(), object.languageIncludingAncestors(), { }, object.isStaticText() });
         else {
             for (auto& child : object.unignoredChildren())
                 buildObjectList(downcast<AccessibilityObject>(child.get()));
@@ -329,7 +329,6 @@ AttributedString AXLiveRegionManager::computeAnnouncement(const LiveRegionSnapsh
     StringBuilder stringBuilder;
     Vector<std::pair<AttributedString::Range, HashMap<String, AttributedString::AttributeValue>>> attributes;
 
-    bool reachedCharacterLimit = false;
     size_t characterCount = 0;
 
     HashSet<AXID> spokenObjects = { };
@@ -368,38 +367,29 @@ AttributedString AXLiveRegionManager::computeAnnouncement(const LiveRegionSnapsh
         spokenObjects.add(object.objectID);
     };
 
-    if (hasAdditions && !diff.added.isEmpty()) {
-        for (auto& object : diff.added) {
-            appendStringAndLanguage(object);
-
-            if (characterCount > maximumAnnouncementLength) {
-                reachedCharacterLimit = true;
+    auto announceObjects = [&](const Vector<LiveRegionObject>& objects, IsLiveRegionRemoval isRemoval = IsLiveRegionRemoval::No, bool textContentOnly = false) {
+        for (auto& object : objects) {
+            if (characterCount > maximumAnnouncementLength)
                 break;
-            }
+            if (textContentOnly && !object.isTextContent)
+                continue;
+            appendStringAndLanguage(object, isRemoval);
         }
-    }
+    };
 
-    if (!reachedCharacterLimit && hasRemovals && !diff.removed.isEmpty()) {
-        for (auto& object : diff.removed) {
-            appendStringAndLanguage(object, IsLiveRegionRemoval::Yes);
+    // "additions" announces all new nodes. "text" without "additions" announces only added text
+    // nodes (e.g. textContent/innerText replacement creates new text nodes, not element additions).
+    // When both are set, "additions" already covers text nodes so the text-only path is skipped.
+    if (hasAdditions)
+        announceObjects(diff.added);
+    else if (hasText)
+        announceObjects(diff.added, IsLiveRegionRemoval::No, /* textContentOnly */ true);
 
-            if (characterCount > maximumAnnouncementLength) {
-                reachedCharacterLimit = true;
-                break;
-            }
-        }
-    }
+    if (hasRemovals)
+        announceObjects(diff.removed, IsLiveRegionRemoval::Yes);
 
-    if (!reachedCharacterLimit && hasText && !diff.changed.isEmpty()) {
-        for (auto& object : diff.changed) {
-            appendStringAndLanguage(object);
-
-            if (characterCount > maximumAnnouncementLength) {
-                reachedCharacterLimit = true;
-                break;
-            }
-        }
-    }
+    if (hasText)
+        announceObjects(diff.changed);
 
     auto string = stringBuilder.toString();
     return AttributedString { WTF::move(string), WTF::move(attributes), std::nullopt };
