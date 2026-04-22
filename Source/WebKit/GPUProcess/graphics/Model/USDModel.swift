@@ -705,7 +705,7 @@ extension WKBridgeReceiver {
                 let identifier = data.identifier
                 logInfo("updateMaterial \(identifier)")
 
-                guard let shaderGraph = ShaderGraph._Proto_ShaderNodeGraph.fromWKDescriptor(data.materialGraph) else {
+                guard let shaderGraph = _Proto_ShaderNodeGraph.fromWKDescriptor(data.materialGraph) else {
                     fatalError("No materialGraph data provided for material \(identifier)")
                 }
 
@@ -1473,7 +1473,7 @@ func webUpdateMaterialRequestFromUpdateMaterialRequest(
     )
 }
 
-extension ShaderGraph._Proto_ShaderNodeGraph {
+extension _Proto_ShaderNodeGraph {
     // Reconstructs the graph from the IPC bridge representation using the SGGraph API directly.
     // This bypasses _Proto_ShaderDataType (which collapses color3h/color4h to cgColor3/cgColor4)
     // and instead uses SGNode.create(nodeDefName:name:) for builtin nodes (preserving MaterialX
