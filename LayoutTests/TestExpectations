@@ -1010,7 +1010,6 @@ imported/w3c/web-platform-tests/html/syntax/speculative-charset/speculative-scri
 imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/base-href-script-src.tentative.html [ Failure Pass ]
 imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/img-src-loading-lazy.tentative.html [ Failure Pass ]
 imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/link-rel-alternate-stylesheet.tentative.html [ Failure Pass ]
-imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-disabled.tentative.html [ Failure Pass ]
 imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/link-rel-stylesheet-nomatch-media.tentative.html [ Failure Pass ]
 imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/math-font-script-src.tentative.html [ Failure Pass ]
 imported/w3c/web-platform-tests/html/syntax/speculative-parsing/generated/page-load/math-script-src.tentative.html [ Failure Pass ]

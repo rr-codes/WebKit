@@ -322,6 +322,8 @@ private:
                 m_referrerPolicy = parseReferrerPolicy(attributeValue, ReferrerPolicySource::ReferrerPolicyAttribute).value_or(ReferrerPolicy::EmptyString);
             else if (match(attributeName, fetchpriorityAttr))
                 m_fetchPriority = parseEnumerationFromString<RequestPriority>(attributeValue.toString()).value_or(RequestPriority::Auto);
+            else if (match(attributeName, disabledAttr))
+                m_linkIsDisabled = true;
             break;
         case TagId::Input:
             if (match(attributeName, srcAttr))
@@ -417,6 +419,9 @@ private:
         if (m_tagId == TagId::Link && !m_linkIsStyleSheet && !m_linkIsPreload)
             return false;
 
+        if (m_tagId == TagId::Link && m_linkIsDisabled)
+            return false;
+
         if (m_tagId == TagId::Input && !m_inputIsImage)
             return false;
 
@@ -434,6 +439,7 @@ private:
     String m_crossOriginMode;
     bool m_linkIsStyleSheet;
     bool m_linkIsPreload;
+    bool m_linkIsDisabled { false };
     String m_mediaAttribute;
     String m_nonceAttribute;
     String m_metaContent;
