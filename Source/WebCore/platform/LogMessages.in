@@ -60,6 +60,7 @@ HTMLMediaElementCanTransitionFromAutoplayToPlayNotEnoughData, "HTMLMediaElement:
 HTMLMediaElementCheckPlaybackTargetCompatibility, "HTMLMediaElement::checkPlaybackTargetCompatibility(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementConfigureTextTrackDisplay, "HTMLMediaElement::configureTextTrackDisplay(%" PRIX64 ") %" PUBLIC_LOG_STRING "", (uint64_t, CString), DEFAULT, Media
 HTMLMediaElementConfigureTextTrackGroup, "HTMLMediaElement::configureTextTrackGroup(%" PRIX64 ") %" PUBLIC_LOG_STRING " track with language %" PUBLIC_LOG_STRING " and BCP 47 language %" PUBLIC_LOG_STRING " has score %d", (uint64_t, CString, CString, CString, int), DEFAULT, Media
+HTMLMediaElementCancelSpeakingCueText, "HTMLMediaElement::cancelSpeakingCueText(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementConstructor, "HTMLMediaElement::HTMLMediaElement(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementCreateMediaPlayer, "HTMLMediaElement::createMediaPlayer(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementCurrentMediaTimeSeeking, "HTMLMediaElement::currentMediaTime(%" PRIX64 ") seeking, returning %f", (uint64_t, float), DEFAULT, Media
@@ -78,8 +79,10 @@ HTMLMediaElementMediaPlayerSeeked, "HTMLMediaElement::mediaPlayerSeeked(%" PRIX6
 HTMLMediaElementMediaPlayerSizeChanged, "HTMLMediaElement::mediaPlayerSizeChanged(%" PRIX64 ") w = %f, h = %f", (uint64_t, float, float), DEFAULT, Media
 HTMLMediaElementMediaPlayerTimeChanged, "HTMLMediaElement::mediaPlayerTimeChanged(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementMediaPlayerTimeChangedLooping, "HTMLMediaElement::mediaPlayerTimeChanged(%" PRIX64 ") current time (%f) is greater then duration (%f), looping", (uint64_t, double, double), DEFAULT, Media
+HTMLMediaElementNoneSupported, "HTMLMediaElement::noneSupported(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPause, "HTMLMediaElement::pause(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPauseInternal, "HTMLMediaElement::pauseInternal(%" PRIX64 ")", (uint64_t), DEFAULT, Media
+HTMLMediaElementPausePlaybackForExtendedTextDescription, "HTMLMediaElement::pausePlaybackForExtendedTextDescription(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPauseSpeakingCueText, "HTMLMediaElement::pauseSpeakingCueText(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPlay, "HTMLMediaElement::play(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementPlayDom, "HTMLMediaElement::play(%" PRIX64 ") (DOM)", (uint64_t), DEFAULT, Media
@@ -88,6 +91,7 @@ HTMLMediaElementPostConnectionSteps, "HTMLMediaElement::postConnectionSteps(%" P
 HTMLMediaElementPrepareForLoad, "HTMLMediaElement::prepareForLoad(%" PRIX64 ") gesture = %d", (uint64_t, int), DEFAULT, Media
 HTMLMediaElementRemoveAudioTrack, "HTMLMediaElement::removeAudioTrack(%" PRIX64 ") id: %" PUBLIC_LOG_STRING ", %" PUBLIC_LOG_STRING "", (uint64_t, CString, CString), DEFAULT, Media
 HTMLMediaElementRemovingSteps, "HTMLMediaElement::removingSteps(%" PRIX64 ")", (uint64_t), DEFAULT, Media
+HTMLMediaElementResumeSpeakingCueText, "HTMLMediaElement::resumeSpeakingCueText(%" PRIX64 ")", (uint64_t), DEFAULT, Media
 HTMLMediaElementSceneIdentifierDidChange, "HTMLMediaElement::sceneIdentifierDidChange(%" PRIX64 ") %" PUBLIC_LOG_STRING "", (uint64_t, CString), DEFAULT, Media
 HTMLMediaElementScheduleConfigureTextTracksLambdaTaskFired, "HTMLMediaElement::scheduleConfigureTextTracks(%" PRIX64 ") lambda(), task fired", (uint64_t), DEFAULT, Media
 HTMLMediaElementScheduleConfigureTextTracksTaskScheduled, "HTMLMediaElement::scheduleConfigureTextTracks(%" PRIX64 ") task scheduled", (uint64_t), DEFAULT, Media
