@@ -243,6 +243,8 @@ RenderPtr<RenderElement> RenderElement::createFor(Element& element, RenderStyle&
         return createRenderer<RenderGrid>(element, WTF::move(style));
     case Style::DisplayType::BlockDeprecatedFlex:
     case Style::DisplayType::InlineDeprecatedFlex:
+        if (rendererTypeOverride.contains(ConstructBlockLevelRendererFor::DeprecatedFlexBox))
+            return createRenderer<RenderBlockFlow>(RenderObject::Type::BlockFlow, element, WTF::move(style));
         return createRenderer<RenderDeprecatedFlexibleBox>(element, WTF::move(style));
     case Style::DisplayType::RubyBase:
         return createRenderer<RenderInline>(RenderObject::Type::Inline, element, WTF::move(style));
