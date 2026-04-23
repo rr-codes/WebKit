@@ -621,6 +621,13 @@ macro(WEBKIT_SETUP_SWIFT_AND_GENERATE_SWIFT_CPP_INTEROP_HEADER _target _module_n
         # of the modulemap and hader for WebKit's internal "APIs" which we
         # make available from C++ to Swift.
         list(APPEND _swift_options "-cxx-interoperability-mode=default" "-Xcc" "-std=c++2b" "-explicit-module-build" "-enable-upcoming-feature" "InternalImportsByDefault" "-Xcc" "-I${_interop_module_path}")
+        # swiftc spawns swift-plugin-server under sandbox-exec to expand macros
+        # (e.g. SwiftUI @State). When the cmake build itself runs inside an
+        # outer sandbox that disallows nested sandbox_apply, macro expansion
+        # fails with "external macro implementation type ... could not be
+        # found". -disable-sandbox skips the inner sandbox; the macros are
+        # WebKit's own, so the isolation it provides isn't load-bearing here.
+        list(APPEND _swift_options "-disable-sandbox")
         # We'll use these options both for mainstream cmake invocations of swiftc (here)
         # and for our own invocation to output an interoperability .h file (later)
         list(TRANSFORM _swift_options PREPEND "$<$<COMPILE_LANGUAGE:Swift>:" OUTPUT_VARIABLE _swift_only_options)
