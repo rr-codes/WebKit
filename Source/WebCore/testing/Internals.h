@@ -257,6 +257,7 @@ public:
     enum class ResourceLoadPriority { ResourceLoadPriorityVeryLow, ResourceLoadPriorityLow, ResourceLoadPriorityMedium, ResourceLoadPriorityHigh, ResourceLoadPriorityVeryHigh };
     void NODELETE setOverrideResourceLoadPriority(ResourceLoadPriority);
     void NODELETE setStrictRawResourceValidationPolicyDisabled(bool);
+    void setImmediateRendererDestructionEnabled(bool);
     std::optional<ResourceLoadPriority> getResourcePriority(const String& url);
 
     using FetchObject = Variant<Ref<FetchRequest>, Ref<FetchResponse>>;

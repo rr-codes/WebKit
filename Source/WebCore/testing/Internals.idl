@@ -546,6 +546,7 @@ enum ContentsFormat {
     undefined setOverrideCachePolicy(CachePolicy policy);
     undefined setOverrideResourceLoadPriority(ResourceLoadPriority priority);
     undefined setStrictRawResourceValidationPolicyDisabled(boolean disabled);
+    undefined setImmediateRendererDestructionEnabled(boolean enabled);
     ResourceLoadPriority? getResourcePriority(DOMString url);
 
     boolean isFetchObjectContextStopped(FetchObject object);

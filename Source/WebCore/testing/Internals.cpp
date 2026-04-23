@@ -1111,6 +1111,14 @@ void Internals::setStrictRawResourceValidationPolicyDisabled(bool disabled)
         localFrame->loader().setStrictRawResourceValidationPolicyDisabledForTesting(disabled);
 }
 
+void Internals::setImmediateRendererDestructionEnabled(bool enabled)
+{
+    auto* document = contextDocument();
+    if (!document || !document->view())
+        return;
+    document->view()->layoutContext().setImmediateRendererDestructionEnabledForTesting(enabled);
+}
+
 static Internals::ResourceLoadPriority NODELETE toInternalsResourceLoadPriority(ResourceLoadPriority priority)
 {
     switch (priority) {
