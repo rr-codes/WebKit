@@ -421,7 +421,7 @@ static inline FloatRect rootViewBounds(Node& node)
 
 static inline String labelText(HTMLElement& element)
 {
-    auto labels = element.labels();
+    RefPtr labels = element.labels();
     if (!labels)
         return { };
 
@@ -439,7 +439,7 @@ static inline String labelText(HTMLElement& element)
 
 static inline std::optional<FloatRect> visibleAssociatedLabelBounds(HTMLElement& element)
 {
-    auto labels = element.labels();
+    RefPtr labels = element.labels();
     if (!labels)
         return std::nullopt;
 
