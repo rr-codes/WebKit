@@ -1923,6 +1923,14 @@ private:
             compileFulfillPromiseFirstResolving();
             break;
 
+        case NewResolvedPromise:
+            compileNewResolvedPromise();
+            break;
+
+        case NewRejectedPromise:
+            compileNewRejectedPromise();
+            break;
+
         case PromiseResolve:
             compilePromiseResolve();
             break;
@@ -20646,6 +20654,44 @@ IGNORE_CLANG_WARNINGS_END
         LValue promise = lowCell(m_node->child1());
         LValue argument = lowJSValue(m_node->child2());
         vmCall(Void, operationFulfillPromiseFirstResolving, weakPointer(globalObject), promise, argument);
+    }
+
+    void compileNewResolvedPromise()
+    {
+        auto* globalObject = m_graph.globalObjectFor(m_origin.semantic);
+
+        if (!(abstractValue(m_node->child1()).m_type & SpecObject)) {
+            LValue argument = lowJSValue(m_node->child1());
+
+            LBasicBlock slowCase = m_out.newBlock();
+            LBasicBlock continuation = m_out.newBlock();
+
+            LValue structure = weakStructure(m_graph.registerStructure(globalObject->promiseStructure()));
+            LValue promise = allocateObject<JSPromise>(structure, m_out.intPtrZero, slowCase);
+            m_out.store64(m_out.constInt64(JSValue::encode(jsNumber(static_cast<int32_t>(JSPromise::Status::Fulfilled)))), promise, m_heaps.JSInternalFieldObjectImpl_internalFields[static_cast<unsigned>(JSPromise::Field::Flags)]);
+            m_out.store64(argument, promise, m_heaps.JSInternalFieldObjectImpl_internalFields[static_cast<unsigned>(JSPromise::Field::ReactionsOrResult)]);
+            mutatorFence();
+            ValueFromBlock fastResult = m_out.anchor(promise);
+            m_out.jump(continuation);
+
+            LBasicBlock lastNext = m_out.appendTo(slowCase, continuation);
+            ValueFromBlock slowResult = m_out.anchor(vmCall(pointerType(), operationNewResolvedPromise, weakPointer(globalObject), argument));
+            m_out.jump(continuation);
+
+            m_out.appendTo(continuation, lastNext);
+            setJSValue(m_out.phi(pointerType(), fastResult, slowResult));
+            return;
+        }
+
+        LValue argument = lowJSValue(m_node->child1());
+        setJSValue(vmCall(pointerType(), operationNewResolvedPromise, weakPointer(globalObject), argument));
+    }
+
+    void compileNewRejectedPromise()
+    {
+        auto* globalObject = m_graph.globalObjectFor(m_origin.semantic);
+        LValue argument = lowJSValue(m_node->child1());
+        setJSValue(vmCall(pointerType(), operationNewRejectedPromise, weakPointer(globalObject), argument));
     }
 
     void compilePromiseResolve()

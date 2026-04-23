@@ -3973,6 +3973,13 @@ bool AbstractInterpreter<AbstractStateType>::executeEffects(unsigned clobberLimi
         break;
     }
 
+    case NewResolvedPromise:
+    case NewRejectedPromise: {
+        clobberWorld();
+        setTypeForNode(node, SpecPromiseObject);
+        break;
+    }
+
     case CreateGenerator:
     case CreateAsyncGenerator: {
         auto tryToFold = [&] (const ClassInfo* classInfo) -> bool {

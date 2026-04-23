@@ -362,6 +362,8 @@ static JSC_DECLARE_HOST_FUNCTION(fulfillPromise);
 static JSC_DECLARE_HOST_FUNCTION(resolvePromiseWithFirstResolvingFunctionCallCheck);
 static JSC_DECLARE_HOST_FUNCTION(rejectPromiseWithFirstResolvingFunctionCallCheck);
 static JSC_DECLARE_HOST_FUNCTION(fulfillPromiseWithFirstResolvingFunctionCallCheck);
+static JSC_DECLARE_HOST_FUNCTION(newResolvedPromise);
+static JSC_DECLARE_HOST_FUNCTION(newRejectedPromise);
 static JSC_DECLARE_HOST_FUNCTION(resolveWithInternalMicrotaskForAsyncAwait);
 static JSC_DECLARE_HOST_FUNCTION(driveAsyncFunction);
 static JSC_DECLARE_HOST_FUNCTION(newHandledRejectedPromise);
@@ -788,6 +790,21 @@ JSC_DEFINE_HOST_FUNCTION(fulfillPromiseWithFirstResolvingFunctionCallCheck, (JSG
     JSValue argument = callFrame->uncheckedArgument(1);
     promise->fulfill(globalObject->vm(), globalObject, argument);
     return encodedJSUndefined();
+}
+
+JSC_DEFINE_HOST_FUNCTION(newResolvedPromise, (JSGlobalObject* globalObject, CallFrame* callFrame))
+{
+    VM& vm = globalObject->vm();
+    JSValue argument = callFrame->uncheckedArgument(0);
+    auto* promise = JSPromise::create(vm, globalObject->promiseStructure());
+    promise->resolve(globalObject, vm, argument);
+    return JSValue::encode(promise);
+}
+
+JSC_DEFINE_HOST_FUNCTION(newRejectedPromise, (JSGlobalObject* globalObject, CallFrame* callFrame))
+{
+    JSValue argument = callFrame->uncheckedArgument(0);
+    return JSValue::encode(JSPromise::rejectedPromise(globalObject, argument));
 }
 
 JSC_DEFINE_HOST_FUNCTION(resolveWithInternalMicrotaskForAsyncAwait, (JSGlobalObject* globalObject, CallFrame* callFrame))
@@ -1963,6 +1980,12 @@ capitalName ## Constructor* lowerName ## Constructor = featureFlag ? capitalName
         });
     m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::fulfillPromiseWithFirstResolvingFunctionCallCheck)].initLater([] (const Initializer<JSCell>& init) {
             init.set(JSFunction::create(init.vm, init.owner, 2, "fulfillPromiseWithFirstResolvingFunctionCallCheck"_s, fulfillPromiseWithFirstResolvingFunctionCallCheck, ImplementationVisibility::Private, FulfillPromiseWithFirstResolvingFunctionCallCheckIntrinsic));
+        });
+    m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::newResolvedPromise)].initLater([] (const Initializer<JSCell>& init) {
+            init.set(JSFunction::create(init.vm, init.owner, 1, "newResolvedPromise"_s, newResolvedPromise, ImplementationVisibility::Private, NewResolvedPromiseIntrinsic));
+        });
+    m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::newRejectedPromise)].initLater([] (const Initializer<JSCell>& init) {
+            init.set(JSFunction::create(init.vm, init.owner, 1, "newRejectedPromise"_s, newRejectedPromise, ImplementationVisibility::Private, NewRejectedPromiseIntrinsic));
         });
     m_linkTimeConstants[static_cast<unsigned>(LinkTimeConstant::resolveWithInternalMicrotaskForAsyncAwait)].initLater([] (const Initializer<JSCell>& init) {
             init.set(JSFunction::create(init.vm, init.owner, 3, "resolveWithInternalMicrotaskForAsyncAwait"_s, resolveWithInternalMicrotaskForAsyncAwait, ImplementationVisibility::Private));
