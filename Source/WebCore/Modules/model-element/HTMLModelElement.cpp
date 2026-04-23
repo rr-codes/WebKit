@@ -1219,7 +1219,7 @@ const URL& HTMLModelElement::environmentMap() const
 
 void HTMLModelElement::setEnvironmentMap(const URL& url)
 {
-    if (url.string() == m_environmentMapURL.string())
+    if (url == m_environmentMapURL)
         return;
 
     m_environmentMapURL = url;
