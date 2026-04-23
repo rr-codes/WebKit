@@ -291,8 +291,10 @@ void NetworkStorageManager::startReceivingMessageFromConnection(IPC::Connection&
 {
     ASSERT(RunLoop::isMain());
 
-    workQueue().dispatch([this, protectedThis = Ref { *this }, connection = connection.uniqueID(), preferences]() mutable {
+    workQueue().dispatch([this, protectedThis = Ref { *this }, connection = connection.uniqueID(), allowedSites = crossThreadCopy(WTF::move(allowedSites)), preferences]() mutable {
         assertIsCurrent(workQueue());
+
+        updateAllowedSitesForConnectionInternal(connection, WTF::move(allowedSites));
         ASSERT(!m_preferencesForConnections.contains(connection));
         m_preferencesForConnections.add(connection, preferences);
 
@@ -305,7 +307,6 @@ void NetworkStorageManager::startReceivingMessageFromConnection(IPC::Connection&
 
     connection.addWorkQueueMessageReceiver(Messages::NetworkStorageManager::messageReceiverName(), m_queue.get(), *this);
     m_connections.add(connection);
-    updateAllowedSitesForConnection(connection.uniqueID(), WTF::move(allowedSites));
 }
 
 void NetworkStorageManager::stopReceivingMessageFromConnection(IPC::Connection& connection)
