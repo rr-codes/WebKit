@@ -5672,6 +5672,7 @@ fast/dom/Geolocation/startUpdatingOnlyWhenPageVisible.html [ Skip ]
 fast/dom/Geolocation/stopUpdatingForHiddenPage.html [ Skip ]
 
 # eventSender.mouseDown is not implemented
+fast/events/anchor-mouse-focusable-quirk.html [ Skip ]
 fast/loader/location-hash-user-gesture.html [ Skip ]
 imported/blink/editing/selection/selectstart-event-crash.html [ Skip ]
 imported/blink/fast/forms/label/label-contains-other-interactive-content.html [ Skip ]

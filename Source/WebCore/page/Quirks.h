@@ -71,6 +71,7 @@ public:
     bool shouldDeferIntersectionObserversDuringResize() const;
     bool NODELETE shouldSilenceMediaQueryListChangeEvents() const;
     bool shouldIgnoreInvalidSignal() const;
+    bool needsAnchorToBeMouseFocusable() const;
     bool needsFormControlToBeMouseFocusable() const;
     bool needsAutoplayPlayPauseEvents() const;
     bool needsSeekingSupportDisabled() const;

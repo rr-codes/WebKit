@@ -5484,6 +5484,9 @@ webkit.org/b/313058 media/media-vp8-webm.html [ Pass Timeout ImageOnlyFailure ]
 
 webkit.org/b/312985 svg/transforms/svg-transform-scale-with-and-without-layer.html [ ImageOnlyFailure ]
 
+# Anchor mouse-focusability quirk is Cocoa-only.
+webkit.org/b/312692 fast/events/anchor-mouse-focusable-quirk.html [ Skip ]
+
 # End: Common failures between GTK and WPE.
 
 #////////////////////////////////////////////////////////////////////////////////////////

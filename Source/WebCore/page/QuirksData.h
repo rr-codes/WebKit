@@ -89,7 +89,8 @@ struct QuirksData {
         NeedsDeferKeyDownAndKeyPressTimersUntilNextEditingCommandQuirk,
 #endif
         NeedsFacebookRemoveNotSupportedQuirk,
-#if PLATFORM(MAC)
+#if PLATFORM(COCOA)
+        NeedsAnchorToBeMouseFocusableQuirk,
         NeedsFormControlToBeMouseFocusableQuirk,
 #endif
 #if PLATFORM(IOS_FAMILY)
