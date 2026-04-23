@@ -385,6 +385,14 @@ bool SVGImage::hasRelativeHeight() const
     return false;
 }
 
+bool SVGImage::hasNaturalAspectRatio() const
+{
+    RefPtr rootElement = this->rootElement();
+    if (!rootElement)
+        return false;
+    return rootElement->hasIntrinsicDimensions();
+}
+
 void SVGImage::computeIntrinsicDimensions(float& intrinsicWidth, float& intrinsicHeight, FloatSize& intrinsicRatio)
 {
     RefPtr rootElement = this->rootElement();
