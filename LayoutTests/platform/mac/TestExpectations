@@ -573,8 +573,6 @@ fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Failure ]
 
 webkit.org/b/131477 fast/repaint/obscured-background-no-repaint.html [ Pass Failure ]
 
-webkit.org/b/116259 http/tests/cache/willsendrequest-returns-null-for-memory-cache-load.html [ Pass Failure ]
-
 # --- Start media tests ---
 ## --- Start media wontfix tests ---
 # This test requires ogg codecs
