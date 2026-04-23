@@ -1500,8 +1500,6 @@ webkit.org/b/210517 storage/indexeddb/result-request-cycle.html [ Pass Failure ]
 
 webkit.org/b/211856 media/video-poster-set-after-playback.html [ Pass Failure ]
 
-http/tests/frame-throttling/raf-throttle-in-cross-origin-subframe.html [ Pass Failure ]
-
 webkit.org/b/212215 media/video-isplayingtoautomotiveheadunit.html [ Pass Failure ]
 
 webkit.org/b/212219 media/track/track-cue-missing.html [ Pass Failure ]
