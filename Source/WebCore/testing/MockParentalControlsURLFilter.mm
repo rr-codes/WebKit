@@ -53,7 +53,7 @@ bool MockParentalControlsURLFilter::isEnabledImpl() const
     return true;
 }
 
-void MockParentalControlsURLFilter::isURLAllowedImpl(const URL& mainDocumentURL, const URL& url, CompletionHandler<void(bool, NSData *)>&& completionHandler)
+void MockParentalControlsURLFilter::isURLAllowedImpl(IsMainFrameLoad, const URL& mainDocumentURL, const URL& url, CompletionHandler<void(bool, NSData *)>&& completionHandler)
 {
     ASSERT(isMainThread());
 

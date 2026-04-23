@@ -106,7 +106,7 @@ void ParentalControlsContentFilter::willSendRequest(ResourceRequest&&, const Res
         return;
     }
 
-    urlFilter()->isURLAllowed(m_mainDocumentURL, redirectResponse.url(), [this, protectedThis = Ref { *this }, evaluatedURL = redirectResponse.url(), completionHandler = WTF::move(completionHandler)](bool isAllowed, NSData *replacementData) mutable {
+    urlFilter()->isURLAllowed(m_isMainFrameLoad, m_mainDocumentURL, redirectResponse.url(), [this, protectedThis = Ref { *this }, evaluatedURL = redirectResponse.url(), completionHandler = WTF::move(completionHandler)](bool isAllowed, NSData *replacementData) mutable {
         if (!isAllowed) {
             m_state = State::Blocked;
             m_evaluatedURL = evaluatedURL;

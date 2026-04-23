@@ -43,7 +43,7 @@ private:
     explicit MockParentalControlsURLFilter(Vector<URL>&& blockedURLs);
 
     bool isEnabledImpl() const final;
-    void isURLAllowedImpl(const URL& mainDocumentURL, const URL&, CompletionHandler<void(bool, NSData *)>&&) final;
+    void isURLAllowedImpl(IsMainFrameLoad, const URL& mainDocumentURL, const URL&, CompletionHandler<void(bool, NSData *)>&&) final;
     void allowURL(const URL&, CompletionHandler<void(bool)>&&) final;
 
     HashSet<URL> m_blockedURLs;
