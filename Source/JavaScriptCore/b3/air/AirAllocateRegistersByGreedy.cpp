@@ -1854,7 +1854,7 @@ private:
                 return a.cost > b.cost;
             if (a.tmp0.tmpIndex(bank) != b.tmp0.tmpIndex(bank))
                 return a.tmp0.tmpIndex(bank) < b.tmp0.tmpIndex(bank);
-            ASSERT(a.tmp1.tmpIndex(bank) != b.tmp1.tmpIndex(bank));
+            ASSERT_IMPLIES(&a != &b, a.tmp1.tmpIndex(bank) != b.tmp1.tmpIndex(bank));
             return a.tmp1.tmpIndex(bank) < b.tmp1.tmpIndex(bank);
         });
 
