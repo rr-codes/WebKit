@@ -730,7 +730,13 @@ BBQJIT::BBQJIT(CompilationContext& compilationContext, const TypeDefinition& sig
         bind(parameter, Location::fromArgumentLocation(callInfo.params[i], type.kind));
         m_arguments.append(i);
     }
-    m_localAndCalleeSaveStorage = m_frameSize; // All stack slots allocated so far are locals.
+    m_localAndCalleeSaveStorage = m_frameSizeForValidation; // All stack slots allocated so far are locals.
+
+    unsigned ipintFrameBytes = m_profiledCallee.maxFrameSizeInV128() * sizeof(v128_t);
+    unsigned bbqCalleeSaveBytes = RegisterAtOffsetList::bbqCalleeSaveRegisters().registerCount() * sizeof(UCPURegister);
+    unsigned calleeStackBytes = std::max<unsigned>(m_profiledCallee.maxCalleeStackSize(), WTF::roundUpToMultipleOf<stackAlignmentBytes()>(WasmCallingConvention::headerSizeInBytes));
+    unsigned scratchSpillBytes = (gprSetBuilder.numberOfSetRegisters() + fprSetBuilder.numberOfSetRegisters()) * tempSlotSize;
+    m_frameSize = alignedFrameSize(bbqCalleeSaveBytes + ipintFrameBytes + calleeStackBytes + scratchSpillBytes);
 }
 
 bool BBQJIT::canTierUpToOMG() const
@@ -828,7 +834,7 @@ PartialResult BBQJIT::addLocal(Type type, uint32_t numberOfLocals)
     for (uint32_t i = 0; i < numberOfLocals; i ++) {
         uint32_t localIndex = m_locals.size();
         m_localSlots.append(allocateStack(Value::fromLocal(type.kind, localIndex)));
-        m_localAndCalleeSaveStorage = m_frameSize;
+        m_localAndCalleeSaveStorage = m_frameSizeForValidation;
         m_locals.append(m_localSlots.last());
         m_localTypes.append(type.kind);
     }
@@ -3201,14 +3207,12 @@ void BBQJIT::emitEntryTierUpCheck()
     } else
         m_jit.storePairPtr(GPRInfo::wasmContextInstancePointer, wasmScratchGPR, GPRInfo::callFrameRegister, CCallHelpers::TrustedImm32(CallFrameSlot::codeBlock * sizeof(Register)));
 
-    m_frameSizeLabels.append(m_jit.moveWithPatch(TrustedImmPtr(nullptr), wasmScratchGPR));
-
     if (m_profiledCallee.hasExceptionHandlers())
         m_jit.store32(CCallHelpers::TrustedImm32(wasmInvalidCallSiteIndex), CCallHelpers::tagFor(CallFrameSlot::argumentCountIncludingThis));
 
     // Because we compile in a single pass, we always need to pessimistically check for stack underflow/overflow.
     static_assert(wasmScratchGPR == GPRInfo::nonPreservedNonArgumentGPR0);
-    m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, wasmScratchGPR);
+    m_jit.subPtr(GPRInfo::callFrameRegister, TrustedImm32(m_frameSize), wasmScratchGPR);
 
     MacroAssembler::JumpList overflow;
     JIT_COMMENT(m_jit, "Stack overflow check");
@@ -3382,7 +3386,7 @@ MacroAssembler::Label BBQJIT::addLoopOSREntrypoint()
     // Because tiering up code materializes BaselineData, this is always non nullptr.
     m_jit.loadPtr(Address(GPRInfo::wasmContextInstancePointer, JSWebAssemblyInstance::offsetOfBaselineData(m_info, m_functionIndex)), GPRInfo::jitDataRegister);
 
-    int roundedFrameSize = stackCheckSize();
+    uint32_t roundedFrameSize = stackCheckSize();
 #if CPU(X86_64) || CPU(ARM64)
     m_jit.subPtr(GPRInfo::callFrameRegister, TrustedImm32(roundedFrameSize), MacroAssembler::stackPointerRegister);
 #else
@@ -3837,7 +3841,8 @@ void BBQJIT::emitLoopTierUpCheckAndOSREntryData(const ControlData& data, Stack& 
         offset += arg.value().type() == TypeKind::V128 ? 2 : 1;
     }
     Checked<int32_t> calleeStackSize = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(offset * sizeof(uint64_t));
-    m_maxCalleeStackSize = std::max<int>(calleeStackSize, m_maxCalleeStackSize);
+    m_maxCalleeStackSizeForValidation = std::max<uint32_t>(calleeStackSize, m_maxCalleeStackSizeForValidation);
+    ASSERT(static_cast<uint32_t>(alignedFrameSize(m_maxCalleeStackSizeForValidation + m_frameSizeForValidation)) <= m_frameSize);
 
     ++m_callSiteIndex;
     if (m_profiledCallee.hasExceptionHandlers()) {
@@ -4111,12 +4116,7 @@ void BBQJIT::prepareForExceptions()
 
 [[nodiscard]] PartialResult BBQJIT::endTopLevel(const Stack&)
 {
-    int frameSize = stackCheckSize();
-    CCallHelpers& jit = m_jit;
-    m_jit.addLinkTask([frameSize, labels = WTF::move(m_frameSizeLabels), &jit](LinkBuffer& linkBuffer) {
-        for (auto label : labels)
-            jit.repatchPointer(linkBuffer.locationOf<NoPtrTag>(label), std::bit_cast<void*>(static_cast<uintptr_t>(frameSize)));
-    });
+    RELEASE_ASSERT(static_cast<uint32_t>(alignedFrameSize(m_maxCalleeStackSizeForValidation + m_frameSizeForValidation)) <= m_frameSize);
 
     LOG_DEDENT();
     LOG_INSTRUCTION("End");
@@ -4143,7 +4143,7 @@ void BBQJIT::prepareForExceptions()
     for (unsigned i = 0; i < numberOfExceptionTypes; ++i) {
         auto& jumps = m_exceptions[i];
         if (!jumps.empty()) {
-            jumps.link(&jit);
+            jumps.link(&m_jit);
             emitThrowException(static_cast<ExceptionType>(i));
         }
     }
@@ -4360,7 +4360,8 @@ void BBQJIT::emitTailCall(FunctionSpaceIndex functionIndexSpace, const TypeDefin
     CallInformation callInfo = callingConvention.callInformationFor(signature, CallRole::Callee);
     Checked<int32_t> calleeStackSize = WTF::roundUpToMultipleOf(stackAlignmentBytes(), callInfo.headerAndArgumentStackSizeInBytes);
     // Do this to ensure we don't write past SP.
-    m_maxCalleeStackSize = std::max<int>(calleeStackSize, m_maxCalleeStackSize);
+    m_maxCalleeStackSizeForValidation = std::max<uint32_t>(calleeStackSize, m_maxCalleeStackSizeForValidation);
+    ASSERT(static_cast<uint32_t>(alignedFrameSize(m_maxCalleeStackSizeForValidation + m_frameSizeForValidation)) <= m_frameSize);
 
     const TypeSignatureIndex callerTypeSignatureIndex = m_info.internalFunctionTypeSignatureIndices[m_functionIndex];
     const TypeDefinition& callerTypeDefinition = m_info.expandedTypeSignature(callerTypeSignatureIndex);
@@ -4482,7 +4483,8 @@ void BBQJIT::emitTailCall(FunctionSpaceIndex functionIndexSpace, const TypeDefin
     const FunctionSignature& functionType = *signature.as<FunctionSignature>();
     CallInformation callInfo = wasmCallingConvention().callInformationFor(signature, CallRole::Caller);
     Checked<int32_t> calleeStackSize = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(callInfo.headerAndArgumentStackSizeInBytes);
-    m_maxCalleeStackSize = std::max<int>(calleeStackSize, m_maxCalleeStackSize);
+    m_maxCalleeStackSizeForValidation = std::max<uint32_t>(calleeStackSize, m_maxCalleeStackSizeForValidation);
+    ASSERT(static_cast<uint32_t>(alignedFrameSize(m_maxCalleeStackSizeForValidation + m_frameSizeForValidation)) <= m_frameSize);
 
     // Preserve caller-saved registers and other info
     prepareForExceptions();
@@ -4513,13 +4515,7 @@ void BBQJIT::emitTailCall(FunctionSpaceIndex functionIndexSpace, const TypeDefin
     returnValuesFromCall(results, functionType, callInfo);
 
     // Our callee could have tail called someone else and changed SP so we need to restore it.
-    m_frameSizeLabels.append(m_jit.moveWithPatch(TrustedImmPtr(nullptr), wasmScratchGPR));
-#if CPU(ARM64)
-    m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, MacroAssembler::stackPointerRegister);
-#else
-    m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, wasmScratchGPR);
-    m_jit.move(wasmScratchGPR, MacroAssembler::stackPointerRegister);
-#endif
+    m_jit.subPtr(GPRInfo::callFrameRegister, TrustedImm32(m_frameSize), MacroAssembler::stackPointerRegister);
 
     if (m_info.callCanClobberInstance(functionIndexSpace) || m_info.isImportedFunctionFromFunctionIndexSpace(functionIndexSpace))
         restoreWebAssemblyGlobalStateAfterWasmCall();
@@ -4538,7 +4534,8 @@ void BBQJIT::emitIndirectCall(const char* opcode, unsigned callProfileIndex, con
     const auto& callingConvention = wasmCallingConvention();
     CallInformation wasmCalleeInfo = callingConvention.callInformationFor(signature, CallRole::Caller);
     Checked<int32_t> calleeStackSize = WTF::roundUpToMultipleOf<stackAlignmentBytes()>(wasmCalleeInfo.headerAndArgumentStackSizeInBytes);
-    m_maxCalleeStackSize = std::max<int>(calleeStackSize, m_maxCalleeStackSize);
+    m_maxCalleeStackSizeForValidation = std::max<uint32_t>(calleeStackSize, m_maxCalleeStackSizeForValidation);
+    ASSERT(static_cast<uint32_t>(alignedFrameSize(m_maxCalleeStackSizeForValidation + m_frameSizeForValidation)) <= m_frameSize);
 
     prepareForExceptions();
     saveValuesAcrossCallAndPassArguments(arguments, wasmCalleeInfo, signature); // Keep in mind that this clobbers wasmScratchGPR and wasmScratchFPR.
@@ -4598,13 +4595,7 @@ void BBQJIT::emitIndirectCall(const char* opcode, unsigned callProfileIndex, con
     returnValuesFromCall(results, *signature.as<FunctionSignature>(), wasmCalleeInfo);
 
     // Our callee could have tail called someone else and changed SP so we need to restore it.
-    m_frameSizeLabels.append(m_jit.moveWithPatch(TrustedImmPtr(nullptr), wasmScratchGPR));
-#if CPU(ARM64)
-    m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, MacroAssembler::stackPointerRegister);
-#else
-    m_jit.subPtr(GPRInfo::callFrameRegister, wasmScratchGPR, wasmScratchGPR);
-    m_jit.move(wasmScratchGPR, MacroAssembler::stackPointerRegister);
-#endif
+    m_jit.subPtr(GPRInfo::callFrameRegister, TrustedImm32(m_frameSize), MacroAssembler::stackPointerRegister);
 
     restoreWebAssemblyGlobalStateAfterWasmCall();
 
@@ -4632,7 +4623,8 @@ void BBQJIT::emitIndirectTailCall(const char* opcode, const Value& callee, GPRRe
     CallInformation callInfo = callingConvention.callInformationFor(signature, CallRole::Callee);
     Checked<int32_t> calleeStackSize = WTF::roundUpToMultipleOf(stackAlignmentBytes(), callInfo.headerAndArgumentStackSizeInBytes);
     // Do this to ensure we don't write past SP.
-    m_maxCalleeStackSize = std::max<int>(calleeStackSize, m_maxCalleeStackSize);
+    m_maxCalleeStackSizeForValidation = std::max<uint32_t>(calleeStackSize, m_maxCalleeStackSizeForValidation);
+    ASSERT(static_cast<uint32_t>(alignedFrameSize(m_maxCalleeStackSizeForValidation + m_frameSizeForValidation)) <= m_frameSize);
 
     const TypeSignatureIndex callerTypeSignatureIndex = m_info.internalFunctionTypeSignatureIndices[m_functionIndex];
     const TypeDefinition& callerTypeDefinition = m_info.expandedTypeSignature(callerTypeSignatureIndex);
@@ -5692,18 +5684,18 @@ Location BBQJIT::canonicalSlot(Value value)
         return m_localSlots[value.asLocal()];
 
     LocalOrTempIndex tempIndex = value.asTemp();
-    int slotOffset = WTF::roundUpToMultipleOf<tempSlotSize>(m_localAndCalleeSaveStorage) + (tempIndex + 1) * tempSlotSize;
-    if (m_frameSize < slotOffset)
-        m_frameSize = slotOffset;
-    return Location::fromStack(-slotOffset);
+    uint32_t slotOffset = WTF::roundUpToMultipleOf<tempSlotSize>(m_localAndCalleeSaveStorage) + (tempIndex + 1) * tempSlotSize;
+    if (m_frameSizeForValidation < slotOffset)
+        m_frameSizeForValidation = slotOffset;
+    return Location::fromStack(-static_cast<int32_t>(slotOffset));
 }
 
 Location BBQJIT::allocateStack(Value value)
 {
     // Align stack for value size.
-    m_frameSize = WTF::roundUpToMultipleOf(value.size(), m_frameSize);
-    m_frameSize += value.size();
-    return Location::fromStack(-m_frameSize);
+    m_frameSizeForValidation = WTF::roundUpToMultipleOf(value.size(), m_frameSizeForValidation);
+    m_frameSizeForValidation += value.size();
+    return Location::fromStack(-static_cast<int32_t>(m_frameSizeForValidation));
 }
 
 void BBQJIT::emitArrayGetPayload(StorageType type, GPRReg arrayGPR, GPRReg payloadGPR)

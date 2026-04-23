@@ -938,7 +938,7 @@ public:
     using CatchHandler = FunctionParser<BBQJIT>::CatchHandler;
     using ArgumentList = FunctionParser<BBQJIT>::ArgumentList;
 
-    unsigned stackCheckSize() const { return alignedFrameSize(m_maxCalleeStackSize + m_frameSize); }
+    uint32_t stackCheckSize() const { return m_frameSize; }
 
 private:
     unsigned m_loggingIndent = 0;
@@ -2276,10 +2276,9 @@ private:
     Vector<std::tuple<WasmOrigin, Function<void(BBQJIT&, CCallHelpers&)>>, 8> m_latePaths; // Late paths to emit after the rest of the function body.
     Vector<std::tuple<WasmOrigin, MacroAssembler::JumpList, MacroAssembler::Label, RegisterBindings, Function<void(BBQJIT&, CCallHelpers&)>>> m_slowPaths; // Like a late path but for when we need to make a CCall thus need to restore our state.
 
-    // FIXME: All uses of this are to restore sp, so we should emit these as a patchable sub instruction rather than move.
-    Vector<DataLabelPtr, 1> m_frameSizeLabels;
-    int m_frameSize { 0 };
-    int m_maxCalleeStackSize { 0 };
+    uint32_t m_frameSize { 0 };
+    uint32_t m_frameSizeForValidation { 0 };
+    uint32_t m_maxCalleeStackSizeForValidation { 0 };
     int m_localAndCalleeSaveStorage { 0 }; // Stack offset pointing to the local and callee save with the lowest address.
     bool m_usesSIMD { false }; // Whether the function we are compiling uses SIMD instructions or not.
     bool m_usesExceptions { false };
