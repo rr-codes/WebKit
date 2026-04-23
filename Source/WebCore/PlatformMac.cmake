@@ -1091,6 +1091,9 @@ list(APPEND WebCoreTestSupport_PRIVATE_HEADERS testing/cocoa/WebArchiveDumpSuppo
 list(APPEND WebCoreTestSupport_SOURCES
     testing/Internals.mm
     testing/MockApplePaySetupFeature.cpp
+    testing/MockContentFilter.cpp
+    testing/MockContentFilterSettings.cpp
+    testing/MockParentalControlsURLFilter.mm
     testing/MockMediaSessionCoordinator.cpp
     testing/MockPaymentCoordinator.cpp
     testing/MockPreviewLoaderClient.cpp

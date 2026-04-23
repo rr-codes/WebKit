@@ -117,10 +117,8 @@ void WebParentalControlsURLFilter::setSharedParentalControlsURLFilterIfNecessary
 {
 #if !HAVE(WEBCONTENTRESTRICTIONS_PATH_SPI)
     ASSERT(isMainRunLoop());
-    static bool initialized = false;
-    if (!initialized) {
+    if (!WebCore::ParentalControlsURLFilter::hasGlobalFilter()) {
         WebCore::ParentalControlsURLFilter::setGlobalFilter(WebParentalControlsURLFilter::create());
-        initialized = true;
     }
 #endif
 }

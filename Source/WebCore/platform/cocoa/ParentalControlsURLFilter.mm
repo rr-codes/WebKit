@@ -110,7 +110,21 @@ void ParentalControlsURLFilter::setGlobalFilter(Ref<ParentalControlsURLFilter>&&
     globalFilter() = WTF::move(filter);
 }
 
+bool ParentalControlsURLFilter::hasGlobalFilter()
+{
+    return !!globalFilter();
+}
+
 #endif
+
+void ParentalControlsURLFilter::setFilterForTesting(Ref<ParentalControlsURLFilter>&& filter)
+{
+#if HAVE(WEBCONTENTRESTRICTIONS_PATH_SPI)
+    allFiltersWithConfigurationPath().set(emptyString(), WTF::move(filter));
+#else
+    setGlobalFilter(WTF::move(filter));
+#endif
+}
 
 ParentalControlsURLFilter::ParentalControlsURLFilter() = default;
 
