@@ -8847,6 +8847,7 @@ enum class WebCore::CDMInstanceAllowDistinctiveIdentifiers : bool
 #endif
 
 #if ENABLE(GPU_PROCESS) && ENABLE(LEGACY_ENCRYPTED_MEDIA)
+header: <WebCore/LegacyCDMSession.h>
 using WebCore::LegacyCDMSessionClient::MediaKeyErrorCode = unsigned short
 #endif
 

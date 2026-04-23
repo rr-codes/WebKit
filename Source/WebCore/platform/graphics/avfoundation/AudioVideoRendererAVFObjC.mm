@@ -576,7 +576,6 @@ void AudioVideoRendererAVFObjC::setTimeObserver(Seconds interval, Function<void(
                 if (!protectedThis->m_currentTimeDidChangeCallback)
                     return;
 
-                ALWAYS_LOG_WITH_THIS(protectedThis, LOGIDENTIFIER_WITH_THIS(protectedThis), "timeobserver called", PAL::toMediaTime(time));
                 auto clampedTime = CMTIME_IS_NUMERIC(time) ? protectedThis->clampTimeToLastSeekTime(PAL::toMediaTime(time)) : MediaTime::zeroTime();
                 protectedThis->m_currentTimeDidChangeCallback(clampedTime);
             }
