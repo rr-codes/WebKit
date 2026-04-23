@@ -54,14 +54,25 @@ public:
         UseBGRALayout = 1 << 2
     };
 
-    // On some non-Mesa stacks gbm_bo allocation and dma-buf export succeed but mmap still
-    // fails; the probe verifies all three once per session before committing to this path.
-    // Gates only MemoryMappedGPUBuffer::create() -- exportFDForPlane() remains usable for
-    // non-mmap callers (e.g. EGLImage wrapping) when export works but the FD isn't RDWR.
+    // On some non-Mesa stacks gbm_bo allocation and dma-buf export succeed but mmap
+    // still fails; the probe verifies all three once per session before committing
+    // to this path. Gates only MemoryMappedGPUBuffer::create() -- callers that only
+    // need a GPUSampling FD do not depend on this flag.
     static bool isSupported();
 
-    // The returned FD may not be RDWR-mappable; callers that mmap must gate on isSupported().
-    static int exportFDForPlane(struct gbm_bo*, int plane);
+    enum class FDExportPurpose : uint8_t {
+        // FD will be imported as an EGLImage and sampled/rendered by GL. Always uses
+        // gbm_bo_get_fd_for_plane() so Mesa observes the export and attaches its
+        // implicit-sync fence; bypassing gbm here leads to EINVAL in gallium's fence
+        // wait when the dma-buf is re-imported as EGLImage (Mesa >= 25).
+        GPUSampling,
+        // FD will be mmap'd with PROT_READ | PROT_WRITE. Uses the probe-selected
+        // strategy that produced a writable mapping on this system. Not suitable
+        // for EGLImage imports -- the RDWR fallback bypasses gbm.
+        CPUMapping,
+    };
+
+    static int exportFDForPlane(struct gbm_bo*, int plane, FDExportPurpose);
 
     static ASCIILiteral exportStrategyDescription();
 
@@ -135,7 +146,6 @@ private:
     void updateContentsInLinearFormat(const void* srcData, const IntRect& targetRect, unsigned bytesPerLine);
     void updateContentsInVivanteSuperTiledFormat(const void* srcData, const IntRect& targetRect, unsigned bytesPerLine);
 
-    int primaryPlaneDmaBufFD() const;
     uint32_t primaryPlaneDmaBufStride() const;
 
     IntSize m_size;
@@ -143,6 +153,12 @@ private:
     OptionSet<BufferFlag> m_flags;
     uint64_t m_modifier { 0 };
     RefPtr<DMABufBuffer> m_dmaBuf;
+
+    // Distinct from the GPU-sampling FDs in m_dmaBuf: those must come from
+    // gbm_bo_get_fd_for_plane() to stay in gbm's bookkeeping. m_exportedFDForMapping
+    // is exported via the probe-selected strategy so it is guaranteed RDWR-mmappable
+    // on this system.
+    UnixFileDescriptor m_exportedFDForMapping;
 
     void* m_mappedData { nullptr };
     size_t m_mappedLength { 0 };
