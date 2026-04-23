@@ -363,7 +363,7 @@ public:
     Style::Validity styleValidity() const { return styleBitfields().styleValidity(); }
     bool hasInvalidRenderer() const { return hasStateFlag(StateFlag::HasInvalidRenderer); }
     bool styleResolutionShouldRecompositeLayer() const { return hasStateFlag(StateFlag::StyleResolutionShouldRecompositeLayer); }
-    bool childNeedsStyleRecalc() const { return hasStyleFlag(NodeStyleFlag::DescendantNeedsStyleResolution); }
+    bool childNeedsStyleRecalc() const { return hasStateFlag(StateFlag::DescendantNeedsStyleResolution); }
     bool isEditingText() const { return isTextNode() && hasTypeFlag(TypeFlag::IsPseudoElementOrSpecialInternalNode); }
 
     bool isDocumentFragmentForInnerOuterHTML() const { return isDocumentFragment() && hasTypeFlag(TypeFlag::IsPseudoElementOrSpecialInternalNode); }
@@ -381,7 +381,7 @@ public:
     void setWasParsedWithFastPath() { setStateFlag(StateFlag::WasParsedWithFastPath); }
     void clearWasParsedWithFastPath() { clearStateFlag(StateFlag::WasParsedWithFastPath); }
 
-    void setChildNeedsStyleRecalc() { setStyleFlag(NodeStyleFlag::DescendantNeedsStyleResolution); }
+    void setChildNeedsStyleRecalc() { setStateFlag(StateFlag::DescendantNeedsStyleResolution); }
     inline void clearChildNeedsStyleRecalc();
 
     inline void setHasValidStyle();
@@ -664,7 +664,9 @@ protected:
         DidMutateSubtreeAfterSetInnerHTML = 1 << 21,
         WasParsedWithFastPath = 1 << 22,
         ShouldNotifyTextManipulationControllerIfDisplayed = 1 << 23,
-        // 8 bits free.
+        DescendantNeedsStyleResolution = 1 << 24,
+        DirectChildNeedsStyleResolution = 1 << 25,
+        // 6 bits free.
     };
 
     enum class TabIndexState : uint8_t {
@@ -712,23 +714,20 @@ protected:
     static constexpr uint32_t s_refCountMask = ~static_cast<uint32_t>(1);
 
     enum class NodeStyleFlag : uint16_t {
-        DescendantNeedsStyleResolution                          = 1 << 0,
-        DirectChildNeedsStyleResolution                         = 1 << 1,
-
-        AffectedByHasWithSiblingRelationship                    = 1 << 2,
-        ChildrenAffectedByFirstChildRules                       = 1 << 3,
-        ChildrenAffectedByLastChildRules                        = 1 << 4,
-        AffectsNextSiblingElementStyle                          = 1 << 5,
-        StyleIsAffectedByPreviousSibling                        = 1 << 6,
-        DescendantsAffectedByPreviousSibling                    = 1 << 7,
-        StyleAffectedByEmpty                                    = 1 << 8,
+        AffectedByHasWithSiblingRelationship                    = 1 << 0,
+        ChildrenAffectedByFirstChildRules                       = 1 << 1,
+        ChildrenAffectedByLastChildRules                        = 1 << 2,
+        AffectsNextSiblingElementStyle                          = 1 << 3,
+        StyleIsAffectedByPreviousSibling                        = 1 << 4,
+        DescendantsAffectedByPreviousSibling                    = 1 << 5,
+        StyleAffectedByEmpty                                    = 1 << 6,
         // We optimize for :first-child and :last-child. The other positional child selectors like nth-child or
         // *-child-of-type, we will just give up and re-evaluate whenever children change at all.
-        ChildrenAffectedByForwardPositionalRules                = 1 << 9,
-        DescendantsAffectedByForwardPositionalRules             = 1 << 10,
-        ChildrenAffectedByBackwardPositionalRules               = 1 << 11,
-        DescendantsAffectedByBackwardPositionalRules            = 1 << 12,
-        AffectedByHasWithAdjacentSiblingRelationship            = 1 << 13,
+        ChildrenAffectedByForwardPositionalRules                = 1 << 7,
+        DescendantsAffectedByForwardPositionalRules             = 1 << 8,
+        ChildrenAffectedByBackwardPositionalRules               = 1 << 9,
+        DescendantsAffectedByBackwardPositionalRules            = 1 << 10,
+        AffectedByHasWithAdjacentSiblingRelationship            = 1 << 11,
     };
 
     struct StyleBitfields {
@@ -743,11 +742,11 @@ protected:
         void setFlag(NodeStyleFlag flag) { m_flags = (flags() | flag).toRaw(); }
         void clearFlag(NodeStyleFlag flag) { m_flags = (flags() - flag).toRaw(); }
         void clearFlags(OptionSet<NodeStyleFlag> flagsToClear) { m_flags = (flags() - flagsToClear).toRaw(); }
-        void clearDescendantsNeedStyleResolution() { m_flags = (flags() - NodeStyleFlag::DescendantNeedsStyleResolution - NodeStyleFlag::DirectChildNeedsStyleResolution).toRaw(); }
 
     private:
         uint16_t m_styleValidity : 3 { 0 };
-        uint16_t m_flags : 13 { 0 };
+        uint16_t m_flags : 12 { 0 };
+        // 1 bit free.
     };
 
     StyleBitfields styleBitfields() const { return m_styleBitfields; }
