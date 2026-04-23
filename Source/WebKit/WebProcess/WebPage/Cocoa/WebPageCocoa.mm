@@ -2333,12 +2333,20 @@ void WebPage::willCommitMainFrameData(MainFrameData& data, const TransactionID& 
         m_internals->lastTransactionIDWithScaleChange = transactionID;
     }
 #endif
+}
+
+std::optional<EditorState> WebPage::editorStateIfUpdateNeeded()
+{
+    std::optional<EditorState> editorState;
 
     if (hasPendingEditorStateUpdate() || m_needsEditorStateVisualDataUpdate) {
-        data.editorState = editorState();
+        editorState = this->editorState();
+
         m_pendingEditorStateUpdateStatus = PendingEditorStateUpdateStatus::NotScheduled;
         m_needsEditorStateVisualDataUpdate = false;
     }
+
+    return editorState;
 }
 
 void WebPage::didFlushLayerTreeAtTime(MonotonicTime timestamp, bool flushSucceeded)
