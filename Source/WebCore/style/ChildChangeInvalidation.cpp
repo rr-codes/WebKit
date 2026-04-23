@@ -54,6 +54,25 @@ static bool rightmostCompoundContainsEmpty(const CSSSelector& selector)
     return false;
 }
 
+static bool isSiblingHasRelation(const MatchElement& matchElement)
+{
+    if (!matchElement.hasRelation)
+        return false;
+    switch (*matchElement.hasRelation) {
+    case MatchElement::HasRelation::DirectSibling:
+    case MatchElement::HasRelation::IndirectSibling:
+    case MatchElement::HasRelation::SiblingChild:
+    case MatchElement::HasRelation::SiblingDescendant:
+        return true;
+    case MatchElement::HasRelation::Child:
+    case MatchElement::HasRelation::Descendant:
+    case MatchElement::HasRelation::ScopeBreaking:
+        return false;
+    }
+    ASSERT_NOT_REACHED();
+    return false;
+}
+
 void ChildChangeInvalidation::invalidateForChangedElement(Element& changedElement, MatchingHasSelectors& matchingHasSelectors, ChangedElementRelation changedElementRelation, EmptyInvalidation emptyInvalidation)
 {
     auto& ruleSets = parentElement().styleResolver().ruleSets();
@@ -79,7 +98,20 @@ void ChildChangeInvalidation::invalidateForChangedElement(Element& changedElemen
         }
     };
 
-    bool isFirst = isChild && m_childChange.previousSiblingElement == changedElement.previousElementSibling() && changedElementRelation == ChangedElementRelation::SelfOrDescendant;
+    auto hasAlreadyMatchedAndMutationIsIrrelevant = [&](const InvalidationRuleSet& invalidationRuleSet) {
+        // For the first changed element at the mutation point, check if a neighbor already matches the
+        // :has() argument. If so, adding/removing one more matching element doesn't change the :has() result.
+        // This doesn't apply inside :not() (inverted logic) or for sibling :has() arguments (direction matters).
+        if (!isChild || changedElementRelation != ChangedElementRelation::SelfOrDescendant)
+            return false;
+        if (m_childChange.previousSiblingElement != changedElement.previousElementSibling())
+            return false;
+        if (invalidationRuleSet.isNegation == IsNegation::Yes)
+            return false;
+        if (isSiblingHasRelation(invalidationRuleSet.matchElement))
+            return false;
+        return true;
+    };
 
     auto hasMatchingInvalidationSelector = [&](auto& invalidationRuleSet) {
         SelectorChecker selectorChecker(changedElement.document());
@@ -91,8 +123,7 @@ void ChildChangeInvalidation::invalidateForChangedElement(Element& changedElemen
             if (emptyInvalidation == EmptyInvalidation::Yes && !rightmostCompoundContainsEmpty(selector))
                 continue;
 
-            if (isFirst && invalidationRuleSet.isNegation == IsNegation::No) {
-                // If this :has() matches ignoring this mutation, nothing actually changes and we don't need to invalidate.
+            if (hasAlreadyMatchedAndMutationIsIrrelevant(invalidationRuleSet)) {
                 // FIXME: We could cache this state across invalidations instead of just testing a single sibling.
                 RefPtr sibling = m_childChange.previousSiblingElement ? m_childChange.previousSiblingElement : m_childChange.nextSiblingElement;
                 if (sibling && selectorChecker.match(selector, *sibling, checkingContext)) {

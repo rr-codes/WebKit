@@ -81,8 +81,6 @@ struct MatchElement {
 constexpr unsigned matchRelationCount = static_cast<unsigned>(MatchElement::Relation::HostChild) + 1;
 
 enum class IsNegation : bool { No, Yes };
-enum class CanBreakScope : bool { No, Yes }; // Are we inside a logical combination pseudo-class like :is() or :not(), which if we were inside a :has(), could break out of its scope?
-enum class DoesBreakScope : bool { No, Yes }; // Did we find a logical combination pseudo-class like :is() or :not() with selector combinators that do break out of a :has() scope?
 
 // For MSVC.
 #pragma pack(push, 4)
@@ -168,17 +166,18 @@ struct RuleFeatureSet {
 private:
     struct SelectorFeatures {
         using InvalidationFeature = std::tuple<const CSSSelector*, MatchElement, IsNegation>;
-        using HasInvalidationFeature = std::tuple<const CSSSelector*, MatchElement, IsNegation, DoesBreakScope, const CSSSelector*>;
+        using HasInvalidationFeature = std::tuple<const CSSSelector*, MatchElement, IsNegation, const CSSSelector*>;
 
         Vector<InvalidationFeature> ids;
         Vector<InvalidationFeature> classes;
         Vector<InvalidationFeature> attributes;
         Vector<InvalidationFeature> pseudoClasses;
         Vector<HasInvalidationFeature> hasPseudoClasses;
+        bool containsScopeBreakingHasPseudoClass { false };
     };
     struct RecursiveCollectionContext;
     void collectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, MatchElement = { MatchElement::Relation::Subject, { } });
-    DoesBreakScope recursivelyCollectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, const RecursiveCollectionContext&);
+    void recursivelyCollectFeaturesFromSelector(SelectorFeatures&, const CSSSelector&, const RecursiveCollectionContext&);
     void NODELETE collectPseudoElementFeatures(const RuleData&);
 };
 
