@@ -41,7 +41,6 @@ my $idlFileNamesList;
 my $generator;
 my @generatorDependency;
 my $defines;
-my $preprocessor;
 my $supplementalDependencyFile;
 my @ppExtraOutput;
 my @ppExtraArgs;
@@ -57,7 +56,6 @@ GetOptions('outputDir=s' => \$outputDirectory,
            'generator=s' => \$generator,
            'generatorDependency=s@' => \@generatorDependency,
            'defines=s' => \$defines,
-           'preprocessor=s' => \$preprocessor,
            'supplementalDependencyFile=s' => \$supplementalDependencyFile,
            'ppExtraOutput=s@' => \@ppExtraOutput,
            'ppExtraArgs=s@' => \@ppExtraArgs,
@@ -119,7 +117,6 @@ my @args = (File::Spec->catfile($scriptDir, 'generate-bindings.pl'),
             '--idlAttributesFile', $idlAttributesFile,
             '--idlFileNamesList', $idlFileNamesList,
             '--write-dependencies');
-push @args, '--preprocessor', $preprocessor if $preprocessor;
 push @args, '--supplementalDependencyFile', $supplementalDependencyFile if $supplementalDependencyFile;
 
 my %directoryCache;
