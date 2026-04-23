@@ -2075,19 +2075,24 @@ void BBQJIT::recordJumpToThrowException(ExceptionType type, const JumpList& jump
     m_exceptions[static_cast<unsigned>(type)].append(jumps);
 }
 
-template<typename IntType>
+template<typename IntType, BBQJIT::ConstantDivOverflow overflow>
 Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
 {
     constexpr bool is32 = sizeof(IntType) == 4;
-    if (!(is32 ? int64_t(rhs.asI32()) : rhs.asI64())) {
+    int64_t lhsValue = is32 ? int64_t(lhs.asI32()) : lhs.asI64();
+    int64_t rhsValue = is32 ? int64_t(rhs.asI32()) : rhs.asI64();
+
+    if (!rhsValue) {
         emitThrowException(ExceptionType::DivisionByZero);
         return is32 ? Value::fromI32(1) : Value::fromI64(1);
     }
-    if ((is32 ? int64_t(rhs.asI32()) : rhs.asI64()) == -1
-        && (is32 ? int64_t(lhs.asI32()) : lhs.asI64()) == std::numeric_limits<IntType>::min()
-        && std::is_signed<IntType>()) {
-        emitThrowException(ExceptionType::IntegerOverflow);
-        return is32 ? Value::fromI32(1) : Value::fromI64(1);
+    if constexpr (std::is_signed_v<IntType>) {
+        if (lhsValue == std::numeric_limits<IntType>::min() && rhsValue == -1) {
+            if constexpr (overflow == ConstantDivOverflow::CanOverflow)
+                emitThrowException(ExceptionType::IntegerOverflow);
+            // Wasm rem_s(INT_MIN, -1) is defined to return 0; substitute divisor to avoid C++ UB.
+            return is32 ? Value::fromI32(1) : Value::fromI64(1);
+        }
     }
     return rhs;
 }
@@ -2098,7 +2103,7 @@ Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
     EMIT_BINARY(
         "I32DivS", TypeKind::I32,
         BLOCK(
-            Value::fromI32(lhs.asI32() / checkConstantDivision<int32_t>(lhs, rhs).asI32())
+            Value::fromI32(lhs.asI32() / checkConstantDivision<int32_t, ConstantDivOverflow::CanOverflow>(lhs, rhs).asI32())
         ),
         BLOCK(
             emitModOrDiv<int32_t, false>(lhs, lhsLocation, rhs, rhsLocation, result, resultLocation);
@@ -2115,7 +2120,7 @@ Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
     EMIT_BINARY(
         "I64DivS", TypeKind::I64,
         BLOCK(
-            Value::fromI64(lhs.asI64() / checkConstantDivision<int64_t>(lhs, rhs).asI64())
+            Value::fromI64(lhs.asI64() / checkConstantDivision<int64_t, ConstantDivOverflow::CanOverflow>(lhs, rhs).asI64())
         ),
         BLOCK(
             emitModOrDiv<int64_t, false>(lhs, lhsLocation, rhs, rhsLocation, result, resultLocation);
@@ -2132,7 +2137,7 @@ Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
     EMIT_BINARY(
         "I32DivU", TypeKind::I32,
         BLOCK(
-            Value::fromI32(static_cast<uint32_t>(lhs.asI32()) / static_cast<uint32_t>(checkConstantDivision<int32_t>(lhs, rhs).asI32()))
+            Value::fromI32(static_cast<uint32_t>(lhs.asI32()) / static_cast<uint32_t>(checkConstantDivision<uint32_t>(lhs, rhs).asI32()))
         ),
         BLOCK(
             emitModOrDiv<uint32_t, false>(lhs, lhsLocation, rhs, rhsLocation, result, resultLocation);
@@ -2149,7 +2154,7 @@ Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
     EMIT_BINARY(
         "I64DivU", TypeKind::I64,
         BLOCK(
-            Value::fromI64(static_cast<uint64_t>(lhs.asI64()) / static_cast<uint64_t>(checkConstantDivision<int64_t>(lhs, rhs).asI64()))
+            Value::fromI64(static_cast<uint64_t>(lhs.asI64()) / static_cast<uint64_t>(checkConstantDivision<uint64_t>(lhs, rhs).asI64()))
         ),
         BLOCK(
             emitModOrDiv<uint64_t, false>(lhs, lhsLocation, rhs, rhsLocation, result, resultLocation);
@@ -2200,7 +2205,7 @@ Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
     EMIT_BINARY(
         "I32RemU", TypeKind::I32,
         BLOCK(
-            Value::fromI32(static_cast<uint32_t>(lhs.asI32()) % static_cast<uint32_t>(checkConstantDivision<int32_t>(lhs, rhs).asI32()))
+            Value::fromI32(static_cast<uint32_t>(lhs.asI32()) % static_cast<uint32_t>(checkConstantDivision<uint32_t>(lhs, rhs).asI32()))
         ),
         BLOCK(
             emitModOrDiv<uint32_t, true>(lhs, lhsLocation, rhs, rhsLocation, result, resultLocation);
@@ -2217,7 +2222,7 @@ Value BBQJIT::checkConstantDivision(const Value& lhs, const Value& rhs)
     EMIT_BINARY(
         "I64RemU", TypeKind::I64,
         BLOCK(
-            Value::fromI64(static_cast<uint64_t>(lhs.asI64()) % static_cast<uint64_t>(checkConstantDivision<int64_t>(lhs, rhs).asI64()))
+            Value::fromI64(static_cast<uint64_t>(lhs.asI64()) % static_cast<uint64_t>(checkConstantDivision<uint64_t>(lhs, rhs).asI64()))
         ),
         BLOCK(
             emitModOrDiv<uint64_t, true>(lhs, lhsLocation, rhs, rhsLocation, result, resultLocation);

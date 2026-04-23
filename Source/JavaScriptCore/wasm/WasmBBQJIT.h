@@ -1649,7 +1649,10 @@ public:
     template<typename IntType, bool IsMod>
     void emitModOrDiv(Value& lhs, Location lhsLocation, Value& rhs, Location rhsLocation, Value& result, Location resultLocation);
 
-    template<typename IntType>
+    // signed INT_MIN / -1 is the only integer div/rem that can overflow.
+    enum class ConstantDivOverflow { CanOverflow, CannotOverflow };
+
+    template<typename IntType, ConstantDivOverflow = ConstantDivOverflow::CannotOverflow>
     Value checkConstantDivision(const Value& lhs, const Value& rhs);
 
     [[nodiscard]] PartialResult addI32DivS(Value lhs, Value rhs, Value& result);
