@@ -4259,6 +4259,7 @@ auto FunctionParser<Context>::parseUnreachableExpression() -> PartialResult
         }
 #define CREATE_EXT1_CASE(name, ...) case Ext1OpType::name:
         FOR_EACH_WASM_TRUNC_SATURATED_OP(CREATE_EXT1_CASE)
+        FOR_EACH_WASM_WIDE_ARITHMETIC_OP(CREATE_EXT1_CASE)
             return { };
 #undef CREATE_EXT1_CASE
         default:

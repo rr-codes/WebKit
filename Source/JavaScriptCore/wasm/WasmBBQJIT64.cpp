@@ -2465,10 +2465,11 @@ void BBQJIT::emitRefTestOrCast(CastKind castKind, const TypedExpression& typedVa
 
 [[nodiscard]] PartialResult BBQJIT::addI64Add128(Value lhsLo, Value lhsHi, Value rhsLo, Value rhsHi, Value& resultLo, Value& resultHi)
 {
-    Location lhsLoLocation = loadIfNecessary(lhsLo);
-    Location lhsHiLocation = loadIfNecessary(lhsHi);
-    Location rhsLoLocation = loadIfNecessary(rhsLo);
-    Location rhsHiLocation = loadIfNecessary(rhsHi);
+    std::optional<ScratchScope<1, 0>> lhsLoScratch, lhsHiScratch, rhsLoScratch, rhsHiScratch;
+    Location lhsLoLocation = materializeToGPR(lhsLo, lhsLoScratch);
+    Location lhsHiLocation = materializeToGPR(lhsHi, lhsHiScratch);
+    Location rhsLoLocation = materializeToGPR(rhsLo, rhsLoScratch);
+    Location rhsHiLocation = materializeToGPR(rhsHi, rhsHiScratch);
     consume(lhsLo);
     consume(lhsHi);
     consume(rhsLo);
@@ -2512,10 +2513,11 @@ void BBQJIT::emitRefTestOrCast(CastKind castKind, const TypedExpression& typedVa
 
 [[nodiscard]] PartialResult BBQJIT::addI64Sub128(Value lhsLo, Value lhsHi, Value rhsLo, Value rhsHi, Value& resultLo, Value& resultHi)
 {
-    Location lhsLoLocation = loadIfNecessary(lhsLo);
-    Location lhsHiLocation = loadIfNecessary(lhsHi);
-    Location rhsLoLocation = loadIfNecessary(rhsLo);
-    Location rhsHiLocation = loadIfNecessary(rhsHi);
+    std::optional<ScratchScope<1, 0>> lhsLoScratch, lhsHiScratch, rhsLoScratch, rhsHiScratch;
+    Location lhsLoLocation = materializeToGPR(lhsLo, lhsLoScratch);
+    Location lhsHiLocation = materializeToGPR(lhsHi, lhsHiScratch);
+    Location rhsLoLocation = materializeToGPR(rhsLo, rhsLoScratch);
+    Location rhsHiLocation = materializeToGPR(rhsHi, rhsHiScratch);
     consume(lhsLo);
     consume(lhsHi);
     consume(rhsLo);
@@ -2563,15 +2565,16 @@ void BBQJIT::emitRefTestOrCast(CastKind castKind, const TypedExpression& typedVa
 
 [[nodiscard]] PartialResult BBQJIT::addI64MulWideU(Value lhs, Value rhs, Value& resultLo, Value& resultHi)
 {
-    Location lhsLocation = loadIfNecessary(lhs);
-    Location rhsLocation = loadIfNecessary(rhs);
-    consume(lhs);
-    consume(rhs);
-
 #if CPU(X86_64)
     for (JSC::Reg reg : clobbersForDivX86())
         clobber(reg);
 #endif
+
+    std::optional<ScratchScope<1, 0>> lhsScratch, rhsScratch;
+    Location lhsLocation = materializeToGPR(lhs, lhsScratch);
+    Location rhsLocation = materializeToGPR(rhs, rhsScratch);
+    consume(lhs);
+    consume(rhs);
 
     resultLo = topValue(TypeKind::I64);
     resultHi = topValue(TypeKind::I64, 1);
@@ -2582,6 +2585,8 @@ void BBQJIT::emitRefTestOrCast(CastKind castKind, const TypedExpression& typedVa
 
 #if CPU(X86_64)
     // x86 mul: rax * src -> rdx:rax
+    if (rhsLocation.asGPR() == X86Registers::eax)
+        std::swap(lhsLocation, rhsLocation);
     m_jit.move(lhsLocation.asGPR(), X86Registers::eax);
     m_jit.x86UMulHigh64(rhsLocation.asGPR(), X86Registers::eax, X86Registers::edx);
     if (resultLoLocation.asGPR() != X86Registers::edx) {
@@ -2611,15 +2616,16 @@ void BBQJIT::emitRefTestOrCast(CastKind castKind, const TypedExpression& typedVa
 
 [[nodiscard]] PartialResult BBQJIT::addI64MulWideS(Value lhs, Value rhs, Value& resultLo, Value& resultHi)
 {
-    Location lhsLocation = loadIfNecessary(lhs);
-    Location rhsLocation = loadIfNecessary(rhs);
-    consume(lhs);
-    consume(rhs);
-
 #if CPU(X86_64)
     for (JSC::Reg reg : clobbersForDivX86())
         clobber(reg);
 #endif
+
+    std::optional<ScratchScope<1, 0>> lhsScratch, rhsScratch;
+    Location lhsLocation = materializeToGPR(lhs, lhsScratch);
+    Location rhsLocation = materializeToGPR(rhs, rhsScratch);
+    consume(lhs);
+    consume(rhs);
 
     resultLo = topValue(TypeKind::I64);
     resultHi = topValue(TypeKind::I64, 1);
@@ -2630,6 +2636,8 @@ void BBQJIT::emitRefTestOrCast(CastKind castKind, const TypedExpression& typedVa
 
 #if CPU(X86_64)
     // x86 imul: rax * src -> rdx:rax (signed)
+    if (rhsLocation.asGPR() == X86Registers::eax)
+        std::swap(lhsLocation, rhsLocation);
     m_jit.move(lhsLocation.asGPR(), X86Registers::eax);
     m_jit.x86MulHigh64(rhsLocation.asGPR(), X86Registers::eax, X86Registers::edx);
     if (resultLoLocation.asGPR() != X86Registers::edx) {
