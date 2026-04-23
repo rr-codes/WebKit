@@ -2275,6 +2275,12 @@ void WebProcessProxy::didStartProvisionalLoadForMainFrame(const URL& url)
     if (url.protocolIsAbout())
         return;
 
+    if (url.protocolIsFile() && m_site && (m_site->protocol() == url.protocol() || !m_hasCommittedAnyMeaningfulProvisionalLoads)) {
+        ASSERT(m_site->protocol() == url.protocol() || m_site->protocol() == "about"_s);
+        m_site = WebCore::Site { url };
+        return;
+    }
+
     if (!url.protocolIsInHTTPFamily() && !processPool().configuration().processSwapsOnNavigationWithinSameNonHTTPFamilyProtocol()) {
         // Unless the processSwapsOnNavigationWithinSameNonHTTPFamilyProtocol flag is set, we don't process swap on navigations withing the same
         // non HTTP(s) protocol. For this reason, we ignore the registrable domain and processes are not eligible for the process cache.
