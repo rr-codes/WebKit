@@ -83,7 +83,8 @@ Ref<ParentalControlsContentFilter> ParentalControlsContentFilter::create(const P
 
 ParentalControlsContentFilter::ParentalControlsContentFilter(const PlatformContentFilter::FilterParameters& params)
 #if HAVE(WEBCONTENTRESTRICTIONS)
-    : m_mainDocumentURL(params.mainDocumentURL)
+    : m_isMainFrameLoad(params.isMainFrameLoad)
+    , m_mainDocumentURL(params.mainDocumentURL)
 #if HAVE(WEBCONTENTRESTRICTIONS_PATH_SPI)
     , m_webContentRestrictionsConfigurationPath(params.webContentRestrictionsConfigurationPath)
 #endif
@@ -113,7 +114,7 @@ void ParentalControlsContentFilter::responseReceived(const ResourceResponse& res
     ASSERT(!m_evaluatedURL);
     m_evaluatedURL = response.url();
     m_state = State::Filtering;
-    urlFilter()->isURLAllowed(m_mainDocumentURL, *m_evaluatedURL, *this);
+    urlFilter()->isURLAllowed(m_isMainFrameLoad, m_mainDocumentURL, *m_evaluatedURL, *this);
 #elif HAVE(WEBCONTENTANALYSIS_FRAMEWORK)
     ASSERT(!m_webFilterEvaluator);
     m_webFilterEvaluator = adoptNS([allocWebFilterEvaluatorInstance() initWithResponse:protect(response.nsURLResponse()).get()]);

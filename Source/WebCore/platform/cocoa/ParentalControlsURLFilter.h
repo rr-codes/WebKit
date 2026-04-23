@@ -27,6 +27,7 @@
 
 #if HAVE(WEBCONTENTRESTRICTIONS)
 
+#include <WebCore/ParentalControlsContentFilter.h>
 #include <WebCore/ParentalControlsURLFilterParameters.h>
 #include <wtf/ThreadSafeRefCounted.h>
 
@@ -59,8 +60,8 @@ public:
 
     WEBCORE_EXPORT virtual ~ParentalControlsURLFilter();
     virtual bool isEnabledImpl() const;
-    void isURLAllowed(const URL& mainDocumentURL, const URL&, ParentalControlsContentFilter&);
-    WEBCORE_EXPORT void isURLAllowed(const URL& mainDocumentURL, const URL&, CompletionHandler<void(bool, NSData *)>&&);
+    void isURLAllowed(IsMainFrameLoad, const URL& mainDocumentURL, const URL&, ParentalControlsContentFilter&);
+    WEBCORE_EXPORT void isURLAllowed(IsMainFrameLoad, const URL& mainDocumentURL, const URL&, CompletionHandler<void(bool, NSData *)>&&);
     virtual void allowURL(const URL&, CompletionHandler<void(bool)>&&);
 #if HAVE(WEBCONTENTRESTRICTIONS_ASK_TO)
 #if HAVE(BROWSERENGINEKIT_WEBCONTENTFILTER)
@@ -76,7 +77,7 @@ protected:
 #endif
     WEBCORE_EXPORT ParentalControlsURLFilter();
 
-    virtual void isURLAllowedImpl(const URL& mainDocumentURL, const URL&, CompletionHandler<void(bool, NSData *)>&&);
+    virtual void isURLAllowedImpl(IsMainFrameLoad, const URL& mainDocumentURL, const URL&, CompletionHandler<void(bool, NSData *)>&&);
 
 private:
     WCRBrowserEngineClient* effectiveWCRBrowserEngineClient();

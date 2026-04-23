@@ -2204,7 +2204,7 @@ void DocumentLoader::startLoadingMainResource()
     // Always filter in WK1
     contentFilterInDocumentLoader() = frame && frame->view() && frame->view()->platformWidget();
     if (contentFilterInDocumentLoader())
-        m_contentFilter = !m_substituteData.isValid() ? ContentFilter::create(*this, IS_MAIN_FRAME) : nullptr;
+        m_contentFilter = !m_substituteData.isValid() ? ContentFilter::create(*this, IS_MAIN_FRAME ? IsMainFrameLoad::Yes : IsMainFrameLoad::No) : nullptr;
 #endif
 
     auto url = m_request.url();

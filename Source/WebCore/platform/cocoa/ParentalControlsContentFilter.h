@@ -78,6 +78,7 @@ private:
 
 #if HAVE(WEBCONTENTRESTRICTIONS)
     std::optional<URL> m_evaluatedURL;
+    IsMainFrameLoad m_isMainFrameLoad;
     URL m_mainDocumentURL;
     Lock m_resultLock;
     Condition m_resultCondition;
