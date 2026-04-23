@@ -8694,7 +8694,7 @@
                 "coordinated-value-list-property-item-type": "Style::SingleTransitionProperty",
                 "computed-style-storage-container": "opaque",
                 "computed-style-storage-path": ["m_nonInheritedData", "miscData", "transitions"],
-                "parser-grammar": "none  | <single-transition-property>#"
+                "parser-grammar": "none | <single-transition-property>#"
             },
             "specification": {
                 "category": "css-transitions",
@@ -15198,6 +15198,23 @@
                 "category": "css-contain",
                 "url": "https://drafts.csswg.org/css-contain-3/#container-name"
             }
+        },
+        "<single-transition-property>": {
+            "grammar": "all | <custom-ident excluding=all,none>",
+            "exported": true,
+            "specification": {
+                "category": "css-transitions",
+                "url": "https://drafts.csswg.org/css-transitions/#single-transition-property"
+            }
+        },
+        "<single-transition-property-or-none>": {
+            "grammar": "none | <single-transition-property>",
+            "exported": true,
+            "specification": {
+                "category": "css-transitions",
+                "url": "https://drafts.csswg.org/css-transitions/#single-transition-property"
+            },
+            "comment": "Used by the `transition` shorthand parser."
         },
         "<counter-name>": {
             "grammar": "<custom-ident excluding=none>",

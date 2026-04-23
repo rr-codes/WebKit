@@ -1093,7 +1093,6 @@ css/parser/CSSPropertyParserConsumer+Syntax.cpp
 css/parser/CSSPropertyParserConsumer+TextDecoration.cpp
 css/parser/CSSPropertyParserConsumer+Timeline.cpp
 css/parser/CSSPropertyParserConsumer+Transform.cpp
-css/parser/CSSPropertyParserConsumer+Transitions.cpp
 css/parser/CSSPropertyParserConsumer+UI.cpp
 css/parser/CSSPropertyParserConsumer+URL.cpp
 css/parser/CSSPropertyParserConsumer+UnicodeRange.cpp

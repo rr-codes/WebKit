@@ -92,7 +92,6 @@
 #include "CSSPropertyParserConsumer+TimeDefinitions.h"
 #include "CSSPropertyParserConsumer+Timeline.h"
 #include "CSSPropertyParserConsumer+Transform.h"
-#include "CSSPropertyParserConsumer+Transitions.h"
 #include "CSSPropertyParserConsumer+UI.h"
 #include "CSSPropertyParserConsumer+URL.h"
 #include "CSSPropertyParserConsumer+UnicodeRange.h"
@@ -1018,7 +1017,7 @@ inline bool PropertyParserCustom::consumeTransitionShorthand(CSSParserTokenRange
         case CSSPropertyTransitionDuration:
             return CSSPrimitiveValueResolver<Time<Nonnegative>>::consumeAndResolve(range, state);
         case CSSPropertyTransitionProperty:
-            return consumeSingleTransitionPropertyOrNone(range, state);
+            return CSSPropertyParsing::consumeSingleTransitionPropertyOrNone(range, state);
         case CSSPropertyTransitionTimingFunction:
             return consumeEasingFunction(range, state);
         case CSSPropertyTransitionBehavior:
