@@ -136,7 +136,7 @@ bool SkiaBackingStore::Tile::tryEnsureSurface(const IntSize& size, CoordinatedTi
 
 void SkiaBackingStore::Tile::update(const IntRect& dirtyRect, const IntRect& tileRect, CoordinatedTileBuffer& buffer)
 {
-    WTFBeginSignpost(this, CoordinatedSwapBuffer, "rect %ix%i+%i+%i", tileRect.x(), tileRect.y(), tileRect.width(), tileRect.height());
+    WTFBeginSignpost(this, SkiaBackingStoreTileUpdate, "rect %ix%i+%i+%i %s", tileRect.x(), tileRect.y(), tileRect.width(), tileRect.height(), buffer.isBackedByOpenGL() ? "GPUToGPU" : "CPUToGPU");
 
     FloatRect unscaledTileRect(tileRect);
     unscaledTileRect.scale(1. / m_scale);
@@ -145,8 +145,6 @@ void SkiaBackingStore::Tile::update(const IntRect& dirtyRect, const IntRect& til
         m_rect = unscaledTileRect;
         m_surface = nullptr;
     }
-
-    WTFBeginSignpost(this, CoordinatedUpdateTileTexture, "%s", buffer.isBackedByOpenGL() ? "GPUToGPU" : "CPUToGPU");
 
     if (buffer.isBackedByOpenGL()) {
         auto& acceleratedBuffer = static_cast<CoordinatedAcceleratedTileBuffer&>(buffer);
@@ -179,8 +177,7 @@ void SkiaBackingStore::Tile::update(const IntRect& dirtyRect, const IntRect& til
         m_surface->writePixels(pixmap, dirtyRect.x(), dirtyRect.y());
     }
 
-    WTFEndSignpost(this, CoordinatedUpdateTileTexture);
-    WTFEndSignpost(this, CoordinatedSwapBuffer);
+    WTFEndSignpost(this, SkiaBackingStoreTileUpdate);
 }
 
 sk_sp<SkImage> SkiaBackingStore::Tile::image()
