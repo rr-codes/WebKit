@@ -5077,7 +5077,6 @@ imported/w3c/web-platform-tests/css/css-writing-modes/forms/checkbox-appearance-
 imported/w3c/web-platform-tests/css/css-writing-modes/forms/checkbox-appearance-native-vertical-rl-baseline.optional.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-writing-modes/forms/radio-appearance-native-vertical-lr-baseline.optional.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-writing-modes/forms/radio-appearance-native-vertical-rl-baseline.optional.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-writing-modes/margin-collapse-vrl-022.xht [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-writing-modes/orthogonal-root-resize-icb-005.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-writing-modes/orthogonal-root-resize-icb-006.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-writing-modes/text-combine-upright-rtl-002.html [ ImageOnlyFailure ]
