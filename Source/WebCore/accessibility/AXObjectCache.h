@@ -1104,10 +1104,10 @@ private:
     Vector<DeferredNotificationData> m_deferredNotifications;
     Vector<Ref<AccessibilityObject>> m_deferredToggledPopovers;
 
+    const Ref<AXGeometryManager> m_geometryManager;
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
     Timer m_buildIsolatedTreeTimer;
     bool m_deferredRegenerateIsolatedTree { false };
-    const Ref<AXGeometryManager> m_geometryManager;
     DeferrableOneShotTimer m_selectedTextRangeTimer;
     Markable<AXID> m_lastDebouncedTextRangeObject;
 
