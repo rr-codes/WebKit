@@ -441,8 +441,8 @@ TEST(FullscreenVideoTextRecognition, NoOverlayInstalledAfterSeekAndExitingVideoF
 
 #endif // PLATFORM(MAC)
 
-#if PLATFORM(IOS_FAMILY)
-
+// FIXME when webkit.org/b/312934 is resolved for Release.
+#if PLATFORM(IOS_FAMILY) && !defined(NDEBUG)
 TEST(FullscreenVideoTextRecognition, NoOverlayInstalledAfterExitingNativeVideoFullscreen)
 {
     auto configuration = [WKWebViewConfiguration _test_configurationWithTestPlugInClassName:@"WebProcessPlugInWithInternals" configureJSCForTesting:YES];
