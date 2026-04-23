@@ -181,7 +181,6 @@ webkit.org/b/264680 media/no-fullscreen-when-hidden.html [ Pass Failure ]
 webkit.org/b/298919 imported/w3c/web-platform-tests/custom-elements/form-associated/ElementInternals-reportValidity-delegatesFocus.html [ Skip ]
 
 # Pending to create bug.
-imported/w3c/web-platform-tests/cookies/attributes/domain.sub.html [ Failure ]
 imported/w3c/web-platform-tests/fetch/metadata/generated/css-font-face.sub.tentative.html [ Failure ]
 imported/w3c/web-platform-tests/fetch/metadata/generated/element-a.https.sub.html [ Failure ]
 imported/w3c/web-platform-tests/fetch/metadata/generated/element-area.https.sub.html [ Failure ]
@@ -579,7 +578,6 @@ fullscreen/full-screen-enter-while-exiting-multiple-elements.html [ Pass Timeout
 fast/events/touch/touch-inside-iframe-scrolled.html [ Pass Timeout ]
 
 # testRunner.dontForceRepaint makes these tests flaky with WPE Platform API.
-compositing/repaint/copy-forward-dirty-region-purged.html [ Pass ImageOnlyFailure ]
 compositing/repaint/copy-forward-dirty-region.html [ Pass ImageOnlyFailure ]
 
 webkit.org/b/304405 http/tests/scroll-to-text-fragment/clear-on-new-fragment-navigation.html [ Pass ImageOnlyFailure ]

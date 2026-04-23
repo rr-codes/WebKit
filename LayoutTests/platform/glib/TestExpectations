@@ -824,9 +824,6 @@ imported/w3c/web-platform-tests/service-workers/service-worker/tentative/static-
 imported/w3c/web-platform-tests/service-workers/service-worker/fetch-canvas-tainting-video.https.html [ Failure ]
 imported/w3c/web-platform-tests/service-workers/service-worker/registration-script-module.https.html [ Failure ]
 
-jquery/event.html [ Pass Slow ]
-jquery/traversing.html [ Pass Slow ]
-
 imported/w3c/web-platform-tests/content-security-policy/font-src/font-match-allowed.sub.html [ Pass ]
 imported/w3c/web-platform-tests/content-security-policy/frame-src/frame-src-same-document.sub.html [ Pass ]
 imported/w3c/web-platform-tests/content-security-policy/gen/top.http-rp/script-src-self/worklet-audio.https.html [ Pass ]
@@ -1276,7 +1273,6 @@ imported/w3c/web-platform-tests/css/css-text/letter-spacing/letter-spacing-ligat
 imported/w3c/web-platform-tests/css/css-text/line-break/line-break-anywhere-overrides-uax-behavior-015.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/text-align/text-align-last-justify-br.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-text/text-autospace/text-autospace-002.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/CSS2/visudet/height-applies-to-010a.xht [ ImageOnlyFailure Pass ]
 imported/w3c/web-platform-tests/css/CSS2/visudet/line-height-204.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/linebox/inline-formatting-context-002.xht [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/CSS2/linebox/inline-formatting-context-003.xht [ ImageOnlyFailure ]
@@ -1547,7 +1543,6 @@ webkit.org/b/296246 imported/w3c/web-platform-tests/event-timing/first-input-int
 webkit.org/b/296246 imported/w3c/web-platform-tests/event-timing/interaction-count-tap.html [ Skip ]
 webkit.org/b/296246 imported/w3c/web-platform-tests/event-timing/TapToStopFling.html [ Skip ]
 
-fast/events/domactivate-sets-underlying-click-event-as-handled.html [ Failure Pass ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of Events-related bugs
@@ -1989,7 +1984,7 @@ webkit.org/b/296171 http/tests/local/fileapi/upload-zip-bundle-as-blob-using-ope
 # Images-related bugs
 #////////////////////////////////////////////////////////////////////////////////////////
 
-http/tests/images/mp4-partial-load.html [ Failure Pass ]
+http/tests/images/mp4-partial-load.html [ Failure ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of Images-related bugs
@@ -2781,7 +2776,7 @@ webkit.org/b/187603 fast/mediastream/media-stream-track-source-failure.html [ Cr
 
 webkit.org/b/264803 fast/mediastream/mediastreamtrack-video-resize-event.html [ Failure ]
 
-http/tests/media/video-play-stall-seek.html [ Timeout Pass ]
+http/tests/media/video-play-stall-seek.html [ Skip ] # Timeout
 
 # Missing support for RTP header encryption support:
 # https://gitlab.freedesktop.org/gstreamer/gstreamer/-/issues/4625
@@ -2796,7 +2791,7 @@ webkit.org/b/265860 imported/w3c/web-platform-tests/webrtc-stats/supported-stats
 
 webkit.org/b/265865 imported/w3c/web-platform-tests/webrtc-stats/rtp-stats-creation.html [ Skip ] # Timeout
 
-fast/mediastream/video-rotation2.html [ Failure Pass Timeout ]
+fast/mediastream/video-rotation2.html [ Failure ]
 
 http/wpt/mediastream/webrtc-vp9-colorspace.html [ Failure ]
 
@@ -4382,7 +4377,7 @@ imported/w3c/web-platform-tests/cookies/schemeful-same-site/schemeful-navigation
 imported/w3c/web-platform-tests/cookies/schemeful-same-site/schemeful-subresource.tentative.html [ Failure ]
 imported/w3c/web-platform-tests/cookies/prefix/__secure.header.https.html [ Failure ]
 
-imported/w3c/web-platform-tests/cookies/attributes/domain.sub.html [ Failure Pass ]
+imported/w3c/web-platform-tests/cookies/attributes/domain.sub.html [ Skip ]
 
 webkit.org/b/228778 mhtml [ ImageOnlyFailure Pass ]
 
@@ -4397,7 +4392,7 @@ webkit.org/b/312714 media/media-source/media-source-webm-configuration-framerate
 # Failure Pass Crash Timeout
 webkit.org/b/207062 webkit.org/b/244776 imported/w3c/web-platform-tests/media-source/mediasource-replay.html [ Skip ]
 
-imported/w3c/web-platform-tests/mathml/relations/css-styling/mozilla-393760-2.xml [ ImageOnlyFailure Pass ]
+imported/w3c/web-platform-tests/mathml/relations/css-styling/mozilla-393760-2.xml [ ImageOnlyFailure ]
 
 css2.1/20110323/height-applies-to-010a.htm [ ImageOnlyFailure Pass ]
 fast/hidpi/hidpi-nested-layers-missing-content.html [ ImageOnlyFailure ]
@@ -4514,7 +4509,6 @@ webkit.org/b/245032 imported/w3c/web-platform-tests/css/compositing/root-element
 
 imported/w3c/web-platform-tests/css/css-color/system-color-hightlights-vs-getSelection-001.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-color/system-color-hightlights-vs-getSelection-002.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-color/body-opacity-0-to-1-stacking-context.html [ Pass ImageOnlyFailure ]
 
 # Flakily crashing on GTK and WPE bots
 webkit.org/b/262949 media/media-garbage-collection.html [ Pass Timeout Failure ]
@@ -4660,13 +4654,10 @@ imported/w3c/web-platform-tests/css/css-view-transitions/snapshot-containing-blo
 imported/w3c/web-platform-tests/css/css-view-transitions/web-animations-api.html [ ImageOnlyFailure Pass ]
 
 imported/w3c/web-platform-tests/css/css-view-transitions/fragmented-at-start-ignored.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-view-transitions/massive-element-left-of-viewport-partially-onscreen-new.html [ Pass ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-view-transitions/massive-element-left-of-viewport-partially-onscreen-old.html [ Pass ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-view-transitions/pseudo-with-classes-mismatch-ident.html [ ImageOnlyFailure Pass ]
 imported/w3c/web-platform-tests/css/css-view-transitions/pseudo-with-classes-mismatch-partial.html [ ImageOnlyFailure Pass ]
 imported/w3c/web-platform-tests/css/css-view-transitions/pseudo-with-classes-mismatch-wildcard.html [ ImageOnlyFailure Pass ]
 imported/w3c/web-platform-tests/css/css-view-transitions/pseudo-with-classes-old-with-class-new-without.html [ ImageOnlyFailure Pass ]
-imported/w3c/web-platform-tests/css/css-view-transitions/massive-element-on-top-of-viewport-partially-onscreen-old.html [ Pass ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-view-transitions/modify-style-via-cssom.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-view-transitions/no-painting-while-render-blocked.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-view-transitions/input-targets-root-while-render-blocked.html [ Failure ]
@@ -4896,16 +4887,8 @@ imported/w3c/web-platform-tests/mixed-content/gen/top.meta/opt-in/img-tag.https.
 imported/w3c/web-platform-tests/mixed-content/gen/top.meta/unset/img-tag.https.html [ Failure Pass ]
 imported/w3c/web-platform-tests/upgrade-insecure-requests/gen/iframe-blank-inherit.meta/unset/img-tag.https.html [ Failure Pass ]
 imported/w3c/web-platform-tests/upgrade-insecure-requests/gen/srcdoc-inherit.meta/unset/img-tag.https.html [ Failure Pass ]
-imported/w3c/web-platform-tests/upgrade-insecure-requests/gen/top.meta/unset/img-tag.https.html [ Failure Pass ]
 
 fullscreen/full-screen-enter-while-exiting-mid-completion-handler.html [ Skip ]
-
-# Failures in new tests introduced by a re-sync of imported wasm tests: https://bugs.webkit.org/show_bug.cgi?id=292629
-# These are benign and caused by the difference in the URLs appearing in the expected and actual output
-imported/w3c/web-platform-tests/wasm/core/data.wast.js.html [ Failure Pass ]
-imported/w3c/web-platform-tests/wasm/core/elem.wast.js.html [ Failure Pass ]
-imported/w3c/web-platform-tests/wasm/core/global.wast.js.html [ Failure Pass ]
-imported/w3c/web-platform-tests/wasm/core/unreached-invalid.wast.js.html [ Failure Pass ]
 
 # CSS image-orientation is not yet enabled.
 webkit.org/b/89052 fast/css/image-orientation/image-orientation.html [ Failure ]
@@ -5113,7 +5096,7 @@ webkit.org/b/204001 imported/w3c/web-platform-tests/pointerevents/pointerlock/po
 
 webkit.org/b/291636 svg/text/timeout-long-text-content.html [ Timeout Pass ]
 
-imported/w3c/web-platform-tests/uievents/interface/keyboard-accesskey-click-event.html [ Failure Pass ]
+imported/w3c/web-platform-tests/uievents/interface/keyboard-accesskey-click-event.html [ Failure ]
 
 imported/w3c/web-platform-tests/visual-viewport/page-and-offset-in-iframe.html [ Skip ]
 imported/w3c/web-platform-tests/visual-viewport/scroll-event-order.html [ Skip ]
