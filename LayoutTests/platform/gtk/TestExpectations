@@ -1487,12 +1487,4 @@ webkit.org/b/312888 inspector/debugger/async-stack-trace-basic.html [ Pass Crash
 webkit.org/b/312889 media/video-seek-past-end-paused.html [ Pass Timeout ]
 webkit.org/b/312892 imported/w3c/web-platform-tests/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/window-open-self.html [ Pass Failure ]
 
-webkit.org/b/313041 inspector/debugger/async-stack-trace-truncate.html [ Pass Crash Timeout ]
-webkit.org/b/313042 media/W3C/audio/currentSrc/currentSrc_nonempty_after_adding_source_child.html [ Pass Failure ]
 webkit.org/b/313043 transitions/remove-transition-style.html [ Pass Failure ]
-webkit.org/b/313046 webgl/2.0.0/conformance2/textures/video/tex-3d-rg32f-rg-float.html [ Pass Failure ]
-webkit.org/b/313047 webgl/2.0.0/conformance2/textures/video/tex-3d-rgb5_a1-rgba-unsigned_byte.html [ Pass Failure ]
-webkit.org/b/313048 webgl/2.0.0/conformance2/textures/video/tex-3d-srgb8-rgb-unsigned_byte.html [ Pass Failure ]
-webkit.org/b/313049 webrtc/getDisplayMedia-odd-size.html [ Pass Failure Timeout Crash ]
-webkit.org/b/313050 webrtc/peer-connection-remote-audio-mute.html [ Pass Timeout ]
-webkit.org/b/313051 webrtc/video-rotation.html [ Pass Failure Timeout ]
