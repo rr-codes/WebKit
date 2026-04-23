@@ -499,7 +499,10 @@ bool Quirks::shouldDispatchSimulatedMouseEvents(const EventTarget* target) const
             return QuirksData::ShouldDispatchSimulatedMouseEvents::Yes;
         // facebook.com rdar://174179871
         if (m_quirksData.isFacebook)
-            return QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetForFacebook;
+            return QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetWithSliderRole;
+        // tiktok.com rdar://174179805
+        if (m_quirksData.isTikTok)
+            return QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetWithSliderRole;
 
         const URL& topDocumentURL = this->topDocumentURL();
         const auto registrableDomainString = RegistrableDomain(topDocumentURL).string();
@@ -547,7 +550,7 @@ bool Quirks::shouldDispatchSimulatedMouseEvents(const EventTarget* target) const
     case QuirksData::ShouldDispatchSimulatedMouseEvents::No:
         return false;
 
-    case QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetForFacebook:
+    case QuirksData::ShouldDispatchSimulatedMouseEvents::DependingOnTargetWithSliderRole:
         for (RefPtr node = dynamicDowncast<Node>(target); node; node = node->parentNode()) {
             if (RefPtr element = dynamicDowncast<Element>(*node); element && element->attributeWithoutSynchronization(HTMLNames::roleAttr) == "slider"_s)
                 return true;
@@ -598,7 +601,19 @@ bool Quirks::shouldDispatchedSimulatedMouseEventsAssumeDefaultPrevented(EventTar
     if (m_quirksData.isSoundCloud)
         return element->hasClassName("sceneLayer"_s);
 
+    // facebook.com rdar://174179871 tiktok.com rdar://174179805
+    if (m_quirksData.isFacebook || m_quirksData.isTikTok)
+        return element->attributeWithoutSynchronization(HTMLNames::roleAttr) == "slider"_s;
+
     return false;
+}
+
+// facebook.com rdar://174179871 tiktok.com rdar://174179805
+bool Quirks::shouldComputeSimulatedMouseEventMovementDelta() const
+{
+    QUIRKS_EARLY_RETURN_IF_DISABLED_WITH_VALUE(false);
+
+    return m_quirksData.isTikTok || m_quirksData.isFacebook;
 }
 
 // sites.google.com rdar://58653069
@@ -2882,7 +2897,12 @@ static void handleTikTokQuirks(QuirksData& quirksData, const URL& /* quirksURL *
 {
     QUIRKS_EARLY_RETURN_IF_NOT_DOMAIN("tiktok.com"_s);
 
-    quirksData.enableQuirk(QuirksData::SiteSpecificQuirk::NeedsTikTokOverflowingContentQuirk);
+    quirksData.isTikTok = true;
+    quirksData.enableQuirks({
+        QuirksData::SiteSpecificQuirk::NeedsTikTokOverflowingContentQuirk,
+        // tiktok.com rdar://174179805
+        QuirksData::SiteSpecificQuirk::ShouldDispatchSimulatedMouseEventsAssumeDefaultPreventedQuirk,
+    });
 }
 
 #if PLATFORM(IOS_FAMILY)
@@ -2970,6 +2990,8 @@ static void handleFacebookQuirks(QuirksData& quirksData, const URL& /* quirksURL
     quirksData.enableQuirks({
         // facebook.com rdar://100871402
         QuirksData::SiteSpecificQuirk::NeedsFacebookRemoveNotSupportedQuirk,
+        // facebook.com rdar://174179871
+        QuirksData::SiteSpecificQuirk::ShouldDispatchSimulatedMouseEventsAssumeDefaultPreventedQuirk,
 #if ENABLE(VIDEO_PRESENTATION_MODE)
         // facebook.com rdar://67273166
         QuirksData::SiteSpecificQuirk::RequiresUserGestureToPauseInPictureInPictureQuirk,
