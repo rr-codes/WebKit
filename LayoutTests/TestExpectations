@@ -8198,3 +8198,8 @@ imported/w3c/web-platform-tests/svg/text/reftests/textpath-side-005.svg [ ImageO
 
 webkit.org/b/312264 imported/w3c/web-platform-tests/css/cssom-view/interrupt-hidden-smooth-scroll.html [ Pass Failure ]
 
+# webkit.org/b/308565 LBSE specific compositing tests
+svg/compositing/foreground-layer-composited-html-in-foreignobject-between-rects.html [ ImageOnlyFailure ]
+svg/compositing/foreground-layer-composited-svg-rect-and-foreignobject-interleaved.html [ ImageOnlyFailure ]
+svg/compositing/foreground-layer-mixed-svg-and-foreignobject-composited.html [ ImageOnlyFailure ]
+svg/compositing/foreground-layer-multiple-foreignobjects-composited.html [ ImageOnlyFailure ]
