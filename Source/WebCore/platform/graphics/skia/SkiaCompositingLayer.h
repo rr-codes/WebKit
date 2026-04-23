@@ -50,10 +50,10 @@ WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_END
 
 namespace WebCore {
 class CoordinatedAnimatedBackingStoreClient;
-class CoordinatedBackingStore;
 class CoordinatedImageBackingStore;
 class CoordinatedPlatformLayerBuffer;
 class FilterOperations;
+class SkiaBackingStore;
 
 class SkiaCompositingLayer final : public RefCountedAndCanMakeWeakPtr<SkiaCompositingLayer> {
     WTF_MAKE_TZONE_ALLOCATED(SkiaCompositingLayer);
@@ -218,7 +218,7 @@ private:
     RefPtr<SkiaCompositingLayer> m_mask;
     RefPtr<SkiaCompositingLayer> m_replica;
     WeakPtr<SkiaCompositingLayer> m_replicatedLayer;
-    RefPtr<CoordinatedBackingStore> m_backingStore;
+    std::unique_ptr<SkiaBackingStore> m_backingStore;
     RefPtr<CoordinatedAnimatedBackingStoreClient> m_animatedBackingStoreClient;
     RefPtr<CoordinatedImageBackingStore> m_imageBackingStore;
     std::unique_ptr<CoordinatedPlatformLayerBuffer> m_contentsBuffer;

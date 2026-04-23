@@ -29,7 +29,6 @@
 #if USE(COORDINATED_GRAPHICS) && USE(SKIA)
 #include "ColorMatrix.h"
 #include "CoordinatedAnimatedBackingStoreClient.h"
-#include "CoordinatedBackingStore.h"
 #include "CoordinatedImageBackingStore.h"
 #include "CoordinatedPlatformLayerBuffer.h"
 #include "CoordinatedTileBuffer.h"
@@ -37,6 +36,7 @@
 #include "FontCache.h"
 #include "PlatformDisplay.h"
 #include "Region.h"
+#include "SkiaBackingStore.h"
 #include "SkiaCompositingLayer3DRenderingContext.h"
 #include "SkiaCompositingLayerOverlapRegions.h"
 WTF_IGNORE_WARNINGS_IN_THIRD_PARTY_CODE_BEGIN
@@ -148,25 +148,17 @@ void SkiaCompositingLayer::setUseBackingStore(bool useBackingStore, CoordinatedA
     }
 
     if (!m_backingStore)
-        m_backingStore = CoordinatedBackingStore::create();
+        m_backingStore = makeUnique<SkiaBackingStore>();
     m_animatedBackingStoreClient = animatedBackingStoreClient;
 }
 
 void SkiaCompositingLayer::updateBackingStore(CoordinatedBackingStoreProxy::Update&& update, float scale)
 {
-    ASSERT(m_backingStore);
-    m_backingStore->resize(m_size, scale);
-    for (auto tileID : update.tilesToCreate())
-        m_backingStore->createTile(tileID);
-    for (auto tileID : update.tilesToRemove())
-        m_backingStore->removeTile(tileID);
-    for (const auto& tileUpdate : update.tilesToUpdate())
-        m_backingStore->updateTile(tileUpdate.tileID, tileUpdate.dirtyRect, tileUpdate.tileRect, tileUpdate.buffer.copyRef(), { });
-
     if (m_maskImage && !update.isEmpty())
         m_maskImage = nullptr;
 
-    m_backingStore->processPendingUpdates();
+    ASSERT(m_backingStore);
+    m_backingStore->update(m_size, scale, WTF::move(update));
 }
 
 void SkiaCompositingLayer::setImageBackingStore(CoordinatedImageBackingStore* imageBackingStore)
