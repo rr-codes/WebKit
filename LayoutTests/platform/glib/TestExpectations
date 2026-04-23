@@ -596,7 +596,7 @@ webkit.org/b/298491 media/media-vp9-reschange-webm.html [ Timeout ]
 webkit.org/b/307141 media/media-source/media-source-seek-and-play.html [ Failure Pass ]
 webkit.org/b/307141 media/media-source/media-controller-media-source-play-then-pause.html [ Failure Pass ]
 
-webkit.org/b/312871 media/media-source/media-source-seek-to-zero-then-play.html [ Failure Timeout ]
+webkit.org/b/312871 media/media-source/media-source-seek-to-zero-then-play.html [ Timeout ]
 
 # NOTIFICATION_EVENT tests
 http/tests/workers/service/shownotification-allowed-document.html [ Pass ]
@@ -2817,7 +2817,7 @@ fast/mediastream/image-capture-grabFrame.html [ Failure ]
 fast/mediastream/microphone-interruption-and-audio-session.html [ Skip ]
 http/tests/webrtc/audioSessionInFrames.html [ Failure ]
 
-webkit.org/b/309435 webrtc/video-mute.html [ Pass Failure Timeout ]
+webkit.org/b/309435 webrtc/video-mute.html [ Pass Failure ]
 
 webrtc/clone-audio-track.html [ Pass Failure ]
 
