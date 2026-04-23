@@ -6032,7 +6032,8 @@ TEST_P(VertexAttributeUint8Test, ConvertUint8IndexAtEndOfBuffer)
     std::vector<float> verts(256 * 2);
     for (int i = 0; i < 256; i++)
     {
-        float x, y;
+        float x = 0;
+        float y = 0;
         // Vertices 0, 1, 2: cover the right half of the framebuffer
         // Vertices 3, 4, 5: cover the left half of the framebuffer
         switch (i % 6)
