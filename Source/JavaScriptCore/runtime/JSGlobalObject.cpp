@@ -255,6 +255,7 @@
 #include "StringIteratorPrototypeInlines.h"
 #include "StringObjectInlines.h"
 #include "StringPrototypeInlines.h"
+#include "StructureInlines.h"
 #include "SuppressedError.h"
 #include "SuppressedErrorConstructorInlines.h"
 #include "SuppressedErrorPrototypeInlines.h"

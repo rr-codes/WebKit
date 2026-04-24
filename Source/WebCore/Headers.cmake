@@ -2983,7 +2983,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     rendering/PaintPhase.h
     rendering/PathOperation.h
     rendering/RegionContext.h
-    rendering/RelayoutScopeForScrollbarChange
+    rendering/RelayoutScopeForScrollbarChange.h
     rendering/RenderAttachment.h
     rendering/RenderBlock.h
     rendering/RenderBlockFlow.h
