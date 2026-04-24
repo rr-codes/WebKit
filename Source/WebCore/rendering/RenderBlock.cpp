@@ -802,14 +802,16 @@ LayoutUnit RenderBlock::marginIntrinsicLogicalWidthForChild(RenderBox& child) co
     // A margin has three types: fixed, percentage, and auto (variable).
     // Auto and percentage margins become 0 when computing min/max width.
     // Fixed margins can be added in as is.
+    // For calc() expressions like calc(10% + 100px), the percentage resolves to 0
+    // and only the fixed part contributes.
     auto& marginLeft = child.style().marginStart(writingMode());
     auto& marginRight = child.style().marginEnd(writingMode());
     const auto& zoomFactor = child.style().usedZoomForLength();
     LayoutUnit margin;
-    if (auto fixedMarginLeft = marginLeft.tryFixed(); fixedMarginLeft && !shouldTrimChildMargin(Style::MarginTrimSide::InlineStart, child))
-        margin += fixedMarginLeft->resolveZoom(zoomFactor);
-    if (auto fixedMarginRight = marginRight.tryFixed(); fixedMarginRight && !shouldTrimChildMargin(Style::MarginTrimSide::InlineEnd, child))
-        margin += fixedMarginRight->resolveZoom(zoomFactor);
+    if (!marginLeft.isAuto() && !shouldTrimChildMargin(Style::MarginTrimSide::InlineStart, child))
+        margin += Style::evaluateMinimum<LayoutUnit>(marginLeft, 0_lu, zoomFactor);
+    if (!marginRight.isAuto() && !shouldTrimChildMargin(Style::MarginTrimSide::InlineEnd, child))
+        margin += Style::evaluateMinimum<LayoutUnit>(marginRight, 0_lu, zoomFactor);
     return margin;
 }
 

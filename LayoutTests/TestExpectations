@@ -4494,7 +4494,6 @@ webkit.org/b/214463 imported/w3c/web-platform-tests/css/css-sizing/image-fractio
 imported/w3c/web-platform-tests/css/css-sizing/calc-margins-block.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-sizing/calc-margins-fieldset-content.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-sizing/calc-margins-fieldset-legend.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-sizing/calc-margins-flex.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-sizing/calc-margins-table-caption.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-sizing/fit-content-length-percentage-001.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-sizing/fit-content-length-percentage-002.html [ ImageOnlyFailure ]
