@@ -282,6 +282,15 @@ void GraphicsLayerCoordinated::setOpacity(float opacity)
     noteLayerPropertyChanged(Change::Opacity, ScheduleFlush::Yes);
 }
 
+void GraphicsLayerCoordinated::setBlendMode(BlendMode blendMode)
+{
+    if (m_blendMode == blendMode)
+        return;
+
+    GraphicsLayer::setBlendMode(blendMode);
+    noteLayerPropertyChanged(Change::BlendMode, ScheduleFlush::Yes);
+}
+
 void GraphicsLayerCoordinated::setContentsVisible(bool contentsVisible)
 {
     if (m_contentsVisible == contentsVisible)
@@ -1084,6 +1093,9 @@ void GraphicsLayerCoordinated::commitLayerChanges(CommitState& commitState, floa
 
     if (m_pendingChanges.contains(Change::Opacity))
         m_platformLayer->setOpacity(m_opacity);
+
+    if (m_pendingChanges.contains(Change::BlendMode))
+        m_platformLayer->setBlendMode(m_blendMode);
 
     if (m_pendingChanges.contains(Change::ContentsVisible)) {
         m_platformLayer->setContentsVisible(m_contentsVisible);

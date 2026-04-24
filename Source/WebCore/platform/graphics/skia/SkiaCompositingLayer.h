@@ -76,6 +76,7 @@ public:
     void setContentsClippingRect(const FloatRoundedRect& rect) { m_contentsClippingRect = rect; }
     void setContentsRectClipsDescendants(bool clips) { m_contentsRectClipsDescendants = clips; }
     void setOpacity(float);
+    void setBlendMode(BlendMode);
     void setContentsRect(const FloatRect& rect) { m_contentsRect = rect; }
     void setAnimations(const TextureMapperAnimations& animations) { m_animations = animations; }
     void setContentsTiling(const FloatSize& size, const FloatSize& phase) { m_contentsTiling = { size, phase }; }
@@ -126,6 +127,7 @@ private:
         }
 
         float opacity { 1 };
+        std::optional<SkBlendMode> blendMode;
         IntSize offset;
         sk_sp<SkColorFilter> colorFilter;
         TransformationMatrix accumulatedReplicaTransform;
@@ -213,6 +215,7 @@ private:
     bool m_contentsRectClipsDescendants { false };
     FloatRoundedRect m_contentsClippingRect;
     float m_opacity { 1 };
+    std::optional<SkBlendMode> m_blendMode;
     SkPath m_clipPath;
     sk_sp<SkImage> m_maskImage;
     RefPtr<SkiaCompositingLayer> m_mask;
