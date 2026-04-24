@@ -142,6 +142,7 @@ private:
 
     struct gbm_bo* allocate(struct gbm_device*, const GLDisplay::BufferFormat&);
     bool createDMABufFromGBMBufferObject(struct gbm_bo*);
+    bool exportFDForMappingFromGBMBufferObject(struct gbm_bo*);
 
     void updateContentsInLinearFormat(const void* srcData, const IntRect& targetRect, unsigned bytesPerLine);
     void updateContentsInVivanteSuperTiledFormat(const void* srcData, const IntRect& targetRect, unsigned bytesPerLine);

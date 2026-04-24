@@ -274,16 +274,20 @@ std::unique_ptr<MemoryMappedGPUBuffer> MemoryMappedGPUBuffer::create(const IntSi
         return nullptr;
     }
 
-    if (!buffer->createDMABufFromGBMBufferObject(bo)) {
-        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to create dma-buf from GBM buffer object");
+    // Order matters: the RDWR mapping export must precede the GPU-sampling export.
+    // The kernel caches the dma-buf object per gem-handle on first export and locks
+    // its mode flags; older Mesas call gbm_bo_get_fd_for_plane() without DRM_RDWR,
+    // so if createDMABufFromGBMBufferObject() ran first every subsequent FD --
+    // including our DRMSystemCall RDWR fallback -- would alias that cached read-only
+    // dma-buf and SIGBUS on mmap(PROT_WRITE).
+    if (!buffer->exportFDForMappingFromGBMBufferObject(bo)) {
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to export dma-buf FD for mapping: %s", safeStrerror(errno).data());
         gbm_bo_destroy(bo);
         return nullptr;
     }
 
-    // Must happen before gbm_bo_destroy() below.
-    buffer->m_exportedFDForMapping = UnixFileDescriptor { exportFDForPlane(bo, 0, FDExportPurpose::CPUMapping), UnixFileDescriptor::Adopt };
-    if (!buffer->m_exportedFDForMapping) {
-        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to export dma-buf FD for mapping: %s", safeStrerror(errno).data());
+    if (!buffer->createDMABufFromGBMBufferObject(bo)) {
+        RELEASE_LOG_ERROR(GraphicsBuffer, "MemoryMappedGPUBuffer::create(), failed to create dma-buf from GBM buffer object");
         gbm_bo_destroy(bo);
         return nullptr;
     }
@@ -343,6 +347,13 @@ bool MemoryMappedGPUBuffer::createDMABufFromGBMBufferObject(struct gbm_bo* bo)
     ASSERT(!m_dmaBuf);
     m_dmaBuf = DMABufBuffer::create(WTF::move(*attributes));
     return true;
+}
+
+bool MemoryMappedGPUBuffer::exportFDForMappingFromGBMBufferObject(struct gbm_bo* bo)
+{
+    ASSERT(!m_exportedFDForMapping);
+    m_exportedFDForMapping = UnixFileDescriptor { exportFDForPlane(bo, 0, FDExportPurpose::CPUMapping), UnixFileDescriptor::Adopt };
+    return !!m_exportedFDForMapping;
 }
 
 uint32_t MemoryMappedGPUBuffer::primaryPlaneDmaBufStride() const
