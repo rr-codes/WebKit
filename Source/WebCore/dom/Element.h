@@ -545,7 +545,8 @@ public:
     bool descendantsAffectedByBackwardPositionalRules() const { return hasStyleFlag(NodeStyleFlag::DescendantsAffectedByBackwardPositionalRules); }
     bool affectsNextSiblingElementStyle() const { return hasStyleFlag(NodeStyleFlag::AffectsNextSiblingElementStyle); }
     bool styleIsAffectedByPreviousSibling() const { return hasStyleFlag(NodeStyleFlag::StyleIsAffectedByPreviousSibling); }
-    bool affectedByHasWithSiblingRelationship() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithSiblingRelationship); }
+    bool affectedByHasWithBackwardSiblingRelationship() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithBackwardSiblingRelationship); }
+    bool affectedByHasWithForwardSiblingRelationship() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithForwardSiblingRelationship); }
     bool affectedByHasWithAdjacentSiblingRelationship() const { return hasStyleFlag(NodeStyleFlag::AffectedByHasWithAdjacentSiblingRelationship); }
     unsigned childIndex() const { return hasRareData() ? rareDataChildIndex() : 0; }
 
@@ -561,7 +562,8 @@ public:
     void setDescendantsAffectedByBackwardPositionalRules() { setStyleFlag(NodeStyleFlag::DescendantsAffectedByBackwardPositionalRules); }
     void setAffectsNextSiblingElementStyle() { setStyleFlag(NodeStyleFlag::AffectsNextSiblingElementStyle); }
     void setStyleIsAffectedByPreviousSibling() { setStyleFlag(NodeStyleFlag::StyleIsAffectedByPreviousSibling); }
-    void setAffectedByHasWithSiblingRelationship() { setStyleFlag(NodeStyleFlag::AffectedByHasWithSiblingRelationship); }
+    void setAffectedByHasWithBackwardSiblingRelationship() { setStyleFlag(NodeStyleFlag::AffectedByHasWithBackwardSiblingRelationship); }
+    void setAffectedByHasWithForwardSiblingRelationship() { setStyleFlag(NodeStyleFlag::AffectedByHasWithForwardSiblingRelationship); }
     void setAffectedByHasWithAdjacentSiblingRelationship() { setStyleFlag(NodeStyleFlag::AffectedByHasWithAdjacentSiblingRelationship); }
     void setChildIndex(unsigned);
 

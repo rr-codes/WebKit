@@ -714,20 +714,21 @@ protected:
     static constexpr uint32_t s_refCountMask = ~static_cast<uint32_t>(1);
 
     enum class NodeStyleFlag : uint16_t {
-        AffectedByHasWithSiblingRelationship                    = 1 << 0,
-        ChildrenAffectedByFirstChildRules                       = 1 << 1,
-        ChildrenAffectedByLastChildRules                        = 1 << 2,
-        AffectsNextSiblingElementStyle                          = 1 << 3,
-        StyleIsAffectedByPreviousSibling                        = 1 << 4,
-        DescendantsAffectedByPreviousSibling                    = 1 << 5,
-        StyleAffectedByEmpty                                    = 1 << 6,
+        AffectedByHasWithBackwardSiblingRelationship            = 1 << 0,
+        AffectedByHasWithForwardSiblingRelationship             = 1 << 1,
+        ChildrenAffectedByFirstChildRules                       = 1 << 2,
+        ChildrenAffectedByLastChildRules                        = 1 << 3,
+        AffectsNextSiblingElementStyle                          = 1 << 4,
+        StyleIsAffectedByPreviousSibling                        = 1 << 5,
+        DescendantsAffectedByPreviousSibling                    = 1 << 6,
+        StyleAffectedByEmpty                                    = 1 << 7,
         // We optimize for :first-child and :last-child. The other positional child selectors like nth-child or
         // *-child-of-type, we will just give up and re-evaluate whenever children change at all.
-        ChildrenAffectedByForwardPositionalRules                = 1 << 7,
-        DescendantsAffectedByForwardPositionalRules             = 1 << 8,
-        ChildrenAffectedByBackwardPositionalRules               = 1 << 9,
-        DescendantsAffectedByBackwardPositionalRules            = 1 << 10,
-        AffectedByHasWithAdjacentSiblingRelationship            = 1 << 11,
+        ChildrenAffectedByForwardPositionalRules                = 1 << 8,
+        DescendantsAffectedByForwardPositionalRules             = 1 << 9,
+        ChildrenAffectedByBackwardPositionalRules               = 1 << 10,
+        DescendantsAffectedByBackwardPositionalRules            = 1 << 11,
+        AffectedByHasWithAdjacentSiblingRelationship            = 1 << 12,
     };
 
     struct StyleBitfields {
@@ -745,8 +746,8 @@ protected:
 
     private:
         uint16_t m_styleValidity : 3 { 0 };
-        uint16_t m_flags : 12 { 0 };
-        // 1 bit free.
+        uint16_t m_flags : 13 { 0 };
+        // 0 bits free.
     };
 
     StyleBitfields styleBitfields() const { return m_styleBitfields; }

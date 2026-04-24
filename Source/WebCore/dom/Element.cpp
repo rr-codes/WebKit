@@ -5818,7 +5818,8 @@ void Element::resetComputedStyle()
 void Element::resetStyleRelations()
 {
     clearStyleFlags(NodeStyleFlag::StyleAffectedByEmpty);
-    clearStyleFlags(NodeStyleFlag::AffectedByHasWithSiblingRelationship);
+    clearStyleFlags(NodeStyleFlag::AffectedByHasWithBackwardSiblingRelationship);
+    clearStyleFlags(NodeStyleFlag::AffectedByHasWithForwardSiblingRelationship);
     clearStyleFlags(NodeStyleFlag::AffectedByHasWithAdjacentSiblingRelationship);
     if (!hasRareData())
         return;

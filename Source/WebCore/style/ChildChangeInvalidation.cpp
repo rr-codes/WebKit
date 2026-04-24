@@ -168,6 +168,43 @@ void ChildChangeInvalidation::invalidateForChangeOutsideHasScope()
         Invalidator::invalidateWithScopeBreakingHasPseudoClassRuleSet(parentElement(), invalidationRuleSet.get());
 }
 
+void ChildChangeInvalidation::invalidateForHasSiblings(MatchingHasSelectors& matchingHasSelectors, MutationPhase phase)
+{
+    bool affectedByBackwardSibling = parentElement().affectedByHasWithBackwardSiblingRelationship();
+    bool affectedByForwardSibling = parentElement().affectedByHasWithForwardSiblingRelationship();
+    bool affectedByAdjacentSibling = parentElement().affectedByHasWithAdjacentSiblingRelationship();
+
+    auto invalidateSibling = [&](auto& changedElement) {
+        invalidateForChangedElement(changedElement, matchingHasSelectors, ChangedElementRelation::Sibling);
+    };
+    if (affectedByBackwardSibling || affectedByAdjacentSibling) {
+        for (RefPtr child = m_childChange.previousSiblingElement; child; child = child->previousElementSibling()) {
+            invalidateSibling(*child);
+            if (!affectedByBackwardSibling)
+                break;
+        }
+    }
+    if (affectedByForwardSibling || affectedByAdjacentSibling) {
+        for (RefPtr child = m_childChange.nextSiblingElement; child; child = child->nextElementSibling()) {
+            invalidateSibling(*child);
+            if (!affectedByForwardSibling)
+                break;
+        }
+    }
+
+    // For insertion, the pre-mutation :first/:last-child state of the neighbor will stop matching.
+    // For removal, the post-mutation state of the neighbor will start matching.
+    bool checkNow = phase == MutationPhase::Before ? m_childChange.isInsertion() : !m_childChange.isInsertion();
+    if (!checkNow)
+        return;
+
+    if (RefPtr next = m_childChange.nextSiblingElement; next && parentElement().childrenAffectedByFirstChildRules() && !next->previousElementSibling())
+        invalidateForChangedElement(*next, matchingHasSelectors, ChangedElementRelation::Sibling);
+
+    if (RefPtr previous = m_childChange.previousSiblingElement; previous && parentElement().childrenAffectedByLastChildRules() && !previous->nextElementSibling())
+        invalidateForChangedElement(*previous, matchingHasSelectors, ChangedElementRelation::Sibling);
+}
+
 void ChildChangeInvalidation::invalidateForHasBeforeMutation()
 {
     ASSERT(m_needsHasInvalidation);
@@ -189,48 +226,7 @@ void ChildChangeInvalidation::invalidateForHasBeforeMutation()
     if (emptyStateWillChange())
         invalidateForChangedElement(parentElement(), matchingHasSelectors, ChangedElementRelation::SelfOrDescendant, EmptyInvalidation::Yes);
 
-    auto firstChildStateWillStopMatching = [&] {
-        if (!m_childChange.nextSiblingElement)
-            return false;
-
-        if (!parentElement().childrenAffectedByFirstChildRules())
-            return false;
-
-        if (m_childChange.isInsertion() && !m_childChange.nextSiblingElement->previousElementSibling())
-            return true;
-
-        return false;
-    };
-
-    auto lastChildStateWillStopMatching = [&] {
-        if (!m_childChange.previousSiblingElement)
-            return false;
-
-        if (!parentElement().childrenAffectedByLastChildRules())
-            return false;
-
-        if (m_childChange.isInsertion() && !m_childChange.previousSiblingElement->nextElementSibling())
-            return true;
-
-        return false;
-    };
-
-    if (parentElement().affectedByHasWithSiblingRelationship()) {
-        traverseRemainingExistingSiblings([&](auto& changedElement) {
-            invalidateForChangedElement(changedElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-        });
-    } else if (parentElement().affectedByHasWithAdjacentSiblingRelationship()) {
-        if (m_childChange.previousSiblingElement)
-            invalidateForChangedElement(*m_childChange.previousSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-        if (m_childChange.nextSiblingElement)
-            invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-    } else {
-        if (firstChildStateWillStopMatching())
-            invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-
-        if (lastChildStateWillStopMatching())
-            invalidateForChangedElement(*m_childChange.previousSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-    }
+    invalidateForHasSiblings(matchingHasSelectors, MutationPhase::Before);
 }
 
 void ChildChangeInvalidation::invalidateForHasAfterMutation()
@@ -254,48 +250,7 @@ void ChildChangeInvalidation::invalidateForHasAfterMutation()
     if (emptyStateDidChange())
         invalidateForChangedElement(parentElement(), matchingHasSelectors, ChangedElementRelation::SelfOrDescendant, EmptyInvalidation::Yes);
 
-    auto firstChildStateWillStartMatching = [&](Element* elementAfterChange) {
-        if (!elementAfterChange)
-            return false;
-
-        if (!parentElement().childrenAffectedByFirstChildRules())
-            return false;
-
-        if (!m_childChange.isInsertion() && !elementAfterChange->previousElementSibling())
-            return true;
-
-        return false;
-    };
-
-    auto lastChildStateWillStartMatching = [&](Element* elementBeforeChange) {
-        if (!elementBeforeChange)
-            return false;
-
-        if (!parentElement().childrenAffectedByLastChildRules())
-            return false;
-
-        if (!m_childChange.isInsertion() && !elementBeforeChange->nextElementSibling())
-            return true;
-
-        return false;
-    };
-
-    if (parentElement().affectedByHasWithSiblingRelationship()) {
-        traverseRemainingExistingSiblings([&](auto& changedElement) {
-            invalidateForChangedElement(changedElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-        });
-    } else if (parentElement().affectedByHasWithAdjacentSiblingRelationship()) {
-        if (m_childChange.previousSiblingElement)
-            invalidateForChangedElement(*m_childChange.previousSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-        if (m_childChange.nextSiblingElement)
-            invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-    } else {
-        if (firstChildStateWillStartMatching(m_childChange.nextSiblingElement))
-            invalidateForChangedElement(*m_childChange.nextSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-
-        if (lastChildStateWillStartMatching(m_childChange.previousSiblingElement))
-            invalidateForChangedElement(*m_childChange.previousSiblingElement, matchingHasSelectors, ChangedElementRelation::Sibling);
-    }
+    invalidateForHasSiblings(matchingHasSelectors, MutationPhase::After);
 }
 
 static bool NODELETE needsDescendantTraversal(const RuleFeatureSet& features)
@@ -353,19 +308,6 @@ void ChildChangeInvalidation::traverseAddedElements(Function&& function)
                 callFunctionOnInclusiveDescendants(*element);
         }
     }
-}
-
-template<typename Function>
-void ChildChangeInvalidation::traverseRemainingExistingSiblings(Function&& function)
-{
-    if (m_childChange.isInsertion() && m_childChange.type == ContainerNode::ChildChange::Type::AllChildrenReplaced)
-        return;
-
-    for (RefPtr child = m_childChange.previousSiblingElement; child; child = child->previousElementSibling())
-        function(*child);
-
-    for (RefPtr child = m_childChange.nextSiblingElement; child; child = child->nextElementSibling())
-        function(*child);
 }
 
 static void checkForEmptyStyleChange(Element& element)
