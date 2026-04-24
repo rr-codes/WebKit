@@ -157,7 +157,7 @@ static NSRect _clipBounds;
 
     // FIXME: This is a workaround for <rdar://problem/11385461>. When that bug is resolved, we should remove this code,
     // as well as the internal method overrides below.
-    auto coreUIDrawOptions = adoptCF(CFDictionaryCreateMutableCopy(NULL, 0, defaultOptions));
+    auto coreUIDrawOptions = adoptCFNullable(CFDictionaryCreateMutableCopy(NULL, 0, defaultOptions));
     CFDictionarySetValue(coreUIDrawOptions.get(), CFSTR("borders only"), kCFBooleanTrue);
     return coreUIDrawOptions.autorelease();
 }

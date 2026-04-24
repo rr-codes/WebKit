@@ -162,7 +162,7 @@ static RetainPtr<NSArray<_WTTextPreview *>> textPreviewsFromIndicator(const RefP
         CGRect frameInRootViewCoordinates = CGRectOffset(textRectInSnapshotCoordinates, boundingRectInRootViewCoordinates.origin.x, boundingRectInRootViewCoordinates.origin.y);
         CGRect presentationFrame = [rootView convertRect:frameInRootViewCoordinates toView:containerView];
         textRectInSnapshotCoordinates.scale(textIndicator->contentImageScaleFactor());
-        [previews addObject:adoptNS([PAL::alloc_WTTextPreviewInstance() initWithSnapshotImage:adoptCF(CGImageCreateWithImageInRect(snapshotPlatformImage.get(), textRectInSnapshotCoordinates)).get() presentationFrame:presentationFrame]).get()];
+        [previews addObject:adoptNS([PAL::alloc_WTTextPreviewInstance() initWithSnapshotImage:adoptCFNullable(CGImageCreateWithImageInRect(snapshotPlatformImage.get(), textRectInSnapshotCoordinates)).get() presentationFrame:presentationFrame]).get()];
     }
 
     return previews;

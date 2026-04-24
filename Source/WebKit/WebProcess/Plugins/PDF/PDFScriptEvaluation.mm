@@ -107,7 +107,7 @@ static bool pdfDocumentContainsPrintScript(RetainPtr<CGPDFDocumentRef> pdfDocume
 
         auto scriptFromBytes = [](std::span<const uint8_t> bytes) {
             CFStringEncoding encoding = (bytes.size() > 1 && bytes[0] == 0xFE && bytes[1] == 0xFF) ? kCFStringEncodingUnicode : kCFStringEncodingUTF8;
-            return adoptCF(CFStringCreateWithBytes(kCFAllocatorDefault, bytes.data(), bytes.size(), encoding, true));
+            return adoptCFNullable(CFStringCreateWithBytes(kCFAllocatorDefault, bytes.data(), bytes.size(), encoding, true));
         };
 
         auto scriptFromStream = [&] -> RetainPtr<CFStringRef> {
@@ -115,7 +115,7 @@ static bool pdfDocumentContainsPrintScript(RetainPtr<CGPDFDocumentRef> pdfDocume
             if (!CGPDFDictionaryGetStream(javaScriptAction, "JS", &stream))
                 return nullptr;
             CGPDFDataFormat format;
-            RetainPtr<CFDataRef> data = adoptCF(CGPDFStreamCopyData(stream, &format));
+            RetainPtr<CFDataRef> data = adoptCFNullable(CGPDFStreamCopyData(stream, &format));
             if (!data)
                 return nullptr;
             return scriptFromBytes(span(data.get()));

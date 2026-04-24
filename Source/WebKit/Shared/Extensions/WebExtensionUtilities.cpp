@@ -149,8 +149,8 @@ static String formatString(const char* format, va_list arguments)
 ALLOW_NONLITERAL_FORMAT_BEGIN
 
 #if PLATFORM(COCOA)
-    auto cfFormat = adoptCF(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, format, kCFStringEncodingUTF8, kCFAllocatorNull));
-    auto cfResult = adoptCF(CFStringCreateWithFormatAndArguments(0, 0, cfFormat.get(), args));
+    auto cfFormat = adoptCFNullable(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, format, kCFStringEncodingUTF8, kCFAllocatorNull));
+    auto cfResult = adoptCFNullable(CFStringCreateWithFormatAndArguments(0, 0, cfFormat.get(), args));
     va_end(args);
     return cfResult.get();
 #endif

@@ -54,7 +54,7 @@ String formatLocalizedString(CFStringRef format, ...)
     auto localizedFormat = copyLocalizedString(format);
 ALLOW_NONLITERAL_FORMAT_BEGIN
     // The 'format' parameter is already checked for correct placeholders and parameters.
-    auto result = adoptCF(CFStringCreateWithFormatAndArguments(0, 0, localizedFormat.get(), arguments));
+    auto result = adoptCFNullable(CFStringCreateWithFormatAndArguments(0, 0, localizedFormat.get(), arguments));
 ALLOW_NONLITERAL_FORMAT_END
 
     va_end(arguments);
@@ -101,7 +101,7 @@ RetainPtr<CFStringRef> copyLocalizedString(CFStringRef key)
 {
     static CFStringRef notFound = CFSTR("localized string not found");
 
-    auto result = adoptCF(CFBundleCopyLocalizedString(webCoreBundleSingleton(), key, notFound, nullptr));
+    auto result = adoptCFNullable(CFBundleCopyLocalizedString(webCoreBundleSingleton(), key, notFound, nullptr));
 
 #if ASSERT_ENABLED
     if (result.get() == notFound) {
@@ -1063,16 +1063,16 @@ String unknownFileSizeText()
 String imageTitle(const String& filename, const IntSize& size)
 {
 #if PLATFORM(COCOA)
-    auto locale = adoptCF(CFLocaleCopyCurrent());
-    auto formatter = adoptCF(CFNumberFormatterCreate(0, locale.get(), kCFNumberFormatterDecimalStyle));
+    auto locale = adoptCFNullable(CFLocaleCopyCurrent());
+    auto formatter = adoptCFNullable(CFNumberFormatterCreate(0, locale.get(), kCFNumberFormatterDecimalStyle));
 
     int widthInt = size.width();
-    auto width = adoptCF(CFNumberCreate(0, kCFNumberIntType, &widthInt));
-    auto widthString = adoptCF(CFNumberFormatterCreateStringWithNumber(0, formatter.get(), width.get()));
+    auto width = adoptCFNullable(CFNumberCreate(0, kCFNumberIntType, &widthInt));
+    auto widthString = adoptCFNullable(CFNumberFormatterCreateStringWithNumber(0, formatter.get(), width.get()));
 
     int heightInt = size.height();
-    auto height = adoptCF(CFNumberCreate(0, kCFNumberIntType, &heightInt));
-    auto heightString = adoptCF(CFNumberFormatterCreateStringWithNumber(0, formatter.get(), height.get()));
+    auto height = adoptCFNullable(CFNumberCreate(0, kCFNumberIntType, &heightInt));
+    auto heightString = adoptCFNullable(CFNumberFormatterCreateStringWithNumber(0, formatter.get(), height.get()));
 
     return WEB_UI_FORMAT_CFSTRING("%@ %@×%@ pixels", "window title for a standalone image (uses multiplication symbol, not x)", filename.createCFString().get(), widthString.get(), heightString.get());
 #elif PLATFORM(WIN)

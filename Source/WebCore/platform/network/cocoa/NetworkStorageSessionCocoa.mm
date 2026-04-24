@@ -205,8 +205,8 @@ RetainPtr<CFURLStorageSessionRef> createPrivateStorageSession(CFStringRef identi
 {
     const void* sessionPropertyKeys[] = { _kCFURLStorageSessionIsPrivate };
     const void* sessionPropertyValues[] = { kCFBooleanTrue };
-    auto sessionProperties = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, sessionPropertyKeys, sessionPropertyValues, sizeof(sessionPropertyKeys) / sizeof(*sessionPropertyKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    auto storageSession = adoptCF(_CFURLStorageSessionCreate(kCFAllocatorDefault, identifier, sessionProperties.get()));
+    auto sessionProperties = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, sessionPropertyKeys, sessionPropertyValues, sizeof(sessionPropertyKeys) / sizeof(*sessionPropertyKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto storageSession = adoptCFNullable(_CFURLStorageSessionCreate(kCFAllocatorDefault, identifier, sessionProperties.get()));
 
     if (!storageSession)
         return nullptr;
@@ -222,14 +222,14 @@ RetainPtr<CFURLStorageSessionRef> createPrivateStorageSession(CFStringRef identi
     // sandbox does not allow CFNetwork access).
 
     if (shouldDisableCFURLCache == NetworkStorageSession::ShouldDisableCFURLCache::No) {
-        auto cache = adoptCF(_CFURLStorageSessionCopyCache(kCFAllocatorDefault, storageSession.get()));
+        auto cache = adoptCFNullable(_CFURLStorageSessionCopyCache(kCFAllocatorDefault, storageSession.get()));
         if (!cache)
             return nullptr;
 
         CFURLCacheSetMemoryCapacity(cache.get(), [[NSURLCache sharedURLCache] memoryCapacity]);
     }
 
-    auto cookieStorage = adoptCF(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, storageSession.get()));
+    auto cookieStorage = adoptCFNullable(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, storageSession.get()));
     if (!cookieStorage)
         return nullptr;
 
@@ -253,7 +253,7 @@ RetainPtr<NSArray> NetworkStorageSession::httpCookies(CFHTTPCookieStorageRef coo
         return [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
     }
     
-    auto cookies = adoptCF(CFHTTPCookieStorageCopyCookies(cookieStorage));
+    auto cookies = adoptCFNullable(CFHTTPCookieStorageCopyCookies(cookieStorage));
     return [NSHTTPCookie _cf2nsCookies:cookies.get()];
 }
 

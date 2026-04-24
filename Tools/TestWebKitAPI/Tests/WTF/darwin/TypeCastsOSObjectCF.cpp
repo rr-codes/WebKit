@@ -67,7 +67,7 @@ TEST(TypeCastsOSObjectCF, dynamicOSObjectCast)
 
     // Same cast / up cast bad cast from CFTypeRef.
     {
-        RetainPtr objectCF = adoptCF<CFTypeRef>(dispatch_group_create());
+        RetainPtr objectCF = adoptCFNullable<CFTypeRef>(dispatch_group_create());
         uintptr_t objectCFPtr = reinterpret_cast<uintptr_t>(objectCF.get());
         EXPECT_EQ(objectCF.get(), dynamicOSObjectCast<dispatch_group_t>(objectCF.get()));
         EXPECT_EQ(objectCF.get(), dynamicOSObjectCast<dispatch_object_t>(objectCF.get()));

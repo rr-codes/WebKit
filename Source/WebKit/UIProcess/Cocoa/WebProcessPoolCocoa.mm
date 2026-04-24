@@ -567,7 +567,7 @@ void WebProcessPool::platformInitializeNetworkProcess(NetworkProcessCreationPara
 
     RetainPtr defaults = [NSUserDefaults standardUserDefaults];
 
-    parameters.networkATSContext = adoptCF(_CFNetworkCopyATSContext());
+    parameters.networkATSContext = adoptCFNullable(_CFNetworkCopyATSContext());
 
     parameters.shouldSuppressMemoryPressureHandler = [defaults boolForKey:WebKitSuppressMemoryPressureHandlerDefaultsKey];
 
@@ -956,11 +956,11 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     m_finishedMobileAssetFontDownloadObserver = [[NSNotificationCenter defaultCenter] addObserverForName:@"FontActivateNotification" object:nil queue:[NSOperationQueue currentQueue] usingBlock:^(NSNotification *notification) {
         RetainPtr fontFamily = dynamic_objc_cast<NSString>(notification.userInfo[@"FontActivateNotificationFontFamilyKey"]);
         if (fontFamily) {
-            RetainPtr ctFont = adoptCF(CTFontCreateWithName(bridge_cast(fontFamily.get()), 0.0, nullptr));
-            RetainPtr downloaded = adoptCF(static_cast<CFBooleanRef>(CTFontCopyAttribute(ctFont.get(), kCTFontDownloadedAttribute)));
+            RetainPtr ctFont = adoptCFNullable(CTFontCreateWithName(bridge_cast(fontFamily.get()), 0.0, nullptr));
+            RetainPtr downloaded = adoptCFNullable(static_cast<CFBooleanRef>(CTFontCopyAttribute(ctFont.get(), kCTFontDownloadedAttribute)));
             if (downloaded == kCFBooleanFalse)
                 return;
-            RetainPtr url = adoptCF(static_cast<CFURLRef>(CTFontCopyAttribute(ctFont.get(), kCTFontURLAttribute)));
+            RetainPtr url = adoptCFNullable(static_cast<CFURLRef>(CTFontCopyAttribute(ctFont.get(), kCTFontURLAttribute)));
             for (Ref process : m_processes) {
                 if (!process->canSendMessage())
                     continue;
@@ -1519,7 +1519,7 @@ void WebProcessPool::registerUserInstalledFonts(WebProcessProxy& process)
 
     RELEASE_LOG(Process, "WebProcessPool::registerUserInstalledFonts: start registering fonts");
     RetainPtr requestedProperties = [NSSet setWithArray:@[@"NSFontNameAttribute", @"NSFontFamilyAttribute", @"NSCTFontFileURLAttribute", @"NSCTFontUserInstalledAttribute"]];
-    RetainPtr fontProperties = adoptCF(XTCopyPropertiesForAllFontsWithOptions(bridge_cast(requestedProperties.get()), kXTScopeGlobal, kXTOptionsDoNotSortResults));
+    RetainPtr fontProperties = adoptCFNullable(XTCopyPropertiesForAllFontsWithOptions(bridge_cast(requestedProperties.get()), kXTScopeGlobal, kXTOptionsDoNotSortResults));
     if (!fontProperties)
         return;
     for (CFIndex i = 0; i < CFArrayGetCount(fontProperties.get()); ++i) {
@@ -1576,11 +1576,11 @@ void WebProcessPool::registerAdditionalFonts(NSArray *fontNames)
     }
 
     for (NSString *nsFontName : fontNames) {
-        RetainPtr ctFont = adoptCF(CTFontCreateWithName(bridge_cast(nsFontName), 0.0, nullptr));
-        RetainPtr downloaded = adoptCF(static_cast<CFBooleanRef>(CTFontCopyAttribute(ctFont.get(), kCTFontDownloadedAttribute)));
+        RetainPtr ctFont = adoptCFNullable(CTFontCreateWithName(bridge_cast(nsFontName), 0.0, nullptr));
+        RetainPtr downloaded = adoptCFNullable(static_cast<CFBooleanRef>(CTFontCopyAttribute(ctFont.get(), kCTFontDownloadedAttribute)));
         if (downloaded == kCFBooleanFalse)
             return;
-        RetainPtr url = adoptCF(static_cast<CFURLRef>(CTFontCopyAttribute(ctFont.get(), kCTFontURLAttribute)));
+        RetainPtr url = adoptCFNullable(static_cast<CFURLRef>(CTFontCopyAttribute(ctFont.get(), kCTFontURLAttribute)));
         URL fontURL(url.get());
         String fontName(nsFontName);
         m_userInstalledFontURLs->add(fontName, fontURL);
@@ -1598,15 +1598,15 @@ void WebProcessPool::registerAdditionalFonts(NSArray *fontNames)
 static URL fontURLFromName(ASCIILiteral fontName)
 {
     RetainPtr cfFontName = fontName.createCFString();
-    RetainPtr font = adoptCF(CTFontCreateWithName(cfFontName.get(), 0.0, nullptr));
-    return URL(adoptCF(static_cast<CFURLRef>(CTFontCopyAttribute(font.get(), kCTFontURLAttribute))).get());
+    RetainPtr font = adoptCFNullable(CTFontCreateWithName(cfFontName.get(), 0.0, nullptr));
+    return URL(adoptCFNullable(static_cast<CFURLRef>(CTFontCopyAttribute(font.get(), kCTFontURLAttribute))).get());
 }
 
 static RetainPtr<CTFontDescriptorRef> fontDescription(ASCIILiteral fontName)
 {
     RetainPtr nsFontName = fontName.createNSString();
     RetainPtr attributes = @{ bridge_cast(kCTFontFamilyNameAttribute): nsFontName.get(), bridge_cast(kCTFontRegistrationScopeAttribute): @(kCTFontPriorityComputer) };
-    return adoptCF(CTFontDescriptorCreateWithAttributes((__bridge CFDictionaryRef)attributes.get()));
+    return adoptCFNullable(CTFontDescriptorCreateWithAttributes((__bridge CFDictionaryRef)attributes.get()));
 }
 
 void WebProcessPool::registerAssetFonts(WebProcessProxy& process)

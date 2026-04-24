@@ -38,13 +38,13 @@ TEST(RetainPtrHashing, HashSet)
 {
     HashSet<RetainPtr<CFArrayRef>> set;
 
-    RetainPtr<CFArrayRef> foo = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> foo = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
 
     EXPECT_FALSE(set.contains(foo));
     set.add(foo);
     EXPECT_TRUE(set.contains(foo));
 
-    RetainPtr<CFArrayRef> foo2 = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> foo2 = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_FALSE(set.contains(foo2));
     set.add(foo2);
     EXPECT_TRUE(set.contains(foo));
@@ -59,13 +59,13 @@ TEST(RetainPtrHashing, HashMapKey)
 {
     HashMap<RetainPtr<CFArrayRef>, int> map;
 
-    RetainPtr<CFArrayRef> foo = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> foo = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
 
     EXPECT_FALSE(map.contains(foo));
     map.add(foo, 1);
     EXPECT_EQ(1, map.get(foo));
 
-    RetainPtr<CFArrayRef> foo2 = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> foo2 = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_TRUE(map.contains(foo));
     EXPECT_FALSE(map.contains(foo2));
     map.add(foo2, 2);
@@ -81,13 +81,13 @@ TEST(RetainPtrHashing, HashMapValue)
 {
     HashMap<int, RetainPtr<CFArrayRef>> map;
 
-    RetainPtr<CFArrayRef> foo = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> foo = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
 
     EXPECT_FALSE(map.contains(1));
     map.add(1, foo);
     EXPECT_EQ(foo, map.get(1));
 
-    RetainPtr<CFArrayRef> foo2 = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> foo2 = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_FALSE(map.contains(2));
     map.add(2, foo2);
     EXPECT_EQ(foo, map.get(1));

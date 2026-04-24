@@ -279,7 +279,7 @@ void InternalAudioEncoderCocoa::processEncodedOutputs()
                 m_lastError = error;
                 continue;
             }
-            rawBuffer = adoptCF(contiguousBuffer);
+            rawBuffer = adoptCFNullable(contiguousBuffer);
         }
         auto size = PAL::CMBlockBufferGetDataLength(rawBuffer.get());
         char* data = nullptr;

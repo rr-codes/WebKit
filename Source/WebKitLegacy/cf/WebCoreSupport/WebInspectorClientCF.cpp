@@ -38,12 +38,12 @@ static constexpr auto inspectorAttachDisabledSetting = "inspectorAttachDisabled"
 
 static RetainPtr<CFStringRef> createKeyForPreferences(const String& key)
 {
-    return adoptCF(CFStringCreateWithFormat(0, 0, CFSTR("WebKit Web Inspector Setting - %@"), key.createCFString().get()));
+    return adoptCFNullable(CFStringCreateWithFormat(0, 0, CFSTR("WebKit Web Inspector Setting - %@"), key.createCFString().get()));
 }
 
 static String loadSetting(const String& key)
 {
-    auto value = adoptCF(CFPreferencesCopyAppValue(createKeyForPreferences(key).get(), kCFPreferencesCurrentApplication));
+    auto value = adoptCFNullable(CFPreferencesCopyAppValue(createKeyForPreferences(key).get(), kCFPreferencesCurrentApplication));
     if (RetainPtr string = dynamic_cf_cast<CFStringRef>(value.get()))
         return string.get();
     if (value == kCFBooleanTrue)

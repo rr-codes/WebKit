@@ -1350,12 +1350,12 @@ String RenderThemeCocoa::youTubeQuirkScript()
 
 static inline FontSelectionValue cssWeightOfSystemFont(CTFontRef font)
 {
-    auto resultRef = adoptCF(static_cast<CFNumberRef>(CTFontCopyAttribute(font, kCTFontCSSWeightAttribute)));
+    auto resultRef = adoptCFNullable(static_cast<CFNumberRef>(CTFontCopyAttribute(font, kCTFontCSSWeightAttribute)));
     float result = 0;
     if (resultRef && CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result))
         return FontSelectionValue(result);
 
-    auto traits = adoptCF(CTFontCopyTraits(font));
+    auto traits = adoptCFNullable(CTFontCopyTraits(font));
     resultRef = static_cast<CFNumberRef>(CFDictionaryGetValue(traits.get(), kCTFontWeightTrait));
     CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result);
     // These numbers were experimentally gathered from weights of the system font.

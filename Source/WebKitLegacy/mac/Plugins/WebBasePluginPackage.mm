@@ -73,7 +73,7 @@ static constexpr auto QuickTimeCocoaPluginIdentifier = "com.apple.quicktime.webp
         return nil;
     
     path = [pluginPath stringByResolvingSymlinksInPath];
-    cfBundle = adoptCF(CFBundleCreate(kCFAllocatorDefault, (CFURLRef)[NSURL fileURLWithPath:path.createNSString().get()]));
+    cfBundle = adoptCFNullable(CFBundleCreate(kCFAllocatorDefault, (CFURLRef)[NSURL fileURLWithPath:path.createNSString().get()]));
 
     if (!cfBundle) {
         [self release];

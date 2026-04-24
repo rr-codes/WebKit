@@ -4879,7 +4879,7 @@ void WebPage::getAccessibilityTreeData(CompletionHandler<void(const std::optiona
     IPC::SharedBufferReference dataBuffer;
 #if PLATFORM(COCOA)
     if (auto treeData = protect(corePage())->accessibilityTreeData(IncludeDOMInfo::Yes)) {
-        auto stream = adoptCF(CFWriteStreamCreateWithAllocatedBuffers(0, 0));
+        auto stream = adoptCFNullable(CFWriteStreamCreateWithAllocatedBuffers(0, 0));
         CFWriteStreamOpen(stream.get());
 
         auto writeTreeToStream = [&stream](auto& tree) {
@@ -4890,7 +4890,7 @@ void WebPage::getAccessibilityTreeData(CompletionHandler<void(const std::optiona
         writeTreeToStream(treeData->liveTree);
         writeTreeToStream(treeData->isolatedTree);
 
-        auto data = adoptCF(checked_cf_cast<CFDataRef>(CFWriteStreamCopyProperty(stream.get(), kCFStreamPropertyDataWritten)));
+        auto data = adoptCFNullable(checked_cf_cast<CFDataRef>(CFWriteStreamCopyProperty(stream.get(), kCFStreamPropertyDataWritten)));
         CFWriteStreamClose(stream.get());
 
         dataBuffer = IPC::SharedBufferReference(SharedBuffer::create(data.get()));
@@ -6031,11 +6031,11 @@ void WebPage::didChooseFilesForOpenPanelWithDisplayStringAndIcon(const Vector<St
 
     RefPtr<Icon> icon;
     if (!iconData.empty()) {
-        RetainPtr<CFDataRef> dataRef = adoptCF(CFDataCreate(nullptr, iconData.data(), iconData.size()));
-        RetainPtr<CGDataProviderRef> imageProviderRef = adoptCF(CGDataProviderCreateWithCFData(dataRef.get()));
-        RetainPtr<CGImageRef> imageRef = adoptCF(CGImageCreateWithPNGDataProvider(imageProviderRef.get(), nullptr, true, kCGRenderingIntentDefault));
+        RetainPtr<CFDataRef> dataRef = adoptCFNullable(CFDataCreate(nullptr, iconData.data(), iconData.size()));
+        RetainPtr<CGDataProviderRef> imageProviderRef = adoptCFNullable(CGDataProviderCreateWithCFData(dataRef.get()));
+        RetainPtr<CGImageRef> imageRef = adoptCFNullable(CGImageCreateWithPNGDataProvider(imageProviderRef.get(), nullptr, true, kCGRenderingIntentDefault));
         if (!imageRef)
-            imageRef = adoptCF(CGImageCreateWithJPEGDataProvider(imageProviderRef.get(), nullptr, true, kCGRenderingIntentDefault));
+            imageRef = adoptCFNullable(CGImageCreateWithJPEGDataProvider(imageProviderRef.get(), nullptr, true, kCGRenderingIntentDefault));
         icon = Icon::create(WTF::move(imageRef));
     }
 

@@ -102,7 +102,7 @@ std::optional<SRGBA<uint8_t>> roundAndClampToSRGBALossy(CGColorRef color)
 template<ColorSpace space>
 static CGColorTransformRef cachedCGColorTransform()
 {
-    static NeverDestroyed<RetainPtr<CGColorTransformRef>> transform = adoptCF(CGColorTransformCreate(cachedCGColorSpaceSingleton<space>(), nullptr));
+    static NeverDestroyed<RetainPtr<CGColorTransformRef>> transform = adoptCFNullable(CGColorTransformCreate(cachedCGColorSpaceSingleton<space>(), nullptr));
     return transform->get();
 }
 
@@ -172,7 +172,7 @@ static RetainPtr<CGColorRef> createCGColor(const Color& color)
     auto [c1, c2, c3, c4] = cgCompatibleComponents;
     std::array<CGFloat, 4> cgFloatComponents { c1, c2, c3, c4 };
 
-    return adoptCF(CGColorCreate(cgColorSpace, cgFloatComponents.data()));
+    return adoptCFNullable(CGColorCreate(cgColorSpace, cgFloatComponents.data()));
 }
 
 RetainPtr<CGColorRef> cachedCGColor(const Color& color)
@@ -207,7 +207,7 @@ RetainPtr<CGColorRef> createCGColorInDestinationStandardRange(const Color& color
     auto [r, g, b, a] = color.toResolvedColorComponentsInColorSpace(clampingSpace);
 
     std::array<CGFloat, 4> sourceComponents { r, g, b, a };
-    return adoptCF(CGColorCreate(cachedNullableCGColorSpaceSingleton(clampingSpace), sourceComponents.data()));
+    return adoptCFNullable(CGColorCreate(cachedNullableCGColorSpaceSingleton(clampingSpace), sourceComponents.data()));
 }
 
 RetainPtr<CGColorRef> cachedCGColorInDestinationStandardRange(const Color& color, const DestinationColorSpace& colorSpace)
@@ -234,7 +234,7 @@ ColorComponents<float, 4> platformConvertColorComponents(ColorSpace inputColorSp
     std::array<CGFloat, 4> sourceComponents { c1, c2, c3, c4 };
     std::array<CGFloat, 4> destinationComponents { };
 
-    auto transform = adoptCF(CGColorTransformCreate(protect(outputColorSpace.platformColorSpace()).get(), nullptr));
+    auto transform = adoptCFNullable(CGColorTransformCreate(protect(outputColorSpace.platformColorSpace()).get(), nullptr));
     auto result = CGColorTransformConvertColorComponents(transform.get(), cgInputColorSpace, kCGRenderingIntentDefault, sourceComponents.data(), destinationComponents.data());
     ASSERT_UNUSED(result, result);
     // CGColorTransformConvertColorComponents doesn't copy over any alpha component.

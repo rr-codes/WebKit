@@ -229,7 +229,7 @@ void LibraryPathDiagnosticsLogger::logBundleInfo(const String& bundleIdentifier)
 
     auto bundleInfo = JSON::Object::create();
 
-    auto bundleCFURL = adoptCF(CFBundleCopyBundleURL(bundle.get()));
+    auto bundleCFURL = adoptCFNullable(CFBundleCopyBundleURL(bundle.get()));
     auto bundleURL = URL(bundleCFURL.get());
     bundleInfo->setString("Path"_s, FileSystem::realPath(bundleURL.fileSystemPath()));
 

@@ -55,14 +55,14 @@
 
 static void printPNG(CGImageRef image, const char* checksum, double scaleFactor)
 {
-    auto imageData = adoptCF(CFDataCreateMutable(0, 0));
-    auto imageDest = adoptCF(CGImageDestinationCreateWithData(imageData.get(), kUTTypePNG, 1, 0));
+    auto imageData = adoptCFNullable(CFDataCreateMutable(0, 0));
+    auto imageDest = adoptCFNullable(CGImageDestinationCreateWithData(imageData.get(), kUTTypePNG, 1, 0));
 
-    auto propertiesDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto propertiesDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     double resolutionWidth = 72.0 * scaleFactor;
     double resolutionHeight = 72.0 * scaleFactor;
-    auto resolutionWidthNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionWidth));
-    auto resolutionHeightNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionHeight));
+    auto resolutionWidthNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionWidth));
+    auto resolutionHeightNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionHeight));
     CFDictionarySetValue(propertiesDictionary.get(), kCGImagePropertyDPIWidth, resolutionWidthNumber.get());
     CFDictionarySetValue(propertiesDictionary.get(), kCGImagePropertyDPIHeight, resolutionHeightNumber.get());
 
@@ -111,7 +111,7 @@ void computeSHA1HashStringForBitmapContext(BitmapContext* context, char hashStri
 
 void dumpBitmap(BitmapContext* context, const char* checksum)
 {
-    RetainPtr<CGImageRef> image = adoptCF(CGBitmapContextCreateImage(context->cgContext()));
+    RetainPtr<CGImageRef> image = adoptCFNullable(CGBitmapContextCreateImage(context->cgContext()));
     printPNG(image.get(), checksum, context->scaleFactor());
 }
 
@@ -126,8 +126,8 @@ RefPtr<BitmapContext> createBitmapContext(size_t pixelsWide, size_t pixelsHigh, 
     }
     
     // Creating this bitmap in the device color space prevents any color conversion when the image of the web view is drawn into it.
-    RetainPtr<CGColorSpaceRef> colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
-    auto context = adoptCF(CGBitmapContextCreate(buffer.get(), pixelsWide, pixelsHigh, 8, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
+    RetainPtr<CGColorSpaceRef> colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
+    auto context = adoptCFNullable(CGBitmapContextCreate(buffer.get(), pixelsWide, pixelsHigh, 8, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
     if (!context) {
         WTFLogAlways("DumpRenderTree: CGBitmapContextCreate(%p, %zu, %zu, 8, %zu, %p, 0x%x) failed\n", buffer.get(), pixelsHigh, pixelsWide, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host));
         return nullptr;

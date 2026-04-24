@@ -159,7 +159,7 @@ static inline void performEnterpriseAttestation(const WebCore::PublicKeyCredenti
         completionHandler({ }, WebCore::ExceptionData { ExceptionCode::UnknownError, "Couldn't find attestation certificate."_s });
         return;
     }
-    auto retainIdentity = adoptCF(identityRef);
+    auto retainIdentity = adoptCFNullable(identityRef);
 
     SecKeyRef privateKeyRef = nullptr;
     status = SecIdentityCopyPrivateKey(((__bridge SecIdentityRef)(id)identityRef), &privateKeyRef);
@@ -168,11 +168,11 @@ static inline void performEnterpriseAttestation(const WebCore::PublicKeyCredenti
         completionHandler({ }, WebCore::ExceptionData { ExceptionCode::UnknownError, "Couldn't access attestation signing key."_s });
         return;
     }
-    auto retainPrivateKey = adoptCF(privateKeyRef);
+    auto retainPrivateKey = adoptCFNullable(privateKeyRef);
 
     CFErrorRef errorRef = nullptr;
-    auto signature = adoptCF(SecKeyCreateSignature(privateKeyRef, kSecKeyAlgorithmECDSASignatureMessageX962SHA256, (__bridge CFDataRef)dataToSign.get(), &errorRef));
-    SUPPRESS_RETAINPTR_CTOR_ADOPT auto retainError = adoptCF(errorRef);
+    auto signature = adoptCFNullable(SecKeyCreateSignature(privateKeyRef, kSecKeyAlgorithmECDSASignatureMessageX962SHA256, (__bridge CFDataRef)dataToSign.get(), &errorRef));
+    SUPPRESS_RETAINPTR_CTOR_ADOPT auto retainError = adoptCFNullable(errorRef);
 
     if (errorRef) {
         RELEASE_LOG_ERROR(WebAuthn, "Couldn't generate attestation signature: %@", ((NSError*)errorRef).localizedDescription);
@@ -187,20 +187,20 @@ static inline void performEnterpriseAttestation(const WebCore::PublicKeyCredenti
         completionHandler({ }, WebCore::ExceptionData { ExceptionCode::UnknownError, "Couldn't access attestation certificate."_s });
         return;
     }
-    auto retainCertRef = adoptCF(certRef);
+    auto retainCertRef = adoptCFNullable(certRef);
 
     NSArray *certs = @[ (__bridge id)certRef ];
-    RetainPtr<SecPolicyRef> policy = adoptCF(SecPolicyCreateBasicX509());
+    RetainPtr<SecPolicyRef> policy = adoptCFNullable(SecPolicyCreateBasicX509());
     SecTrustRef trustRef = nullptr;
     status = SecTrustCreateWithCertificates((__bridge CFArrayRef)certs, policy.get(), &trustRef);
-    RetainPtr<SecTrustRef> trust = adoptCF(trustRef);
-    RetainPtr<NSArray> chain = bridge_cast(adoptCF(SecTrustCopyCertificateChain(trustRef)));
+    RetainPtr<SecTrustRef> trust = adoptCFNullable(trustRef);
+    RetainPtr<NSArray> chain = bridge_cast(adoptCFNullable(SecTrustCopyCertificateChain(trustRef)));
 
     cbor::CBORValue::MapValue attestationStatementMap;
     {
         Vector<cbor::CBORValue> cborArray;
         for (id nsCert in chain.get())
-            cborArray.append(cbor::CBORValue(makeVector((NSData *)adoptCF(SecCertificateCopyData((__bridge SecCertificateRef)nsCert)).get())));
+            cborArray.append(cbor::CBORValue(makeVector((NSData *)adoptCFNullable(SecCertificateCopyData((__bridge SecCertificateRef)nsCert)).get())));
         attestationStatementMap[cbor::CBORValue("x5c")] = cbor::CBORValue(WTF::move(cborArray));
         attestationStatementMap[cbor::CBORValue("alg")] = cbor::CBORValue(coseAlgorithmES256);
         attestationStatementMap[cbor::CBORValue("sig")] = cbor::CBORValue(makeVector((NSData *)signature.get()));
@@ -407,9 +407,9 @@ void LocalAuthenticator::continueMakeCredentialAfterReceivingLAContext(LAContext
     RetainPtr<SecAccessControlRef> accessControl;
     {
         CFErrorRef rawError = nullptr;
-        accessControl = adoptCF(SecAccessControlCreateWithFlags(NULL, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence, &rawError));
+        accessControl = adoptCFNullable(SecAccessControlCreateWithFlags(NULL, kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly, kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence, &rawError));
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-        SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCF(rawError)) {
+        SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCFNullable(rawError)) {
             receiveException({ ExceptionCode::UnknownError, makeString("Couldn't create access control: "_s, String(bridge_cast(error.get()).localizedDescription)) });
             return;
         }
@@ -500,7 +500,7 @@ std::optional<WebCore::ExceptionData> LocalAuthenticator::processLargeBlobExtens
         }
 
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-        SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr dict = bridge_cast(adoptCF(checked_cf_cast<CFDictionaryRef>(attributesArrayRef)));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr dict = bridge_cast(adoptCFNullable(checked_cf_cast<CFDictionaryRef>(attributesArrayRef)));
 
         auto decodedResponse = cbor::CBORReader::read(makeVector(retainPtr(dict.get()[(id)kSecAttrApplicationTag]).get()));
         if (!decodedResponse || !decodedResponse->isMap()) {
@@ -605,11 +605,11 @@ void LocalAuthenticator::continueMakeCredentialAfterUserVerification(SecAccessCo
 
     RetainPtr<CFDataRef> publicKeyDataRef;
     {
-        auto publicKey = adoptCF(SecKeyCopyPublicKey(privateKey.get()));
+        auto publicKey = adoptCFNullable(SecKeyCopyPublicKey(privateKey.get()));
         CFErrorRef rawError = nullptr;
-        publicKeyDataRef = adoptCF(SecKeyCopyExternalRepresentation(publicKey.get(), &rawError));
+        publicKeyDataRef = adoptCFNullable(SecKeyCopyExternalRepresentation(publicKey.get(), &rawError));
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-        SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCF(rawError)) {
+        SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCFNullable(rawError)) {
             receiveException({ ExceptionCode::UnknownError, makeString("Couldn't export the public key: "_s, String((bridge_cast(error.get())).localizedDescription)) });
             return;
         }
@@ -825,16 +825,16 @@ void LocalAuthenticator::continueGetAssertionAfterUserVerification(Ref<WebCore::
             RELEASE_LOG_ERROR(WebAuthn, "privateKeyRef is null. status: %d", status);
             return;
         }
-        auto privateKey = adoptCF(privateKeyRef);
+        auto privateKey = adoptCFNullable(privateKeyRef);
 
         RetainPtr dataToSign = adoptNS([[NSMutableData alloc] initWithBytes:authData.span().data() length:authData.size()]);
         [dataToSign appendBytes:requestData().hash.span().data() length:requestData().hash.size()];
 
         CFErrorRef rawError = nullptr;
         // FIXME: Converting CFTypeRef to SecKeyRef is quite subtle here.
-        signature = adoptCF(SecKeyCreateSignature((__bridge SecKeyRef)((id)privateKeyRef), kSecKeyAlgorithmECDSASignatureMessageX962SHA256, bridge_cast(dataToSign.get()), &rawError));
+        signature = adoptCFNullable(SecKeyCreateSignature((__bridge SecKeyRef)((id)privateKeyRef), kSecKeyAlgorithmECDSASignatureMessageX962SHA256, bridge_cast(dataToSign.get()), &rawError));
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-        SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCF(rawError)) {
+        SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCFNullable(rawError)) {
             RELEASE_LOG_ERROR(WebAuthn, "Couldn't generate signature: %@", bridge_cast(error.get()).localizedDescription);
             receiveException({ ExceptionCode::UnknownError, makeString("Couldn't generate the signature: "_s, String(bridge_cast(error.get()).localizedDescription)) });
             return;

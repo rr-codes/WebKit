@@ -38,12 +38,12 @@ static String testPathFromURL(WKURLRef url)
 {
     if (!url)
         return "(null)"_s;
-    auto cfURL = adoptCF(WKURLCopyCFURL(kCFAllocatorDefault, url));
+    auto cfURL = adoptCFNullable(WKURLCopyCFURL(kCFAllocatorDefault, url));
     if (!cfURL)
         return String();
 
-    auto schemeCFString = adoptCF(CFURLCopyScheme(cfURL.get()));
-    auto pathCFString = adoptCF(CFURLCopyPath(cfURL.get()));
+    auto schemeCFString = adoptCFNullable(CFURLCopyScheme(cfURL.get()));
+    auto pathCFString = adoptCFNullable(CFURLCopyPath(cfURL.get()));
 
     String schemeString(schemeCFString.get());
     String pathString(pathCFString.get());
@@ -60,7 +60,7 @@ static String testPathFromURL(WKURLRef url)
     if (!equalLettersIgnoringASCIICase(schemeString, "http"_s) && !equalLettersIgnoringASCIICase(schemeString, "https"_s))
         return String();
 
-    auto hostCFString = adoptCF(CFURLCopyHostName(cfURL.get()));
+    auto hostCFString = adoptCFNullable(CFURLCopyHostName(cfURL.get()));
     String hostString(hostCFString.get());
     if (hostString == "127.0.0.1"_s)
         return pathString;

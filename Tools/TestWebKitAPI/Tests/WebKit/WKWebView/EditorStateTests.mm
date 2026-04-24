@@ -362,9 +362,9 @@ TEST(EditorStateTests, CaretColorInContentEditable)
     UIView<UITextInputTraits_Private> *textInput = (UIView<UITextInputTraits_Private> *) [webView textInputContentView];
     UIColor *insertionPointColor = textInput.insertionPointColor;
     UIColor *redColor = [UIColor redColor];
-    RetainPtr colorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
-    RetainPtr cgInsertionPointColor = adoptCF(CGColorCreateCopyByMatchingToColorSpace(colorSpace.get(), kCGRenderingIntentDefault, insertionPointColor.CGColor, NULL));
-    RetainPtr cgRedColor = adoptCF(CGColorCreateCopyByMatchingToColorSpace(colorSpace.get(), kCGRenderingIntentDefault, redColor.CGColor, NULL));
+    RetainPtr colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
+    RetainPtr cgInsertionPointColor = adoptCFNullable(CGColorCreateCopyByMatchingToColorSpace(colorSpace.get(), kCGRenderingIntentDefault, insertionPointColor.CGColor, NULL));
+    RetainPtr cgRedColor = adoptCFNullable(CGColorCreateCopyByMatchingToColorSpace(colorSpace.get(), kCGRenderingIntentDefault, redColor.CGColor, NULL));
     EXPECT_TRUE(CGColorEqualToColor(cgInsertionPointColor.get(), cgRedColor.get()));
 }
 

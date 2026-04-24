@@ -250,7 +250,7 @@ bool CaptionUserPreferencesMediaAF::userPrefersCaptions() const
     if (captionSetting || testingMode() || !MediaAccessibilityLibrary())
         return captionSetting;
 
-    RetainPtr captioningMediaCharacteristics = adoptCF(MACaptionAppearanceCopyPreferredCaptioningMediaCharacteristics(kMACaptionAppearanceDomainUser));
+    RetainPtr captioningMediaCharacteristics = adoptCFNullable(MACaptionAppearanceCopyPreferredCaptioningMediaCharacteristics(kMACaptionAppearanceDomainUser));
     return captioningMediaCharacteristics && CFArrayGetCount(captioningMediaCharacteristics.get());
 }
 
@@ -260,7 +260,7 @@ bool CaptionUserPreferencesMediaAF::userPrefersSubtitles() const
     if (subtitlesSetting || testingMode() || !MediaAccessibilityLibrary())
         return subtitlesSetting;
     
-    RetainPtr captioningMediaCharacteristics = adoptCF(MACaptionAppearanceCopyPreferredCaptioningMediaCharacteristics(kMACaptionAppearanceDomainUser));
+    RetainPtr captioningMediaCharacteristics = adoptCFNullable(MACaptionAppearanceCopyPreferredCaptioningMediaCharacteristics(kMACaptionAppearanceDomainUser));
     return !(captioningMediaCharacteristics && CFArrayGetCount(captioningMediaCharacteristics.get()));
 }
 
@@ -270,7 +270,7 @@ bool CaptionUserPreferencesMediaAF::userPrefersTextDescriptions() const
     if (prefersTextDescriptions || testingMode() || !MediaAccessibilityLibrary())
         return prefersTextDescriptions;
 
-    RetainPtr preferDescriptiveVideo = adoptCF(MAAudibleMediaPrefCopyPreferDescriptiveVideo());
+    RetainPtr preferDescriptiveVideo = adoptCFNullable(MAAudibleMediaPrefCopyPreferDescriptiveVideo());
     return preferDescriptiveVideo && CFBooleanGetValue(preferDescriptiveVideo.get());
 }
 
@@ -336,7 +336,7 @@ String CaptionUserPreferencesMediaAF::captionsWindowCSS() const
 {
     return runWithPreviewProfile(m_previewProfileID, [] {
         MACaptionAppearanceBehavior behavior;
-        RetainPtr color = adoptCF(MACaptionAppearanceCopyWindowColor(kMACaptionAppearanceDomainUser, &behavior));
+        RetainPtr color = adoptCFNullable(MACaptionAppearanceCopyWindowColor(kMACaptionAppearanceDomainUser, &behavior));
 
         Color windowColor(roundAndClampToSRGBALossy(color.get()));
         if (!windowColor.isValid())
@@ -358,7 +358,7 @@ String CaptionUserPreferencesMediaAF::captionsBackgroundCSS() const
 
         MACaptionAppearanceBehavior behavior;
 
-        RetainPtr color = adoptCF(MACaptionAppearanceCopyBackgroundColor(kMACaptionAppearanceDomainUser, &behavior));
+        RetainPtr color = adoptCFNullable(MACaptionAppearanceCopyBackgroundColor(kMACaptionAppearanceDomainUser, &behavior));
         Color backgroundColor(roundAndClampToSRGBALossy(color.get()));
         if (!backgroundColor.isValid())
             backgroundColor = defaultBackgroundColor;
@@ -375,7 +375,7 @@ Color CaptionUserPreferencesMediaAF::captionsTextColor(bool& important) const
 {
     return runWithPreviewProfile(m_previewProfileID, [&important] {
         MACaptionAppearanceBehavior behavior;
-        RetainPtr color = adoptCF(MACaptionAppearanceCopyForegroundColor(kMACaptionAppearanceDomainUser, &behavior)).get();
+        RetainPtr color = adoptCFNullable(MACaptionAppearanceCopyForegroundColor(kMACaptionAppearanceDomainUser, &behavior)).get();
         Color textColor(roundAndClampToSRGBALossy(color.get()));
         if (!textColor.isValid()) {
             // This must match the ::cue text color of WebCore/Modules/modern-media-controls/controls/text-tracks.css
@@ -423,7 +423,7 @@ bool CaptionUserPreferencesMediaAF::captionStrokeWidthForFont(float fontSize, co
         auto trackLanguage = language.createCFString();
         CGFloat strokeWidthPt;
 
-        RetainPtr fontDescriptor = adoptCF(MACaptionAppearanceCopyFontDescriptorWithStrokeForStyle(kMACaptionAppearanceDomainUser, &behavior, kMACaptionAppearanceFontStyleDefault, trackLanguage.get(), fontSize, &strokeWidthPt));
+        RetainPtr fontDescriptor = adoptCFNullable(MACaptionAppearanceCopyFontDescriptorWithStrokeForStyle(kMACaptionAppearanceDomainUser, &behavior, kMACaptionAppearanceFontStyleDefault, trackLanguage.get(), fontSize, &strokeWidthPt));
 
         if (!fontDescriptor)
             return false;
@@ -474,11 +474,11 @@ String CaptionUserPreferencesMediaAF::captionsDefaultFontCSS() const
     return runWithPreviewProfile(m_previewProfileID, [] {
         MACaptionAppearanceBehavior behavior;
 
-        RetainPtr font = adoptCF(MACaptionAppearanceCopyFontDescriptorForStyle(kMACaptionAppearanceDomainUser, &behavior, kMACaptionAppearanceFontStyleDefault));
+        RetainPtr font = adoptCFNullable(MACaptionAppearanceCopyFontDescriptorForStyle(kMACaptionAppearanceDomainUser, &behavior, kMACaptionAppearanceFontStyleDefault));
         if (!font)
             return emptyString();
 
-        RetainPtr name = adoptCF(static_cast<CFStringRef>(CTFontDescriptorCopyAttribute(font.get(), kCTFontNameAttribute)));
+        RetainPtr name = adoptCFNullable(static_cast<CFStringRef>(CTFontDescriptorCopyAttribute(font.get(), kCTFontNameAttribute)));
         if (!name)
             return emptyString();
 
@@ -496,12 +496,12 @@ String CaptionUserPreferencesMediaAF::captionsDefaultFontCSS() const
 
         StringBuilder builder;
         builder.append("font-family: \""_s, name.get(), '"');
-        if (RetainPtr cascadeList = adoptCF(static_cast<CFArrayRef>(CTFontDescriptorCopyAttribute(font.get(), kCTFontCascadeListAttribute)))) {
+        if (RetainPtr cascadeList = adoptCFNullable(static_cast<CFArrayRef>(CTFontDescriptorCopyAttribute(font.get(), kCTFontCascadeListAttribute)))) {
             for (CFIndex i = 0; i < CFArrayGetCount(cascadeList.get()); i++) {
                 RetainPtr fontCascade = static_cast<CTFontDescriptorRef>(CFArrayGetValueAtIndex(cascadeList.get(), i));
                 if (!fontCascade)
                     continue;
-                RetainPtr fontCascadeName = adoptCF(static_cast<CFStringRef>(CTFontDescriptorCopyAttribute(fontCascade.get(), kCTFontNameAttribute)));
+                RetainPtr fontCascadeName = adoptCFNullable(static_cast<CFStringRef>(CTFontDescriptorCopyAttribute(fontCascade.get(), kCTFontNameAttribute)));
                 if (!fontCascadeName)
                     continue;
                 builder.append(", \""_s, fontCascadeName.get(), '"');
@@ -593,7 +593,7 @@ Vector<String> CaptionUserPreferencesMediaAF::preferredLanguages() const
 
 Vector<String> CaptionUserPreferencesMediaAF::platformPreferredLanguages()
 {
-    RetainPtr captionLanguages = adoptCF(MACaptionAppearanceCopySelectedLanguages(kMACaptionAppearanceDomainUser));
+    RetainPtr captionLanguages = adoptCFNullable(MACaptionAppearanceCopySelectedLanguages(kMACaptionAppearanceDomainUser));
     return captionLanguages ? makeVector<String>(captionLanguages.get()) : Vector<String> { };
 }
 
@@ -614,7 +614,7 @@ Vector<String> CaptionUserPreferencesMediaAF::preferredAudioCharacteristics() co
         return CaptionUserPreferences::preferredAudioCharacteristics();
 
     CFIndex characteristicCount = 0;
-    RetainPtr characteristics = adoptCF(MAAudibleMediaCopyPreferredCharacteristics());
+    RetainPtr characteristics = adoptCFNullable(MAAudibleMediaCopyPreferredCharacteristics());
     if (characteristics)
         characteristicCount = CFArrayGetCount(characteristics.get());
 
@@ -629,7 +629,7 @@ bool CaptionUserPreferencesMediaAF::hasNullCaptionProfile() const
     if (!canLoad_MediaAccessibility_MACaptionAppearanceCopyActiveProfileID())
         return false;
 
-    String captionProfile = adoptCF(MACaptionAppearanceCopyActiveProfileID()).get();
+    String captionProfile = adoptCFNullable(MACaptionAppearanceCopyActiveProfileID()).get();
 
     return captionProfile.isEmpty();
 }
@@ -780,9 +780,9 @@ static String trackDisplayName(const TrackBase& track, const Vector<String>& pre
     String trackLanguageIdentifier = track.validBCP47Language();
 
     auto defaultLanguage = !preferredLanguages.isEmpty() ? preferredLanguages[0] : emptyString(); // This matches `defaultLanguage`.
-    RetainPtr currentLocale = adoptCF(CFLocaleCreate(kCFAllocatorDefault, defaultLanguage.createCFString().get()));
-    RetainPtr localeIdentifier = adoptCF(CFLocaleCreateCanonicalLocaleIdentifierFromString(kCFAllocatorDefault, trackLanguageIdentifier.createCFString().get()));
-    String languageDisplayName = adoptCF(CFLocaleCopyDisplayNameForPropertyValue(currentLocale.get(), kCFLocaleLanguageCode, localeIdentifier.get())).get();
+    RetainPtr currentLocale = adoptCFNullable(CFLocaleCreate(kCFAllocatorDefault, defaultLanguage.createCFString().get()));
+    RetainPtr localeIdentifier = adoptCFNullable(CFLocaleCreateCanonicalLocaleIdentifierFromString(kCFAllocatorDefault, trackLanguageIdentifier.createCFString().get()));
+    String languageDisplayName = adoptCFNullable(CFLocaleCopyDisplayNameForPropertyValue(currentLocale.get(), kCFLocaleLanguageCode, localeIdentifier.get())).get();
 
     bool exactMatch;
     bool matchesDefaultLanguage = !indexOfBestMatchingLanguageInList(trackLanguageIdentifier, { defaultLanguage }, exactMatch);
@@ -791,7 +791,7 @@ static String trackDisplayName(const TrackBase& track, const Vector<String>& pre
     if (!label.isEmpty() && (matchesDefaultLanguage || (!languageDisplayName.isEmpty() && label.contains(languageDisplayName))))
         result = addTrackKindDisplayNameIfNeeded(track, label);
     else {
-        String languageAndLocale = adoptCF(CFLocaleCopyDisplayNameForPropertyValue(currentLocale.get(), kCFLocaleIdentifier, trackLanguageIdentifier.createCFString().get())).get();
+        String languageAndLocale = adoptCFNullable(CFLocaleCopyDisplayNameForPropertyValue(currentLocale.get(), kCFLocaleIdentifier, trackLanguageIdentifier.createCFString().get())).get();
         if (!languageAndLocale.isEmpty())
             result = languageAndLocale;
         else if (!languageDisplayName.isEmpty())
@@ -1021,7 +1021,7 @@ Vector<String> CaptionUserPreferencesMediaAF::platformProfileIDs()
 {
     if (!canLoad_MediaAccessibility_MACaptionAppearanceCopyProfileIDs())
         return { };
-    RetainPtr<CFArrayRef> cfProfileIDs = adoptCF(MACaptionAppearanceCopyProfileIDs());
+    RetainPtr<CFArrayRef> cfProfileIDs = adoptCFNullable(MACaptionAppearanceCopyProfileIDs());
     return makeVector<String>(cfProfileIDs.get());
 }
 
@@ -1029,7 +1029,7 @@ String CaptionUserPreferencesMediaAF::platformActiveProfileID()
 {
     if (!canLoad_MediaAccessibility_MACaptionAppearanceCopyActiveProfileID())
         return nullString();
-    RetainPtr cfProfileID = adoptCF(MACaptionAppearanceCopyActiveProfileID());
+    RetainPtr cfProfileID = adoptCFNullable(MACaptionAppearanceCopyActiveProfileID());
     return cfProfileID.get();
 }
 
@@ -1057,7 +1057,7 @@ String CaptionUserPreferencesMediaAF::nameForProfileID(const String& profileID)
         return nullString();
 
     RetainPtr cfProfileID = profileID.createCFString();
-    RetainPtr cfProfileName = adoptCF(MACaptionAppearanceCopyProfileName(cfProfileID.get()));
+    RetainPtr cfProfileName = adoptCFNullable(MACaptionAppearanceCopyProfileName(cfProfileID.get()));
     return cfProfileName.get();
 }
 
@@ -1083,7 +1083,7 @@ String CaptionUserPreferencesMediaAF::captionPreviewTitle() const
     String activeProfileID = platformActiveProfileID();
 
     if (canLoad_MediaAccessibility_MACaptionAppearanceCopyPreviewText())
-        return adoptCF(MACaptionAppearanceCopyPreviewText(activeProfileID.createCFString().get(), nullptr)).get();
+        return adoptCFNullable(MACaptionAppearanceCopyPreviewText(activeProfileID.createCFString().get(), nullptr)).get();
 
     String activeProfileName = nameForProfileID(activeProfileID);
     if (activeProfileName.isEmpty())

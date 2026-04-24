@@ -52,8 +52,8 @@ static DDDFAScannerRef phoneNumbersScanner()
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [] {
         if (DataDetectorsCoreLibrary()) {
-            if (auto cache = adoptCF(DDDFACacheCreateFromFramework()))
-                scanner.get() = adoptCF(DDDFAScannerCreateFromCache(cache.get()));
+            if (auto cache = adoptCFNullable(DDDFACacheCreateFromFramework()))
+                scanner.get() = adoptCFNullable(DDDFAScannerCreateFromCache(cache.get()));
         }
     });
     return scanner.get().get();

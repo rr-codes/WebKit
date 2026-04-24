@@ -782,7 +782,7 @@ void TiledCoreAnimationDrawingArea::commitTransientZoom(double scale, FloatPoint
 
     if (shadowCALayer) {
         FloatRect shadowBounds = shadowLayerBoundsForFrame(frameView.get(), scale);
-        RetainPtr<CGPathRef> shadowPath = adoptCF(CGPathCreateWithRect(shadowBounds, NULL));
+        RetainPtr<CGPathRef> shadowPath = adoptCFNullable(CGPathCreateWithRect(shadowBounds, NULL));
 
         RetainPtr<CABasicAnimation> shadowBoundsAnimation = DrawingArea::transientZoomSnapAnimationForKeyPath("bounds"_s);
         [shadowBoundsAnimation setToValue:[NSValue valueWithRect:shadowBounds]];

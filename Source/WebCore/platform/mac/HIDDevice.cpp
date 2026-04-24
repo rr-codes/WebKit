@@ -78,7 +78,7 @@ Vector<HIDElement> HIDDevice::uniqueInputElementsInDeviceTreeOrder() const
     HashSet<IOHIDElementCookie> encounteredCookies;
     Deque<IOHIDElementRef> elementQueue;
 
-    RetainPtr<CFArrayRef> elements = adoptCF(IOHIDDeviceCopyMatchingElements(m_rawDevice.get(), NULL, kIOHIDOptionsTypeNone));
+    RetainPtr<CFArrayRef> elements = adoptCFNullable(IOHIDDeviceCopyMatchingElements(m_rawDevice.get(), NULL, kIOHIDOptionsTypeNone));
     CFIndex count = elements ? CFArrayGetCount(elements.get()) : 0;
     for (CFIndex i = 0; i < count; ++i)
         elementQueue.append(checked_cf_cast<IOHIDElementRef>(CFArrayGetValueAtIndex(elements.get(), i)));

@@ -324,7 +324,7 @@ static RetainPtr<NSArray> getAllLocalAuthenticatorCredentialsImpl(NSString *acce
     if (status && status != errSecItemNotFound)
         return nullptr;
 
-    auto retainAttributesArray = adoptCF(attributesArrayRef);
+    auto retainAttributesArray = adoptCFNullable(attributesArrayRef);
 
     auto result = adoptNS([[NSMutableArray alloc] init]);
     for (NSDictionary *attributes in (NSArray *)attributesArrayRef) {
@@ -675,21 +675,21 @@ static void createNSErrorFromWKErrorIfNecessary(NSError **error, WKErrorCode err
         (id)kSecAttrKeySizeInBits: @(keySize),
     };
     CFErrorRef errorRef = nullptr;
-    auto key = adoptCF(SecKeyCreateWithData(
+    auto key = adoptCFNullable(SecKeyCreateWithData(
         bridge_cast(privateKey.get()),
         bridge_cast(options.get()),
         &errorRef
     ));
     // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr adoptedErrorRef = adoptCF(errorRef)) {
+    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr adoptedErrorRef = adoptCFNullable(errorRef)) {
         createNSErrorFromWKErrorIfNecessary(error, WKErrorMalformedCredential);
         return nullptr;
     }
 
-    auto publicKey = adoptCF(SecKeyCopyPublicKey(key.get()));
-    RetainPtr nsPublicKeyData = bridge_cast(adoptCF(SecKeyCopyExternalRepresentation(publicKey.get(), &errorRef)));
+    auto publicKey = adoptCFNullable(SecKeyCopyPublicKey(key.get()));
+    RetainPtr nsPublicKeyData = bridge_cast(adoptCFNullable(SecKeyCopyExternalRepresentation(publicKey.get(), &errorRef)));
     // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr adoptedErrorRef = adoptCF(errorRef)) {
+    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr adoptedErrorRef = adoptCFNullable(errorRef)) {
         createNSErrorFromWKErrorIfNecessary(error, WKErrorMalformedCredential);
         return nullptr;
     }
@@ -789,11 +789,11 @@ static void createNSErrorFromWKErrorIfNecessary(NSError **error, WKErrorCode err
         return nullptr;
     }
 
-    auto privateKey = adoptCF(privateKeyRef);
+    auto privateKey = adoptCFNullable(privateKeyRef);
     CFErrorRef errorRef = nullptr;
-    auto privateKeyRep = adoptCF(SecKeyCopyExternalRepresentation((__bridge SecKeyRef)((id)privateKeyRef), &errorRef));
+    auto privateKeyRep = adoptCFNullable(SecKeyCopyExternalRepresentation((__bridge SecKeyRef)((id)privateKeyRef), &errorRef));
     // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr adoptedErrorRef = adoptCF(errorRef)) {
+    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr adoptedErrorRef = adoptCFNullable(errorRef)) {
         createNSErrorFromWKErrorIfNecessary(error, WKErrorCredentialNotFound);
         return nullptr;
     }

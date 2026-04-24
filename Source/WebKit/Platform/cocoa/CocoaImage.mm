@@ -38,7 +38,7 @@ RetainPtr<NSData> transcode(CGImageRef image, CFStringRef typeIdentifier)
         return nil;
 
     auto data = adoptNS([[NSMutableData alloc] init]);
-    auto destination = adoptCF(CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data.get(), typeIdentifier, 1, nil));
+    auto destination = adoptCFNullable(CGImageDestinationCreateWithData((__bridge CFMutableDataRef)data.get(), typeIdentifier, 1, nil));
     CGImageDestinationAddImage(destination.get(), image, nil);
     if (!CGImageDestinationFinalize(destination.get()))
         return nil;

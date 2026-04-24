@@ -52,7 +52,7 @@ Ref<UIScriptController> UIScriptController::create(UIScriptContext& context)
 
 void UIScriptControllerMac::replaceTextAtRange(JSStringRef text, int location, int length)
 {
-    auto textToInsert = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, text));
+    auto textToInsert = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, text));
     auto rangeAttribute = adoptNS([[NSDictionary alloc] initWithObjectsAndKeys:NSStringFromRange(NSMakeRange(location == -1 ? NSNotFound : location, length)), NSTextInputReplacementRangeAttributeName, nil]);
     auto textAndRange = adoptNS([[NSAttributedString alloc] initWithString:(__bridge NSString *)textToInsert.get() attributes:rangeAttribute.get()]);
 
@@ -84,7 +84,7 @@ JSObjectRef UIScriptControllerMac::contentsOfUserInterfaceItem(JSStringRef inter
 {
 #if JSC_OBJC_API_ENABLED
     WebView *webView = [mainFrame webView];
-    RetainPtr<CFStringRef> interfaceItemCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, interfaceItem));
+    RetainPtr<CFStringRef> interfaceItemCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, interfaceItem));
     NSDictionary *contentDictionary = [webView _contentsOfUserInterfaceItem:(__bridge NSString *)interfaceItemCF.get()];
     return JSValueToObject(m_context->jsContext(), [JSValue valueWithObject:contentDictionary inContext:[JSContext contextWithJSGlobalContextRef:m_context->jsContext()]].JSValueRef, nullptr);
 #else
@@ -110,7 +110,7 @@ void UIScriptControllerMac::overridePreference(JSStringRef preferenceRef, JSStri
 {
     WebPreferences *preferences = mainFrame.webView.preferences;
 
-    RetainPtr<CFStringRef> value = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, valueRef));
+    RetainPtr<CFStringRef> value = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, valueRef));
     if (JSStringIsEqualToUTF8CString(preferenceRef, "WebKitMinimumFontSize"))
         preferences.minimumFontSize = [(__bridge NSString *)value.get() doubleValue];
 }

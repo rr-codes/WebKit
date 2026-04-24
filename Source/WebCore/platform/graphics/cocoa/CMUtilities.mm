@@ -96,7 +96,7 @@ static FourCC cfStringToFourCC(CFStringRef string)
 static RetainPtr<CFStringRef> cfStringFromFourCC(FourCC fourCC)
 {
     auto string = fourCC.string();
-    return adoptCF(CFStringCreateWithCString(kCFAllocatorDefault, string.begin(), kCFStringEncodingASCII));
+    return adoptCFNullable(CFStringCreateWithCString(kCFAllocatorDefault, string.begin(), kCFStringEncodingASCII));
 }
 
 static RetainPtr<CFDictionaryRef> createExtensionAtomsDictionary(const Vector<std::pair<FourCC, Ref<SharedBuffer>>>& configurations)
@@ -115,7 +115,7 @@ static RetainPtr<CFDictionaryRef> createExtensionAtomsDictionary(const Vector<st
     });
     ASSERT(rawConfigurationKeys.size() == rawConfigurationValues.size());
 
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, rawConfigurationKeys.begin(), rawConfigurationValues.begin(), rawConfigurationKeys.size(), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, rawConfigurationKeys.begin(), rawConfigurationValues.begin(), rawConfigurationKeys.size(), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 #if ENABLE(ENCRYPTED_MEDIA) && HAVE(AVCONTENTKEYSESSION)
@@ -194,7 +194,7 @@ static RetainPtr<CFMutableDictionaryRef> createExtensionsDictionary(const TrackI
         return 5;
 #endif
     }();
-    RetainPtr extensions = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, maxNumberOfElements, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr extensions = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, maxNumberOfElements, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     if (!extensions)
         return nullptr;
 
@@ -213,7 +213,7 @@ static RetainPtr<CFMutableDictionaryRef> createExtensionsDictionary(const TrackI
             break;
         }
         if (encryptionCollection->encryptionOriginalFormat) {
-            RetainPtr originalFormat = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &encryptionCollection->encryptionOriginalFormat->value));
+            RetainPtr originalFormat = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &encryptionCollection->encryptionOriginalFormat->value));
             CFDictionaryAddValue(extensions.get(), CFSTR("CommonEncryptionOriginalFormat"), originalFormat.get());
         }
         configurationsNumKey += encryptionCollection->encryptionInitDatas.size();
@@ -256,7 +256,7 @@ static RetainPtr<CMFormatDescriptionRef> createAudioFormatDescription(const Audi
         LOG_ERROR("createAudioFormatDescription failed with %d", static_cast<int>(error));
         return nullptr;
     }
-    return adoptCF(format);
+    return adoptCFNullable(format);
 }
 
 static CFStringRef convertToCMColorPrimaries(PlatformVideoColorPrimaries primaries)
@@ -353,7 +353,7 @@ RetainPtr<CMFormatDescriptionRef> createFormatDescriptionFromTrackInfo(const Tra
                 RELEASE_LOG_ERROR(MediaStream, "createFormatDescriptionFromTrackInfo: CMAudioFormatDescriptionCreate failed with error %d", (int)error);
                 return nullptr;
             }
-            return adoptCF(newFormat);
+            return adoptCFNullable(newFormat);
         }
         default:
             return createAudioFormatDescription(*audioInfo);
@@ -410,7 +410,7 @@ RetainPtr<CMFormatDescriptionRef> createFormatDescriptionFromTrackInfo(const Tra
         return nullptr;
     }
 
-    return adoptCF(formatDescription);
+    return adoptCFNullable(formatDescription);
 }
 
 RefPtr<AudioInfo> createAudioInfoFromFormatDescription(CMFormatDescriptionRef description)
@@ -508,7 +508,7 @@ Expected<RetainPtr<CMSampleBufferRef>, CString> toCMSampleBuffer(const MediaSamp
         auto err = PAL::CMBlockBufferCreateEmpty(kCFAllocatorDefault, samples.size(), 0, &rawBlockBuffer);
         if (err != kCMBlockBufferNoErr || !rawBlockBuffer)
             return makeUnexpected("CMBlockBufferCreateEmpty failed");
-        completeBlockBuffers = adoptCF(rawBlockBuffer);
+        completeBlockBuffers = adoptCFNullable(rawBlockBuffer);
     }
 
     Vector<CMSampleTimingInfo> packetTimings;
@@ -560,13 +560,13 @@ Expected<RetainPtr<CMSampleBufferRef>, CString> toCMSampleBuffer(const MediaSamp
         PAL::CMSetAttachment(rawSampleBuffer, PAL::kCMSampleBufferAttachmentKey_FillDiscontinuitiesWithSilence, *samples.discontinuity() ? kCFBooleanTrue : kCFBooleanFalse, kCMAttachmentMode_ShouldPropagate);
 
     if (cumulativeTrimDuration > MediaTime::zeroTime()) {
-        auto trimDurationDict = adoptCF(PAL::softLink_CoreMedia_CMTimeCopyAsDictionary(PAL::toCMTime(cumulativeTrimDuration), kCFAllocatorDefault));
+        auto trimDurationDict = adoptCFNullable(PAL::softLink_CoreMedia_CMTimeCopyAsDictionary(PAL::toCMTime(cumulativeTrimDuration), kCFAllocatorDefault));
         PAL::CMSetAttachment(rawSampleBuffer, PAL::kCMSampleBufferAttachmentKey_TrimDurationAtStart, trimDurationDict.get(), kCMAttachmentMode_ShouldPropagate);
     }
 
 #if ENABLE(ENCRYPTED_MEDIA)
     if (!samples.info() || !samples.info()->encryptionDataCollection())
-        return adoptCF(rawSampleBuffer);
+        return adoptCFNullable(rawSampleBuffer);
 
     RetainPtr attachmentsArray = PAL::CMSampleBufferGetSampleAttachmentsArray(rawSampleBuffer, true);
     ASSERT(attachmentsArray);
@@ -574,7 +574,7 @@ Expected<RetainPtr<CMSampleBufferRef>, CString> toCMSampleBuffer(const MediaSamp
         return makeUnexpected("No sample attachment found");
     if (static_cast<size_t>(CFArrayGetCount(attachmentsArray.get())) < samples.size()) {
         RELEASE_LOG_DEBUG(Media, "Encrypted sample doesn't contain sufficient attachments: %u (expected:%u)", static_cast<unsigned>(CFArrayGetCount(attachmentsArray.get())), static_cast<unsigned>(samples.size()));
-        return adoptCF(rawSampleBuffer);
+        return adoptCFNullable(rawSampleBuffer);
     }
 
     for (size_t index = 0; index < samples.size(); index++) {
@@ -584,7 +584,7 @@ Expected<RetainPtr<CMSampleBufferRef>, CString> toCMSampleBuffer(const MediaSamp
             continue;
 
         auto& sample = samples[index];
-        RetainPtr value = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &sample.bytesOfClearDataCount));
+        RetainPtr value = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &sample.bytesOfClearDataCount));
         CFDictionarySetValue(attachmentsDictionary.get(), CFSTR("BytesOfClearDataCount") /* PAL::kCMSampleAttachmentKey_BytesOfClearDataCount */, value.get());
         if (RefPtr cryptorIV = sample.cryptorIV)
             CFDictionarySetValue(attachmentsDictionary.get(), CFSTR("CryptorIV") /* PAL::kCMSampleAttachmentKey_CryptorInitializationVector */, cryptorIV->createCFData().get());
@@ -592,7 +592,7 @@ Expected<RetainPtr<CMSampleBufferRef>, CString> toCMSampleBuffer(const MediaSamp
             CFDictionarySetValue(attachmentsDictionary.get(), PAL::kCMSampleAttachmentKey_CryptorSubsampleAuxiliaryData, cryptorSubsampleAuxiliaryData->createCFData().get());
     }
 #endif
-    return adoptCF(rawSampleBuffer);
+    return adoptCFNullable(rawSampleBuffer);
 }
 
 UniqueRef<MediaSamplesBlock> samplesBlockFromCMSampleBuffer(CMSampleBufferRef cmSample, const TrackInfo* trackInfo)
@@ -905,7 +905,7 @@ RetainPtr<CMBlockBufferRef> ensureContiguousBlockBuffer(CMBlockBufferRef rawBloc
         RELEASE_LOG_FAULT(Media, "Failed to create contiguous blockBuffer with error:%d", static_cast<int>(status));
         return nullptr;
     }
-    return adoptCF(contiguousBuffer);
+    return adoptCFNullable(contiguousBuffer);
 }
 
 Ref<SharedBuffer> sharedBufferFromCMBlockBuffer(CMBlockBufferRef blockBuffer)
@@ -988,7 +988,7 @@ String channelLayoutDescription(UInt32 channelLayoutTag)
     UInt32 stringSize = sizeof(channelLayoutName);
     if (PAL::AudioFormatGetProperty(kAudioFormatProperty_ChannelLayoutName, channelLayout.second, channelLayout.first.get(), &stringSize, &channelLayoutName))
         return { };
-    SUPPRESS_RETAINPTR_CTOR_ADOPT return adoptCF(channelLayoutName).get(); // The caller is responsible for releasing the returned string.
+    SUPPRESS_RETAINPTR_CTOR_ADOPT return adoptCFNullable(channelLayoutName).get(); // The caller is responsible for releasing the returned string.
 }
 
 RetainPtr<CMSampleBufferRef> sampleBufferFromVideoData(std::span<const uint8_t> buffer, CMVideoFormatDescriptionRef videoFormat)
@@ -998,7 +998,7 @@ RetainPtr<CMSampleBufferRef> sampleBufferFromVideoData(std::span<const uint8_t> 
         RELEASE_LOG_ERROR(Media, "CMBlockBufferCreateWithMemoryBlock failed with: %d", (int)error);
         return nullptr;
     }
-    auto blockBuffer = adoptCF(newVlockBuffer);
+    auto blockBuffer = adoptCFNullable(newVlockBuffer);
 
     if (auto error = PAL::CMBlockBufferReplaceDataBytes(buffer.data(), blockBuffer.get(), 0, buffer.size())) {
         RELEASE_LOG_ERROR(Media, "CMBlockBufferReplaceDataBytes failed with: %d", (int)error);
@@ -1011,7 +1011,7 @@ RetainPtr<CMSampleBufferRef> sampleBufferFromVideoData(std::span<const uint8_t> 
         return nullptr;
     }
 
-    return adoptCF(sampleBuffer);
+    return adoptCFNullable(sampleBuffer);
 }
 
 } // namespace WebCore

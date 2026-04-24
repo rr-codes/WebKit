@@ -67,7 +67,7 @@ Ref<UIScriptController> UIScriptController::create(UIScriptContext& context)
 
 static RetainPtr<CFStringRef> cfString(JSStringRef string)
 {
-    return adoptCF(JSStringCopyCFString(kCFAllocatorDefault, string));
+    return adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, string));
 }
 
 void UIScriptControllerMac::replaceTextAtRange(JSStringRef text, int location, int length)
@@ -225,7 +225,7 @@ void UIScriptControllerMac::chooseMenuAction(JSStringRef jsAction, JSValueRef ca
 {
     unsigned callbackID = m_context->prepareForAsyncTask(callback, CallbackTypeNonPersistent);
 
-    auto action = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, jsAction));
+    auto action = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, jsAction));
     __block NSUInteger matchIndex = NSNotFound;
     auto activeMenu = retainPtr(webView()._activeMenu);
     [[activeMenu itemArray] enumerateObjectsUsingBlock:^(NSMenuItem *item, NSUInteger index, BOOL *stop) {
@@ -268,7 +268,7 @@ void UIScriptControllerMac::playBackEventStream(JSStringRef eventStream, JSValue
     RefPtr context = m_context.get();
     if (!context)
         return;
-    auto stream = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, eventStream));
+    auto stream = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, eventStream));
     playBackEvents(webView(), *context, (__bridge NSString *)stream.get(), callback);
 }
 

@@ -35,7 +35,7 @@ namespace WebCore {
 
 String ServiceWorkerInternals::processName() const
 {
-    return adoptCF((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, _LSGetCurrentApplicationASN(), _kLSDisplayNameKey)).get();
+    return adoptCFNullable((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, _LSGetCurrentApplicationASN(), _kLSDisplayNameKey)).get();
 }
 
 } // namespace WebCore

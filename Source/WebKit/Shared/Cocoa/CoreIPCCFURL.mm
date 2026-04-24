@@ -38,7 +38,7 @@ std::optional<CoreIPCCFURL> CoreIPCCFURL::createWithBaseURLAndBytes(std::optiona
     }
 
     RetainPtr baseCFURL = baseURL ? baseURL->m_cfURL.get() : nullptr;
-    if (RetainPtr newCFURL = adoptCF(CFURLCreateAbsoluteURLWithBytes(nullptr, bytes.span().data(), bytes.size(), kCFStringEncodingUTF8, baseCFURL.get(), true)))
+    if (RetainPtr newCFURL = adoptCFNullable(CFURLCreateAbsoluteURLWithBytes(nullptr, bytes.span().data(), bytes.size(), kCFStringEncodingUTF8, baseCFURL.get(), true)))
         return CoreIPCCFURL { WTF::move(newCFURL) };
 
     return std::nullopt;

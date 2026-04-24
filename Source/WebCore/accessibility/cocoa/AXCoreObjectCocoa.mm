@@ -99,11 +99,11 @@ void attributedStringSetFont(NSMutableAttributedString *attributedString, CTFont
         return;
 
     auto fontAttributes = adoptNS([[NSMutableDictionary alloc] init]);
-    auto familyName = adoptCF(CTFontCopyFamilyName(font));
+    auto familyName = adoptCFNullable(CTFontCopyFamilyName(font));
     NSNumber *size = [NSNumber numberWithFloat:CTFontGetSize(font)];
 
 #if PLATFORM(IOS_FAMILY)
-    auto fullName = adoptCF(CTFontCopyFullName(font));
+    auto fullName = adoptCFNullable(CTFontCopyFullName(font));
     if (fullName)
         [fontAttributes setValue:bridge_cast(fullName.get()) forKey:AccessibilityTokenFontName];
     if (familyName)
@@ -124,7 +124,7 @@ void attributedStringSetFont(NSMutableAttributedString *attributedString, CTFont
 
     if (familyName)
         [fontAttributes setValue:bridge_cast(familyName.get()) forKey:NSAccessibilityFontFamilyKey];
-    auto postScriptName = adoptCF(CTFontCopyPostScriptName(font));
+    auto postScriptName = adoptCFNullable(CTFontCopyPostScriptName(font));
     if (postScriptName)
         [fontAttributes setValue:bridge_cast(postScriptName.get()) forKey:NSAccessibilityFontNameKey];
     auto traits = CTFontGetSymbolicTraits(font);
@@ -179,7 +179,7 @@ void attributedStringSetElement(NSMutableAttributedString *string, NSString *att
             wrapper = attachmentView;
     }
 
-    if (RetainPtr axElement = adoptCF(NSAccessibilityCreateAXUIElementRef(wrapper)))
+    if (RetainPtr axElement = adoptCFNullable(NSAccessibilityCreateAXUIElementRef(wrapper)))
         [string addAttribute:attribute value:(__bridge id)axElement.get() range:range];
 }
 
@@ -224,7 +224,7 @@ RetainPtr<NSMutableAttributedString> AXCoreObject::createAttributedString(String
     if (isReplacedElement()) {
         if (id wrapper = this->wrapper()) {
 #if PLATFORM(MAC)
-            [string.get() addAttribute:NSAccessibilityAttachmentTextAttribute value:(__bridge id)adoptCF(NSAccessibilityCreateAXUIElementRef(wrapper)).get() range:range];
+            [string.get() addAttribute:NSAccessibilityAttachmentTextAttribute value:(__bridge id)adoptCFNullable(NSAccessibilityCreateAXUIElementRef(wrapper)).get() range:range];
 #else
             [string.get() addAttribute:AccessibilityTokenAttachment value:wrapper range:range];
 #endif // PLATFORM(MAC)
@@ -273,7 +273,7 @@ RetainPtr<NSMutableAttributedString> AXCoreObject::createAttributedString(String
 
         if (ancestor->isExposableTable()) {
             if (id wrapper = ancestor->wrapper())
-                [string.get() addAttribute:NSAccessibilityTableAttribute value:(__bridge id)adoptCF(NSAccessibilityCreateAXUIElementRef(wrapper)).get() range:range];
+                [string.get() addAttribute:NSAccessibilityTableAttribute value:(__bridge id)adoptCFNullable(NSAccessibilityCreateAXUIElementRef(wrapper)).get() range:range];
         }
     }
     if (blockquoteLevel)

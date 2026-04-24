@@ -107,7 +107,7 @@ RefPtr<VideoInfo> createVideoInfoFromAVCC(std::span<const uint8_t> avcc)
     CMFormatDescriptionRef rawDescription = nullptr;
     if (PAL::CMVideoFormatDescriptionCreateFromH264ParameterSets(kCFAllocatorDefault, paramSetPtrs.size(), paramSetPtrs.span().data(), paramSetSizes.span().data(), lengthSize, &rawDescription))
         return nullptr;
-    RetainPtr description = adoptCF(rawDescription);
+    RetainPtr description = adoptCFNullable(rawDescription);
     auto dimensions = PAL::CMVideoFormatDescriptionGetDimensions(rawDescription);
     auto presentationDimensions = PAL::CMVideoFormatDescriptionGetPresentationDimensions(rawDescription, true, true);
 

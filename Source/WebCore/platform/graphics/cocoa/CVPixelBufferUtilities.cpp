@@ -53,13 +53,13 @@ RetainPtr<CVPixelBufferRef> createScratchCVPixelBuffer(unsigned width, unsigned 
     if (colorSpace)
         CVBufferSetAttachment(pixelBuffer, kCVImageBufferCGColorSpaceKey, colorSpace, kCVAttachmentMode_ShouldPropagate);
 
-    return adoptCF(pixelBuffer);
+    return adoptCFNullable(pixelBuffer);
 }
 
 RetainPtr<CVPixelBufferRef> createScratchMetalCompatibleCVPixelBuffer(unsigned width, unsigned height, OSType pixelFormat, CGColorSpaceRef colorSpace)
 {
-    RetainPtr attributes = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    RetainPtr surfaceProperties = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr attributes = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr surfaceProperties = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CFDictionarySetValue(attributes.get(), kCVPixelBufferIOSurfacePropertiesKey, surfaceProperties.get());
     CFDictionarySetValue(attributes.get(), kCVPixelBufferMetalCompatibilityKey, kCFBooleanTrue);
 

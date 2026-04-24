@@ -37,7 +37,7 @@ struct FontInterrogation {
     {
         bool foundStat = false;
         bool foundTrak = false;
-        auto tables = adoptCF(CTFontCopyAvailableTables(font, kCTFontTableOptionNoOptions));
+        auto tables = adoptCFNullable(CTFontCopyAvailableTables(font, kCTFontTableOptionNoOptions));
         if (!tables)
             return;
         auto size = CFArrayGetCount(tables.get());

@@ -36,7 +36,7 @@ namespace PAL {
 
 RetainPtr<CFStringRef> defaultSearchProviderDisplayName()
 {
-    auto providerInfo = adoptCF(_CFWebServicesCopyProviderInfo(kCFWebServicesTypeWebSearch, nullptr));
+    auto providerInfo = adoptCFNullable(_CFWebServicesCopyProviderInfo(kCFWebServicesTypeWebSearch, nullptr));
     if (!providerInfo)
         return CFSTR("Google");
 

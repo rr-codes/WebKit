@@ -325,7 +325,7 @@ RetainPtr<CGImageRef> ImageBufferIOSurfaceBackend::createImageReference()
 {
     // The reference is used only in synchronized manner, so after the use ends, we can update
     // externally without invalidation marker. Thus we do not set m_mayHaveOutstandingBackingStoreReferences.
-    auto image = adoptCF(CGIOSurfaceContextCreateImageReference(ensurePlatformContext()));
+    auto image = adoptCFNullable(CGIOSurfaceContextCreateImageReference(ensurePlatformContext()));
     // CG has internal caches for some operations related to software bitmap draw.
     // One of these caches are per-image color matching cache. Since these will not get any hits
     // from an image that is recreated every time, mark the image transient to skip these caches.

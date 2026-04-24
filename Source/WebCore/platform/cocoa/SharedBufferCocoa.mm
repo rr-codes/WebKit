@@ -125,7 +125,7 @@ RetainPtr<CMBlockBufferRef> FragmentedSharedBuffer::createCMBlockBuffer() const
         CMBlockBufferRef partialBuffer = nullptr;
         if (PAL::CMBlockBufferCreateWithMemoryBlock(nullptr, const_cast<uint8_t*>(segment.span().data()), segment.size(), nullptr, &allocator, 0, segment.size(), 0, &partialBuffer) != kCMBlockBufferNoErr)
             return nullptr;
-        return adoptCF(partialBuffer);
+        return adoptCFNullable(partialBuffer);
     };
 
     if (isContiguous() && !isEmpty())
@@ -135,7 +135,7 @@ RetainPtr<CMBlockBufferRef> FragmentedSharedBuffer::createCMBlockBuffer() const
     auto err = PAL::CMBlockBufferCreateEmpty(kCFAllocatorDefault, isEmpty() ? 0 : m_segments.size(), 0, &rawBlockBuffer);
     if (err != kCMBlockBufferNoErr || !rawBlockBuffer)
         return nullptr;
-    auto blockBuffer = adoptCF(rawBlockBuffer);
+    auto blockBuffer = adoptCFNullable(rawBlockBuffer);
 
     if (isEmpty())
         return blockBuffer;
@@ -160,7 +160,7 @@ RetainPtr<NSData> SharedBuffer::createNSData() const
 RetainPtr<CFDataRef> SharedBuffer::createCFData() const
 {
     if (!size())
-        return adoptCF(CFDataCreate(nullptr, nullptr, 0));
+        return adoptCFNullable(CFDataCreate(nullptr, nullptr, 0));
     return bridge_cast(segments()[0].segment->createNSData());
 }
 

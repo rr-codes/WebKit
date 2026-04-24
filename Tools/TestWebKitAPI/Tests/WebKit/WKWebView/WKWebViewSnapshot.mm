@@ -294,13 +294,13 @@ TEST(WKWebView, SnapshotImageBaseCase)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
 
         RetainPtr cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr<CGColorSpaceRef> colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr<CGColorSpaceRef> colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
 
         NSInteger viewWidthInPixels = viewWidth * backingScaleFactor;
         NSInteger viewHeightInPixels = viewHeight * backingScaleFactor;
 
         uint8_t *rgba = (unsigned char *)calloc(viewWidthInPixels * viewHeightInPixels * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidthInPixels, viewHeightInPixels), cgImage.get());
 
         NSInteger pixelIndex = getPixelIndex(0, 0, viewWidthInPixels);
@@ -444,10 +444,10 @@ TEST(WKWebView, SnapshotImageLargeAsyncDecoding)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
 
         auto cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
 
         uint8_t *rgba = (unsigned char *)calloc(viewWidth * viewHeight * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidth, viewHeight, 8, 4 * viewWidth, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidth, viewHeight, 8, 4 * viewWidth, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidth, viewHeight), cgImage.get());
 
         // Top-left corner of the div (0, 0, 100, 100)
@@ -516,13 +516,13 @@ TEST(WKWebView, SnapshotAfterScreenUpdates)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
         
         RetainPtr cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr<CGColorSpaceRef> colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr<CGColorSpaceRef> colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
         
         NSInteger viewWidthInPixels = viewWidth * backingScaleFactor;
         NSInteger viewHeightInPixels = viewHeight * backingScaleFactor;
         
         uint8_t *rgba = (unsigned char *)calloc(viewWidthInPixels * viewHeightInPixels * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidthInPixels, viewHeightInPixels), cgImage.get());
         
         NSInteger pixelIndex = getPixelIndex(0, 0, viewWidthInPixels);
@@ -579,13 +579,13 @@ TEST(WKWebView, SnapshotWithoutAfterScreenUpdates)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
         
         RetainPtr cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr<CGColorSpaceRef> colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr<CGColorSpaceRef> colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
         
         NSInteger viewWidthInPixels = viewWidth * backingScaleFactor;
         NSInteger viewHeightInPixels = viewHeight * backingScaleFactor;
         
         uint8_t *rgba = (unsigned char *)calloc(viewWidthInPixels * viewHeightInPixels * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidthInPixels, viewHeightInPixels), cgImage.get());
 
         NSInteger pixelIndex = getPixelIndex(0, 0, viewWidthInPixels);
@@ -637,13 +637,13 @@ TEST(WKWebView, SnapshotWebGL)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
 
         RetainPtr cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr<CGColorSpaceRef> colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr<CGColorSpaceRef> colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
 
         NSInteger viewWidthInPixels = viewWidth * backingScaleFactor;
         NSInteger viewHeightInPixels = viewHeight * backingScaleFactor;
 
         uint8_t *rgba = (unsigned char *)calloc(viewWidthInPixels * viewHeightInPixels * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidthInPixels, viewHeightInPixels), cgImage.get());
 
         NSInteger pixelIndex = getPixelIndex(0, 0, viewWidthInPixels);
@@ -686,13 +686,13 @@ TEST(WKWebView, SnapshotWithoutSelectionHighlighting)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
 
         RetainPtr cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr<CGColorSpaceRef> colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr<CGColorSpaceRef> colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
 
         NSInteger viewWidthInPixels = viewWidth * backingScaleFactor;
         NSInteger viewHeightInPixels = viewHeight * backingScaleFactor;
 
         uint8_t *rgba = (unsigned char *)calloc(viewWidthInPixels * viewHeightInPixels * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidthInPixels, viewHeightInPixels, 8, 4 * viewWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidthInPixels, viewHeightInPixels), cgImage.get());
 
         // Get a pixel from inside where the selection highlight would normally be and verify that the highlight isn't in the snapshot.
@@ -735,9 +735,9 @@ TEST(WKWebView, SnapshotWithContentsRect)
         EXPECT_GT(snapshotHeightInPixels, viewHeight);
 
         auto cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
         uint8_t *rgba = (unsigned char *)calloc(snapshotWidthInPixels * snapshotHeightInPixels * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, snapshotWidthInPixels, snapshotHeightInPixels, 8, 4 * snapshotWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, snapshotWidthInPixels, snapshotHeightInPixels, 8, 4 * snapshotWidthInPixels, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, snapshotWidthInPixels, snapshotHeightInPixels), cgImage.get());
 
         // Inside the blue div.
@@ -844,10 +844,10 @@ TEST(WKWebView, RemoteSnapshotWithTransform)
         EXPECT_EQ(viewWidth, snapshotImage.size.width);
 
         auto cgImage = Util::convertToCGImage(snapshotImage);
-        RetainPtr colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
+        RetainPtr colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
 
         uint8_t *rgba = (unsigned char *)calloc(viewWidth * viewHeight * 4, sizeof(unsigned char));
-        RetainPtr context = adoptCF(CGBitmapContextCreate(rgba, viewWidth, viewHeight, 8, 4 * viewWidth, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+        RetainPtr context = adoptCFNullable(CGBitmapContextCreate(rgba, viewWidth, viewHeight, 8, 4 * viewWidth, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
         CGContextDrawImage(context.get(), CGRectMake(0, 0, viewWidth, viewHeight), cgImage.get());
 
         void (^verifyPixel)(NSPoint) = ^(NSPoint point) {

@@ -105,7 +105,7 @@ Vector<MachSendRight> CompositorIntegrationImpl::recreateRenderBuffers(int width
     }
 
     {
-        auto renderBuffers = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, m_renderBuffers.size(), &kCFTypeArrayCallBacks));
+        auto renderBuffers = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, m_renderBuffers.size(), &kCFTypeArrayCallBacks));
         for (auto& ioSurface : m_renderBuffers)
             CFArrayAppendValue(renderBuffers.get(), ioSurface->surface());
         m_renderBuffersWereRecreatedCallback(static_cast<CFArrayRef>(renderBuffers));

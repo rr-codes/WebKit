@@ -115,7 +115,7 @@ std::unique_ptr<IOSurface> IOSurface::createFromSendRight(const MachSendRight&& 
 {
     ASSERT(ProcessCapabilities::canUseAcceleratedBuffers());
 
-    auto surface = adoptCF(IOSurfaceLookupFromMachPort(sendRight.sendRight()));
+    auto surface = adoptCFNullable(IOSurfaceLookupFromMachPort(sendRight.sendRight()));
     return IOSurface::createFromSurface(surface.get(), { });
 }
 
@@ -212,7 +212,7 @@ static RetainPtr<IOSurfaceRef> createSurfaceViaCoreVideo(IntSize size, IOSurface
         return nullptr;
     }
 
-    RetainPtr cvBuffer = adoptCF(rawPixelBuffer);
+    RetainPtr cvBuffer = adoptCFNullable(rawPixelBuffer);
     return CVPixelBufferGetIOSurface(cvBuffer.get());
 }
 
@@ -334,7 +334,7 @@ static RetainPtr<IOSurfaceRef> createSurface(IntSize size, IOSurface::Name name,
 #endif
     }
 
-    return adoptCF(IOSurfaceCreate((CFDictionaryRef)options.get()));
+    return adoptCFNullable(IOSurfaceCreate((CFDictionaryRef)options.get()));
 }
 
 // MARK: -
@@ -525,7 +525,7 @@ RetainPtr<id> IOSurface::asCAIOSurfaceLayerContents() const
     // but doesn't mark the IOSurface as in-use. We can retain it for efficiency
     // without breaking use-counting.
     if (PAL::canLoad_QuartzCore_CAIOSurfaceCreate()) {
-        auto result = adoptCF(CAIOSurfaceCreate(m_surface.get()));
+        auto result = adoptCFNullable(CAIOSurfaceCreate(m_surface.get()));
 #if HAVE(SUPPORT_HDR_DISPLAY)
         // Force CA to reload the headroom, since this doesn't happen automatically.
         if (m_contentEDRHeadroom && *m_contentEDRHeadroom != 1 && PAL::canLoad_QuartzCore_CAIOSurfaceReloadColorAttributes())
@@ -539,7 +539,7 @@ RetainPtr<id> IOSurface::asCAIOSurfaceLayerContents() const
 RetainPtr<CGImageRef> IOSurface::createImage(CGContextRef context)
 {
     ASSERT(CGIOSurfaceContextGetSurface(context) == m_surface);
-    return adoptCF(CGIOSurfaceContextCreateImage(context));
+    return adoptCFNullable(CGIOSurfaceContextCreateImage(context));
 }
 
 RetainPtr<CGImageRef> IOSurface::sinkIntoImage(std::unique_ptr<IOSurface> surface, RetainPtr<CGContextRef> context)
@@ -548,7 +548,7 @@ RetainPtr<CGImageRef> IOSurface::sinkIntoImage(std::unique_ptr<IOSurface> surfac
         context = surface->createPlatformContext();
     ASSERT(CGIOSurfaceContextGetSurface(context.get()) == surface->m_surface);
     UNUSED_PARAM(surface);
-    return adoptCF(CGIOSurfaceContextCreateImageReference(context.get()));
+    return adoptCFNullable(CGIOSurfaceContextCreateImageReference(context.get()));
 }
 
 IOSurface::BitmapConfiguration IOSurface::bitmapConfiguration() const
@@ -607,7 +607,7 @@ RetainPtr<CGContextRef> IOSurface::createCompatibleBitmap(unsigned width, unsign
     auto bytesPerRow = roundUpToMultipleOfNonPowerOfTwo(bytesPerRowAlignment(), width * (bitsPerPixel / 8));
 
     ensureColorSpace();
-    return adoptCF(CGBitmapContextCreate(NULL, width, height, configuration.bitsPerComponent, bytesPerRow, protect(m_colorSpace->platformColorSpace()).get(), configuration.bitmapInfo));
+    return adoptCFNullable(CGBitmapContextCreate(NULL, width, height, configuration.bitsPerComponent, bytesPerRow, protect(m_colorSpace->platformColorSpace()).get(), configuration.bitmapInfo));
 }
 
 RetainPtr<CGContextRef> IOSurface::createPlatformContext(PlatformDisplayID displayID, std::optional<CGImageAlphaInfo> overrideAlphaInfo)
@@ -618,7 +618,7 @@ RetainPtr<CGContextRef> IOSurface::createPlatformContext(PlatformDisplayID displ
     auto bitsPerPixel = configuration.bitsPerComponent * 4;
 
     ensureColorSpace();
-    auto cgContext = adoptCF(CGIOSurfaceContextCreate(m_surface.get(), m_size.width(), m_size.height(), configuration.bitsPerComponent, bitsPerPixel, protect(m_colorSpace->platformColorSpace()).get(), configuration.bitmapInfo));
+    auto cgContext = adoptCFNullable(CGIOSurfaceContextCreate(m_surface.get(), m_size.width(), m_size.height(), configuration.bitsPerComponent, bitsPerPixel, protect(m_colorSpace->platformColorSpace()).get(), configuration.bitmapInfo));
 
 #if PLATFORM(MAC)
     if (auto displayMask = primaryOpenGLDisplayMask()) {
@@ -646,7 +646,7 @@ std::optional<IOSurface::LockAndContext> IOSurface::createBitmapPlatformContext(
     auto configuration = bitmapConfiguration();
     auto size = this->size();
 
-    auto context = adoptCF(CGBitmapContextCreate(locker->surfaceBaseAddress(), size.width(), size.height(), configuration.bitsPerComponent, bytesPerRow(), protect(colorSpace().platformColorSpace()).get(), configuration.bitmapInfo));
+    auto context = adoptCFNullable(CGBitmapContextCreate(locker->surfaceBaseAddress(), size.width(), size.height(), configuration.bitsPerComponent, bytesPerRow(), protect(colorSpace().platformColorSpace()).get(), configuration.bitmapInfo));
     if (!context) {
         RELEASE_LOG_ERROR(IOSurface, "IOSurface::createBitmapPlatformContext: Failed to create bitmap context for IOSurface %x (size %d x %d), bitsPerComponent %lu, bytesPerRow %lu", surfaceID(), size.width(), size.height(), configuration.bitsPerComponent, bytesPerRow());
         return std::nullopt;
@@ -801,7 +801,7 @@ void IOSurface::setOwnershipIdentity(IOSurfaceRef surface, const ProcessIdentity
 void IOSurface::setColorSpaceProperty()
 {
     ASSERT(m_colorSpace);
-    auto colorSpaceProperties = adoptCF(CGColorSpaceCopyPropertyList(protect(m_colorSpace->platformColorSpace()).get()));
+    auto colorSpaceProperties = adoptCFNullable(CGColorSpaceCopyPropertyList(protect(m_colorSpace->platformColorSpace()).get()));
     IOSurfaceSetValue(m_surface.get(), kIOSurfaceColorSpace, colorSpaceProperties.get());
 }
 
@@ -832,18 +832,18 @@ std::optional<float> IOSurface::contentEDRHeadroom() const
 void IOSurface::loadContentEDRHeadroom()
 {
     m_contentEDRHeadroom = 1;
-    if (auto valueNumber = dynamic_cf_cast<CFNumberRef>(adoptCF(IOSurfaceCopyValue(m_surface.get(), kIOSurfaceContentHeadroom))))
+    if (auto valueNumber = dynamic_cf_cast<CFNumberRef>(adoptCFNullable(IOSurfaceCopyValue(m_surface.get(), kIOSurfaceContentHeadroom))))
         CFNumberGetValue(valueNumber.get(), kCFNumberFloat32Type, &m_contentEDRHeadroom.value());
 }
 #endif
 
 std::optional<DestinationColorSpace> IOSurface::surfaceColorSpace() const
 {
-    auto propertyList = adoptCF(IOSurfaceCopyValue(m_surface.get(), kIOSurfaceColorSpace));
+    auto propertyList = adoptCFNullable(IOSurfaceCopyValue(m_surface.get(), kIOSurfaceColorSpace));
     if (!propertyList)
         return { };
     
-    auto colorSpaceCF = adoptCF(CGColorSpaceCreateWithPropertyList(propertyList.get()));
+    auto colorSpaceCF = adoptCFNullable(CGColorSpaceCreateWithPropertyList(propertyList.get()));
     if (!colorSpaceCF)
         return { };
     

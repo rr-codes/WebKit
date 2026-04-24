@@ -75,7 +75,7 @@ void AuthenticationManager::initializeConnection(IPC::Connection* connection)
             auto endPoint = adoptNS([[NSXPCListenerEndpoint alloc] init]);
             [endPoint _setEndpoint:xpcEndPoint.get()];
             NSError *error = nil;
-            auto identity = adoptCF([SecKeyProxy createIdentityFromEndpoint:endPoint.get() error:&error]);
+            auto identity = adoptCFNullable([SecKeyProxy createIdentityFromEndpoint:endPoint.get() error:&error]);
             if (!identity || error) {
                 LOG_ERROR("Couldn't create identity from end point: %@", error);
                 return;
@@ -89,8 +89,8 @@ void AuthenticationManager::initializeConnection(IPC::Connection* connection)
                 certificates = [NSMutableArray arrayWithCapacity:total];
                 for (size_t i = 0; i < total; i++) {
                     OSObjectPtr<xpc_object_t> certificateData = xpc_array_get_value(certificateDataArray.get(), i);
-                    RetainPtr cfData = adoptCF(CFDataCreate(nullptr, static_cast<const UInt8*>(xpc_data_get_bytes_ptr(certificateData.get())), xpc_data_get_length(certificateData.get())));
-                    RetainPtr certificate = adoptCF(SecCertificateCreateWithData(nullptr, cfData.get()));
+                    RetainPtr cfData = adoptCFNullable(CFDataCreate(nullptr, static_cast<const UInt8*>(xpc_data_get_bytes_ptr(certificateData.get())), xpc_data_get_length(certificateData.get())));
+                    RetainPtr certificate = adoptCFNullable(SecCertificateCreateWithData(nullptr, cfData.get()));
                     if (!certificate)
                         return;
                     [certificates addObject:(__bridge id)certificate.get()];

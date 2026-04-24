@@ -223,9 +223,9 @@ RetainPtr<SecKeyRef> LocalConnection::createCredentialPrivateKey(LAContext *cont
         attributes = alternateAttributes(context, accessControlRef, secAttrLabel, secAttrApplicationTag);
 
     CFErrorRef rawError = nullptr;
-    auto credentialPrivateKey = adoptCF(SecKeyCreateRandomKey((__bridge CFDictionaryRef)attributes.get(), &rawError));
+    auto credentialPrivateKey = adoptCFNullable(SecKeyCreateRandomKey((__bridge CFDictionaryRef)attributes.get(), &rawError));
     // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-    SUPPRESS_RETAINPTR_CTOR_ADOPT if (auto error = adoptCF(rawError)) {
+    SUPPRESS_RETAINPTR_CTOR_ADOPT if (auto error = adoptCFNullable(rawError)) {
         LOG_ERROR("Couldn't create private key: %@", bridge_cast(error.get()));
         return nullptr;
     }
@@ -250,7 +250,7 @@ RetainPtr<NSArray> LocalConnection::getExistingCredentials(const String& rpId)
     if (status && status != errSecItemNotFound)
         return nullptr;
     // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr nsAttributesArray = bridge_cast(adoptCF(checked_cf_cast<CFArrayRef>(attributesArrayRef)));
+    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr nsAttributesArray = bridge_cast(adoptCFNullable(checked_cf_cast<CFArrayRef>(attributesArrayRef)));
     return [nsAttributesArray sortedArrayUsingComparator:^(NSDictionary *a, NSDictionary *b) {
         return [retainPtr(b[(id)kSecAttrModificationDate]) compare:retainPtr(a[(id)kSecAttrModificationDate]).get()];
     }];

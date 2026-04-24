@@ -37,8 +37,8 @@ bool certificatesMatch(SecTrustRef trust1, SecTrustRef trust2)
     if (!trust1 || !trust2)
         return false;
 
-    RetainPtr chain1 = adoptCF(SecTrustCopyCertificateChain(trust1));
-    RetainPtr chain2 = adoptCF(SecTrustCopyCertificateChain(trust2));
+    RetainPtr chain1 = adoptCFNullable(SecTrustCopyCertificateChain(trust1));
+    RetainPtr chain2 = adoptCFNullable(SecTrustCopyCertificateChain(trust2));
     CFIndex count1 = chain1 ? CFArrayGetCount(chain1.get()) : 0;
     CFIndex count2 = chain2 ? CFArrayGetCount(chain2.get()) : 0;
 
@@ -62,18 +62,18 @@ RetainPtr<SecTrustRef> CertificateInfo::secTrustFromCertificateChain(CFArrayRef 
     SecTrustRef trustRef = nullptr;
     if (SecTrustCreateWithCertificates(certificateChain, nullptr, &trustRef) != noErr)
         return nullptr;
-    return adoptCF(trustRef);
+    return adoptCFNullable(trustRef);
 }
 
 RetainPtr<CFArrayRef> CertificateInfo::certificateChainFromSecTrust(SecTrustRef trust)
 {
-    return adoptCF(SecTrustCopyCertificateChain(trust));
+    return adoptCFNullable(SecTrustCopyCertificateChain(trust));
 }
 
 bool CertificateInfo::containsNonRootSHA1SignedCertificate() const
 {
     if (m_trust) {
-        auto chain = adoptCF(SecTrustCopyCertificateChain(trust().get()));
+        auto chain = adoptCFNullable(SecTrustCopyCertificateChain(trust().get()));
         // Allow only the root certificate (the last in the chain) to be SHA1.
         for (CFIndex i = 0, size = SecTrustGetCertificateCount(trust().get()) - 1; i < size; ++i) {
             RetainPtr certificate = checked_cf_cast<SecCertificateRef>(CFArrayGetValueAtIndex(chain.get(), i));
@@ -96,12 +96,12 @@ std::optional<CertificateSummary> CertificateInfo::summary() const
 
 #if !PLATFORM(IOS_FAMILY_SIMULATOR) && !PLATFORM(MACCATALYST)
     RetainPtr leafCertificate = checked_cf_cast<SecCertificateRef>(CFArrayGetValueAtIndex(chain.get(), 0));
-    RetainPtr subjectCF = adoptCF(SecCertificateCopySubjectSummary(leafCertificate.get()));
+    RetainPtr subjectCF = adoptCFNullable(SecCertificateCopySubjectSummary(leafCertificate.get()));
     summaryInfo.subject = subjectCF.get();
 #endif
 
 #if PLATFORM(MAC)
-    if (auto certificateDictionary = adoptCF(SecCertificateCopyValues(leafCertificate.get(), nullptr, nullptr))) {
+    if (auto certificateDictionary = adoptCFNullable(SecCertificateCopyValues(leafCertificate.get(), nullptr, nullptr))) {
         if (RetainPtr validNotBefore = checked_cf_cast<CFDictionaryRef>(CFDictionaryGetValue(certificateDictionary.get(), kSecOIDX509V1ValidityNotBefore))) {
             if (RetainPtr number = checked_cf_cast<CFNumberRef>(CFDictionaryGetValue(validNotBefore.get(), CFSTR("value")))) {
                 double numberValue;

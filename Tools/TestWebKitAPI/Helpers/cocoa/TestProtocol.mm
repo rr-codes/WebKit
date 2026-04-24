@@ -99,8 +99,8 @@ static NSURL *createRedirectURL(NSString *query)
 
 static NSString *contentTypeForFileExtension(NSString *fileExtension)
 {
-    RetainPtr identifier = adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, nullptr));
-    RetainPtr mimeType = adoptCF(UTTypeCopyPreferredTagWithClass(identifier.get(), kUTTagClassMIMEType));
+    RetainPtr identifier = adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)fileExtension, nullptr));
+    RetainPtr mimeType = adoptCFNullable(UTTypeCopyPreferredTagWithClass(identifier.get(), kUTTagClassMIMEType));
     return (__bridge NSString *)mimeType.autorelease();
 }
 

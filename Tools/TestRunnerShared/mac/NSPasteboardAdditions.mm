@@ -37,7 +37,7 @@
 + (NSPasteboardType)_modernPasteboardType:(NSString *)type
 {
     if (UTTypeIsDynamic((__bridge CFStringRef)type)) {
-        if (auto legacyType = adoptCF(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)type, kUTTagClassNSPboardType)))
+        if (auto legacyType = adoptCFNullable(UTTypeCopyPreferredTagWithClass((__bridge CFStringRef)type, kUTTagClassNSPboardType)))
             type = legacyType.bridgingAutorelease();
     }
 

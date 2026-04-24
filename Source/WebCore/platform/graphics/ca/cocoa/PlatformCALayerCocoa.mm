@@ -1007,7 +1007,7 @@ void PlatformCALayerCocoa::setCornerRadius(float value)
 Path PlatformCALayerCocoa::shadowPath() const
 {
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    return { PathCG::create(adoptCF(CGPathCreateMutableCopy([m_layer shadowPath]))) };
+    return { PathCG::create(adoptCFNullable(CGPathCreateMutableCopy([m_layer shadowPath]))) };
     END_BLOCK_OBJC_EXCEPTIONS
 }
 
@@ -1093,7 +1093,7 @@ Path PlatformCALayerCocoa::shapePath() const
     ASSERT(m_layerType == PlatformCALayer::LayerType::LayerTypeShapeLayer);
 
     BEGIN_BLOCK_OBJC_EXCEPTIONS
-    return { PathCG::create(adoptCF(CGPathCreateMutableCopy([(CAShapeLayer *)m_layer path]))) };
+    return { PathCG::create(adoptCFNullable(CGPathCreateMutableCopy([(CAShapeLayer *)m_layer path]))) };
     END_BLOCK_OBJC_EXCEPTIONS
 }
 

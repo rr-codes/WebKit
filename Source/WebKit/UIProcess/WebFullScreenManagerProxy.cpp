@@ -323,8 +323,8 @@ void WebFullScreenManagerProxy::prepareQuickLookImageURL(CompletionHandler<void(
                 if (!cgImage)
                     return nullptr;
 
-                RetainPtr destinationData = adoptCF(CFDataCreateMutable(nullptr, 0));
-                RetainPtr destination = adoptCF(CGImageDestinationCreateWithData(destinationData.get(), CFSTR("public.heic"), 1, nullptr));
+                RetainPtr destinationData = adoptCFNullable(CFDataCreateMutable(nullptr, 0));
+                RetainPtr destination = adoptCFNullable(CGImageDestinationCreateWithData(destinationData.get(), CFSTR("public.heic"), 1, nullptr));
                 CGImageDestinationAddImage(destination.get(), cgImage.get(), nullptr);
 
                 if (!CGImageDestinationFinalize(destination.get()))

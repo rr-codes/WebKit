@@ -196,7 +196,7 @@
 
     NSUInteger length;
     if (auto bytes = (UInt8 *)[coder decodeBytesWithReturnedLength:&length]) {
-        m_wrappedURL = bridge_cast(adoptCF(CFURLCreateAbsoluteURLWithBytes(nullptr, bytes, length, kCFStringEncodingUTF8, nullptr, true)));
+        m_wrappedURL = bridge_cast(adoptCFNullable(CFURLCreateAbsoluteURLWithBytes(nullptr, bytes, length, kCFStringEncodingUTF8, nullptr, true)));
         if (!m_wrappedURL)
             LOG_ERROR("Failed to decode NSURL due to invalid encoding of length %zu. Substituting a blank URL", length);
     }

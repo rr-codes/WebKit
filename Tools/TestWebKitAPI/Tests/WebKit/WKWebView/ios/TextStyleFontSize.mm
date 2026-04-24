@@ -54,8 +54,8 @@ static auto contentSizeCategory = kCTFontContentSizeCategoryXXXL;
 
 TEST(TextStyleFontSize, Startup)
 {
-    RetainPtr descriptor = adoptCF(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleBody, contentSizeCategory, nullptr));
-    RetainPtr sizeNumber = adoptCF(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontSizeAttribute));
+    RetainPtr descriptor = adoptCFNullable(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleBody, contentSizeCategory, nullptr));
+    RetainPtr sizeNumber = adoptCFNullable(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontSizeAttribute));
     auto expected = static_cast<NSNumber *>(sizeNumber.get()).integerValue;
 
     static NSString *testMarkup = @"<html><head></head><body><div id='target' style='-webkit-text-size-adjust: none; font: -apple-system-body;'>Hello</div></body></html>";
@@ -75,8 +75,8 @@ TEST(TextStyleFontSize, AfterCrash)
 
     WebCore::setContentSizeCategory(contentSizeCategory);
 
-    RetainPtr descriptor = adoptCF(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleBody, contentSizeCategory, nullptr));
-    RetainPtr sizeNumber = adoptCF(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontSizeAttribute));
+    RetainPtr descriptor = adoptCFNullable(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleBody, contentSizeCategory, nullptr));
+    RetainPtr sizeNumber = adoptCFNullable(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontSizeAttribute));
     auto expected = static_cast<NSNumber *>(sizeNumber.get()).integerValue;
 
     static NSString *testMarkup = @"<html><head></head><body><div id='target' style='-webkit-text-size-adjust: none; font: -apple-system-body;'>Hello</div></body></html>";

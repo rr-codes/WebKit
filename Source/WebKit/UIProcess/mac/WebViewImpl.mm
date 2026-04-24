@@ -5045,7 +5045,7 @@ static RetainPtr<CGImageRef> takeWindowSnapshot(CGSWindowID windowID, bool captu
         CGSWindowCaptureOptions options = kCGSCaptureIgnoreGlobalClipShape;
         if (captureAtNominalResolution)
             options |= kCGSWindowCaptureNominalResolution;
-        RetainPtr<CFArrayRef> windowSnapshotImages = adoptCF(CGSHWCaptureWindowList(CGSMainConnectionID(), &windowID, 1, options));
+        RetainPtr<CFArrayRef> windowSnapshotImages = adoptCFNullable(CGSHWCaptureWindowList(CGSMainConnectionID(), &windowID, 1, options));
 
         if (windowSnapshotImages && CFArrayGetCount(windowSnapshotImages.get()))
             return checked_cf_cast<CGImageRef>(CFArrayGetValueAtIndex(windowSnapshotImages.get(), 0));
@@ -5102,7 +5102,7 @@ RefPtr<ViewSnapshot> WebViewImpl::takeViewSnapshot(ForceSoftwareCapturingViewpor
     NSRect croppedImageRect = windowCaptureRect;
     croppedImageRect.origin.y = windowScreenRect.size.height - windowCaptureScreenRect.size.height - NSMinY(windowCaptureRect);
 
-    auto croppedSnapshotImage = adoptCF(CGImageCreateWithImageInRect(windowSnapshotImage.get(), NSRectToCGRect([window convertRectToBacking:croppedImageRect])));
+    auto croppedSnapshotImage = adoptCFNullable(CGImageCreateWithImageInRect(windowSnapshotImage.get(), NSRectToCGRect([window convertRectToBacking:croppedImageRect])));
 
     auto surface = WebCore::IOSurface::createFromImage(nullptr, croppedSnapshotImage.get());
     if (!surface)

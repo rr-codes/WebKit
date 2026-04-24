@@ -48,7 +48,7 @@ RetainPtr<CFDataRef> SharedBuffer::createCFData() const
         if (auto* data = std::get_if<RetainPtr<CFDataRef>>(&segments()[0].segment->m_immutableData))
             return *data;
     }
-    return adoptCF(CFDataCreate(nullptr, data(), size()));
+    return adoptCFNullable(CFDataCreate(nullptr, data(), size()));
 }
 #endif
 

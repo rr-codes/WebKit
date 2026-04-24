@@ -51,7 +51,7 @@ static RetainPtr<CGPDFPageRef> loadPassKitPDFPage(NSString *imageName)
     RetainPtr<NSURL> url = [passKitBundleSingleton() URLForResource:imageName withExtension:@"pdf"];
     if (!url)
         return nullptr;
-    auto document = adoptCF(CGPDFDocumentCreateWithURL((CFURLRef)url.get()));
+    auto document = adoptCFNullable(CGPDFDocumentCreateWithURL((CFURLRef)url.get()));
     if (!document)
         return nullptr;
     if (!CGPDFDocumentGetNumberOfPages(document.get()))

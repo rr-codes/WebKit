@@ -49,7 +49,7 @@ static RetainPtr<CFDataRef> safeAudioComponentFetchServerRegistrations()
     SUPPRESS_UNRETAINED_LOCAL CFDataRef registrations { nullptr };
     if (PAL::AudioComponentFetchServerRegistrations(&registrations) != noErr || !registrations)
         return nullptr;
-    return adoptCF(registrations);
+    return adoptCFNullable(registrations);
 }
 
 RefPtr<WebCore::SharedBuffer> AuxiliaryProcessProxy::fetchAudioComponentServerRegistrations()

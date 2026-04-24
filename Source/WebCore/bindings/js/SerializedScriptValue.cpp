@@ -2639,7 +2639,7 @@ private:
         RetainPtr colorSpace = destinationColorSpace.platformColorSpace();
 
         if (RetainPtr name = CGColorSpaceGetName(colorSpace.get())) {
-            auto data = adoptCF(CFStringCreateExternalRepresentation(nullptr, name.get(), kCFStringEncodingUTF8, 0));
+            auto data = adoptCFNullable(CFStringCreateExternalRepresentation(nullptr, name.get(), kCFStringEncodingUTF8, 0));
             if (!data) {
                 write(DestinationColorSpaceSRGBTag);
                 return;
@@ -2650,8 +2650,8 @@ private:
             return;
         }
 
-        if (auto propertyList = adoptCF(CGColorSpaceCopyPropertyList(colorSpace.get()))) {
-            auto data = adoptCF(CFPropertyListCreateData(nullptr, propertyList.get(), kCFPropertyListBinaryFormat_v1_0, 0, nullptr));
+        if (auto propertyList = adoptCFNullable(CGColorSpaceCopyPropertyList(colorSpace.get()))) {
+            auto data = adoptCFNullable(CFPropertyListCreateData(nullptr, propertyList.get(), kCFPropertyListBinaryFormat_v1_0, 0, nullptr));
             if (!data) {
                 write(DestinationColorSpaceSRGBTag);
                 return;
@@ -4157,11 +4157,11 @@ private:
             if (!read(data))
                 return false;
 
-            auto name = adoptCF(CFStringCreateFromExternalRepresentation(nullptr, data.get(), kCFStringEncodingUTF8));
+            auto name = adoptCFNullable(CFStringCreateFromExternalRepresentation(nullptr, data.get(), kCFStringEncodingUTF8));
             if (!name)
                 return false;
 
-            auto colorSpace = adoptCF(CGColorSpaceCreateWithName(name.get()));
+            auto colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(name.get()));
             if (!colorSpace)
                 return false;
 
@@ -4173,11 +4173,11 @@ private:
             if (!read(data))
                 return false;
 
-            auto propertyList = adoptCF(CFPropertyListCreateWithData(nullptr, data.get(), kCFPropertyListImmutable, nullptr, nullptr));
+            auto propertyList = adoptCFNullable(CFPropertyListCreateWithData(nullptr, data.get(), kCFPropertyListImmutable, nullptr, nullptr));
             if (!propertyList)
                 return false;
 
-            auto colorSpace = adoptCF(CGColorSpaceCreateWithPropertyList(propertyList.get()));
+            auto colorSpace = adoptCFNullable(CGColorSpaceCreateWithPropertyList(propertyList.get()));
             if (!colorSpace)
                 return false;
 

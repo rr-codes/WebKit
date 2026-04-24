@@ -889,7 +889,7 @@ void WebAutomationSession::platformSimulateKeySequence(WebPageProxy& page, const
 void WebAutomationSession::platformSimulateWheelInteraction(WebPageProxy& page, const WebCore::IntPoint& locationInViewport, const WebCore::IntSize& delta)
 {
     static constexpr auto scrollWheelCount = 2;
-    auto cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, scrollWheelCount, -delta.height(), -delta.width()));
+    auto cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, scrollWheelCount, -delta.height(), -delta.width()));
 
     auto locationInWindow = viewportLocationToWindowLocation(locationInViewport, page);
     RetainPtr window = page.platformWindow();

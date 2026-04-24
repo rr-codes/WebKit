@@ -58,7 +58,7 @@ public:
     void setSize(CGFloat size)
     {
         if (static_cast<bool>(*this))
-            CFDictionarySetValue(m_attributes.get(), kCTFontSizeAttribute, adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &size)).get());
+            CFDictionarySetValue(m_attributes.get(), kCTFontSizeAttribute, adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &size)).get());
     }
 
     operator bool() const;
@@ -83,7 +83,7 @@ private:
     static void applyVariations(CFMutableDictionaryRef attributes, const VariationsMap& variationsToBeApplied);
 
     Variant<RetainPtr<CTFontRef>, RetainPtr<CTFontDescriptorRef>> m_baseFont;
-    RetainPtr<CFMutableDictionaryRef> m_attributes { adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks)) };
+    RetainPtr<CFMutableDictionaryRef> m_attributes { adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks)) };
 
     ApplyTraitsVariations m_applyTraitsVariations { ApplyTraitsVariations::Yes };
     float m_weight { 0 };

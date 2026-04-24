@@ -38,7 +38,7 @@ static CTParagraphStyleRef paragraphStyleWithCompositionLanguageNone()
     static LazyNeverDestroyed<RetainPtr<CTParagraphStyleRef>> paragraphStyle;
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [&] {
-        paragraphStyle.construct(adoptCF(CTParagraphStyleCreate(nullptr, 0)));
+        paragraphStyle.construct(adoptCFNullable(CTParagraphStyleCreate(nullptr, 0)));
         CTParagraphStyleSetCompositionLanguage(paragraphStyle.get().get(), kCTCompositionLanguageNone);
     });
     return paragraphStyle.get().get();
@@ -50,7 +50,7 @@ static CFNumberRef zeroValue()
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [&] {
         const float zero = 0;
-        zeroValue.construct(adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &zero)));
+        zeroValue.construct(adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &zero)));
     });
     return zeroValue.get().get();
 }
@@ -90,7 +90,7 @@ extern RetainPtr<CFDictionaryRef> getCFStringAttributes(const Font& font, bool e
 
     ASSERT(count <= std::size(keys));
 
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys.data(), values.data(), count, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys.data(), values.data(), count, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 } // namespace WebCore

@@ -115,13 +115,13 @@ static bool NODELETE indicatorWantsFadeIn(const WebCore::TextIndicator& indicato
     auto bounceLayers = adoptNS([[NSMutableArray alloc] init]);
 
     RetainPtr<CGColorRef> highlightColor;
-    auto rimShadowColor = adoptCF(CGColorCreateGenericGray(0, 0.35));
-    auto dropShadowColor = adoptCF(CGColorCreateGenericGray(0, 0.2));
-    auto borderColor = adoptCF(CGColorCreateSRGB(0.96, 0.9, 0, 1));
+    auto rimShadowColor = adoptCFNullable(CGColorCreateGenericGray(0, 0.35));
+    auto dropShadowColor = adoptCFNullable(CGColorCreateGenericGray(0, 0.2));
+    auto borderColor = adoptCFNullable(CGColorCreateSRGB(0.96, 0.9, 0, 1));
 #if PLATFORM(MAC)
     highlightColor = [NSColor findHighlightColor].CGColor;
 #else
-    highlightColor = adoptCF(CGColorCreateSRGB(.99, .89, 0.22, 1.0));
+    highlightColor = adoptCFNullable(CGColorCreateSRGB(.99, .89, 0.22, 1.0));
 #endif
 
     auto textRectsInBoundingRectCoordinates = _textIndicator->textRectsInBoundingRectCoordinates();

@@ -789,8 +789,8 @@ TEST(WebTransport, ServerCertificateHashes)
         {
             // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
             CFErrorRef rawError = NULL;
-            privateKey = adoptCF(SecKeyCreateRandomKey(bridge_cast(options), &rawError));
-            SUPPRESS_RETAINPTR_CTOR_ADOPT keyError = adoptCF(rawError);
+            privateKey = adoptCFNullable(SecKeyCreateRandomKey(bridge_cast(options), &rawError));
+            SUPPRESS_RETAINPTR_CTOR_ADOPT keyError = adoptCFNullable(rawError);
         }
         EXPECT_NULL(keyError);
 
@@ -798,8 +798,8 @@ TEST(WebTransport, ServerCertificateHashes)
         NSDictionary *parameters = @{
             (__bridge NSString*)kSecCertificateLifetime: @(certLifetime)
         };
-        RetainPtr certificate = adoptCF(SecGenerateSelfSignedCertificate((__bridge CFArrayRef)subject, (__bridge CFDictionaryRef)parameters, nullptr, privateKey.get()));
-        RetainPtr identity = adoptCF(SecIdentityCreate(kCFAllocatorDefault, certificate.get(), privateKey.get()));
+        RetainPtr certificate = adoptCFNullable(SecGenerateSelfSignedCertificate((__bridge CFArrayRef)subject, (__bridge CFDictionaryRef)parameters, nullptr, privateKey.get()));
+        RetainPtr identity = adoptCFNullable(SecIdentityCreate(kCFAllocatorDefault, certificate.get(), privateKey.get()));
         RetainPtr certificateDER = adoptNS((__bridge NSData *)SecCertificateCopyData(certificate.get()));
 
         WebTransportServer echoServer([](ConnectionGroup group) -> ConnectionTask {

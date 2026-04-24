@@ -1853,13 +1853,13 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     if (!trust)
         return nil;
 
-    auto infoDictionary = adoptCF(SecTrustCopyInfo(trust.get()));
+    auto infoDictionary = adoptCFNullable(SecTrustCopyInfo(trust.get()));
     // If SecTrustCopyInfo returned NULL then it's likely that the SecTrustRef has not been evaluated
     // and the only way to get the information we need is to call SecTrustEvaluate ourselves.
     if (!infoDictionary) {
         if (!SecTrustEvaluateWithError(trust.get(), nullptr))
             return nil;
-        infoDictionary = adoptCF(SecTrustCopyInfo(trust.get()));
+        infoDictionary = adoptCFNullable(SecTrustCopyInfo(trust.get()));
         if (!infoDictionary)
             return nil;
     }

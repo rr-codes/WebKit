@@ -676,8 +676,8 @@ std::optional<InteractionRegion> interactionRegionForRenderedRegion(const Render
                 if (!clipOffset.isZero())
                     adjustedPath.translate(clipOffset);
 
-                RetainPtr intersectingPath = adoptCF(CGPathCreateCopyByIntersectingPath(adjustedPath.platformPath(), clipPath->platformPath(), false));
-                clipPath = { PathCG::create(adoptCF(CGPathCreateMutableCopy(intersectingPath.get()))) };
+                RetainPtr intersectingPath = adoptCFNullable(CGPathCreateCopyByIntersectingPath(adjustedPath.platformPath(), clipPath->platformPath(), false));
+                clipPath = { PathCG::create(adoptCFNullable(CGPathCreateMutableCopy(intersectingPath.get()))) };
 
                 // No need for continuous corners if we're already going to clip.
                 useContinuousCorners = false;

@@ -53,11 +53,11 @@ bool shouldAllowAutoFillForCellularIdentifiers(const URL& topURL)
     }
 
     static bool hasPublicCellularPlanEntitlement = [] {
-        auto task = adoptCF(SecTaskCreateFromSelf(kCFAllocatorDefault));
+        auto task = adoptCFNullable(SecTaskCreateFromSelf(kCFAllocatorDefault));
         if (!task)
             return false;
 
-        auto entitlementValue = adoptCF(SecTaskCopyValueForEntitlement(task.get(), CFSTR("com.apple.CommCenter.fine-grained"), nullptr));
+        auto entitlementValue = adoptCFNullable(SecTaskCopyValueForEntitlement(task.get(), CFSTR("com.apple.CommCenter.fine-grained"), nullptr));
         RetainPtr entitlementValueAsArray = (__bridge NSArray *)dynamic_cf_cast<CFArrayRef>(entitlementValue.get());
         for (id value in entitlementValueAsArray.get()) {
             if (RetainPtr string = dynamic_objc_cast<NSString>(value); [string isEqualToString:@"public-cellular-plan"])

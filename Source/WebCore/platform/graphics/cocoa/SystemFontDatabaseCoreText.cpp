@@ -57,7 +57,7 @@ RetainPtr<CTFontRef> SystemFontDatabaseCoreText::createSystemUIFont(const Cascad
     // We need to use the system locale in this case.
     if (locale && !CFStringGetLength(locale))
         locale = nullptr;
-    auto result = adoptCF(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, parameters.size, locale));
+    auto result = adoptCFNullable(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, parameters.size, locale));
     ASSERT(result);
     return createFontByApplyingWeightWidthItalicsAndFallbackBehavior(result.get(), parameters.weight, parameters.width, parameters.italic, parameters.size, parameters.allowUserInstalledFonts);
 }
@@ -84,14 +84,14 @@ RetainPtr<CTFontRef> SystemFontDatabaseCoreText::createSystemDesignFont(SystemFo
 RetainPtr<CTFontRef> SystemFontDatabaseCoreText::createTextStyleFont(const CascadeListParameters& parameters)
 {
     RetainPtr<CFStringRef> localeString = parameters.locale.isEmpty() ? nullptr : parameters.locale.string().createCFString();
-    auto descriptor = adoptCF(CTFontDescriptorCreateWithTextStyle(parameters.fontName.string().createCFString().get(), protect(contentSizeCategory()).get(), localeString.get()));
+    auto descriptor = adoptCFNullable(CTFontDescriptorCreateWithTextStyle(parameters.fontName.string().createCFString().get(), protect(contentSizeCategory()).get(), localeString.get()));
     // FIXME: Use createFontByApplyingWeightWidthItalicsAndFallbackBehavior().
     CTFontSymbolicTraits traits = (parameters.weight >= kCTFontWeightSemibold ? kCTFontTraitBold : 0)
         | (parameters.width >= kCTFontWidthSemiExpanded ? kCTFontTraitExpanded : 0)
         | (parameters.width <= kCTFontWidthSemiCondensed ? kCTFontTraitCondensed : 0)
         | (parameters.italic ? kCTFontTraitItalic : 0);
     if (traits)
-        descriptor = adoptCF(CTFontDescriptorCreateCopyWithSymbolicTraits(descriptor.get(), traits, traits));
+        descriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithSymbolicTraits(descriptor.get(), traits, traits));
     return createFontForInstalledFonts(descriptor.get(), parameters.size, parameters.allowUserInstalledFonts);
 }
 
@@ -139,41 +139,41 @@ void SystemFontDatabaseCoreText::clear()
 
 RetainPtr<CTFontRef> SystemFontDatabaseCoreText::createFontByApplyingWeightWidthItalicsAndFallbackBehavior(CTFontRef font, CGFloat weight, CGFloat width, bool italic, float size, AllowUserInstalledFonts allowUserInstalledFonts, CFStringRef design)
 {
-    auto weightNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &weight));
-    auto widthNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &width));
+    auto weightNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &weight));
+    auto widthNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberCGFloatType, &width));
     const float systemFontItalicSlope = 0.07;
     float italicsRawNumber = italic ? systemFontItalicSlope : 0;
-    auto italicsNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &italicsRawNumber));
+    auto italicsNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &italicsRawNumber));
     CFTypeRef traitsKeys[] = { kCTFontWeightTrait, kCTFontWidthTrait, kCTFontSlantTrait, kCTFontUIFontDesignTrait };
     CFTypeRef traitsValues[] = { weightNumber.get(), widthNumber.get(), italicsNumber.get(), design ? static_cast<CFTypeRef>(design) : static_cast<CFTypeRef>(kCTFontUIFontDesignDefault) };
-    auto traitsDictionary = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, traitsKeys, traitsValues, std::size(traitsKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    auto attributes = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto traitsDictionary = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, traitsKeys, traitsValues, std::size(traitsKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto attributes = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CFDictionaryAddValue(attributes.get(), kCTFontTraitsAttribute, traitsDictionary.get());
     addAttributesForInstalledFonts(attributes.get(), allowUserInstalledFonts);
-    auto modification = adoptCF(CTFontDescriptorCreateWithAttributes(attributes.get()));
+    auto modification = adoptCFNullable(CTFontDescriptorCreateWithAttributes(attributes.get()));
     if (font)
-        return adoptCF(CTFontCreateCopyWithAttributes(font, size, nullptr, modification.get()));
-    return adoptCF(CTFontCreateWithFontDescriptor(modification.get(), size, nullptr));
+        return adoptCFNullable(CTFontCreateCopyWithAttributes(font, size, nullptr, modification.get()));
+    return adoptCFNullable(CTFontCreateWithFontDescriptor(modification.get(), size, nullptr));
 }
 
 RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::removeCascadeList(CTFontDescriptorRef fontDescriptor)
 {
-    auto emptyArray = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, &kCFTypeArrayCallBacks));
+    auto emptyArray = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, &kCFTypeArrayCallBacks));
     CFTypeRef fallbackDictionaryKeys[] = { kCTFontCascadeListAttribute };
     CFTypeRef fallbackDictionaryValues[] = { emptyArray.get() };
-    auto fallbackDictionary = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, fallbackDictionaryKeys, fallbackDictionaryValues, std::size(fallbackDictionaryKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    auto modifiedFontDescriptor = adoptCF(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor, fallbackDictionary.get()));
+    auto fallbackDictionary = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, fallbackDictionaryKeys, fallbackDictionaryValues, std::size(fallbackDictionaryKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto modifiedFontDescriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor, fallbackDictionary.get()));
     return modifiedFontDescriptor;
 }
 
 Vector<RetainPtr<CTFontDescriptorRef>> SystemFontDatabaseCoreText::computeCascadeList(CTFontRef font, CFStringRef locale)
 {
     CFTypeRef arrayValues[] = { locale };
-    auto localeArray = adoptCF(CFArrayCreate(kCFAllocatorDefault, arrayValues, std::size(arrayValues), &kCFTypeArrayCallBacks));
-    auto cascadeList = adoptCF(CTFontCopyDefaultCascadeListForLanguages(font, localeArray.get()));
+    auto localeArray = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, arrayValues, std::size(arrayValues), &kCFTypeArrayCallBacks));
+    auto cascadeList = adoptCFNullable(CTFontCopyDefaultCascadeListForLanguages(font, localeArray.get()));
     Vector<RetainPtr<CTFontDescriptorRef>> result;
     // WebKit handles the cascade list, and WebKit 2's IPC code doesn't know how to serialize Core Text's cascade list.
-    result.append(removeCascadeList(adoptCF(CTFontCopyFontDescriptor(font)).get()));
+    result.append(removeCascadeList(adoptCFNullable(CTFontCopyFontDescriptor(font)).get()));
     if (cascadeList) {
         CFIndex arrayLength = CFArrayGetCount(cascadeList.get());
         for (CFIndex i = 0; i < arrayLength; ++i)
@@ -323,8 +323,8 @@ Vector<RetainPtr<CTFontDescriptorRef>> SystemFontDatabaseCoreText::cascadeList(c
 static String genericFamily(const String& locale, MemoryCompactRobinHoodHashMap<String, String>& map, CFStringRef ctKey)
 {
     return map.ensure(locale, [&] {
-        auto descriptor = adoptCF(CTFontDescriptorCreateForCSSFamily(ctKey, locale.createCFString().get()));
-        auto value = adoptCF(checked_cf_cast<CFStringRef>(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontFamilyNameAttribute)));
+        auto descriptor = adoptCFNullable(CTFontDescriptorCreateForCSSFamily(ctKey, locale.createCFString().get()));
+        auto value = adoptCFNullable(checked_cf_cast<CFStringRef>(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontFamilyNameAttribute)));
         return String { value.get() };
     }).iterator->value;
 }
@@ -366,12 +366,12 @@ String SystemFontDatabaseCoreText::monospaceFamily(const String& locale)
 
 static inline FontSelectionValue cssWeightOfSystemFontDescriptor(CTFontDescriptorRef fontDescriptor)
 {
-    auto resultRef = adoptCF(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontCSSWeightAttribute)));
+    auto resultRef = adoptCFNullable(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontCSSWeightAttribute)));
     float result = 0;
     if (resultRef && CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result))
         return FontSelectionValue(result);
 
-    auto traitsRef = adoptCF(static_cast<CFDictionaryRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontTraitsAttribute)));
+    auto traitsRef = adoptCFNullable(static_cast<CFDictionaryRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontTraitsAttribute)));
     resultRef = static_cast<CFNumberRef>(CFDictionaryGetValue(traitsRef.get(), kCTFontWeightTrait));
     CFNumberGetValue(resultRef.get(), kCFNumberFloatType, &result);
     return FontSelectionValue(normalizeCTWeight(result));
@@ -391,7 +391,7 @@ static CTFontTextStylePlatform NODELETE fontPlatform()
 auto SystemFontDatabase::platformSystemFontShorthandInfo(FontShorthand fontShorthand) -> SystemFontShorthandInfo
 {
     auto interrogateFontDescriptorShorthandItem = [] (CTFontDescriptorRef fontDescriptor, const String& family) {
-        auto sizeNumber = adoptCF(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontSizeAttribute)));
+        auto sizeNumber = adoptCFNullable(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor, kCTFontSizeAttribute)));
         float size = 0;
         CFNumberGetValue(sizeNumber.get(), kCFNumberFloatType, &size);
         auto weight = cssWeightOfSystemFontDescriptor(fontDescriptor);
@@ -409,7 +409,7 @@ auto SystemFontDatabase::platformSystemFontShorthandInfo(FontShorthand fontShort
     case FontShorthand::Caption:
     case FontShorthand::Icon:
     case FontShorthand::MessageBox:
-        return interrogateFontDescriptorShorthandItem(adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, 0, nullptr)).get(), "system-ui"_s);
+        return interrogateFontDescriptorShorthandItem(adoptCFNullable(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, 0, nullptr)).get(), "system-ui"_s);
     case FontShorthand::Menu:
         return interrogateFontDescriptorShorthandItem(SystemFontDatabaseCoreText::menuFontDescriptor().get(), "-apple-menu"_s);
     case FontShorthand::SmallCaption:

@@ -186,7 +186,7 @@ static void layerPathWithHole(CAShapeLayer *layer, const WebCore::FloatQuad& out
         innerHole = quadIntersection(outerQuad, holeQuad);
 
     // Clockwise inside rect (hole), Counter-Clockwise outside rect (fill).
-    auto path = adoptCF(CGPathCreateMutable());
+    auto path = adoptCFNullable(CGPathCreateMutable());
     CGPathMoveToPoint(path.get(), 0, innerHole.p1().x(), innerHole.p1().y());
     CGPathAddLineToPoint(path.get(), 0, innerHole.p2().x(), innerHole.p2().y());
     CGPathAddLineToPoint(path.get(), 0, innerHole.p3().x(), innerHole.p3().y());
@@ -200,7 +200,7 @@ static void layerPathWithHole(CAShapeLayer *layer, const WebCore::FloatQuad& out
 
 static void layerPath(CAShapeLayer *layer, const WebCore::FloatQuad& outerQuad)
 {
-    auto path = adoptCF(CGPathCreateMutable());
+    auto path = adoptCFNullable(CGPathCreateMutable());
     CGPathMoveToPoint(path.get(), 0, outerQuad.p1().x(), outerQuad.p1().y());
     CGPathAddLineToPoint(path.get(), 0, outerQuad.p4().x(), outerQuad.p4().y());
     CGPathAddLineToPoint(path.get(), 0, outerQuad.p3().x(), outerQuad.p3().y());

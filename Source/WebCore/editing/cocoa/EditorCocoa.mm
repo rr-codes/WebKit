@@ -432,12 +432,12 @@ static RetainPtr<CGImageRef> fallbackImageForMultiRepresentationHEIC(std::span<c
 
     RetainPtr colorSpace = CGImageGetColorSpace(image.get());
     if (!CGColorSpaceSupportsOutput(colorSpace.get()))
-        colorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
 
     size_t imageWidth = std::ceil(imageSize.width);
     size_t imageHeight = std::ceil(imageSize.height);
 
-    RetainPtr context = adoptCF(CGBitmapContextCreate(nil, imageWidth, imageHeight, 8, 4 * imageWidth, colorSpace.get(), kCGImageAlphaPremultipliedLast));
+    RetainPtr context = adoptCFNullable(CGBitmapContextCreate(nil, imageWidth, imageHeight, 8, 4 * imageWidth, colorSpace.get(), kCGImageAlphaPremultipliedLast));
     if (!context)
         return nullptr;
 
@@ -446,7 +446,7 @@ static RetainPtr<CGImageRef> fallbackImageForMultiRepresentationHEIC(std::span<c
     CGRect destinationRect = CGRectMake((imageWidth - imageSize.width) / 2.f, (imageHeight - imageSize.height) / 2.f, imageSize.width, imageSize.height);
     CGContextDrawImage(context.get(), destinationRect, image.get());
 
-    return adoptCF(CGBitmapContextCreateImage(context.get()));
+    return adoptCFNullable(CGBitmapContextCreateImage(context.get()));
 }
 
 void Editor::insertMultiRepresentationHEIC(const std::span<const uint8_t>& data, const String& altText)

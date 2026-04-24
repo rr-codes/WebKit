@@ -1487,7 +1487,7 @@ TEST(WebKit, SaveDataToFile)
 
 static void synthesizeWheelEvents(NSView *view, int x, int y)
 {
-    RetainPtr<CGEventRef> cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitLine, 2, y, x));
+    RetainPtr<CGEventRef> cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitLine, 2, y, x));
     NSEvent* event = [NSEvent eventWithCGEvent:cgScrollEvent.get()];
     [view scrollWheel:event];
     

@@ -415,7 +415,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     };
 
     // Read all sample buffers
-    while (RetainPtr sampleBuffer = adoptCF([trackOutput copyNextSampleBuffer])) {
+    while (RetainPtr sampleBuffer = adoptCFNullable([trackOutput copyNextSampleBuffer])) {
         if (auto trimStart = getTimeAttachment(sampleBuffer.get(), PAL::kCMSampleBufferAttachmentKey_TrimDurationAtStart))
             trimDurationAtStart += *trimStart;
 
@@ -676,7 +676,7 @@ std::optional<size_t> AudioFileReader::decodeData(AudioBufferList& bufferList, s
                 RELEASE_LOG_FAULT(WebAudio, "failed to create contiguous block buffer");
                 return { };
             }
-            buffer = adoptCF(contiguousBuffer);
+            buffer = adoptCFNullable(contiguousBuffer);
         }
 
         auto srcData = PAL::CMBlockBufferGetDataSpan(buffer.get());

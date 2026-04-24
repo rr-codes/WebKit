@@ -382,7 +382,7 @@ RetainPtr<NSURLRequest> copyRequestWithStorageSession(CFURLStorageSessionRef sto
     if (!storageSession || !request)
         return adoptNS([request copy]);
 
-    auto cfRequest = adoptCF(CFURLRequestCreateMutableCopy(kCFAllocatorDefault, [request _CFURLRequest]));
+    auto cfRequest = adoptCFNullable(CFURLRequestCreateMutableCopy(kCFAllocatorDefault, [request _CFURLRequest]));
     _CFURLRequestSetStorageSession(cfRequest.get(), storageSession);
     auto nsRequest = adoptNS([[NSMutableURLRequest alloc] _initWithCFURLRequest:cfRequest.get()]);
 #if ENABLE(APP_PRIVACY_REPORT)
@@ -396,8 +396,8 @@ NSCachedURLResponse *cachedResponseForRequest(CFURLStorageSessionRef storageSess
     if (!storageSession)
         return [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
 
-    auto cache = adoptCF(_CFURLStorageSessionCopyCache(kCFAllocatorDefault, storageSession));
-    auto cachedResponse = adoptCF(CFURLCacheCopyResponseForRequest(cache.get(), [request _CFURLRequest]));
+    auto cache = adoptCFNullable(_CFURLStorageSessionCopyCache(kCFAllocatorDefault, storageSession));
+    auto cachedResponse = adoptCFNullable(CFURLCacheCopyResponseForRequest(cache.get(), [request _CFURLRequest]));
     if (!cachedResponse)
         return nil;
 

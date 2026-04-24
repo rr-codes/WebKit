@@ -95,7 +95,7 @@ static ScrollingAccelerationCurve fromIOHIDCurveArrayWithAcceleration(NSArray<NS
 
 static RetainPtr<IOHIDEventSystemClientRef> createHIDClient()
 {
-    auto client = adoptCF(IOHIDEventSystemClientCreateWithType(nil, kIOHIDEventSystemClientTypePassive, nil));
+    auto client = adoptCFNullable(IOHIDEventSystemClientCreateWithType(nil, kIOHIDEventSystemClientTypePassive, nil));
     IOHIDEventSystemClientSetDispatchQueue(client.get(), mainDispatchQueueSingleton());
     IOHIDEventSystemClientActivate(client.get());
     return client;
@@ -107,27 +107,27 @@ static std::optional<ScrollingAccelerationCurve> fromIOHIDDevice(IOHIDEventSende
     if (!client.get())
         client.get() = createHIDClient();
 
-    RetainPtr<IOHIDServiceClientRef> ioHIDService = adoptCF(IOHIDEventSystemClientCopyServiceForRegistryID(client.get().get(), senderID));
+    RetainPtr<IOHIDServiceClientRef> ioHIDService = adoptCFNullable(IOHIDEventSystemClientCopyServiceForRegistryID(client.get().get(), senderID));
     if (!ioHIDService) {
         RELEASE_LOG(ScrollAnimations, "ScrollingAccelerationCurve::fromIOHIDDevice did not find matching HID service");
         return std::nullopt;
     }
 
-    auto curves = adoptCF(dynamic_cf_cast<CFArrayRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), CFSTR(kHIDScrollAccelParametricCurvesKey))));
+    auto curves = adoptCFNullable(dynamic_cf_cast<CFArrayRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), CFSTR(kHIDScrollAccelParametricCurvesKey))));
     if (!curves) {
         RELEASE_LOG(ScrollAnimations, "ScrollingAccelerationCurve::fromIOHIDDevice failed to look up curves");
         return std::nullopt;
     }
 
     auto readFixedPointServiceKey = [&] (CFStringRef key) -> std::optional<float> {
-        auto valueCF = adoptCF(dynamic_cf_cast<CFNumberRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), key)));
+        auto valueCF = adoptCFNullable(dynamic_cf_cast<CFNumberRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), key)));
         if (!valueCF)
             return std::nullopt;
         return fromFixedPoint([(NSNumber *)valueCF.get() floatValue]);
     };
 
     auto scrollAcceleration = [&] () -> std::optional<float> {
-        if (auto scrollAccelerationType = adoptCF(dynamic_cf_cast<CFStringRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), CFSTR("HIDScrollAccelerationType"))))) {
+        if (auto scrollAccelerationType = adoptCFNullable(dynamic_cf_cast<CFStringRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), CFSTR("HIDScrollAccelerationType"))))) {
             if (auto acceleration = readFixedPointServiceKey(scrollAccelerationType.get()))
                 return acceleration;
         }
@@ -153,7 +153,7 @@ static std::optional<ScrollingAccelerationCurve> fromIOHIDDevice(IOHIDEventSende
 
     static CFStringRef dispatchFrameRateKey = CFSTR("ScrollMomentumDispatchRate");
     static constexpr float defaultDispatchFrameRate = 60;
-    auto frameRateCF = adoptCF(dynamic_cf_cast<CFNumberRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), dispatchFrameRateKey)));
+    auto frameRateCF = adoptCFNullable(dynamic_cf_cast<CFNumberRef>(IOHIDServiceClientCopyProperty(ioHIDService.get(), dispatchFrameRateKey)));
     float frameRate = frameRateCF ? fromCFNumber(frameRateCF.get()) : defaultDispatchFrameRate;
 
     return fromIOHIDCurveArrayWithAcceleration((NSArray *)curves.get(), *scrollAcceleration, *resolution, frameRate);
@@ -169,7 +169,7 @@ std::optional<ScrollingAccelerationCurve> ScrollingAccelerationCurve::fromNative
         return std::nullopt;
     }
 
-    auto hidEvent = adoptCF(CGEventCopyIOHIDEvent(cgEvent.get()));
+    auto hidEvent = adoptCFNullable(CGEventCopyIOHIDEvent(cgEvent.get()));
     if (!hidEvent) {
         RELEASE_LOG(ScrollAnimations, "ScrollingAccelerationCurve::fromNativeWheelEvent did not find HID event");
         return std::nullopt;

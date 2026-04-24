@@ -52,7 +52,7 @@ static Expected<RetainPtr<CVPixelBufferPoolRef>, CVReturn> createBufferPool(unsi
     auto status = CVPixelBufferPoolCreate(kCFAllocatorDefault, (__bridge CFDictionaryRef)poolOptions, (__bridge CFDictionaryRef)pixelAttributes, &pool);
     if (status != kCVReturnSuccess || !pool)
         return makeUnexpected(status);
-    return adoptCF(pool);
+    return adoptCFNullable(pool);
 }
 
 Expected<RetainPtr<CVPixelBufferPoolRef>, CVReturn> createIOSurfaceCVPixelBufferPool(size_t width, size_t height, OSType format, unsigned minimumBufferCount, bool isCGImageCompatible)
@@ -99,7 +99,7 @@ Expected<RetainPtr<CVPixelBufferRef>, CVReturn> createCVPixelBufferFromPool(CVPi
     }
     if (status != kCVReturnSuccess || !pixelBuffer)
         return makeUnexpected(status);
-    return adoptCF(pixelBuffer);
+    return adoptCFNullable(pixelBuffer);
 }
 
 static CFDictionaryRef pixelBufferCreationOptions(IOSurfaceRef surface)
@@ -143,7 +143,7 @@ Expected<RetainPtr<CVPixelBufferRef>, CVReturn> createCVPixelBuffer(IOSurfaceRef
         RELEASE_LOG_ERROR(WebRTC, "createCVPixelBuffer failed with IOSurface status=%d, pixelBuffer=%p", (int)status, pixelBuffer);
         return makeUnexpected(status);
     }
-    return adoptCF(pixelBuffer);
+    return adoptCFNullable(pixelBuffer);
 }
 
 RetainPtr<CGColorSpaceRef> createCGColorSpaceForCVPixelBuffer(CVPixelBufferRef buffer)
@@ -153,11 +153,11 @@ RetainPtr<CGColorSpaceRef> createCGColorSpaceForCVPixelBuffer(CVPixelBufferRef b
 
     RetainPtr<CFDictionaryRef> attachments;
 #if HAVE(CVBUFFERCOPYATTACHMENTS)
-    attachments = adoptCF(CVBufferCopyAttachments(buffer, kCVAttachmentMode_ShouldPropagate));
+    attachments = adoptCFNullable(CVBufferCopyAttachments(buffer, kCVAttachmentMode_ShouldPropagate));
 #else
     attachments = CVBufferGetAttachments(buffer, kCVAttachmentMode_ShouldPropagate);
 #endif
-    if (auto colorSpace = adoptCF(CVImageBufferCreateColorSpaceFromAttachments(attachments.get())))
+    if (auto colorSpace = adoptCFNullable(CVImageBufferCreateColorSpaceFromAttachments(attachments.get())))
         return colorSpace;
 
     // We should only get here with content that has a broken embedded ICC
@@ -209,7 +209,7 @@ RetainPtr<CVPixelBufferRef> createBlackPixelBuffer(size_t width, size_t height, 
 
     status = CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
     ASSERT(!status);
-    return adoptCF(pixelBuffer);
+    return adoptCFNullable(pixelBuffer);
 }
 
 namespace {
@@ -245,7 +245,7 @@ RetainPtr<CGDataProviderRef> CVPixelBufferDataProviderInfo::createDataProvider(R
         return nullptr;
     CVPixelBufferDataProviderInfo* info = new CVPixelBufferDataProviderInfo(WTF::move(pixelBuffer));
     CGDataProviderDirectCallbacks providerCallbacks = { 0, getBytePointerCallback, releaseBytePointerCallback, 0, releaseInfoCallback };
-    return adoptCF(CGDataProviderCreateDirect(info, dataSize, &providerCallbacks));
+    return adoptCFNullable(CGDataProviderCreateDirect(info, dataSize, &providerCallbacks));
 }
 
 CVPixelBufferDataProviderInfo::~CVPixelBufferDataProviderInfo()
@@ -306,7 +306,7 @@ RetainPtr<CGImageRef> createImageFrom32BGRAPixelBuffer(RetainPtr<CVPixelBufferRe
     RetainPtr provider = CVPixelBufferDataProviderInfo::createDataProvider(WTF::move(buffer));
     if (!provider)
         return nullptr;
-    RetainPtr<CGImageRef> image = adoptCF(CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace, bitmapInfo, provider.get(), nullptr, false, kCGRenderingIntentDefault));
+    RetainPtr<CGImageRef> image = adoptCFNullable(CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace, bitmapInfo, provider.get(), nullptr, false, kCGRenderingIntentDefault));
     if (!image)
         return nullptr;
     // For historical reasons, CoreAnimation will adjust certain video color

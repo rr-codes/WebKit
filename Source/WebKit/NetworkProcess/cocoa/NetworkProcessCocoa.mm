@@ -163,7 +163,7 @@ RetainPtr<CFDataRef> NetworkProcess::sourceApplicationAuditData() const
 {
 #if USE(SOURCE_APPLICATION_AUDIT_DATA)
     if (auto auditToken = sourceApplicationAuditToken())
-        return adoptCF(CFDataCreate(nullptr, (const UInt8*)&*auditToken, sizeof(*auditToken)));
+        return adoptCFNullable(CFDataCreate(nullptr, (const UInt8*)&*auditToken, sizeof(*auditToken)));
 #endif
 
     return nullptr;

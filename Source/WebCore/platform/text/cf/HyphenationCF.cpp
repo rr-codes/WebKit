@@ -56,7 +56,7 @@ public:
 
     static RetainPtr<CFLocaleRef> createValueForKey(const AtomString& localeIdentifier)
     {
-        RetainPtr<CFLocaleRef> locale = adoptCF(CFLocaleCreate(kCFAllocatorDefault, localeIdentifier.string().createCFString().get()));
+        RetainPtr<CFLocaleRef> locale = adoptCFNullable(CFLocaleCreate(kCFAllocatorDefault, localeIdentifier.string().createCFString().get()));
 
         return CFStringIsHyphenationAvailableForLocale(locale.get()) ? locale : nullptr;
     }

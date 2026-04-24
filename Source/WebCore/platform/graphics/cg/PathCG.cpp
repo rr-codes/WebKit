@@ -253,12 +253,12 @@ static inline void addToCGPath(CGMutablePathRef path, const PathContinuousRounde
 static inline void addToCGContextPath(CGContextRef context, const PathRoundedRect& segment)
 {
     // No API to add rounded rects to context.
-    RetainPtr path = adoptCF(CGPathCreateMutable());
+    RetainPtr path = adoptCFNullable(CGPathCreateMutable());
     addToCGPath(path.get(), segment);
     // CGContextAddPath has a bug with existing MoveToPoints in context path.
     // rdar://118395262
     auto ctm = CGContextGetCTM(context);
-    RetainPtr transformedPath = adoptCF(CGPathCreateCopyByTransformingPath(path.get(), &ctm));
+    RetainPtr transformedPath = adoptCFNullable(CGPathCreateCopyByTransformingPath(path.get(), &ctm));
     CGContextSetCTM(context, CGAffineTransformIdentity);
     CGContextAddPath(context, transformedPath.get());
     CGContextSetCTM(context, ctm);
@@ -267,12 +267,12 @@ static inline void addToCGContextPath(CGContextRef context, const PathRoundedRec
 static inline void addToCGContextPath(CGContextRef context, const PathContinuousRoundedRect& segment)
 {
     // No API to add continuous rounded rects to context.
-    RetainPtr path = adoptCF(CGPathCreateMutable());
+    RetainPtr path = adoptCFNullable(CGPathCreateMutable());
     addToCGPath(path.get(), segment);
     // CGContextAddPath has a bug with existing MoveToPoints in context path.
     // rdar://118395262
     auto ctm = CGContextGetCTM(context);
-    RetainPtr transformedPath = adoptCF(CGPathCreateCopyByTransformingPath(path.get(), &ctm));
+    RetainPtr transformedPath = adoptCFNullable(CGPathCreateCopyByTransformingPath(path.get(), &ctm));
     CGContextSetCTM(context, CGAffineTransformIdentity);
     CGContextAddPath(context, transformedPath.get());
     CGContextSetCTM(context, ctm);
@@ -346,7 +346,7 @@ WTF_MAKE_TZONE_ALLOCATED_IMPL(PathCG);
 
 Ref<PathCG> PathCG::create(std::span<const PathSegment> segments)
 {
-    RetainPtr platformPath = adoptCF(CGPathCreateMutable());
+    RetainPtr platformPath = adoptCFNullable(CGPathCreateMutable());
     for (auto& segment : segments)
         addToCGPath(platformPath.get(), segment);
     return PathCG::create(WTF::move(platformPath));
@@ -362,7 +362,7 @@ PlatformPathPtr PathCG::emptyPlatformPath()
     static LazyNeverDestroyed<RetainPtr<CGMutablePathRef>> emptyPath;
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [] {
-        emptyPath.construct(adoptCF(CGPathCreateMutable()));
+        emptyPath.construct(adoptCFNullable(CGPathCreateMutable()));
     });
     return emptyPath.get().get();
 }
@@ -403,7 +403,7 @@ PlatformPathPtr PathCG::platformPath() const
 PlatformPathPtr PathCG::ensureMutablePlatformPath()
 {
     if (CFGetRetainCount(m_platformPath.get()) > 1)
-        m_platformPath = adoptCF(CGPathCreateMutableCopy(m_platformPath.get()));
+        m_platformPath = adoptCFNullable(CGPathCreateMutableCopy(m_platformPath.get()));
     return m_platformPath.get();
 }
 
@@ -483,7 +483,7 @@ void PathCG::addPath(const PathCG& path, const AffineTransform& transform)
         return;
     }
 
-    auto pathCopy = adoptCF(CGPathCreateCopy(path.platformPath()));
+    auto pathCopy = adoptCFNullable(CGPathCreateCopy(path.platformPath()));
     CGPathAddPath(ensureMutablePlatformPath(), &transformCG, pathCopy.get());
 }
 
@@ -529,7 +529,7 @@ FloatPoint PathCG::currentPoint() const
 bool PathCG::transform(const AffineTransform& transform)
 {
     CGAffineTransform transformCG = transform;
-    m_platformPath = adoptCF(CGPathCreateMutableCopyByTransformingPath(platformPath(), &transformCG));
+    m_platformPath = adoptCFNullable(CGPathCreateMutableCopyByTransformingPath(platformPath(), &transformCG));
     return true;
 }
 
@@ -561,7 +561,7 @@ static void copyClosingSubpathsApplierFunction(void* info, const CGPathElement* 
 
 static RetainPtr<CGMutablePathRef> copyCGPathClosingSubpaths(CGPathRef originalPath)
 {
-    auto path = adoptCF(CGPathCreateMutable());
+    auto path = adoptCFNullable(CGPathCreateMutable());
     CGPathApply(originalPath, path.get(), copyClosingSubpathsApplierFunction);
     CGPathCloseSubpath(path.get());
     return path;
@@ -586,8 +586,8 @@ static size_t NODELETE putBytesNowhere(void*, const void*, size_t count)
 static RetainPtr<CGContextRef> createScratchContext()
 {
     CGDataConsumerCallbacks callbacks = { putBytesNowhere, 0 };
-    auto consumer = adoptCF(CGDataConsumerCreate(0, &callbacks));
-    auto context = adoptCF(CGPDFContextCreate(consumer.get(), 0, 0));
+    auto consumer = adoptCFNullable(CGDataConsumerCreate(0, &callbacks));
+    auto context = adoptCFNullable(CGPDFContextCreate(consumer.get(), 0, 0));
 
     constexpr std::array<CGFloat, 4> black { 0, 0, 0, 1 };
     CGContextSetFillColor(context.get(), black.data());

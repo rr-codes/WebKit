@@ -192,7 +192,7 @@ GradientRendererCG::Gradient GradientRendererCG::makeGradient(ColorInterpolation
 
     apply139572277Workaround();
 
-    return Gradient { adoptCF(CGGradientCreateWithColorComponentsAndOptions(cgColorSpace.get(), colorComponents.span().data(), locations.span().data(), numberOfStops, gradientOptionsDictionary(colorInterpolationMethod))) };
+    return Gradient { adoptCFNullable(CGGradientCreateWithColorComponentsAndOptions(cgColorSpace.get(), colorComponents.span().data(), locations.span().data(), numberOfStops, gradientOptionsDictionary(colorInterpolationMethod))) };
 }
 
 // MARK: - Gradient-by-sampling strategy.
@@ -240,7 +240,7 @@ RetainPtr<CGGradientRef> GradientRendererCG::createGradientBySampling(ColorInter
         cgColorSpace = cachedCGColorSpaceSingleton<ColorSpaceFor<OutputSpaceColorType>>();
     }
 
-    return adoptCF(CGGradientCreateWithColorComponentsAndOptions(cgColorSpace,
+    return adoptCFNullable(CGGradientCreateWithColorComponentsAndOptions(cgColorSpace,
         components.span().data(), locations.span().data(), locations.size(), gradientOptionsDictionary(colorInterpolationMethod)));
 }
 

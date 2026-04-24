@@ -84,12 +84,12 @@ static RetainPtr<CMSampleBufferRef> createSampleBuffer(const CAAudioStreamDescri
     CMAudioFormatDescriptionRef rawFormatDescription;
     if (PAL::CMAudioFormatDescriptionCreate(kCFAllocatorDefault, &description.streamDescription(), 0, nullptr, 0, nullptr, nullptr, &rawFormatDescription))
         return nullptr;
-    RetainPtr formatDescription = adoptCF(rawFormatDescription);
+    RetainPtr formatDescription = adoptCFNullable(rawFormatDescription);
 
     CMSampleBufferRef rawSampleBuffer;
     if (PAL::CMAudioSampleBufferCreateWithPacketDescriptions(kCFAllocatorDefault, nullptr, false, nullptr, nullptr, rawFormatDescription, numberOfFrames, time, nullptr, &rawSampleBuffer))
         return nullptr;
-    auto sampleBuffer = adoptCF(rawSampleBuffer);
+    auto sampleBuffer = adoptCFNullable(rawSampleBuffer);
 
     if (auto error = PAL::CMSampleBufferSetDataBufferFromAudioBufferList(sampleBuffer.get(), kCFAllocatorDefault, kCFAllocatorDefault, kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment, list.list())) {
         RELEASE_LOG_ERROR(MediaStream, "PlatformRawAudioData::create createSampleBuffer couldn't allocate memory with error %d", error);

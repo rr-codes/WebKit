@@ -5524,7 +5524,7 @@ WKRetainPtr<WKTypeRef> TestController::handleAXGetRoot()
     // Try to get children
     CFTypeRef childrenValue = nullptr;
     AXError error = AXUIElementCopyAttributeValue(webContentElement, kAXChildrenAttribute, &childrenValue);
-    RetainPtr adoptedChildren = adoptCF(childrenValue);
+    RetainPtr adoptedChildren = adoptCFNullable(childrenValue);
 
     if (error != kAXErrorSuccess || !childrenValue)
         return nullptr;
@@ -5549,14 +5549,14 @@ RetainPtr<CFTypeRef> TestController::axCopyAttributeValue(WKDictionaryRef messag
     if (!element)
         return nullptr;
 
-    RetainPtr attributeNameCF = adoptCF(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(attributeName).c_str(), kCFStringEncodingUTF8));
+    RetainPtr attributeNameCF = adoptCFNullable(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(attributeName).c_str(), kCFStringEncodingUTF8));
     CFTypeRef value = nullptr;
     AXError error = AXUIElementCopyAttributeValue(element, attributeNameCF.get(), &value);
 
     if (error != kAXErrorSuccess || !value)
         return nullptr;
 
-    return adoptCF(value);
+    return adoptCFNullable(value);
 }
 
 WKRetainPtr<WKTypeRef> TestController::handleAXCopyAttributeValueAsString(WKDictionaryRef messageBody)
@@ -5700,7 +5700,7 @@ WKRetainPtr<WKTypeRef> TestController::handleAXSearchPredicate(WKDictionaryRef m
         return nullptr;
 
     // Build the search predicate parameter dictionary using CF APIs.
-    RetainPtr paramDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr paramDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     if (startElementToken) {
         if (AXUIElementRef startElement = static_cast<AXUIElementRef>(getAXElement(startElementToken)))
@@ -5711,18 +5711,18 @@ WKRetainPtr<WKTypeRef> TestController::handleAXSearchPredicate(WKDictionaryRef m
         isDirectionNext ? CFSTR("AXDirectionNext") : CFSTR("AXDirectionPrevious"));
 
     int resultsLimitInt = static_cast<int>(resultsLimit);
-    RetainPtr resultsLimitNum = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &resultsLimitInt));
+    RetainPtr resultsLimitNum = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &resultsLimitInt));
     CFDictionarySetValue(paramDictionary.get(), CFSTR("AXResultsLimit"), resultsLimitNum.get());
 
     if (searchKey) {
-        RetainPtr searchKeyCF = adoptCF(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(searchKey).c_str(), kCFStringEncodingUTF8));
+        RetainPtr searchKeyCF = adoptCFNullable(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(searchKey).c_str(), kCFStringEncodingUTF8));
         CFDictionarySetValue(paramDictionary.get(), CFSTR("AXSearchKey"), searchKeyCF.get());
     }
 
     if (searchText) {
         auto searchTextStd = toSTD(searchText);
         if (!searchTextStd.empty()) {
-            RetainPtr searchTextCF = adoptCF(CFStringCreateWithCString(kCFAllocatorDefault, searchTextStd.c_str(), kCFStringEncodingUTF8));
+            RetainPtr searchTextCF = adoptCFNullable(CFStringCreateWithCString(kCFAllocatorDefault, searchTextStd.c_str(), kCFStringEncodingUTF8));
             CFDictionarySetValue(paramDictionary.get(), CFSTR("AXSearchText"), searchTextCF.get());
         }
     }
@@ -5736,7 +5736,7 @@ WKRetainPtr<WKTypeRef> TestController::handleAXSearchPredicate(WKDictionaryRef m
     if (error != kAXErrorSuccess || !resultValue)
         return nullptr;
 
-    RetainPtr result = adoptCF(resultValue);
+    RetainPtr result = adoptCFNullable(resultValue);
 
     if (CFGetTypeID(result.get()) != CFArrayGetTypeID())
         return nullptr;
@@ -5776,7 +5776,7 @@ void TestController::handleAXPerformAction(WKDictionaryRef messageBody)
     if (!element)
         return;
 
-    RetainPtr actionNameCF = adoptCF(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(actionName).c_str(), kCFStringEncodingUTF8));
+    RetainPtr actionNameCF = adoptCFNullable(CFStringCreateWithCString(kCFAllocatorDefault, toSTD(actionName).c_str(), kCFStringEncodingUTF8));
     AXUIElementPerformAction(element, actionNameCF.get());
 }
 

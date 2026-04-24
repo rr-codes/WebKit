@@ -42,7 +42,7 @@ namespace WebCore {
 static RetainPtr<NSString> toUTI(NSString *pasteboardType)
 {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    return bridge_cast(adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, bridge_cast(pasteboardType), nullptr)));
+    return bridge_cast(adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, bridge_cast(pasteboardType), nullptr)));
 ALLOW_DEPRECATED_DECLARATIONS_END
 }
 
@@ -65,7 +65,7 @@ RetainPtr<id <NSPasteboardWriting>> createPasteboardWriter(const PasteboardWrite
         [pasteboardItem setString:plainText->text.createNSString().get() forType:NSPasteboardTypeString];
         if (plainText->canSmartCopyOrDelete) {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-            auto smartPasteType = bridge_cast(adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, RetainPtr { bridge_cast(_NXSmartPaste) }.get(), nullptr)));
+            auto smartPasteType = bridge_cast(adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, RetainPtr { bridge_cast(_NXSmartPaste) }.get(), nullptr)));
 ALLOW_DEPRECATED_DECLARATIONS_END
             [pasteboardItem setData:[NSData data] forType:smartPasteType.get()];
         }
@@ -108,13 +108,13 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     if (auto& webContent = data.webContent()) {
         if (webContent->canSmartCopyOrDelete) {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-            auto smartPasteType = bridge_cast(adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, RetainPtr { bridge_cast(_NXSmartPaste) }.get(), nullptr)));
+            auto smartPasteType = bridge_cast(adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, RetainPtr { bridge_cast(_NXSmartPaste) }.get(), nullptr)));
 ALLOW_DEPRECATED_DECLARATIONS_END
             [pasteboardItem setData:[NSData data] forType:smartPasteType.get()];
         }
         if (RefPtr dataInWebArchiveFormat = webContent->dataInWebArchiveFormat) {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-            auto webArchiveType = bridge_cast(adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, CFSTR("Apple Web Archive pasteboard type"), nullptr)));
+            auto webArchiveType = bridge_cast(adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, CFSTR("Apple Web Archive pasteboard type"), nullptr)));
 ALLOW_DEPRECATED_DECLARATIONS_END
             [pasteboardItem setData:dataInWebArchiveFormat->createNSData().get() forType:webArchiveType.get()];
         }

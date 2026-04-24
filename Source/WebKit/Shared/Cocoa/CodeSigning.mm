@@ -37,12 +37,12 @@ namespace WebKit {
 
 static String codeSigningIdentifier(SecTaskRef task)
 {
-    return adoptCF(SecTaskCopySigningIdentifier(task, nullptr)).get();
+    return adoptCFNullable(SecTaskCopySigningIdentifier(task, nullptr)).get();
 }
 
 String codeSigningIdentifierForCurrentProcess()
 {
-    return codeSigningIdentifier(adoptCF(SecTaskCreateFromSelf(kCFAllocatorDefault)).get());
+    return codeSigningIdentifier(adoptCFNullable(SecTaskCreateFromSelf(kCFAllocatorDefault)).get());
 }
 
 String codeSigningIdentifier(xpc_connection_t connection)
@@ -53,13 +53,13 @@ String codeSigningIdentifier(xpc_connection_t connection)
 
 bool currentProcessIsPlatformBinary()
 {
-    auto task = adoptCF(SecTaskCreateFromSelf(kCFAllocatorDefault));
+    auto task = adoptCFNullable(SecTaskCreateFromSelf(kCFAllocatorDefault));
     return SecTaskGetCodeSignStatus(task.get()) & CS_PLATFORM_BINARY;
 }
 
 static std::pair<String, bool> codeSigningIdentifierAndPlatformBinaryStatus(audit_token_t auditToken)
 {
-    auto task = adoptCF(SecTaskCreateWithAuditToken(kCFAllocatorDefault, auditToken));
+    auto task = adoptCFNullable(SecTaskCreateWithAuditToken(kCFAllocatorDefault, auditToken));
     bool isPlatformBinary = SecTaskGetCodeSignStatus(task.get()) & CS_PLATFORM_BINARY;
     auto signingIdentifier = codeSigningIdentifier(task.get());
     return std::make_pair(signingIdentifier, isPlatformBinary);

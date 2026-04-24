@@ -481,13 +481,13 @@ RetainPtr<CGColorSpaceRef> JPEGXLImageDecoder::tryDecodeICCColorProfile()
     if (JxlDecoderGetICCProfileSize(m_decoder.get(), &s_pixelFormat, JXL_COLOR_PROFILE_TARGET_DATA, &profileSize) != JXL_DEC_SUCCESS)
         return nullptr;
 
-    auto data = adoptCF(CFDataCreateMutable(kCFAllocatorDefault, profileSize));
+    auto data = adoptCFNullable(CFDataCreateMutable(kCFAllocatorDefault, profileSize));
     CFDataIncreaseLength(data.get(), profileSize);
 
     if (JxlDecoderGetColorAsICCProfile(m_decoder.get(), &s_pixelFormat, JXL_COLOR_PROFILE_TARGET_DATA, CFDataGetMutableBytePtr(data.get()), profileSize) != JXL_DEC_SUCCESS)
         return nullptr;
 
-    return adoptCF(CGColorSpaceCreateWithICCData(data.get()));
+    return adoptCFNullable(CGColorSpaceCreateWithICCData(data.get()));
 }
 
 void JPEGXLImageDecoder::maybePerformColorSpaceConversion(std::span<uint8_t> inputBuffer, std::span<uint8_t> outputBuffer, unsigned numberOfPixels)

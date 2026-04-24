@@ -191,7 +191,7 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
     m_currentPixelSize = WebCore::IntSize(size.width().toUnsigned(), size.height().toUnsigned());
 
     WebModel::ImageAsset diffuseTexture {
-        .data = loadData(adoptCF(static_cast<CFStringRef>(@"modelDefaultDiffuseData"))),
+        .data = loadData(adoptCFNullable(static_cast<CFStringRef>(@"modelDefaultDiffuseData"))),
         .width = 64,
         .height = 64,
         .depth = 1,
@@ -203,7 +203,7 @@ void WebModelPlayer::load(WebCore::Model& modelSource, WebCore::LayoutSize size)
         .swizzle = { }
     };
     WebModel::ImageAsset specularTexture {
-        .data = loadData(adoptCF(static_cast<CFStringRef>(@"modelDefaultSpecularData"))),
+        .data = loadData(adoptCFNullable(static_cast<CFStringRef>(@"modelDefaultSpecularData"))),
         .width = 256,
         .height = 256,
         .depth = 1,

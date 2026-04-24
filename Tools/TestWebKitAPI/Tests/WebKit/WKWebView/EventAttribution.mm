@@ -103,7 +103,7 @@ static RetainPtr<SecTrustRef> secTrustFromCertificateChain(NSArray *chain)
     SecTrustRef trustRef = nullptr;
     if (SecTrustCreateWithCertificates((__bridge CFArrayRef)chain, nullptr, &trustRef) != noErr)
         return nullptr;
-    return adoptCF(trustRef);
+    return adoptCFNullable(trustRef);
 }
 
 static TestNavigationDelegate *delegateAllowingAllTLS()
@@ -299,7 +299,7 @@ static void signUnlinkableTokenAndSendSecretToken(TokenSigningParty signingParty
     RetainPtr publicKey = adoptNS([[NSMutableData alloc] initWithLength:exportSize]);
     ccder_encode_rsa_pub(rsaPublicKey, static_cast<uint8_t*>([publicKey mutableBytes]), static_cast<uint8_t*>([publicKey mutableBytes]) + [publicKey length]);
 
-    RetainPtr secKey = adoptCF(SecKeyCreateWithData((__bridge CFDataRef)publicKey.get(), (__bridge CFDictionaryRef)@{
+    RetainPtr secKey = adoptCFNullable(SecKeyCreateWithData((__bridge CFDataRef)publicKey.get(), (__bridge CFDictionaryRef)@{
         (__bridge id)kSecAttrKeyType: (__bridge id)kSecAttrKeyTypeRSA,
         (__bridge id)kSecAttrKeyClass: (__bridge id)kSecAttrKeyClassPublic
     }, nil));

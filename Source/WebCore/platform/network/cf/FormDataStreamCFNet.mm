@@ -145,7 +145,7 @@ static bool advanceCurrentStream(FormStreamFields* form)
         [form] (Vector<uint8_t>& bytes) {
             auto data = bytes.releaseBuffer();
             auto span = data.span();
-            form->currentStream = adoptCF(CFReadStreamCreateWithBytesNoCopy(0, span.data(), span.size_bytes(), kCFAllocatorNull));
+            form->currentStream = adoptCFNullable(CFReadStreamCreateWithBytesNoCopy(0, span.data(), span.size_bytes(), kCFAllocatorNull));
             form->currentData = WTF::move(data);
             return true;
         }, [form] (const FormDataElement::EncodedFileData& fileData) {
@@ -154,13 +154,13 @@ static bool advanceCurrentStream(FormStreamFields* form)
                 return false;
 
             const String& path = fileData.filename;
-            form->currentStream = adoptCF(CFReadStreamCreateWithFile(0, FileSystem::pathAsURL(path).get()));
+            form->currentStream = adoptCFNullable(CFReadStreamCreateWithFile(0, FileSystem::pathAsURL(path).get()));
             if (!form->currentStream) {
                 // The file must have been removed or become unreadable.
                 return false;
             }
             if (fileData.fileStart > 0) {
-                RetainPtr<CFNumberRef> position = adoptCF(CFNumberCreate(0, kCFNumberLongLongType, &fileData.fileStart));
+                RetainPtr<CFNumberRef> position = adoptCFNullable(CFNumberCreate(0, kCFNumberLongLongType, &fileData.fileStart));
                 CFReadStreamSetProperty(form->currentStream.get(), kCFStreamPropertyFileCurrentOffset, position.get());
             }
             form->currentStreamRangeLength = fileData.fileLength;
@@ -387,7 +387,7 @@ RetainPtr<CFReadStreamRef> createHTTPBodyCFReadStream(FormData& formData)
     ASSERT(isMainThread());
     FormCreationContext* formContext = new FormCreationContext { WTF::move(dataForUpload), length };
     CFReadStreamCallBacksV1 callBacks = { 1, formCreate, formFinalize, nullptr, formOpen, nullptr, formRead, nullptr, formCanRead, formClose, formCopyProperty, nullptr, nullptr, formSchedule, formUnschedule };
-    return adoptCF(CFReadStreamCreate(nullptr, static_cast<const void*>(&callBacks), formContext));
+    return adoptCFNullable(CFReadStreamCreate(nullptr, static_cast<const void*>(&callBacks), formContext));
 }
 
 void setHTTPBody(CFMutableURLRequestRef request, const RefPtr<FormData>& formData)
@@ -418,7 +418,7 @@ FormData* httpBodyFromStream(CFReadStreamRef stream)
     // so a side HashMap wouldn't work.
     // Even the stream's context pointer is different from the one we returned from formCreate().
 
-    RetainPtr<CFNumberRef> formDataPointerAsCFNumber = adoptCF(static_cast<CFNumberRef>(CFReadStreamCopyProperty(stream, formDataPointerPropertyNameSingleton())));
+    RetainPtr<CFNumberRef> formDataPointerAsCFNumber = adoptCFNullable(static_cast<CFNumberRef>(CFReadStreamCopyProperty(stream, formDataPointerPropertyNameSingleton())));
     if (!formDataPointerAsCFNumber)
         return nullptr;
 

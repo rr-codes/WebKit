@@ -109,7 +109,7 @@ static CGSGesturePhase EventSenderCGGesturePhaseFromNSEventPhase(NSEventPhase ph
 
 - (instancetype)initPressureEventAtLocation:(NSPoint)location globalLocation:(NSPoint)globalLocation stage:(NSInteger)stage pressure:(float)pressure stageTransition:(float)stageTransition phase:(NSEventPhase)phase time:(NSTimeInterval)time eventNumber:(NSInteger)eventNumber window:(NSWindow *)window
 {
-    auto cgEvent = adoptCF(CGEventCreate(nullptr));
+    auto cgEvent = adoptCFNullable(CGEventCreate(nullptr));
     CGEventSetType(cgEvent.get(), (CGEventType)kCGSEventGesture);
     CGEventSetIntegerValueField(cgEvent.get(), kCGEventGestureHIDType, kIOHIDEventTypeForce);
     CGEventSetIntegerValueField(cgEvent.get(), kCGEventGesturePhase, EventSenderCGGesturePhaseFromNSEventPhase(phase));
@@ -139,7 +139,7 @@ static CGSGesturePhase EventSenderCGGesturePhaseFromNSEventPhase(NSEventPhase ph
 
 - (id)initMagnifyEventAtLocation:(NSPoint)location globalLocation:(NSPoint)globalLocation magnification:(CGFloat)magnification phase:(NSEventPhase)phase time:(NSTimeInterval)time eventNumber:(NSInteger)eventNumber window:(NSWindow *)window
 {
-    auto cgEvent = adoptCF(CGEventCreate(nullptr));
+    auto cgEvent = adoptCFNullable(CGEventCreate(nullptr));
     CGEventSetType(cgEvent.get(), (CGEventType)kCGSEventGesture);
     CGEventSetIntegerValueField(cgEvent.get(), kCGEventGestureHIDType, kIOHIDEventTypeZoom);
     CGEventSetIntegerValueField(cgEvent.get(), kCGEventGesturePhase, EventSenderCGGesturePhaseFromNSEventPhase(phase));
@@ -162,7 +162,7 @@ static CGSGesturePhase EventSenderCGGesturePhaseFromNSEventPhase(NSEventPhase ph
 
 - (id)initSmartMagnifyEventAtLocation:(NSPoint)location globalLocation:(NSPoint)globalLocation time:(NSTimeInterval)time eventNumber:(NSInteger)eventNumber window:(NSWindow *)window
 {
-    auto cgEvent = adoptCF(CGEventCreate(nullptr));
+    auto cgEvent = adoptCFNullable(CGEventCreate(nullptr));
     CGEventSetType(cgEvent.get(), (CGEventType)kCGSEventGesture);
     CGEventSetIntegerValueField(cgEvent.get(), kCGEventGestureHIDType, kIOHIDEventTypeZoomToggle);
 
@@ -806,7 +806,7 @@ void EventSenderProxy::rawKeyUp(WKStringRef key, WKEventModifiers modifiers, uns
 
 void EventSenderProxy::mouseScrollBy(int x, int y)
 {
-    auto cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent2(0, kCGScrollEventUnitLine, 2, y, x, 0));
+    auto cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent2(0, kCGScrollEventUnitLine, 2, y, x, 0));
 
     // Set the CGEvent location in flipped coords relative to the first screen, which
     // compensates for the behavior of +[NSEvent eventWithCGEvent:] when the event has
@@ -833,7 +833,7 @@ void EventSenderProxy::continuousMouseScrollBy(int x, int y, bool paged)
 
 void EventSenderProxy::mouseScrollByWithWheelAndMomentumPhases(int x, int y, int phase, int momentum)
 {
-    auto cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent2(0, kCGScrollEventUnitLine, 2, y, x, 0));
+    auto cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent2(0, kCGScrollEventUnitLine, 2, y, x, 0));
 
     // Set the CGEvent location in flipped coords relative to the first screen, which
     // compensates for the behavior of +[NSEvent eventWithCGEvent:] when the event has
@@ -903,7 +903,7 @@ static CGMomentumScrollPhase cgMomentumPhaseFromPhase(EventSenderProxy::WheelEve
 void EventSenderProxy::sendWheelEvent(EventTimestamp timestamp, double windowX, double windowY, double deltaX, double deltaY, WheelEventPhase phase, WheelEventPhase momentumPhase)
 {
     constexpr uint32_t wheelCount = 2;
-    auto cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent2(nullptr, kCGScrollEventUnitPixel, wheelCount, deltaY, deltaX, 0));
+    auto cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent2(nullptr, kCGScrollEventUnitPixel, wheelCount, deltaY, deltaX, 0));
     CGEventSetTimestamp(cgScrollEvent.get(), timestamp);
 
     // Set the CGEvent location in flipped coords relative to the first screen, which

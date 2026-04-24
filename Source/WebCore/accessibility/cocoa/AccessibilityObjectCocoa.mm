@@ -117,7 +117,7 @@ static void attributedStringAppendWrapper(NSMutableAttributedString *attrString,
     const auto attachmentCharacter = attachmentCharacterValue;
     [attrString appendAttributedString:adoptNS([[NSMutableAttributedString alloc] initWithString:[NSString stringWithCharacters:&attachmentCharacter length:1]
 #if PLATFORM(MAC)
-        attributes:@{ NSAccessibilityAttachmentTextAttribute : (__bridge id)adoptCF(NSAccessibilityCreateAXUIElementRef(wrapper)).get() }
+        attributes:@{ NSAccessibilityAttachmentTextAttribute : (__bridge id)adoptCFNullable(NSAccessibilityCreateAXUIElementRef(wrapper)).get() }
 #else
         attributes:@{ AccessibilityTokenAttachment : wrapper }
 #endif

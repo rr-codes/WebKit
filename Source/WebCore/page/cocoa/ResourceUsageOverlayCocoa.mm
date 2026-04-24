@@ -126,7 +126,7 @@ private:
 static RetainPtr<CGColorRef> createColor(float r, float g, float b, float a)
 {
     std::array<CGFloat, 4> components { r, g, b, a };
-    return adoptCF(CGColorCreate(sRGBColorSpaceSingleton(), components.data()));
+    return adoptCFNullable(CGColorCreate(sRGBColorSpaceSingleton(), components.data()));
 }
 
 struct HistoricMemoryCategoryInfo {
@@ -269,15 +269,15 @@ static void showText(CGContextRef context, float x, float y, CGColorRef color, c
     CFStringRef fontName = CFSTR("Menlo");
     CGFloat fontSize = 11;
 #endif
-    auto font = adoptCF(CTFontCreateWithName(fontName, fontSize, &matrix));
+    auto font = adoptCFNullable(CTFontCreateWithName(fontName, fontSize, &matrix));
     CFTypeRef keys[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
     CFTypeRef values[] = { font.get(), kCFBooleanTrue };
-    auto attributes = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto attributes = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CString cstr = text.ascii();
     auto cstrSpan = cstr.span();
-    auto string = adoptCF(CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, byteCast<UInt8>(cstrSpan.data()), cstrSpan.size(), kCFStringEncodingASCII, false, kCFAllocatorNull));
-    auto attributedString = adoptCF(CFAttributedStringCreate(kCFAllocatorDefault, string.get(), attributes.get()));
-    auto line = adoptCF(CTLineCreateWithAttributedString(attributedString.get()));
+    auto string = adoptCFNullable(CFStringCreateWithBytesNoCopy(kCFAllocatorDefault, byteCast<UInt8>(cstrSpan.data()), cstrSpan.size(), kCFStringEncodingASCII, false, kCFAllocatorNull));
+    auto attributedString = adoptCFNullable(CFAttributedStringCreate(kCFAllocatorDefault, string.get(), attributes.get()));
+    auto line = adoptCFNullable(CTLineCreateWithAttributedString(attributedString.get()));
     CGContextSetTextPosition(context, x, y);
     CTLineDraw(line.get(), context);
 

@@ -30,11 +30,11 @@ namespace WebKit {
 
 bool Module::load()
 {
-    RetainPtr<CFURLRef> bundleURL = adoptCF(CFURLCreateWithFileSystemPath(kCFAllocatorDefault, m_path.createCFString().get(), kCFURLPOSIXPathStyle, FALSE));
+    RetainPtr<CFURLRef> bundleURL = adoptCFNullable(CFURLCreateWithFileSystemPath(kCFAllocatorDefault, m_path.createCFString().get(), kCFURLPOSIXPathStyle, FALSE));
     if (!bundleURL)
         return false;
 
-    RetainPtr<CFBundleRef> bundle = adoptCF(CFBundleCreate(kCFAllocatorDefault, bundleURL.get()));
+    RetainPtr<CFBundleRef> bundle = adoptCFNullable(CFBundleCreate(kCFAllocatorDefault, bundleURL.get()));
     if (!bundle)
         return false;
 
@@ -59,7 +59,7 @@ void* Module::platformFunctionPointer(const char* functionName) const
 {
     if (!m_bundle)
         return 0;
-    RetainPtr<CFStringRef> functionNameString = adoptCF(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, functionName, kCFStringEncodingASCII, kCFAllocatorNull));
+    RetainPtr<CFStringRef> functionNameString = adoptCFNullable(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, functionName, kCFStringEncodingASCII, kCFAllocatorNull));
     return CFBundleGetFunctionPointerForName(m_bundle.get(), functionNameString.get());
 }
 

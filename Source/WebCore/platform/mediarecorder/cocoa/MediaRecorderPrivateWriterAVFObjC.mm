@@ -208,7 +208,7 @@ static inline void appendEndsPreviousSampleDurationMarker(AVAssetWriterInput *as
         RELEASE_LOG_ERROR(MediaStream, "MediaRecorderPrivateWriter appendEndsPreviousSampleDurationMarker failed CMSampleBufferCreate with %d", error);
         return;
     }
-    RetainPtr sampleBuffer = adoptCF(buffer);
+    RetainPtr sampleBuffer = adoptCFNullable(buffer);
 
     PAL::CMSetAttachment(sampleBuffer.get(), PAL::kCMSampleBufferAttachmentKey_EndsPreviousSampleDuration, kCFBooleanTrue, kCMAttachmentMode_ShouldPropagate);
     if (![assetWriterInput appendSampleBuffer:sampleBuffer.get()])

@@ -63,8 +63,8 @@ WorkQueue& sharedImageTranscodingQueueSingleton()
 
 static String transcodeImage(const String& path, const String& destinationUTI, const String& destinationExtension)
 {
-    auto sourceURL = adoptCF(CFURLCreateWithFileSystemPath(kCFAllocatorDefault, path.createCFString().get(), kCFURLPOSIXPathStyle, false));
-    auto source = adoptCF(CGImageSourceCreateWithURL(sourceURL.get(), nullptr));
+    auto sourceURL = adoptCFNullable(CFURLCreateWithFileSystemPath(kCFAllocatorDefault, path.createCFString().get(), kCFURLPOSIXPathStyle, false));
+    auto source = adoptCFNullable(CGImageSourceCreateWithURL(sourceURL.get(), nullptr));
     if (!source)
         return nullString();
 
@@ -95,8 +95,8 @@ static String transcodeImage(const String& path, const String& destinationUTI, c
         nullptr
     };
 
-    auto consumer = adoptCF(CGDataConsumerCreate(&destinationFileHandle, &callbacks));
-    auto destination = adoptCF(CGImageDestinationCreateWithDataConsumer(consumer.get(), destinationUTI.createCFString().get(), 1, nullptr));
+    auto consumer = adoptCFNullable(CGDataConsumerCreate(&destinationFileHandle, &callbacks));
+    auto destination = adoptCFNullable(CGImageDestinationCreateWithDataConsumer(consumer.get(), destinationUTI.createCFString().get(), 1, nullptr));
 
     CGImageDestinationAddImageFromSource(destination.get(), source.get(), 0, nullptr);
 
@@ -325,9 +325,9 @@ RefPtr<SharedBuffer> createIconDataFromBitmaps(Vector<Ref<ShareableBitmap>>&& bi
 
     constexpr auto icoUTI = "com.microsoft.ico"_s;
     RetainPtr cfUTI = icoUTI.createCFString();
-    RetainPtr colorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr destinationData = adoptCF(CFDataCreateMutable(0, 0));
-    RetainPtr destination = adoptCF(CGImageDestinationCreateWithData(destinationData.get(), cfUTI.get(), bitmaps.size(), nullptr));
+    RetainPtr colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr destinationData = adoptCFNullable(CFDataCreateMutable(0, 0));
+    RetainPtr destination = adoptCFNullable(CGImageDestinationCreateWithData(destinationData.get(), cfUTI.get(), bitmaps.size(), nullptr));
 
     for (Ref bitmap : bitmaps) {
         RetainPtr cgImage = bitmap->createPlatformImage();
@@ -432,10 +432,10 @@ static RetainPtr<CFDictionaryRef> imagePropertiesForDestinationUTIAndQuality(CFS
 {
     if (CFEqual(destinationUTI, jpegUTI()) && quality && *quality >= 0.0 && *quality <= 1.0) {
         // Apply the compression quality to the JPEG image destination.
-        auto compressionQuality = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &*quality));
+        auto compressionQuality = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &*quality));
         const void* key = kCGImageDestinationLossyCompressionQuality;
         const void* value = compressionQuality.get();
-        return adoptCF(CFDictionaryCreate(0, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        return adoptCFNullable(CFDictionaryCreate(0, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     }
     return nullptr;
 
@@ -460,8 +460,8 @@ static bool encode(CGImageRef image, const String& mimeType, std::optional<doubl
         nullptr
     };
 
-    auto consumer = adoptCF(CGDataConsumerCreate(const_cast<ScopedLambda<PutBytesCallback>*>(&function), &callbacks));
-    auto destination = adoptCF(CGImageDestinationCreateWithDataConsumer(consumer.get(), destinationUTI.get(), 1, nullptr));
+    auto consumer = adoptCFNullable(CGDataConsumerCreate(const_cast<ScopedLambda<PutBytesCallback>*>(&function), &callbacks));
+    auto destination = adoptCFNullable(CGImageDestinationCreateWithDataConsumer(consumer.get(), destinationUTI.get(), 1, nullptr));
 
     auto imageProperties = imagePropertiesForDestinationUTIAndQuality(destinationUTI.get(), quality);
     CGImageDestinationAddImage(destination.get(), image, imageProperties.get());
@@ -509,12 +509,12 @@ static bool encode(const PixelBuffer& source, const String& mimeType, std::optio
 
     verifyImageBufferIsBigEnough(data);
 
-    auto dataProvider = adoptCF(CGDataProviderCreateWithData(nullptr, data.data(), dataSize, nullptr));
+    auto dataProvider = adoptCFNullable(CGDataProviderCreateWithData(nullptr, data.data(), dataSize, nullptr));
     if (!dataProvider)
         return false;
 
     auto imageSize = source.size();
-    auto image = adoptCF(CGImageCreate(imageSize.width(), imageSize.height(), 8, 32, 4 * imageSize.width(), protect(source.format().colorSpace.platformColorSpace()).get(), static_cast<uint32_t>(kCGBitmapByteOrderDefault) | static_cast<uint32_t>(dataAlphaInfo), dataProvider.get(), 0, false, kCGRenderingIntentDefault));
+    auto image = adoptCFNullable(CGImageCreate(imageSize.width(), imageSize.height(), 8, 32, 4 * imageSize.width(), protect(source.format().colorSpace.platformColorSpace()).get(), static_cast<uint32_t>(kCGBitmapByteOrderDefault) | static_cast<uint32_t>(dataAlphaInfo), dataProvider.get(), 0, false, kCGRenderingIntentDefault));
 
     return encode(image.get(), mimeType, quality, function);
 }

@@ -45,7 +45,7 @@ RefPtr<VideoDecoderVTB> VideoDecoderVTB::create(CMVideoFormatDescriptionRef vide
     auto result = VTDecompressionSessionCreate(kCFAllocatorDefault, videoFormatDescription, (__bridge CFDictionaryRef)videoDecoderSpecification, pixelBufferAttributes, nullptr, &decompressionSession);
     if (result != noErr)
         return nullptr;
-    return adoptRef(*new VideoDecoderVTB(adoptCF(decompressionSession)));
+    return adoptRef(*new VideoDecoderVTB(adoptCFNullable(decompressionSession)));
 }
 
 VideoDecoderVTB::~VideoDecoderVTB() = default;

@@ -52,13 +52,13 @@ static RetainPtr<CFDictionaryRef> deviceMatchingDictionary(uint32_t usagePage, u
     ASSERT(usagePage);
     ASSERT(usage);
 
-    RetainPtr<CFNumberRef> pageNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usagePage));
-    RetainPtr<CFNumberRef> usageNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage));
+    RetainPtr<CFNumberRef> pageNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usagePage));
+    RetainPtr<CFNumberRef> usageNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &usage));
 
     CFStringRef keys[] = { CFSTR(kIOHIDDeviceUsagePageKey), CFSTR(kIOHIDDeviceUsageKey) };
     CFNumberRef values[] = { pageNumber.get(), usageNumber.get() };
 
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, (const void**)keys, (const void**)values, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, (const void**)keys, (const void**)values, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 static void deviceAddedCallback(void* context, IOReturn, void*, IOHIDDeviceRef device)
@@ -90,7 +90,7 @@ HIDGamepadProvider& HIDGamepadProvider::singleton()
 }
 
 HIDGamepadProvider::HIDGamepadProvider()
-    : m_manager(adoptCF(IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone)))
+    : m_manager(adoptCFNullable(IOHIDManagerCreate(kCFAllocatorDefault, kIOHIDOptionsTypeNone)))
     , m_initialGamepadsConnectedTimer(*this, &HIDGamepadProvider::initialGamepadsConnectedTimerFired)
     , m_inputNotificationTimer(*this, &HIDGamepadProvider::inputNotificationTimerFired)
 {
@@ -99,7 +99,7 @@ HIDGamepadProvider::HIDGamepadProvider()
 
     CFDictionaryRef devices[] = { joystickDictionary.get(), gamepadDictionary.get() };
 
-    RetainPtr<CFArrayRef> matchingArray = adoptCF(CFArrayCreate(kCFAllocatorDefault, (const void**)devices, 2, &kCFTypeArrayCallBacks));
+    RetainPtr<CFArrayRef> matchingArray = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, (const void**)devices, 2, &kCFTypeArrayCallBacks));
 
     IOHIDManagerSetDeviceMatchingMultiple(m_manager.get(), matchingArray.get());
     IOHIDManagerRegisterDeviceMatchingCallback(m_manager.get(), deviceAddedCallback, this);

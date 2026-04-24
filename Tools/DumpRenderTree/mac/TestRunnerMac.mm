@@ -143,10 +143,10 @@ JSContextRef TestRunner::mainFrameJSContext()
 
 void TestRunner::addDisallowedURL(JSStringRef url)
 {
-    RetainPtr<CFStringRef> urlCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, url));
+    RetainPtr<CFStringRef> urlCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, url));
 
     if (!disallowedURLs)
-        disallowedURLs = adoptCF(CFSetCreateMutable(kCFAllocatorDefault, 0, NULL));
+        disallowedURLs = adoptCFNullable(CFSetCreateMutable(kCFAllocatorDefault, 0, NULL));
 
     // Canonicalize the URL
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:(__bridge NSString *)urlCF.get()]];
@@ -209,14 +209,14 @@ void TestRunner::clearBackForwardList()
 
 JSRetainPtr<JSStringRef> TestRunner::copyDecodedHostName(JSStringRef name)
 {
-    auto nameCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, name));
+    auto nameCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, name));
     NSString *nameNS = (__bridge NSString *)nameCF.get();
     return adopt(JSStringCreateWithCFString((__bridge CFStringRef)[nameNS _web_decodeHostName]));
 }
 
 JSRetainPtr<JSStringRef> TestRunner::copyEncodedHostName(JSStringRef name)
 {
-    auto nameCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, name));
+    auto nameCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, name));
     NSString *nameNS = (__bridge NSString *)nameCF.get();
     return adopt(JSStringCreateWithCFString((__bridge CFStringRef)[nameNS _web_encodeHostName]));
 }
@@ -343,7 +343,7 @@ JSRetainPtr<JSStringRef> TestRunner::pathToLocalResource(JSContextRef context, J
 
 void TestRunner::queueLoad(JSStringRef url, JSStringRef target)
 {
-    RetainPtr<CFStringRef> urlCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, url));
+    RetainPtr<CFStringRef> urlCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, url));
     NSString *urlNS = (__bridge NSString *)urlCF.get();
 
     NSURL *nsurl = [NSURL URLWithString:urlNS relativeToURL:[[[mainFrame dataSource] response] URL]];
@@ -406,7 +406,7 @@ void TestRunner::setDefersLoading(bool defers)
 
 void TestRunner::setDomainRelaxationForbiddenForURLScheme(bool forbidden, JSStringRef scheme)
 {
-    RetainPtr<CFStringRef> schemeCFString = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, scheme));
+    RetainPtr<CFStringRef> schemeCFString = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, scheme));
     [WebView _setDomainRelaxationForbidden:forbidden forURLScheme:(__bridge NSString *)schemeCFString.get()];
 }
 
@@ -444,7 +444,7 @@ void TestRunner::setMockGeolocationPosition(double latitude, double longitude, d
 
 void TestRunner::setMockGeolocationPositionUnavailableError(JSStringRef message)
 {
-    RetainPtr<CFStringRef> messageCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, message));
+    RetainPtr<CFStringRef> messageCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, message));
     NSString *messageNS = (__bridge NSString *)messageCF.get();
     [[MockGeolocationProvider shared] setPositionUnavailableErrorWithMessage:messageNS];
 }
@@ -515,7 +515,7 @@ void TestRunner::setUserStyleSheetEnabled(bool flag)
 
 void TestRunner::setUserStyleSheetLocation(JSStringRef path)
 {
-    RetainPtr<CFStringRef> pathCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, path));
+    RetainPtr<CFStringRef> pathCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, path));
     NSURL *url = [NSURL URLWithString:(__bridge NSString *)pathCF.get()];
     [[[mainFrame webView] preferences] setUserStyleSheetLocation:url];
 }
@@ -526,7 +526,7 @@ void TestRunner::setValueForUser(JSContextRef context, JSValueRef nodeObject, JS
     if (!element || ![element isKindOfClass:[DOMHTMLInputElement class]])
         return;
 
-    RetainPtr<CFStringRef> valueCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, value));
+    RetainPtr<CFStringRef> valueCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, value));
     [(DOMHTMLInputElement *)element setValueForUser:(__bridge NSString *)valueCF.get()];
 }
 
@@ -552,7 +552,7 @@ void TestRunner::removeAllVisitedLinks()
 
 void TestRunner::setPersistentUserStyleSheetLocation(JSStringRef jsURL)
 {
-    RetainPtr<CFStringRef> urlString = adoptCF(JSStringCopyCFString(0, jsURL));
+    RetainPtr<CFStringRef> urlString = adoptCFNullable(JSStringCopyCFString(0, jsURL));
     ::setPersistentUserStyleSheetLocation(urlString.get());
 }
 
@@ -581,7 +581,7 @@ void TestRunner::setWaitToDump(bool waitUntilDone)
 {
     m_waitToDump = waitUntilDone;
     if (m_waitToDump && m_timeout && shouldSetWaitToDumpWatchdog())
-        setWaitToDumpWatchdog(adoptCF(CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + m_timeout / 1000.0, 0, 0, 0, waitUntilDoneWatchdogFired, NULL)));
+        setWaitToDumpWatchdog(adoptCFNullable(CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + m_timeout / 1000.0, 0, 0, 0, waitUntilDoneWatchdogFired, NULL)));
 }
 
 int TestRunner::windowCount()
@@ -591,10 +591,10 @@ int TestRunner::windowCount()
 
 void TestRunner::execCommand(JSStringRef name, JSStringRef value)
 {
-    RetainPtr<CFStringRef> nameCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, name));
+    RetainPtr<CFStringRef> nameCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, name));
     NSString *nameNS = (__bridge NSString *)nameCF.get();
 
-    RetainPtr<CFStringRef> valueCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, value));
+    RetainPtr<CFStringRef> valueCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, value));
     NSString *valueNS = (__bridge NSString *)valueCF.get();
 
     [[mainFrame webView] _executeCoreCommandByName:nameNS value:valueNS];
@@ -605,7 +605,7 @@ bool TestRunner::findString(JSContextRef context, JSStringRef target, JSObjectRe
     WebFindOptions options = 0;
 
     auto length = WTR::arrayLength(context, optionsArray);
-    auto targetCFString = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, target));
+    auto targetCFString = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, target));
 
     for (unsigned i = 0; i < length; ++i) {
         JSValueRef value = JSObjectGetPropertyAtIndex(context, optionsArray, i, 0);
@@ -639,7 +639,7 @@ void TestRunner::setCacheModel(int cacheModel)
 bool TestRunner::isCommandEnabled(JSStringRef name)
 {
 #if !PLATFORM(IOS_FAMILY)
-    RetainPtr<CFStringRef> nameCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, name));
+    RetainPtr<CFStringRef> nameCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, name));
     NSString *nameNS = (__bridge NSString *)nameCF.get();
 
     // Accept command strings with capital letters for first letter without trailing colon.
@@ -673,22 +673,22 @@ void TestRunner::waitForPolicyDelegate()
 
 void TestRunner::addOriginAccessAllowListEntry(JSStringRef sourceOrigin, JSStringRef destinationProtocol, JSStringRef destinationHost, bool allowDestinationSubdomains)
 {
-    RetainPtr<CFStringRef> sourceOriginCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, sourceOrigin));
+    RetainPtr<CFStringRef> sourceOriginCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, sourceOrigin));
     NSString *sourceOriginNS = (__bridge NSString *)sourceOriginCF.get();
-    RetainPtr<CFStringRef> protocolCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, destinationProtocol));
+    RetainPtr<CFStringRef> protocolCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, destinationProtocol));
     NSString *destinationProtocolNS = (__bridge NSString *)protocolCF.get();
-    RetainPtr<CFStringRef> hostCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, destinationHost));
+    RetainPtr<CFStringRef> hostCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, destinationHost));
     NSString *destinationHostNS = (__bridge NSString *)hostCF.get();
     [WebView _addOriginAccessAllowListEntryWithSourceOrigin:sourceOriginNS destinationProtocol:destinationProtocolNS destinationHost:destinationHostNS allowDestinationSubdomains:allowDestinationSubdomains];
 }
 
 void TestRunner::removeOriginAccessAllowListEntry(JSStringRef sourceOrigin, JSStringRef destinationProtocol, JSStringRef destinationHost, bool allowDestinationSubdomains)
 {
-    RetainPtr<CFStringRef> sourceOriginCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, sourceOrigin));
+    RetainPtr<CFStringRef> sourceOriginCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, sourceOrigin));
     NSString *sourceOriginNS = (__bridge NSString *)sourceOriginCF.get();
-    RetainPtr<CFStringRef> protocolCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, destinationProtocol));
+    RetainPtr<CFStringRef> protocolCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, destinationProtocol));
     NSString *destinationProtocolNS = (__bridge NSString *)protocolCF.get();
-    RetainPtr<CFStringRef> hostCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, destinationHost));
+    RetainPtr<CFStringRef> hostCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, destinationHost));
     NSString *destinationHostNS = (__bridge NSString *)hostCF.get();
     [WebView _removeOriginAccessAllowListEntryWithSourceOrigin:sourceOriginNS destinationProtocol:destinationProtocolNS destinationHost:destinationHostNS allowDestinationSubdomains:allowDestinationSubdomains];
 }
@@ -700,14 +700,14 @@ void TestRunner::setScrollbarPolicy(JSStringRef orientation, JSStringRef policy)
 
 void TestRunner::addUserScript(JSStringRef source, bool runAtStart, bool allFrames)
 {
-    RetainPtr<CFStringRef> sourceCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, source));
+    RetainPtr<CFStringRef> sourceCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, source));
     NSString *sourceNS = (__bridge NSString *)sourceCF.get();
     [WebView _addUserScriptToGroup:@"org.webkit.DumpRenderTree" world:[WebScriptWorld world] source:sourceNS url:nil includeMatchPatternStrings:nil excludeMatchPatternStrings:nil injectionTime:(runAtStart ? WebInjectAtDocumentStart : WebInjectAtDocumentEnd) injectedFrames:(allFrames ? WebInjectInAllFrames : WebInjectInTopFrameOnly)];
 }
 
 void TestRunner::addUserStyleSheet(JSStringRef source, bool allFrames)
 {
-    RetainPtr<CFStringRef> sourceCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, source));
+    RetainPtr<CFStringRef> sourceCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, source));
     NSString *sourceNS = (__bridge NSString *)sourceCF.get();
     [WebView _addUserStyleSheetToGroup:@"org.webkit.DumpRenderTree" world:[WebScriptWorld world] source:sourceNS url:nil includeMatchPatternStrings:nil excludeMatchPatternStrings:nil injectedFrames:(allFrames ? WebInjectInAllFrames : WebInjectInTopFrameOnly)];
 }
@@ -724,7 +724,7 @@ void TestRunner::closeWebInspector()
 
 void TestRunner::evaluateInWebInspector(JSStringRef script)
 {
-    RetainPtr<CFStringRef> scriptCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, script));
+    RetainPtr<CFStringRef> scriptCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, script));
     NSString *scriptNS = (__bridge NSString *)scriptCF.get();
     [[[mainFrame webView] inspector] evaluateInFrontend:nil script:scriptNS];
 }
@@ -738,7 +738,7 @@ JSRetainPtr<JSStringRef> TestRunner::inspectorTestStubURL()
     if (!inspectorBundle)
         return nullptr;
 
-    RetainPtr<CFURLRef> url = adoptCF(CFBundleCopyResourceURL(inspectorBundle, CFSTR("TestStub"), CFSTR("html"), NULL));
+    RetainPtr<CFURLRef> url = adoptCFNullable(CFBundleCopyResourceURL(inspectorBundle, CFSTR("TestStub"), CFSTR("html"), NULL));
     if (!url)
         return nullptr;
 
@@ -772,7 +772,7 @@ void TestRunner::evaluateScriptInIsolatedWorldAndReturnValue(unsigned worldID, J
 
 void TestRunner::evaluateScriptInIsolatedWorld(unsigned worldID, JSObjectRef globalObject, JSStringRef script)
 {
-    RetainPtr<CFStringRef> scriptCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, script));
+    RetainPtr<CFStringRef> scriptCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, script));
     NSString *scriptNS = (__bridge NSString *)scriptCF.get();
 
     // A worldID of 0 always corresponds to a new world. Any other worldID corresponds to a world
@@ -851,8 +851,8 @@ void TestRunner::evaluateScriptInIsolatedWorld(unsigned worldID, JSObjectRef glo
         return nil;
 
     testRunner = runner;
-    data = [(__bridge NSString *)adoptCF(JSStringCopyCFString(kCFAllocatorDefault, dataString)).get() dataUsingEncoding:NSUTF8StringEncoding];
-    baseURL = [NSURL URLWithString:(__bridge NSString *)adoptCF(JSStringCopyCFString(kCFAllocatorDefault, baseURLString)).get()];
+    data = [(__bridge NSString *)adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, dataString)).get() dataUsingEncoding:NSUTF8StringEncoding];
+    baseURL = [NSURL URLWithString:(__bridge NSString *)adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, baseURLString)).get()];
     return self;
 }
 
@@ -926,8 +926,8 @@ void TestRunner::apiTestNewWindowDataLoadBaseURL(JSStringRef utf8Data, JSStringR
 #endif
 
     @autoreleasepool {
-        RetainPtr<CFStringRef> utf8DataCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, utf8Data));
-        RetainPtr<CFStringRef> baseURLCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, baseURL));
+        RetainPtr<CFStringRef> utf8DataCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, utf8Data));
+        RetainPtr<CFStringRef> baseURLCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, baseURL));
 
         auto webView = adoptNS([[WebView alloc] initWithFrame:NSZeroRect frameName:@"" groupName:@""]);
 
@@ -1026,9 +1026,9 @@ IGNORE_WARNINGS_END
 void TestRunner::authenticateSession(JSStringRef url, JSStringRef username, JSStringRef password)
 {
     // See <rdar://problem/7880699>.
-    RetainPtr<CFStringRef> urlStringCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, url));
-    RetainPtr<CFStringRef> usernameCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, username));
-    RetainPtr<CFStringRef> passwordCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, password));
+    RetainPtr<CFStringRef> urlStringCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, url));
+    RetainPtr<CFStringRef> usernameCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, username));
+    RetainPtr<CFStringRef> passwordCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, password));
 
     RetainPtr<NSURLRequest> request = adoptNS([[NSURLRequest alloc] initWithURL:[NSURL URLWithString:(__bridge NSString *)urlStringCF.get()]]);
 
@@ -1132,14 +1132,14 @@ void TestRunner::setPageVisibility(const char* newVisibility)
 
 void TestRunner::grantWebNotificationPermission(JSStringRef jsOrigin)
 {
-    RetainPtr<CFStringRef> cfOrigin = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, jsOrigin));
+    RetainPtr<CFStringRef> cfOrigin = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, jsOrigin));
     ASSERT([[mainFrame webView] _notificationProvider] == [MockWebNotificationProvider shared]);
     [[MockWebNotificationProvider shared] setWebNotificationOrigin:(__bridge NSString *)cfOrigin.get() permission:TRUE];
 }
 
 void TestRunner::denyWebNotificationPermission(JSStringRef jsOrigin)
 {
-    RetainPtr<CFStringRef> cfOrigin = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, jsOrigin));
+    RetainPtr<CFStringRef> cfOrigin = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, jsOrigin));
     ASSERT([[mainFrame webView] _notificationProvider] == [MockWebNotificationProvider shared]);
     [[MockWebNotificationProvider shared] setWebNotificationOrigin:(__bridge NSString *)cfOrigin.get() permission:FALSE];
 }
@@ -1201,10 +1201,10 @@ unsigned TestRunner::imageCountInGeneralPasteboard() const
 void TestRunner::generateTestReport(JSStringRef message, JSStringRef group)
 {
     ASSERT(message);
-    auto messageCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, message));
+    auto messageCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, message));
     RetainPtr<CFStringRef> groupCF;
     if (group)
-        groupCF = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, group));
+        groupCF = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, group));
     [mainFrame _generateTestReport:(__bridge NSString *)messageCF.get() withGroup:(__bridge NSString *)groupCF.get()];
 }
 

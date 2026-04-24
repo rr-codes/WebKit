@@ -440,7 +440,7 @@ void WebProcess::platformInitializeWebProcess(WebProcessCreationParameters& para
         // Dispatch this work on a thread to avoid blocking the main thread. We will wait for this to complete at the end of this method.
         codeCheckSemaphore = adoptOSObject(dispatch_semaphore_create(0));
         dispatch_async(globalDispatchQueueSingleton(QOS_CLASS_USER_INTERACTIVE, 0), [codeCheckSemaphore = codeCheckSemaphore] {
-            auto bundleURL = adoptCF(CFBundleCopyBundleURL(RetainPtr { CFBundleGetMainBundle() }.get()));
+            auto bundleURL = adoptCFNullable(CFBundleCopyBundleURL(RetainPtr { CFBundleGetMainBundle() }.get()));
             SecStaticCodeRef code = nullptr;
             if (bundleURL)
                 SecStaticCodeCreateWithPath(bundleURL.get(), kSecCSDefaultFlags, &code);
@@ -765,7 +765,7 @@ void WebProcess::updateProcessName(IsInProcessInitialization isInProcessInitiali
     }
 #if ASSERT_ENABLED
     // It is possible for _LSSetApplicationInformationItem() to return 0 and yet fail to set the display name so we make sure the display name has actually been set.
-    String actualApplicationName = adoptCF((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, RetainPtr { _LSGetCurrentApplicationASN() }.get(), _kLSDisplayNameKey)).get();
+    String actualApplicationName = adoptCFNullable((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, RetainPtr { _LSGetCurrentApplicationASN() }.get(), _kLSDisplayNameKey)).get();
     ASSERT(!actualApplicationName.isEmpty());
 #endif
 #endif
@@ -1045,7 +1045,7 @@ RetainPtr<CFDataRef> WebProcess::sourceApplicationAuditData() const
     std::optional<audit_token_t> auditToken = protect(parentProcessConnection())->getAuditToken();
     if (!auditToken)
         return nullptr;
-    return adoptCF(CFDataCreate(nullptr, (const UInt8*)&*auditToken, sizeof(*auditToken)));
+    return adoptCFNullable(CFDataCreate(nullptr, (const UInt8*)&*auditToken, sizeof(*auditToken)));
 #else
     return nullptr;
 #endif

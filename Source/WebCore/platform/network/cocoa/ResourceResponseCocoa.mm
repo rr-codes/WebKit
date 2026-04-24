@@ -95,7 +95,7 @@ CertificateInfo ResourceResponse::platformCertificateInfo(std::span<const std::b
     RetainPtr trust = checked_cf_cast<SecTrustRef>(trustValue);
 
     if (trust && auditToken.size()) {
-        auto data = adoptCF(CFDataCreate(nullptr, byteCast<uint8_t>(auditToken.data()), auditToken.size()));
+        auto data = adoptCFNullable(CFDataCreate(nullptr, byteCast<uint8_t>(auditToken.data()), auditToken.size()));
         SecTrustSetClientAuditToken(trust.get(), data.get());
     }
 
@@ -137,7 +137,7 @@ static inline AtomString stripLeadingAndTrailingDoubleQuote(const String& value)
 static inline HTTPHeaderMap initializeHTTPHeaders(CFHTTPMessageRef messageRef)
 {
     // Avoid calling [NSURLResponse allHeaderFields] to minimize copying (<rdar://problem/26778863>).
-    auto headers = adoptCF(CFHTTPMessageCopyAllHeaderFields(messageRef));
+    auto headers = adoptCFNullable(CFHTTPMessageCopyAllHeaderFields(messageRef));
 
     HTTPHeaderMap headersMap;
     CFDictionaryApplyFunction(headers.get(), addToHTTPHeaderMap, &headersMap);
@@ -146,7 +146,7 @@ static inline HTTPHeaderMap initializeHTTPHeaders(CFHTTPMessageRef messageRef)
 
 static inline AtomString extractHTTPStatusText(CFHTTPMessageRef messageRef)
 {
-    if (auto httpStatusLine = adoptCF(CFHTTPMessageCopyResponseStatusLine(messageRef)))
+    if (auto httpStatusLine = adoptCFNullable(CFHTTPMessageCopyResponseStatusLine(messageRef)))
         return extractReasonPhraseFromHTTPStatusLine(httpStatusLine.get());
 
     static MainThreadNeverDestroyed<const AtomString> defaultStatusText("OK"_s);
@@ -180,7 +180,7 @@ void ResourceResponse::platformLazyInit(InitLevel initLevel)
         }
         if (messageRef && initLevel == AllFields) {
             m_httpStatusText = extractHTTPStatusText(messageRef.get());
-            m_httpVersion = AtomString { String(adoptCF(CFHTTPMessageCopyVersion(messageRef.get())).get()).convertToASCIIUppercase() };
+            m_httpVersion = AtomString { String(adoptCFNullable(CFHTTPMessageCopyVersion(messageRef.get())).get()).convertToASCIIUppercase() };
         }
     }
 

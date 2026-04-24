@@ -34,7 +34,7 @@
 
 namespace TestWebKitAPI {
 
-TEST(RetainRef, AdoptCFRef)
+TEST(RetainRef, adoptCFRef)
 {
     RetainRef<CFArrayRef> array = adoptCFRef(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_EQ(1, CFGetRetainCount(array.get()));
@@ -43,7 +43,7 @@ TEST(RetainRef, AdoptCFRef)
 
 TEST(RetainRef, RetainRefFromValue)
 {
-    RetainPtr<CFArrayRef> source = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> source = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_EQ(1, CFGetRetainCount(source.get()));
 
     {
@@ -80,7 +80,7 @@ TEST(RetainRef, MoveConstructor)
 
 TEST(RetainRef, FromRetainPtrReleaseNonNull)
 {
-    RetainPtr<CFArrayRef> ptr = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> ptr = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     CFArrayRef raw = ptr.get();
     EXPECT_EQ(1, CFGetRetainCount(raw));
 
@@ -105,7 +105,7 @@ TEST(RetainRef, MoveToRetainPtr)
 
 TEST(RetainRef, AssignToRetainPtr)
 {
-    RetainPtr<CFArrayRef> ptr = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> ptr = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     CFArrayRef rawOriginal = ptr.get();
     EXPECT_EQ(1, CFGetRetainCount(rawOriginal));
 
@@ -132,7 +132,7 @@ TEST(RetainRef, CtadFromRetainRef)
 
 TEST(RetainRef, ExplicitFromRetainPtr)
 {
-    RetainPtr<CFArrayRef> ptr = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> ptr = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_EQ(1, CFGetRetainCount(ptr.get()));
 
     {

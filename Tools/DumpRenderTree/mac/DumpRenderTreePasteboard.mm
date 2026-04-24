@@ -137,10 +137,10 @@ static RetainPtr<CFStringRef> toUTI(NSString *type)
 {
     if (isUTI(type)) {
         // This is already a UTI.
-        return adoptCF(CFStringCreateCopy(nullptr, (__bridge CFStringRef)type));
+        return adoptCFNullable(CFStringCreateCopy(nullptr, (__bridge CFStringRef)type));
     }
 
-    return adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, (__bridge CFStringRef)type, nullptr));
+    return adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, (__bridge CFStringRef)type, nullptr));
 }
 
 - (void)_clearContentsWithoutUpdatingChangeCount

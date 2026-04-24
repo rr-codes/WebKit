@@ -56,13 +56,13 @@ TextBreakIterator::TextBreakIterator(StringView string, std::span<const char16_t
 
 static RetainPtr<CFStringRef> textBreakLocalePreference()
 {
-    return dynamic_cf_cast<CFStringRef>(adoptCF(CFPreferencesCopyValue(CFSTR("AppleTextBreakLocale"),
+    return dynamic_cf_cast<CFStringRef>(adoptCFNullable(CFPreferencesCopyValue(CFSTR("AppleTextBreakLocale"),
         kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost)));
 }
 
 static RetainPtr<CFStringRef> topLanguagePreference()
 {
-    auto languagesArray = adoptCF(CFLocaleCopyPreferredLanguages());
+    auto languagesArray = adoptCFNullable(CFLocaleCopyPreferredLanguages());
     if (!languagesArray || !CFArrayGetCount(languagesArray.get()))
         return nullptr;
     return static_cast<CFStringRef>(CFArrayGetValueAtIndex(languagesArray.get(), 0));
@@ -89,7 +89,7 @@ static RetainPtr<CFStringRef> textBreakLocale()
     auto locale = textBreakLocalePreference();
     if (!locale)
         return topLanguagePreference();
-    if (auto canonicalLocale = adoptCF(CFLocaleCreateCanonicalLanguageIdentifierFromString(kCFAllocatorDefault, locale.get())))
+    if (auto canonicalLocale = adoptCFNullable(CFLocaleCreateCanonicalLanguageIdentifierFromString(kCFAllocatorDefault, locale.get())))
         return canonicalLocale;
     return locale;
 }

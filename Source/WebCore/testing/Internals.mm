@@ -258,13 +258,13 @@ bool Internals::hasSandboxIOKitOpenAccessToClass(const String& process, const St
 DDScannerResult *Internals::fakeDataDetectorResultForTesting()
 {
     static NeverDestroyed result = []() -> RetainPtr<DDScannerResult> {
-        auto scanner = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
+        auto scanner = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
         auto stringToScan = CFSTR("webkit.org");
-        auto query = adoptCF(PAL::softLink_DataDetectorsCore_DDScanQueryCreateFromString(kCFAllocatorDefault, stringToScan, CFRangeMake(0, CFStringGetLength(stringToScan))));
+        auto query = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScanQueryCreateFromString(kCFAllocatorDefault, stringToScan, CFRangeMake(0, CFStringGetLength(stringToScan))));
         if (!PAL::softLink_DataDetectorsCore_DDScannerScanQuery(scanner.get(), query.get()))
             return nil;
 
-        auto results = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
+        auto results = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
         if (!CFArrayGetCount(results.get()))
             return nil;
 

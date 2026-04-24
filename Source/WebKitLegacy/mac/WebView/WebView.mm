@@ -810,7 +810,7 @@ static WebCore::StorageBlockingPolicy NODELETE core(WebStorageBlockingPolicy sto
 
 static bool isLockdownModeEnabled()
 {
-    RetainPtr preferenceValue = adoptCF(CFPreferencesCopyValue(WKLockdownModeEnabledKeyCFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+    RetainPtr preferenceValue = adoptCFNullable(CFPreferencesCopyValue(WKLockdownModeEnabledKeyCFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
 
     if (preferenceValue.get() == kCFBooleanTrue)
         return true;
@@ -818,7 +818,7 @@ static bool isLockdownModeEnabled()
 #if HAVE(LOCKDOWN_MODE_FRAMEWORK)
     return PAL::isLockdownModeEnabled();
 #else
-    preferenceValue = adoptCF(CFPreferencesCopyValue(LDMEnabledKey, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+    preferenceValue = adoptCFNullable(CFPreferencesCopyValue(LDMEnabledKey, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
     return preferenceValue.get() == kCFBooleanTrue;
 #endif
 }
@@ -1298,7 +1298,7 @@ static RetainPtr<CFMutableSetRef>& NODELETE allWebViewsSet()
 - (void)_addToAllWebViewsSet
 {
     if (!allWebViewsSet())
-        allWebViewsSet() = adoptCF(CFSetCreateMutable(NULL, 0, &NonRetainingSetCallbacks));
+        allWebViewsSet() = adoptCFNullable(CFSetCreateMutable(NULL, 0, &NonRetainingSetCallbacks));
 
     CFSetSetValue(allWebViewsSet().get(), (__bridge CFTypeRef)self);
 }
@@ -2697,7 +2697,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 #if PLATFORM(IOS_FAMILY)
 - (void)_setHostApplicationProcessIdentifier:(pid_t)pid auditToken:(audit_token_t)auditToken
 {
-    RetainPtr<CFDataRef> auditData = adoptCF(CFDataCreate(nullptr, (const UInt8*)&auditToken, sizeof(auditToken)));
+    RetainPtr<CFDataRef> auditData = adoptCFNullable(CFDataCreate(nullptr, (const UInt8*)&auditToken, sizeof(auditToken)));
     Inspector::RemoteInspector::singleton().setParentProcessInformation(pid, auditData);
 }
 #endif // PLATFORM(IOS_FAMILY)
@@ -6777,7 +6777,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
     // Use a visited set so we don't loop indefinitely when walking crazy key loops.
     // AppKit uses such sets internally and we want our loop to be as robust as its loops.
-    RetainPtr<CFMutableSetRef> visitedViews = adoptCF(CFSetCreateMutable(0, 0, 0));
+    RetainPtr<CFMutableSetRef> visitedViews = adoptCFNullable(CFSetCreateMutable(0, 0, 0));
     CFSetAddValue(visitedViews.get(), result);
 
     RetainPtr<NSView> previousView = self;
@@ -8389,7 +8389,7 @@ FORWARD(toggleUnderline)
     if (s_didSetCacheModel && cacheModel == s_cacheModel)
         return;
 
-    auto nsurlCacheDirectory = adoptCF(_CFURLCacheCopyCacheDirectory([[NSURLCache sharedURLCache] _CFURLCache]));
+    auto nsurlCacheDirectory = adoptCFNullable(_CFURLCacheCopyCacheDirectory([[NSURLCache sharedURLCache] _CFURLCache]));
     if (!nsurlCacheDirectory)
         nsurlCacheDirectory = (__bridge CFStringRef)NSHomeDirectory();
 

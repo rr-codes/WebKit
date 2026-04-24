@@ -88,14 +88,14 @@ bool AudioSampleBufferConverter::initialize(CMBufferQueueTriggerCallback callbac
         RELEASE_LOG_ERROR(MediaStream, "AudioSampleBufferConverter CMBufferQueueCreate for m_inputBufferQueue failed with %d", static_cast<int>(error));
         return false;
     }
-    lazyInitialize(m_inputBufferQueue, adoptCF(inputBufferQueue));
+    lazyInitialize(m_inputBufferQueue, adoptCFNullable(inputBufferQueue));
 
     CMBufferQueueRef outputBufferQueue;
     if (auto error = PAL::CMBufferQueueCreate(kCFAllocatorDefault, 0, PAL::CMBufferQueueGetCallbacksForUnsortedSampleBuffers(), &outputBufferQueue)) {
         RELEASE_LOG_ERROR(MediaStream, "AudioSampleBufferConverter CMBufferQueueCreate for m_outputBufferQueue failed with %d", static_cast<int>(error));
         return false;
     }
-    lazyInitialize(m_outputBufferQueue, adoptCF(outputBufferQueue));
+    lazyInitialize(m_outputBufferQueue, adoptCFNullable(outputBufferQueue));
     PAL::CMBufferQueueInstallTrigger(m_outputBufferQueue.get(), callback, callbackObject, kCMBufferQueueTrigger_WhenDataBecomesReady, PAL::kCMTimeZero, &m_triggerToken);
 
     return true;
@@ -338,7 +338,7 @@ void AudioSampleBufferConverter::attachPrimingTrimsIfNeeded(CMSampleBufferRef bu
     if (CMTIME_COMPARE_INLINE(kCMTimeZero, <, m_remainingPrimeDuration)) {
         CMTime sampleDuration = CMSampleBufferGetDuration(buffer);
         CMTime trimDuration = CMTimeMinimum(sampleDuration, m_remainingPrimeDuration);
-        auto trimAtStartDict = adoptCF(CMTimeCopyAsDictionary(trimDuration, kCFAllocatorDefault));
+        auto trimAtStartDict = adoptCFNullable(CMTimeCopyAsDictionary(trimDuration, kCFAllocatorDefault));
         CMSetAttachment(buffer, kCMSampleBufferAttachmentKey_TrimDurationAtStart, trimAtStartDict.get(), kCMAttachmentMode_ShouldPropagate);
         m_remainingPrimeDuration = CMTimeSubtract(m_remainingPrimeDuration, trimDuration);
     }
@@ -399,7 +399,7 @@ Expected<RetainPtr<CMSampleBufferRef>, OSStatus> AudioSampleBufferConverter::sam
             RELEASE_LOG_ERROR(MediaStream, "AudioSampleBufferConverter CMAudioFormatDescriptionCreate failed with %d", static_cast<int>(error));
             return makeUnexpected(error);
         }
-        m_destinationFormatDescription = adoptCF(destinationFormatDescription);
+        m_destinationFormatDescription = adoptCFNullable(destinationFormatDescription);
         m_gdrCountNum = gradualDecoderRefreshCount();
     }
 
@@ -408,7 +408,7 @@ Expected<RetainPtr<CMSampleBufferRef>, OSStatus> AudioSampleBufferConverter::sam
         RELEASE_LOG_ERROR(MediaStream, "AudioSampleBufferConverter CMAudioSampleBufferCreateWithPacketDescriptions failed with %d", static_cast<int>(error));
         return makeUnexpected(error);
     }
-    auto sampleBuffer = adoptCF(rawSampleBuffer);
+    auto sampleBuffer = adoptCFNullable(rawSampleBuffer);
     if (auto error = PAL::CMSampleBufferSetDataBufferFromAudioBufferList(sampleBuffer.get(), kCFAllocatorDefault, kCFAllocatorDefault, kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment, fillBufferList.list())) {
         RELEASE_LOG_ERROR(MediaStream, "AudioSampleBufferConverter CMSampleBufferSetDataBufferFromAudioBufferList failed with %d", static_cast<int>(error));
         return makeUnexpected(error);
@@ -436,7 +436,7 @@ OSStatus AudioSampleBufferConverter::provideSourceDataNumOutputPackets(UInt32* n
     *numOutputPacketsPtr = 0;
 
     while (!PAL::CMBufferQueueIsEmpty(m_inputBufferQueue.get())) {
-        RetainPtr sampleBuffer = adoptCF((CMSampleBufferRef)(const_cast<void*>(PAL::CMBufferQueueDequeueAndRetain(m_inputBufferQueue.get()))));
+        RetainPtr sampleBuffer = adoptCFNullable((CMSampleBufferRef)(const_cast<void*>(PAL::CMBufferQueueDequeueAndRetain(m_inputBufferQueue.get()))));
         size_t listSize = 0;
         if (auto result = PAL::CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer.get(), &listSize, nullptr, 0, kCFAllocatorSystemDefault, kCFAllocatorSystemDefault, kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment, nullptr))
             return result;
@@ -445,7 +445,7 @@ OSStatus AudioSampleBufferConverter::provideSourceDataNumOutputPackets(UInt32* n
         CMBlockBufferRef buffer = nullptr;
         if (auto result = PAL::CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer.get(), nullptr, list.get(), listSize, kCFAllocatorSystemDefault, kCFAllocatorSystemDefault, kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment, &buffer))
             return result;
-        m_blockBuffer = adoptCF(buffer);
+        m_blockBuffer = adoptCFNullable(buffer);
 
         if (audioBufferList->mNumberBuffers != list->mNumberBuffers)
             return kAudioConverterErr_BadPropertySizeError;
@@ -636,7 +636,7 @@ CMSampleBufferRef AudioSampleBufferConverter::getOutputSampleBuffer() const
 
 RetainPtr<CMSampleBufferRef> AudioSampleBufferConverter::takeOutputSampleBuffer()
 {
-    return adoptCF((CMSampleBufferRef)(const_cast<void*>(PAL::CMBufferQueueDequeueAndRetain(m_outputBufferQueue.get()))));
+    return adoptCFNullable((CMSampleBufferRef)(const_cast<void*>(PAL::CMBufferQueueDequeueAndRetain(m_outputBufferQueue.get()))));
 }
 
 unsigned AudioSampleBufferConverter::bitRate() const

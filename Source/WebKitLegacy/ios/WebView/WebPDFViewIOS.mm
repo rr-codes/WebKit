@@ -63,9 +63,9 @@ static const float PAGE_HEIGHT_INSET    = 4.0 * 2.0;
 
 static RetainPtr<CGColorRef> createCGColorWithDeviceWhite(CGFloat white, CGFloat alpha)
 {
-    static NeverDestroyed<RetainPtr<CGColorSpaceRef>> graySpace = adoptCF(CGColorSpaceCreateDeviceGray());
+    static NeverDestroyed<RetainPtr<CGColorSpaceRef>> graySpace = adoptCFNullable(CGColorSpaceCreateDeviceGray());
     const CGFloat components[] = { white, alpha };
-    return adoptCF(CGColorCreate(graySpace.get().get(), components));
+    return adoptCFNullable(CGColorCreate(graySpace.get().get(), components));
 }
 
 @implementation WebPDFView {
@@ -294,7 +294,7 @@ static RetainPtr<CGColorRef> createCGColorWithDeviceWhite(CGFloat white, CGFloat
     CGPDFDictionaryRef info = CGPDFDocumentGetInfo(_PDFDocument);
     CGPDFStringRef value;
     if (CGPDFDictionaryGetString(info, "Title", &value))
-        title = adoptCF(CGPDFStringCopyTextString(value));
+        title = adoptCFNullable(CGPDFStringCopyTextString(value));
 
     if (title && CFStringGetLength(title.get())) {
         _title = bridge_cast(title.get());
@@ -304,7 +304,7 @@ static RetainPtr<CGColorRef> createCGColorWithDeviceWhite(CGFloat white, CGFloat
 
 - (void)finishedLoadingWithDataSource:(WebDataSource *)dataSource
 {
-    auto provider = adoptCF(CGDataProviderCreateWithCFData((CFDataRef)[dataSource data]));
+    auto provider = adoptCFNullable(CGDataProviderCreateWithCFData((CFDataRef)[dataSource data]));
     if (!provider) 
         return;
     

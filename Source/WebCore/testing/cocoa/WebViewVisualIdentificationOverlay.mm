@@ -128,7 +128,7 @@ const void* const webViewVisualIdentificationOverlayKey = &webViewVisualIdentifi
 static RetainPtr<CTFontRef> createIdentificationFont()
 {
     auto matrix = CGAffineTransformIdentity;
-    return adoptCF(CTFontCreateWithName(CFSTR("Helvetica"), 20, &matrix));
+    return adoptCFNullable(CTFontCreateWithName(CFSTR("Helvetica"), 20, &matrix));
 }
 
 constexpr CGFloat horizontalMargin = 15;
@@ -142,8 +142,8 @@ static void drawPattern(void *overlayPtr, CGContextRef ctx)
         (id)kCTFontAttributeName : (id)createIdentificationFont().get(),
         (id)kCTForegroundColorFromContextAttributeName : @YES
     };
-    auto attributedString = adoptCF(CFAttributedStringCreate(kCFAllocatorDefault, (__bridge CFStringRef)overlay->_kind.get(), (__bridge CFDictionaryRef)attributes));
-    auto line = adoptCF(CTLineCreateWithAttributedString(attributedString.get()));
+    auto attributedString = adoptCFNullable(CFAttributedStringCreate(kCFAllocatorDefault, (__bridge CFStringRef)overlay->_kind.get(), (__bridge CFDictionaryRef)attributes));
+    auto line = adoptCFNullable(CTLineCreateWithAttributedString(attributedString.get()));
 
     CGSize textSize = [overlay->_kind sizeWithAttributes:attributes];
 
@@ -166,12 +166,12 @@ static void drawPattern(void *overlayPtr, CGContextRef ctx)
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
 {
     CGPatternCallbacks callbacks = { 0, &drawPattern, nullptr };
-    auto patternSpace = adoptCF(CGColorSpaceCreatePattern(nullptr));
+    auto patternSpace = adoptCFNullable(CGColorSpaceCreatePattern(nullptr));
     CGContextSetFillColorSpace(ctx, patternSpace.get());
 
     CGSize textSize = [_kind sizeWithAttributes:@{ (id)kCTFontAttributeName : (id)createIdentificationFont().get() }];
     CGSize patternSize = CGSizeMake(textSize.width + horizontalMargin, (textSize.height + verticalMargin) * 2);
-    auto pattern = adoptCF(CGPatternCreate(self, layer.bounds, CGAffineTransformMakeRotation(piOverFourDouble), patternSize.width, patternSize.height, kCGPatternTilingNoDistortion, true, &callbacks));
+    auto pattern = adoptCFNullable(CGPatternCreate(self, layer.bounds, CGAffineTransformMakeRotation(piOverFourDouble), patternSize.width, patternSize.height, kCGPatternTilingNoDistortion, true, &callbacks));
     CGFloat alpha = 0.5;
     CGContextSetFillPattern(ctx, pattern.get(), &alpha);
 

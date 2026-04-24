@@ -31,6 +31,6 @@ using namespace WebCore;
 
 NSString *WebLocalizedStringInternal(const char* key)
 {
-    auto keyString = adoptCF(CFStringCreateWithCStringNoCopy(0, key, kCFStringEncodingUTF8, kCFAllocatorNull));
+    auto keyString = adoptCFNullable(CFStringCreateWithCStringNoCopy(0, key, kCFStringEncodingUTF8, kCFAllocatorNull));
     return localizedNSString(bridge_cast(keyString.get()));
 }

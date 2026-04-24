@@ -276,7 +276,7 @@ static const float PAGE_HEIGHT_INSET = 4.0f * 2.0f;
     [self dataSourceUpdated:dataSource];
 
     _didFinishLoad = YES;
-    auto provider = adoptCF(CGDataProviderCreateWithCFData((CFDataRef)[dataSource data]));
+    auto provider = adoptCFNullable(CGDataProviderCreateWithCFData((CFDataRef)[dataSource data]));
     if (!provider)
         return;
 
@@ -333,7 +333,7 @@ static const float PAGE_HEIGHT_INSET = 4.0f * 2.0f;
     CGPDFDictionaryRef info = CGPDFDocumentGetInfo(_document);
     CGPDFStringRef value;
     if (CGPDFDictionaryGetString(info, "Title", &value))
-        title = adoptCF(CGPDFStringCopyTextString(value));
+        title = adoptCFNullable(CGPDFStringCopyTextString(value));
 
     if (title && CFStringGetLength(title.get())) {
         [self setTitle:bridge_cast(title.get())];

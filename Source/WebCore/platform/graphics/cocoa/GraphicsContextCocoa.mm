@@ -129,7 +129,7 @@ void GraphicsContextCG::drawFocusRing(const Path& path, float, const Color& colo
     // -1. According to CoreGraphics, the reasoning for this behavior has been
     // lost in time.
     focusRingStyle.accumulate = -1;
-    auto style = adoptCF(CGStyleCreateFocusRingWithColor(&focusRingStyle, cachedCGColor(color).get()));
+    auto style = adoptCFNullable(CGStyleCreateFocusRingWithColor(&focusRingStyle, cachedCGColor(color).get()));
 
     CGContextStateSaver stateSaver(platformContext);
 

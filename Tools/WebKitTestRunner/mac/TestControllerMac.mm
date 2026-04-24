@@ -242,7 +242,7 @@ void TestController::configureContentExtensionForTest(const TestInvocation& test
     if (!test.urlContains("contentextensions/"_s))
         return;
 
-    auto testURL = adoptCF(WKURLCopyCFURL(kCFAllocatorDefault, test.url()));
+    auto testURL = adoptCFNullable(WKURLCopyCFURL(kCFAllocatorDefault, test.url()));
     NSURL *filterURL = [[(__bridge NSURL *)testURL.get() URLByDeletingPathExtension] URLByAppendingPathExtension:@"json"];
 
     __block RetainPtr<NSString> contentExtensionString;
@@ -526,7 +526,7 @@ void TestController::initializeWebProcessAccessibility()
     // a web content process before it's ready to serve that request on the AX thread, causing
     // it to time out. Reduce the timeout from the default of 1.5 seconds to 0.05 seconds so
     // that it retries quickly and doesn't slow down the test.
-    auto systemWide = adoptCF(AXUIElementCreateSystemWide());
+    auto systemWide = adoptCFNullable(AXUIElementCreateSystemWide());
     AXUIElementSetMessagingTimeout(systemWide.get(), 0.05);
 
     // Trigger accessibility initialization by accessing an accessibility attribute.

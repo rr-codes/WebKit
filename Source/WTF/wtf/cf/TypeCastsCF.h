@@ -60,7 +60,7 @@ template<typename T, typename U> RetainPtr<T> dynamic_cf_cast(RetainPtr<U>&& obj
     if (CFGetTypeID(object.get()) != CFTypeTrait<T>::typeID())
         return nullptr;
 
-    return adoptCF(static_cast<T>(const_cast<CF_BRIDGED_TYPE(id) void*>(object.leakRef())));
+    return adoptCFNullable(static_cast<T>(const_cast<CF_BRIDGED_TYPE(id) void*>(object.leakRef())));
 }
 
 // Use checked_cf_cast<> instead of dynamic_cf_cast<> when a specific CF type is required.

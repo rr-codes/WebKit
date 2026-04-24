@@ -42,8 +42,8 @@ PlatformImagePtr ImageBackingStore::image() const
     size_t height = size().height();
     size_t bytesPerRow = bytesPerPixel * width;
 
-    auto colorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    auto dataProvider = adoptCF(CGDataProviderCreateWithData(m_pixels.get(), m_pixelsSpan.data(), height * bytesPerRow, dataProviderReleaseCallback));
+    auto colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    auto dataProvider = adoptCFNullable(CGDataProviderCreateWithData(m_pixels.get(), m_pixelsSpan.data(), height * bytesPerRow, dataProviderReleaseCallback));
 
     if (!dataProvider)
         return nullptr;
@@ -52,7 +52,7 @@ PlatformImagePtr ImageBackingStore::image() const
 IGNORE_WARNINGS_BEGIN("deprecated-enum-enum-conversion")
     CGBitmapInfo bitmapInfo = (m_premultiplyAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaFirst) | kCGImageByteOrder32Little;
 IGNORE_WARNINGS_END
-    return adoptCF(CGImageCreate(width, height, bitsPerComponent, bytesPerPixel * 8, bytesPerRow, colorSpace.get(), bitmapInfo, dataProvider.get(), nullptr, true, kCGRenderingIntentDefault));
+    return adoptCFNullable(CGImageCreate(width, height, bitsPerComponent, bytesPerPixel * 8, bytesPerRow, colorSpace.get(), bitmapInfo, dataProvider.get(), nullptr, true, kCGRenderingIntentDefault));
 }
 
 } // namespace WebCore

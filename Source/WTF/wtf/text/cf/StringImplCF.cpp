@@ -107,7 +107,7 @@ namespace StringWrapperCFAllocator {
         static NeverDestroyed allocator = [] {
             initializeMainThread();
             CFAllocatorContext context = { 0, nullptr, retain, release, copyDescription, allocate, reallocate, deallocate, preferredSize };
-            return adoptCF(CFAllocatorCreate(nullptr, &context));
+            return adoptCFNullable(CFAllocatorCreate(nullptr, &context));
         }();
         return allocator.get().get();
     }
@@ -119,10 +119,10 @@ RetainPtr<CFStringRef> StringImpl::createCFString()
     if (!m_length || !isMainThread()) {
         if (is8Bit()) {
             auto characters = span8();
-            return adoptCF(CFStringCreateWithBytes(nullptr, byteCast<UInt8>(characters.data()), characters.size(), kCFStringEncodingISOLatin1, false));
+            return adoptCFNullable(CFStringCreateWithBytes(nullptr, byteCast<UInt8>(characters.data()), characters.size(), kCFStringEncodingISOLatin1, false));
         }
         auto characters = span16();
-        return adoptCF(CFStringCreateWithCharacters(nullptr, reinterpret_cast<const UniChar*>(characters.data()), characters.size()));
+        return adoptCFNullable(CFStringCreateWithCharacters(nullptr, reinterpret_cast<const UniChar*>(characters.data()), characters.size()));
     }
 
     // Put pointer to the StringImpl in a global so the allocator can store it with the CFString.
@@ -132,10 +132,10 @@ RetainPtr<CFStringRef> StringImpl::createCFString()
     RetainPtr<CFStringRef> string;
     if (is8Bit()) {
         auto characters = span8();
-        string = adoptCF(CFStringCreateWithBytesNoCopy(StringWrapperCFAllocator::allocatorSingleton(), byteCast<UInt8>(characters.data()), characters.size(), kCFStringEncodingISOLatin1, false, kCFAllocatorNull));
+        string = adoptCFNullable(CFStringCreateWithBytesNoCopy(StringWrapperCFAllocator::allocatorSingleton(), byteCast<UInt8>(characters.data()), characters.size(), kCFStringEncodingISOLatin1, false, kCFAllocatorNull));
     } else {
         auto characters = span16();
-        string = adoptCF(CFStringCreateWithCharactersNoCopy(StringWrapperCFAllocator::allocatorSingleton(), reinterpret_cast<const UniChar*>(characters.data()), characters.size(), kCFAllocatorNull));
+        string = adoptCFNullable(CFStringCreateWithCharactersNoCopy(StringWrapperCFAllocator::allocatorSingleton(), reinterpret_cast<const UniChar*>(characters.data()), characters.size(), kCFAllocatorNull));
     }
     // CoreFoundation might not have to allocate anything, we clear currentString() in case we did not execute allocate().
     StringWrapperCFAllocator::currentString() = nullptr;

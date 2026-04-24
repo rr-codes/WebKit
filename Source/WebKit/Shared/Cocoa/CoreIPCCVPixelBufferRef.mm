@@ -44,14 +44,14 @@ RetainPtr<CVPixelBufferRef> CoreIPCCVPixelBufferRef::toCF() const
     if (!m_sendRight)
         return pixelBuffer;
     {
-        auto surface = adoptCF(IOSurfaceLookupFromMachPort(m_sendRight.sendRight()));
+        auto surface = adoptCFNullable(IOSurfaceLookupFromMachPort(m_sendRight.sendRight()));
         if (!surface)
             return nullptr;
         CVPixelBufferRef rawBuffer = nullptr;
         auto status = CVPixelBufferCreateWithIOSurface(kCFAllocatorDefault, surface.get(), nullptr, &rawBuffer);
         if (status != noErr || !rawBuffer)
             return nullptr;
-        pixelBuffer = adoptCF(rawBuffer);
+        pixelBuffer = adoptCFNullable(rawBuffer);
     }
     return pixelBuffer;
 }

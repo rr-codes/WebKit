@@ -63,8 +63,8 @@ static CFStringTokenizerRef tokenizerForString(CFStringRef str)
 {
     static const NeverDestroyed locale = [] {
         const char* localID = currentTextBreakLocaleID();
-        auto currentLocaleID = adoptCF(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, localID, kCFStringEncodingASCII, kCFAllocatorNull));
-        return adoptCF(CFLocaleCreate(kCFAllocatorDefault, currentLocaleID.get()));
+        auto currentLocaleID = adoptCFNullable(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, localID, kCFStringEncodingASCII, kCFAllocatorNull));
+        return adoptCFNullable(CFLocaleCreate(kCFAllocatorDefault, currentLocaleID.get()));
     }();
 
     if (!locale.get())
@@ -74,7 +74,7 @@ static CFStringTokenizerRef tokenizerForString(CFStringRef str)
 
     static NeverDestroyed<RetainPtr<CFStringTokenizerRef>> tokenizer;
     if (!tokenizer.get())
-        tokenizer.get() = adoptCF(CFStringTokenizerCreate(kCFAllocatorDefault, str, entireRange, kCFStringTokenizerUnitWordBoundary, locale.get().get()));
+        tokenizer.get() = adoptCFNullable(CFStringTokenizerCreate(kCFAllocatorDefault, str, entireRange, kCFStringTokenizerUnitWordBoundary, locale.get().get()));
     else
         CFStringTokenizerSetString(tokenizer.get().get(), str, entireRange);
     return tokenizer.get().get();

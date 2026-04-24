@@ -74,7 +74,7 @@ static RetainPtr<CFDataRef> extractFontCustomPlatformDataShared(RetainPtr<CFArra
         if (auto desiredName = itemInCollection.createCFString()) {
             for (CFIndex i = 0; i < length; ++i) {
                 auto candidate = static_cast<FPFontRef>(CFArrayGetValueAtIndex(array.get(), i));
-                auto postScriptName = adoptCF(FPFontCopyPostScriptName(candidate));
+                auto postScriptName = adoptCFNullable(FPFontCopyPostScriptName(candidate));
                 if (CFStringCompare(postScriptName.get(), desiredName.get(), 0) == kCFCompareEqualTo) {
                     font = candidate;
                     break;
@@ -87,14 +87,14 @@ static RetainPtr<CFDataRef> extractFontCustomPlatformDataShared(RetainPtr<CFArra
 
     // Retain the extracted font contents, so the GPU process doesn't have to extract it a second time later.
     // This is a power optimization.
-    return adoptCF(FPFontCopySFNTData(font));
+    return adoptCFNullable(FPFontCopySFNTData(font));
 }
 
 static RetainPtr<CFDataRef> extractFontCustomPlatformDataSystemParser(const SharedBuffer& buffer, const String& itemInCollection)
 {
     RetainPtr bufferData = buffer.createCFData();
 
-    RetainPtr array = adoptCF(FPFontCreateFontsFromData(bufferData.get()));
+    RetainPtr array = adoptCFNullable(FPFontCreateFontsFromData(bufferData.get()));
     return extractFontCustomPlatformDataShared(WTF::move(array), itemInCollection);
 }
 
@@ -103,7 +103,7 @@ static RetainPtr<CFDataRef> extractFontCustomPlatformDataMemorySafe(const Shared
 {
     RetainPtr bufferData = buffer.createCFData();
 
-    RetainPtr array = adoptCF(FPFontCreateMemorySafeFontsFromData(bufferData.get()));
+    RetainPtr array = adoptCFNullable(FPFontCreateMemorySafeFontsFromData(bufferData.get()));
     return extractFontCustomPlatformDataShared(WTF::move(array), itemInCollection);
 }
 #endif
@@ -116,7 +116,7 @@ RefPtr<FontCustomPlatformData> FontCustomPlatformData::create(SharedBuffer& buff
         return nullptr;
     }
 
-    RetainPtr fontDescriptor = adoptCF(CTFontManagerCreateFontDescriptorFromData(extractedData.get()));
+    RetainPtr fontDescriptor = adoptCFNullable(CTFontManagerCreateFontDescriptorFromData(extractedData.get()));
     Ref bufferRef = SharedBuffer::create(extractedData.get());
 
     FontPlatformData::CreationData creationData = { WTF::move(bufferRef), itemInCollection };
@@ -132,7 +132,7 @@ RefPtr<FontCustomPlatformData> FontCustomPlatformData::createMemorySafe(SharedBu
         return nullptr;
     }
 
-    RetainPtr fontDescriptor = adoptCF(CTFontManagerCreateMemorySafeFontDescriptorFromData(extractedData.get()));
+    RetainPtr fontDescriptor = adoptCFNullable(CTFontManagerCreateMemorySafeFontDescriptorFromData(extractedData.get()));
 
     // Safe Font parser could not handle this font. This is already logged by CachedFontLoadRequest::ensureCustomFontData
     if (!fontDescriptor)

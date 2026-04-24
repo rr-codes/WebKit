@@ -48,13 +48,13 @@ public:
     }
 
     CoreIPCCFCharacterSet(std::span<const uint8_t> data)
-        : m_cfCharacterSetData(adoptCF(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
+        : m_cfCharacterSetData(adoptCFNullable(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
     {
     }
 
     RetainPtr<CFCharacterSetRef> toCF() const
     {
-        return adoptCF(CFCharacterSetCreateWithBitmapRepresentation(nullptr, m_cfCharacterSetData.get()));
+        return adoptCFNullable(CFCharacterSetCreateWithBitmapRepresentation(nullptr, m_cfCharacterSetData.get()));
     }
 
     std::span<const uint8_t> dataReference() const
@@ -67,7 +67,7 @@ private:
     RetainPtr<CFDataRef> dataFromCharacterSet(CFCharacterSetRef characterSet)
     {
         ASSERT(characterSet);
-        auto data = adoptCF(CFCharacterSetCreateBitmapRepresentation(nullptr, characterSet));
+        auto data = adoptCFNullable(CFCharacterSetCreateBitmapRepresentation(nullptr, characterSet));
         ASSERT(data);
         return data;
     }

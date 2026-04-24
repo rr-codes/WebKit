@@ -246,7 +246,7 @@ String displayNameForLanguageLocale(const String& localeName)
 {
 #if USE(CF)
     if (!localeName.isEmpty())
-        return adoptCF(CFLocaleCopyDisplayNameForPropertyValue(adoptCF(CFLocaleCopyCurrent()).get(), kCFLocaleIdentifier, localeName.createCFString().get())).get();
+        return adoptCFNullable(CFLocaleCopyDisplayNameForPropertyValue(adoptCFNullable(CFLocaleCopyCurrent()).get(), kCFLocaleIdentifier, localeName.createCFString().get())).get();
 #endif
     return localeName;
 }

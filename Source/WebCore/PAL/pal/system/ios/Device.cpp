@@ -65,7 +65,7 @@ bool deviceClassIsVision()
 String deviceName()
 {
 #if ENABLE(MOBILE_GESTALT_DEVICE_NAME)
-    static NeverDestroyed<RetainPtr<CFStringRef>> deviceName = adoptCF(static_cast<CFStringRef>(MGCopyAnswer(kMGQDeviceName, nullptr)));
+    static NeverDestroyed<RetainPtr<CFStringRef>> deviceName = adoptCFNullable(static_cast<CFStringRef>(MGCopyAnswer(kMGQDeviceName, nullptr)));
     return deviceName.get().get();
 #else
     if (!deviceClassIsSmallScreen())

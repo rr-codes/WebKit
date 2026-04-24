@@ -37,7 +37,7 @@ namespace WebCore {
 // https://w3c.github.io/csswg-drafts/css-text/#full-width
 String transformToFullWidth(const String& text)
 {
-    auto mutableString = adoptCF(CFStringCreateMutableCopy(nullptr, 0, text.createCFString().get()));
+    auto mutableString = adoptCFNullable(CFStringCreateMutableCopy(nullptr, 0, text.createCFString().get()));
     if (CFStringTransform(mutableString.get(), nullptr, kCFStringTransformFullwidthHalfwidth, true))
         return mutableString.get();
     return text;

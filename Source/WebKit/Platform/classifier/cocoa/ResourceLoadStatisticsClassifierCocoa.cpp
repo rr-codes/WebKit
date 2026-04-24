@@ -62,15 +62,15 @@ bool ResourceLoadStatisticsClassifierCocoa::classify(unsigned subresourceUnderTo
 String ResourceLoadStatisticsClassifierCocoa::storagePath()
 {
     RetainPtr<CFBundleRef> webKitBundle = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.WebKit"));
-    RetainPtr<CFURLRef> resourceURL = adoptCF(CFBundleCopyResourcesDirectoryURL(webKitBundle.get()));
-    resourceURL = adoptCF(CFURLCreateCopyAppendingPathComponent(nullptr, resourceURL.get(), CFSTR("corePrediction_model"), false));
+    RetainPtr<CFURLRef> resourceURL = adoptCFNullable(CFBundleCopyResourcesDirectoryURL(webKitBundle.get()));
+    resourceURL = adoptCFNullable(CFURLCreateCopyAppendingPathComponent(nullptr, resourceURL.get(), CFSTR("corePrediction_model"), false));
     CFErrorRef error = nullptr;
-    resourceURL = adoptCF(CFURLCreateFilePathURL(nullptr, resourceURL.get(), &error));
+    resourceURL = adoptCFNullable(CFURLCreateFilePathURL(nullptr, resourceURL.get(), &error));
 
     if (error || !resourceURL)
         return String();
 
-    RetainPtr<CFStringRef> resourceURLString = adoptCF(CFURLCopyFileSystemPath(resourceURL.get(), kCFURLPOSIXPathStyle));
+    RetainPtr<CFStringRef> resourceURLString = adoptCFNullable(CFURLCopyFileSystemPath(resourceURL.get(), kCFURLPOSIXPathStyle));
     return String(resourceURLString.get());
 }
 

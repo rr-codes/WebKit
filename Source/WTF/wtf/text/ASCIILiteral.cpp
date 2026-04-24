@@ -40,7 +40,7 @@ void ASCIILiteral::dump(PrintStream& out) const
 #if USE(CF)
 RetainPtr<CFStringRef> ASCIILiteral::createCFString() const
 {
-    return adoptCF(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, characters(), kCFStringEncodingASCII, kCFAllocatorNull));
+    return adoptCFNullable(CFStringCreateWithCStringNoCopy(kCFAllocatorDefault, characters(), kCFStringEncodingASCII, kCFAllocatorNull));
 }
 #endif
 

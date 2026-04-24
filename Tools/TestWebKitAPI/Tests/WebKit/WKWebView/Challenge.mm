@@ -53,7 +53,7 @@ static bool navigationFinished;
 RetainPtr<SecCertificateRef> testCertificate()
 {
     auto certificateBytes = TestWebKitAPI::HTTPServer::testCertificate();
-    return adoptCF(SecCertificateCreateWithData(nullptr, toCFData(certificateBytes.span()).get()));
+    return adoptCFNullable(SecCertificateCreateWithData(nullptr, toCFData(certificateBytes.span()).get()));
 }
 
 static RetainPtr<SecIdentityRef> createTestIdentity(const Vector<uint8_t>& privateKeyBytes, const Vector<uint8_t>& certificateBytes)
@@ -70,15 +70,15 @@ static RetainPtr<SecIdentityRef> createTestIdentity(const Vector<uint8_t>& priva
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        privateKey = adoptCF(SecKeyCreateWithData(bridge_cast([derEncodedPrivateKey subdataWithRange:NSMakeRange(pemEncodedPrivateKeyHeaderLength, [derEncodedPrivateKey length] - pemEncodedPrivateKeyHeaderLength)]), bridge_cast(options), &rawError));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT keyError = adoptCF(rawError);
+        privateKey = adoptCFNullable(SecKeyCreateWithData(bridge_cast([derEncodedPrivateKey subdataWithRange:NSMakeRange(pemEncodedPrivateKeyHeaderLength, [derEncodedPrivateKey length] - pemEncodedPrivateKeyHeaderLength)]), bridge_cast(options), &rawError));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT keyError = adoptCFNullable(rawError);
     }
     EXPECT_NULL(keyError);
     EXPECT_NOT_NULL(privateKey.get());
 
-    RetainPtr testCertificate = adoptCF(SecCertificateCreateWithData(nullptr, toCFData(certificateBytes.span()).get()));
+    RetainPtr testCertificate = adoptCFNullable(SecCertificateCreateWithData(nullptr, toCFData(certificateBytes.span()).get()));
 
-    return adoptCF(SecIdentityCreate(kCFAllocatorDefault, testCertificate.get(), privateKey.get()));
+    return adoptCFNullable(SecIdentityCreate(kCFAllocatorDefault, testCertificate.get(), privateKey.get()));
 }
 
 RetainPtr<SecIdentityRef> testIdentity()
@@ -422,7 +422,7 @@ void verifyCertificateAndPublicKey(SecTrustRef trust)
             EXPECT_EQ(expected[i], bytes[i]);
     };
 
-    RetainPtr publicKey = adoptCF(SecKeyCopyExternalRepresentation(adoptCF(SecTrustCopyPublicKey(trust)).get(), nullptr));
+    RetainPtr publicKey = adoptCFNullable(SecKeyCopyExternalRepresentation(adoptCFNullable(SecTrustCopyPublicKey(trust)).get(), nullptr));
     compareData(publicKey, {
         0x30, 0x82, 0x02, 0x0a, 0x02, 0x82, 0x02, 0x01, 0x00, 0xde, 0xb8, 0x4d, 0xe1, 0x23, 0xe0, 0xf1,
         0x56, 0x3f, 0x3e, 0xd1, 0x83, 0x34, 0xa6, 0x37, 0x4f, 0xd2, 0x48, 0x4a, 0x06, 0xf2, 0xf1, 0x81,
@@ -461,7 +461,7 @@ void verifyCertificateAndPublicKey(SecTrustRef trust)
     
     EXPECT_EQ(1, SecTrustGetCertificateCount(trust));
 
-    RetainPtr certificate = adoptCF(SecCertificateCopyData((SecCertificateRef)CFArrayGetValueAtIndex(adoptCF(SecTrustCopyCertificateChain(trust)).get(), 0)));
+    RetainPtr certificate = adoptCFNullable(SecCertificateCopyData((SecCertificateRef)CFArrayGetValueAtIndex(adoptCFNullable(SecTrustCopyCertificateChain(trust)).get(), 0)));
     compareData(certificate, {
         0x30, 0x82, 0x05, 0x80, 0x30, 0x82, 0x03, 0x68, 0x02, 0x09, 0x00, 0x8a, 0x1e, 0x23, 0xd1, 0x53,
         0x93, 0x10, 0xb8, 0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b,

@@ -1288,8 +1288,8 @@ static void storeAccessibilityRemoteConnectionInformation(id element, pid_t pid,
                 [printFormatter _setPrintedDocument:nullptr];
             else {
                 auto data = pdfData->createCFData();
-                auto dataProvider = adoptCF(CGDataProviderCreateWithCFData(data.get()));
-                [printFormatter _setPrintedDocument:adoptCF(CGPDFDocumentCreateWithProvider(dataProvider.get())).get()];
+                auto dataProvider = adoptCFNullable(CGDataProviderCreateWithCFData(data.get()));
+                [printFormatter _setPrintedDocument:adoptCFNullable(CGPDFDocumentCreateWithProvider(dataProvider.get())).get()];
             }
         });
 

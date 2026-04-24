@@ -331,7 +331,7 @@ void ControlMac::drawCellFocusRing(GraphicsContext& context, const FloatRect& re
     // FIXME: This color should be shared with RenderThemeMac. For now just use the same NSColor color.
     // The color is expected to be opaque, since CoreGraphics will apply opacity when drawing (because opacity is normally animated).
     auto color = colorFromCocoaColor([NSColor keyboardFocusIndicatorColor]).opaqueColor();
-    auto cgStyle = adoptCF(CGStyleCreateFocusRingWithColor(&focusRingStyle, cachedCGColor(color).get()));
+    auto cgStyle = adoptCFNullable(CGStyleCreateFocusRingWithColor(&focusRingStyle, cachedCGColor(color).get()));
     CGContextSetStyle(cgContext.get(), cgStyle.get());
 
     CGContextBeginTransparencyLayerWithRect(cgContext.get(), rect, nullptr);

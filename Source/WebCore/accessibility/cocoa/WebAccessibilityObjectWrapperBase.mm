@@ -514,7 +514,7 @@ static void convertPathToScreenSpaceFunction(PathConversionInfo& conversion, con
 
 - (CGPathRef)convertPathToScreenSpace:(const Path&)path
 {
-    auto convertedPath = adoptCF(CGPathCreateMutable());
+    auto convertedPath = adoptCFNullable(CGPathCreateMutable());
     PathConversionInfo conversion = { retainPtr(self), convertedPath };
     path.applyElements([&conversion](const PathElement& pathElement) {
         convertPathToScreenSpaceFunction(conversion, pathElement);

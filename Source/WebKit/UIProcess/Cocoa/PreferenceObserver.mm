@@ -73,9 +73,9 @@
             encodedString = [data base64EncodedStringWithOptions:0];
         }
 
-        auto systemValue = adoptCF(CFPreferencesCopyValue((__bridge CFStringRef)key, kCFPreferencesAnyApplication, kCFPreferencesAnyUser, kCFPreferencesAnyHost));
-        auto globalValue = adoptCF(CFPreferencesCopyValue((__bridge CFStringRef)key, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
-        auto domainValue = adoptCF(CFPreferencesCopyValue((__bridge CFStringRef)key, (__bridge CFStringRef)m_suiteName.get(), kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+        auto systemValue = adoptCFNullable(CFPreferencesCopyValue((__bridge CFStringRef)key, kCFPreferencesAnyApplication, kCFPreferencesAnyUser, kCFPreferencesAnyHost));
+        auto globalValue = adoptCFNullable(CFPreferencesCopyValue((__bridge CFStringRef)key, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+        auto domainValue = adoptCFNullable(CFPreferencesCopyValue((__bridge CFStringRef)key, (__bridge CFStringRef)m_suiteName.get(), kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
 
         auto preferenceValuesAreEqual = [] (id a, id b) {
             return a == b || [a isEqual:b];

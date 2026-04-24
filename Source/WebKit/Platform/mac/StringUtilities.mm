@@ -54,13 +54,13 @@ RetainPtr<NSString> formattedPhoneNumberString(NSString *originalPhoneNumber)
 {
     RetainPtr countryCode = [[[NSLocale currentLocale] objectForKey:NSLocaleCountryCode] lowercaseString];
 
-    RetainPtr<CFPhoneNumberRef> phoneNumber = adoptCF(CFPhoneNumberCreate(kCFAllocatorDefault, bridge_cast(originalPhoneNumber), bridge_cast(countryCode.get())));
+    RetainPtr<CFPhoneNumberRef> phoneNumber = adoptCFNullable(CFPhoneNumberCreate(kCFAllocatorDefault, bridge_cast(originalPhoneNumber), bridge_cast(countryCode.get())));
     if (!phoneNumber)
         return originalPhoneNumber;
 
-    RetainPtr phoneNumberString = adoptCF(CFPhoneNumberCopyFormattedRepresentation(phoneNumber.get()));
+    RetainPtr phoneNumberString = adoptCFNullable(CFPhoneNumberCopyFormattedRepresentation(phoneNumber.get()));
     if (!phoneNumberString)
-        phoneNumberString = adoptCF(CFPhoneNumberCopyUnformattedRepresentation(phoneNumber.get()));
+        phoneNumberString = adoptCFNullable(CFPhoneNumberCopyUnformattedRepresentation(phoneNumber.get()));
 
     return bridge_cast(WTF::move(phoneNumberString));
 }

@@ -263,8 +263,8 @@ CoreIPCSecTrust::CoreIPCSecTrust(SecTrustRef trust)
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        cfDictionary = adoptCF(dynamic_cf_cast<CFDictionaryRef>(SecTrustCopyPropertyListRepresentation(trust, &rawError)));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCF(rawError);
+        cfDictionary = adoptCFNullable(dynamic_cf_cast<CFDictionaryRef>(SecTrustCopyPropertyListRepresentation(trust, &rawError)));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCFNullable(rawError);
     }
     if (!cfDictionary || error)
         return;
@@ -902,8 +902,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        trust = adoptCF(SecTrustCreateFromPropertyListRepresentation(dict.get(), &rawError));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCF(rawError);
+        trust = adoptCFNullable(SecTrustCreateFromPropertyListRepresentation(dict.get(), &rawError));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCFNullable(rawError);
     }
     if (error) {
         RELEASE_LOG_ERROR(IPC, "CoreIPCSecTrust error creating trust object");

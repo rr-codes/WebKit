@@ -88,7 +88,7 @@ void PopupMenuMac::populate()
             RetainPtr font = style.font().primaryFont().ctFont();
             if (!font) {
                 CGFloat size = style.font().primaryFont().platformData().size();
-                font = adoptCF(CTFontCreateUIFontForLanguage(isFontWeightBold(style.font().weight()) ? kCTFontUIFontEmphasizedSystem : kCTFontUIFontSystem, size, nullptr));
+                font = adoptCFNullable(CTFontCreateUIFontForLanguage(isFontWeightBold(style.font().weight()) ? kCTFontUIFontEmphasizedSystem : kCTFontUIFontSystem, size, nullptr));
             }
             [attributes setObject:(__bridge NSFont *)(font.get()) forKey:NSFontAttributeName];
         }
@@ -169,7 +169,7 @@ void PopupMenuMac::show(const IntRect& r, LocalFrameView& frameView, int selecte
             titleFrame = r;
         float vertOffset = roundf((NSMaxY(r) - NSMaxY(titleFrame)) + NSHeight(titleFrame));
         // Adjust for fonts other than the system font.
-        auto defaultFont = adoptCF(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, CTFontGetSize(font.get()), nil));
+        auto defaultFont = adoptCFNullable(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, CTFontGetSize(font.get()), nil));
         vertOffset += CTFontGetDescent(font.get()) - CTFontGetDescent(defaultFont.get());
         vertOffset = fminf(NSHeight(r), vertOffset);
         if (textDirection == TextDirection::LTR)

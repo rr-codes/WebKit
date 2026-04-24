@@ -114,13 +114,13 @@ TEST(SnapshotStore, SnapshotUponNavigation)
 
     RetainPtr<WKBackForwardListItem> firstItem = [[webView backForwardList] currentItem];
 
-    RetainPtr<CGImageRef> imageBeforeNavigation = adoptCF([firstItem _copySnapshotForTesting]);
+    RetainPtr<CGImageRef> imageBeforeNavigation = adoptCFNullable([firstItem _copySnapshotForTesting]);
     EXPECT_NULL(imageBeforeNavigation.get());
 
     [webView synchronouslyLoadTestPageAndForceRepaint:@"lots-of-text"];
 
     // After navigating, the first item should have a valid back-forward snapshot.
-    RetainPtr<CGImageRef> imageAfterNavigation = adoptCF([firstItem _copySnapshotForTesting]);
+    RetainPtr<CGImageRef> imageAfterNavigation = adoptCFNullable([firstItem _copySnapshotForTesting]);
     EXPECT_NOT_NULL(imageAfterNavigation.get());
     EXPECT_EQ(CGImageGetWidth(imageAfterNavigation.get()), (unsigned long)(800 * [webView window].backingScaleFactor));
 }
@@ -136,7 +136,7 @@ TEST(SnapshotStore, SnapshotClearedWhenItemIsRemoved)
 
     [webView synchronouslyLoadTestPageAndForceRepaint:@"simple"];
 
-    EXPECT_NOT_NULL(adoptCF([item _copySnapshotForTesting]).get());
+    EXPECT_NOT_NULL(adoptCFNullable([item _copySnapshotForTesting]).get());
 
     [webView goBack];
     [webView _test_waitForDidFinishNavigation];
@@ -144,13 +144,13 @@ TEST(SnapshotStore, SnapshotClearedWhenItemIsRemoved)
     [webView _test_waitForDidFinishNavigation];
 
     // The original second item is still in the forward list, and should still have a snapshot.
-    EXPECT_NOT_NULL(adoptCF([item _copySnapshotForTesting]).get());
+    EXPECT_NOT_NULL(adoptCFNullable([item _copySnapshotForTesting]).get());
 
     [webView synchronouslyLoadTestPageAndForceRepaint:@"lots-of-text"];
 
     // The original second item shouldn't have an image anymore, because it was invalidated
     // by navigating back past it and then doing another load.
-    EXPECT_NULL(adoptCF([item _copySnapshotForTesting]).get());
+    EXPECT_NULL(adoptCFNullable([item _copySnapshotForTesting]).get());
 }
 
 static RetainPtr<NSView> makeRedSquareView()
@@ -174,13 +174,13 @@ TEST(SnapshotStore, ExplicitSnapshotsChangeUponNavigation)
     [webView _saveBackForwardSnapshotForItem:firstItem.get()];
     [redSquare removeFromSuperview];
 
-    RetainPtr<CGImageRef> initialSnapshot = adoptCF([firstItem _copySnapshotForTesting]);
+    RetainPtr<CGImageRef> initialSnapshot = adoptCFNullable([firstItem _copySnapshotForTesting]);
     EXPECT_NOT_NULL(initialSnapshot);
 
     [webView synchronouslyLoadTestPageAndForceRepaint:@"simple"];
 
     // After navigating, the first item's snapshot should change.
-    RetainPtr<CGImageRef> snapshotAfterNavigation = adoptCF([firstItem _copySnapshotForTesting]);
+    RetainPtr<CGImageRef> snapshotAfterNavigation = adoptCFNullable([firstItem _copySnapshotForTesting]);
     EXPECT_NOT_NULL(snapshotAfterNavigation.get());
     EXPECT_FALSE(imagesAreEqual(initialSnapshot.get(), snapshotAfterNavigation.get()));
 }
@@ -203,14 +203,14 @@ TEST(SnapshotStore, SnapshotsForNeverLoadedPagesDoNotChangeUponNavigation)
 
     [webView synchronouslyLoadTestPageAndForceRepaint:@"lots-of-text"];
 
-    RetainPtr<CGImageRef> initialSnapshot = adoptCF([firstItem _copySnapshotForTesting]);
+    RetainPtr<CGImageRef> initialSnapshot = adoptCFNullable([firstItem _copySnapshotForTesting]);
     EXPECT_NOT_NULL(initialSnapshot);
 
     [webView synchronouslyLoadTestPageAndForceRepaint:@"simple"];
 
     // After navigating, the first item's snapshot should not change, because it was
     // never loaded into the view.
-    RetainPtr<CGImageRef> snapshotAfterNavigation = adoptCF([firstItem _copySnapshotForTesting]);
+    RetainPtr<CGImageRef> snapshotAfterNavigation = adoptCFNullable([firstItem _copySnapshotForTesting]);
     EXPECT_NOT_NULL(snapshotAfterNavigation.get());
     EXPECT_TRUE(imagesAreEqual(initialSnapshot.get(), snapshotAfterNavigation.get()));
 }
@@ -240,11 +240,11 @@ TEST(SnapshotStore, ClearSiteDataHeader)
     auto *backForwardList = [webView backForwardList];
     [webView synchronouslyLoadRequestPageAndForceRepaint:server.request("/index1.html"_s)];
     [webView synchronouslyLoadRequestPageAndForceRepaint:server.request("/index2.html"_s)];
-    EXPECT_TRUE(!!adoptCF([backForwardList.backItem _copySnapshotForTesting]));
+    EXPECT_TRUE(!!adoptCFNullable([backForwardList.backItem _copySnapshotForTesting]));
 
     [webView synchronouslyLoadRequestPageAndForceRepaint:server.request("/logout.html"_s)];
-    EXPECT_FALSE(!!adoptCF([backForwardList.backItem _copySnapshotForTesting]));
-    EXPECT_FALSE(!!adoptCF([[backForwardList itemAtIndex:-2] _copySnapshotForTesting]));
+    EXPECT_FALSE(!!adoptCFNullable([backForwardList.backItem _copySnapshotForTesting]));
+    EXPECT_FALSE(!!adoptCFNullable([[backForwardList itemAtIndex:-2] _copySnapshotForTesting]));
 }
 
 TEST(SnapshotStore, ClearSiteDataHeaderCrossOrigin)
@@ -266,13 +266,13 @@ TEST(SnapshotStore, ClearSiteDataHeaderCrossOrigin)
     auto *backForwardList = [webView backForwardList];
     [webView synchronouslyLoadRequestPageAndForceRepaint:server.request("/index1.html"_s)];
     [webView synchronouslyLoadRequestPageAndForceRepaint:server.requestWithLocalhost("/crossOrigin.html"_s)];
-    EXPECT_TRUE(!!adoptCF([backForwardList.backItem _copySnapshotForTesting]));
+    EXPECT_TRUE(!!adoptCFNullable([backForwardList.backItem _copySnapshotForTesting]));
 
     [webView synchronouslyLoadRequestPageAndForceRepaint:server.request("/logout.html"_s)];
     // Shouldn't clear the crossOrigin.html snapshot since it was cross-origin.
-    EXPECT_TRUE(!!adoptCF([backForwardList.backItem _copySnapshotForTesting]));
+    EXPECT_TRUE(!!adoptCFNullable([backForwardList.backItem _copySnapshotForTesting]));
     // Should have cleared the index1.html snapshot though since it was same-origin.
-    EXPECT_FALSE(!!adoptCF([[backForwardList itemAtIndex:-2] _copySnapshotForTesting]));
+    EXPECT_FALSE(!!adoptCFNullable([[backForwardList itemAtIndex:-2] _copySnapshotForTesting]));
 }
 
 #endif // PLATFORM(MAC)

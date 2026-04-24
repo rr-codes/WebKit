@@ -4346,14 +4346,14 @@ TEST(SiteIsolation, ThemeColor)
     __block bool observedUnderPageBackgroundColor { false };
     RetainPtr observer = adoptNS([TestObserver new]);
     observer.get().observeValueForKeyPath = ^(NSString *path, id view) {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
         if ([path isEqualToString:@"themeColor"]) {
-            RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+            RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
             EXPECT_TRUE(CGColorEqualToColor([[view themeColor] CGColor], redColor.get()));
             observedThemeColor = true;
         } else {
             EXPECT_WK_STREQ(path, "underPageBackgroundColor");
-            RetainPtr blueColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
+            RetainPtr blueColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
             EXPECT_TRUE(CGColorEqualToColor([[view underPageBackgroundColor] CGColor], blueColor.get()));
             observedUnderPageBackgroundColor = true;
         }

@@ -111,7 +111,7 @@ std::optional<float> makeVectorElement(const float*, CFNumberRef);
 
 template<typename CollectionType> RetainPtr<CFMutableArrayRef> createCFArray(CollectionType&& collection)
 {
-    auto array = adoptCF(CFArrayCreateMutable(nullptr, Checked<CFIndex>(std::size(collection)), &kCFTypeArrayCallBacks));
+    auto array = adoptCFNullable(CFArrayCreateMutable(nullptr, Checked<CFIndex>(std::size(collection)), &kCFTypeArrayCallBacks));
     for (auto&& element : collection)
         addUnlessNil(array.get(), getPtr(makeCFArrayElement(std::forward<decltype(element)>(element))));
     return array;
@@ -119,7 +119,7 @@ template<typename CollectionType> RetainPtr<CFMutableArrayRef> createCFArray(Col
 
 template<typename CollectionType, typename MapFunctionType> RetainPtr<CFMutableArrayRef> createCFArray(CollectionType&& collection, MapFunctionType&& function)
 {
-    auto array = adoptCF(CFArrayCreateMutable(nullptr, Checked<CFIndex>(std::size(collection)), &kCFTypeArrayCallBacks));
+    auto array = adoptCFNullable(CFArrayCreateMutable(nullptr, Checked<CFIndex>(std::size(collection)), &kCFTypeArrayCallBacks));
     for (auto&& element : collection)
         addUnlessNil(array.get(), getPtr(std::invoke(function, std::forward<decltype(element)>(element))));
     return array;
@@ -193,12 +193,12 @@ inline std::span<uint8_t> mutableSpan(CFMutableDataRef data)
 
 inline RetainPtr<CFDataRef> toCFData(std::span<const uint8_t> span)
 {
-    return adoptCF(CFDataCreate(kCFAllocatorDefault, span.data(), span.size()));
+    return adoptCFNullable(CFDataCreate(kCFAllocatorDefault, span.data(), span.size()));
 }
 
 inline RetainPtr<CFDataRef> toCFDataNoCopy(std::span<const uint8_t> span, CFAllocatorRef bytesDeallocator)
 {
-    return adoptCF(CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, span.data(), span.size(), bytesDeallocator));
+    return adoptCFNullable(CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, span.data(), span.size(), bytesDeallocator));
 }
 
 inline Vector<uint8_t> makeVector(CFDataRef data)
@@ -210,7 +210,7 @@ inline Vector<uint8_t> makeVector(CFDataRef data)
 
 inline RetainPtr<CFNumberRef> makeCFArrayElement(const float& number)
 {
-    return adoptCF(CFNumberCreate(nullptr, kCFNumberFloatType, &number));
+    return adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloatType, &number));
 }
 
 inline std::optional<float> makeVectorElement(const float*, CFNumberRef cfNumber)

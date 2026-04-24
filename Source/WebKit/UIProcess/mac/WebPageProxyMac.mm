@@ -972,8 +972,8 @@ void WebPageProxy::showImageInQuickLookPreviewPanel(ShareableBitmap& imageBitmap
     if (!image)
         return;
 
-    auto imageData = adoptCF(CFDataCreateMutable(kCFAllocatorDefault, 0));
-    auto destination = adoptCF(CGImageDestinationCreateWithData(imageData.get(), (__bridge CFStringRef)UTTypePNG.identifier, 1, nullptr));
+    auto imageData = adoptCFNullable(CFDataCreateMutable(kCFAllocatorDefault, 0));
+    auto destination = adoptCFNullable(CGImageDestinationCreateWithData(imageData.get(), (__bridge CFStringRef)UTTypePNG.identifier, 1, nullptr));
     if (!destination)
         return;
 

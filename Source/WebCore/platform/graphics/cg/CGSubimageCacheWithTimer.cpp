@@ -75,7 +75,7 @@ struct CGSubimageCacheAdder {
     static void translate(CGSubimageCacheWithTimer::CacheEntry& entry, const CGSubimageRequest& request, unsigned /*hashCode*/)
     {
         entry.image = request.image.get();
-        entry.subimage = adoptCF(CGImageCreateWithImageInRect(request.image.get(), request.rect));
+        entry.subimage = adoptCFNullable(CGImageCreateWithImageInRect(request.image.get(), request.rect));
         entry.rect = request.rect;
     }
 };

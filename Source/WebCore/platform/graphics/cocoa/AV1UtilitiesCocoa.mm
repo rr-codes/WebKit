@@ -83,7 +83,7 @@ std::optional<PlatformMediaCapabilitiesInfo> validateAV1Parameters(const AV1Code
         || !canLoad_VideoToolbox_kVTDecoderCapability_ColorDepth())
         return std::nullopt;
 
-    auto capabilities = adoptCF(softLink_VideoToolbox_VTCopyAV1DecoderCapabilitiesDictionary());
+    auto capabilities = adoptCFNullable(softLink_VideoToolbox_VTCopyAV1DecoderCapabilitiesDictionary());
     if (!capabilities)
         return std::nullopt;
 
@@ -92,7 +92,7 @@ std::optional<PlatformMediaCapabilitiesInfo> validateAV1Parameters(const AV1Code
         return std::nullopt;
 
     int16_t profile = static_cast<int16_t>(record.profile);
-    auto cfProfile = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &profile));
+    auto cfProfile = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &profile));
     auto searchRange = CFRangeMake(0, CFArrayGetCount(supportedProfiles.get()));
     if (!CFArrayContainsValue(supportedProfiles.get(), searchRange, cfProfile.get()))
         return std::nullopt;

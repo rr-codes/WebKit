@@ -110,7 +110,7 @@ void MainThreadSharedTimer::setFireInterval(Seconds interval)
 
     CFAbsoluteTime fireDate = CFAbsoluteTimeGetCurrent() + interval.value();
     if (!sharedTimer()) {
-        sharedTimer() = adoptCF(CFRunLoopTimerCreate(nullptr, fireDate, kCFTimeIntervalDistantFuture, 0, 0, timerFired, nullptr));
+        sharedTimer() = adoptCFNullable(CFRunLoopTimerCreate(nullptr, fireDate, kCFTimeIntervalDistantFuture, 0, 0, timerFired, nullptr));
 #if PLATFORM(IOS_FAMILY)
         CFRunLoopAddTimer(WebThreadRunLoop(), sharedTimer().get(), kCFRunLoopCommonModes);
 #else

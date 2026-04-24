@@ -423,7 +423,7 @@ static void getImageBytesFromVideoFrame(WebGPU::Queue& backing, const RefPtr<Vid
     RetainPtr platformImage = nativeImage->platformImage();
     if (!platformImage)
         return callback({ }, 0, 0);
-    RetainPtr pixelDataCfData = adoptCF(CGDataProviderCopyData(CGImageGetDataProvider(platformImage.get())));
+    RetainPtr pixelDataCfData = adoptCFNullable(CGDataProviderCopyData(CGImageGetDataProvider(platformImage.get())));
     if (!pixelDataCfData)
         return callback({ }, 0, 0);
 
@@ -511,7 +511,7 @@ static void imageBytesForSource(WebGPU::Queue& backing, const GPUImageCopyExtern
             RetainPtr platformImage = nativeImage->platformImage();
             if (!platformImage)
                 return callback({ }, 0, 0);
-            RetainPtr pixelDataCfData = adoptCF(CGDataProviderCopyData(RetainPtr { CGImageGetDataProvider(platformImage.get()) }.get()));
+            RetainPtr pixelDataCfData = adoptCFNullable(CGDataProviderCopyData(RetainPtr { CGImageGetDataProvider(platformImage.get()) }.get()));
             if (!pixelDataCfData)
                 return callback({ }, 0, 0);
 

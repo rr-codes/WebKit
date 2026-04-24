@@ -88,7 +88,7 @@ TEST(TypeCastsCocoa, bridge_cast)
     EXPECT_EQ(1L, CFGetRetainCount((CFTypeRef)objectNSPtr));
 
     AUTORELEASEPOOL_FOR_ARC_DEBUG {
-        objectCF = adoptCF(CFStringCreateWithBytes(NULL, (const UInt8*)helloWorldCString, helloWorldCStringLength(), kCFStringEncodingUTF8, false));
+        objectCF = adoptCFNullable(CFStringCreateWithBytes(NULL, (const UInt8*)helloWorldCString, helloWorldCStringLength(), kCFStringEncodingUTF8, false));
         objectCFPtr = reinterpret_cast<uintptr_t>(objectCF.get());
     }
     EXPECT_EQ(1L, CFGetRetainCount((CFTypeRef)objectCFPtr));
@@ -120,7 +120,7 @@ TEST(TypeCastsCocoa, bridge_id_cast)
     }
 
     @autoreleasepool {
-        RetainPtr objectCF = adoptCF(CFStringCreateWithBytes(NULL, (const UInt8*)helloWorldCString, helloWorldCStringLength(), kCFStringEncodingUTF8, false));
+        RetainPtr objectCF = adoptCFNullable(CFStringCreateWithBytes(NULL, (const UInt8*)helloWorldCString, helloWorldCStringLength(), kCFStringEncodingUTF8, false));
         auto objectCFPtr = reinterpret_cast<uintptr_t>(objectCF.get());
         EXPECT_EQ(1L, CFGetRetainCount((CFTypeRef)objectCFPtr));
 

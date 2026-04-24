@@ -593,7 +593,7 @@ void ScrollbarThemeMac::setUpOverhangAreaShadow(CALayer *layer)
         layer.shadowRadius = shadowRadius;
     }
 
-    RetainPtr<CGPathRef> shadowPath = adoptCF(CGPathCreateWithRect(layer.bounds, NULL));
+    RetainPtr<CGPathRef> shadowPath = adoptCFNullable(CGPathCreateWithRect(layer.bounds, NULL));
     layer.shadowPath = shadowPath.get();
 }
 

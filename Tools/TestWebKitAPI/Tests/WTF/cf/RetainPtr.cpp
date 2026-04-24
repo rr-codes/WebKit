@@ -33,13 +33,13 @@
 
 namespace TestWebKitAPI {
 
-TEST(RetainPtr, AdoptCF)
+TEST(RetainPtr, adoptCFNullable)
 {
-    RetainPtr<CFArrayRef> array1 = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFArrayRef> array1 = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_EQ(1, CFGetRetainCount(array1.get()));
     EXPECT_EQ(0, CFArrayGetCount(array1.get()));
 
-    RetainPtr<CFTypeRef> array2 = adoptCF(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
+    RetainPtr<CFTypeRef> array2 = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, nullptr, 0, nullptr));
     EXPECT_EQ(1, CFGetRetainCount(array2.get()));
     EXPECT_EQ(0, CFArrayGetCount(checked_cf_cast<CFArrayRef>(array2.get())));
 }
@@ -130,9 +130,9 @@ TEST(RetainPtr, MoveAssignmentFromSameCFType)
 
 TEST(RetainPtr, OptionalRetainPtrCF)
 {
-    // Test assignment from adoptCF().
+    // Test assignment from adoptCFNullable().
     float value = 3.1415926535;
-    std::optional<RetainPtr<CFNumberRef>> optionalObject1 = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &value));
+    std::optional<RetainPtr<CFNumberRef>> optionalObject1 = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &value));
     EXPECT_EQ(1, CFGetRetainCount(optionalObject1.value().get()));
     RetainPtr<CFNumberRef> object1 = optionalObject1.value();
     EXPECT_EQ(optionalObject1.value(), object1);

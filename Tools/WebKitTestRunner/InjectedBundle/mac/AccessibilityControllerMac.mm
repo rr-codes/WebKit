@@ -231,7 +231,7 @@ void AXThread::initializeRunLoop()
         m_threadRunLoop = CFRunLoopGetCurrent();
 
         CFRunLoopSourceContext context = { 0, this, 0, 0, 0, 0, 0, 0, 0, threadRunLoopSourceCallback };
-        m_threadRunLoopSource = adoptCF(CFRunLoopSourceCreate(0, 0, &context));
+        m_threadRunLoopSource = adoptCFNullable(CFRunLoopSourceCreate(0, 0, &context));
         CFRunLoopAddSource(CFRunLoopGetCurrent(), m_threadRunLoopSource.get(), kCFRunLoopDefaultMode);
 
         m_initializeRunLoopConditionVariable.notifyAll();

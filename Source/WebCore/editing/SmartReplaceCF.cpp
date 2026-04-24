@@ -42,7 +42,7 @@ static CFMutableCharacterSetRef getSmartSet(bool isPreviousCharacter)
     static NeverDestroyed<RetainPtr<CFMutableCharacterSetRef>> postSmartSet;
     RetainPtr<CFMutableCharacterSetRef>& smartSet = isPreviousCharacter ? preSmartSet.get() : postSmartSet.get();
     if (!smartSet) {
-        smartSet = adoptCF(CFCharacterSetCreateMutable(kCFAllocatorDefault));
+        smartSet = adoptCFNullable(CFCharacterSetCreateMutable(kCFAllocatorDefault));
         CFCharacterSetAddCharactersInString(smartSet.get(), isPreviousCharacter ? CFSTR("([\"\'#$/-`{") : CFSTR(")].,;:?\'!\"%*-/}"));
         CFCharacterSetUnion(smartSet.get(), CFCharacterSetGetPredefined(kCFCharacterSetWhitespaceAndNewline));
 

@@ -86,7 +86,7 @@ bool ObjcMethod::isFallbackMethod() const
 
 ObjcField::ObjcField(Ivar ivar) 
     : _ivar(ivar)
-    , _name(adoptCF(CFStringCreateWithCString(0, ivar_getName(_ivar), kCFStringEncodingASCII)))
+    , _name(adoptCFNullable(CFStringCreateWithCString(0, ivar_getName(_ivar), kCFStringEncodingASCII)))
 {
 }
 

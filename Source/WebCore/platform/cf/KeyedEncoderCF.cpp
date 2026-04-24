@@ -43,7 +43,7 @@ std::unique_ptr<KeyedEncoder> KeyedEncoder::encoder()
 
 static RetainPtr<CFMutableDictionaryRef> createDictionary()
 {
-    return adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 KeyedEncoderCF::KeyedEncoderCF()
@@ -72,37 +72,37 @@ void KeyedEncoderCF::encodeBool(const String& key, bool value)
 
 void KeyedEncoderCF::encodeUInt32(const String& key, uint32_t value)
 {
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), number.get());
 }
     
 void KeyedEncoderCF::encodeUInt64(const String& key, uint64_t value)
 {
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &value));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &value));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), number.get());
 }
 
 void KeyedEncoderCF::encodeInt32(const String& key, int32_t value)
 {
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), number.get());
 }
 
 void KeyedEncoderCF::encodeInt64(const String& key, int64_t value)
 {
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &value));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &value));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), number.get());
 }
 
 void KeyedEncoderCF::encodeFloat(const String& key, float value)
 {
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &value));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &value));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), number.get());
 }
 
 void KeyedEncoderCF::encodeDouble(const String& key, double value)
 {
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &value));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &value));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), number.get());
 }
 
@@ -126,7 +126,7 @@ void KeyedEncoderCF::endObject()
 
 void KeyedEncoderCF::beginArray(const String& key)
 {
-    auto array = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
+    auto array = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
     CFDictionarySetValue(m_dictionaryStack.last(), key.createCFString().get(), array.get());
 
     m_arrayStack.append(array.get());
@@ -152,7 +152,7 @@ void KeyedEncoderCF::endArray()
 
 RefPtr<SharedBuffer> KeyedEncoderCF::finishEncoding()
 {
-    auto data = adoptCF(CFPropertyListCreateData(kCFAllocatorDefault, m_rootDictionary.get(), kCFPropertyListBinaryFormat_v1_0, 0, nullptr));
+    auto data = adoptCFNullable(CFPropertyListCreateData(kCFAllocatorDefault, m_rootDictionary.get(), kCFPropertyListBinaryFormat_v1_0, 0, nullptr));
     if (!data)
         return nullptr;
     return SharedBuffer::create(data.get());

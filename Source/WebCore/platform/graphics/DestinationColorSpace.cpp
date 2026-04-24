@@ -191,7 +191,7 @@ std::optional<DestinationColorSpace> DestinationColorSpace::asExtended() const
         return *this;
 #if USE(CG)
     // Avoid refing color space here as this is performance-sensitive.
-    SUPPRESS_UNRETAINED_ARG if (RetainPtr colorSpace = adoptCF(CGColorSpaceCreateExtended(platformColorSpace())))
+    SUPPRESS_UNRETAINED_ARG if (RetainPtr colorSpace = adoptCFNullable(CGColorSpaceCreateExtended(platformColorSpace())))
         return DestinationColorSpace(WTF::move(colorSpace));
 #endif
     return std::nullopt;
@@ -249,7 +249,7 @@ TextStream& operator<<(TextStream& ts, const DestinationColorSpace& colorSpace)
         ts << "ExtendedRec2020"_s;
 #endif
 #if USE(CG)
-    else if (RetainPtr description = adoptCF(CGColorSpaceCopyICCProfileDescription(protect(colorSpace.platformColorSpace()).get())))
+    else if (RetainPtr description = adoptCFNullable(CGColorSpaceCopyICCProfileDescription(protect(colorSpace.platformColorSpace()).get())))
         ts << String(description.get());
 #endif
 

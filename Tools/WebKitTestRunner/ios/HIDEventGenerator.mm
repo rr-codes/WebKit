@@ -256,7 +256,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
 
 - (void)_sendIOHIDKeyboardEvent:(uint64_t)timestamp usage:(uint32_t)usage isKeyDown:(bool)isKeyDown
 {
-    auto eventRef = adoptCF(IOHIDEventCreateKeyboardEvent(kCFAllocatorDefault,
+    auto eventRef = adoptCFNullable(IOHIDEventCreateKeyboardEvent(kCFAllocatorDefault,
         timestamp,
         kHIDPage_KeyboardOrKeypad,
         usage,
@@ -403,7 +403,7 @@ static InterpolationType interpolationFromString(NSString *string)
         if ([touchInfo[HIDEventPressureKey] floatValue])
             childEventMask |= kIOHIDDigitizerEventAttribute;
 
-        auto subEvent = adoptCF(IOHIDEventCreateDigitizerFingerEvent(kCFAllocatorDefault, machTime,
+        auto subEvent = adoptCFNullable(IOHIDEventCreateDigitizerFingerEvent(kCFAllocatorDefault, machTime,
             [touchInfo[HIDEventTouchIDKey] intValue],               // index
             2,                                                      // identifier (which finger we think it is). FIXME: this should come from the data.
             childEventMask,
@@ -441,7 +441,7 @@ static InterpolationType interpolationFromString(NSString *string)
         eventMask |= kIOHIDDigitizerEventIdentity;
 
     uint64_t machTime = mach_absolute_time();
-    auto eventRef = adoptCF(IOHIDEventCreateDigitizerEvent(kCFAllocatorDefault, machTime,
+    auto eventRef = adoptCFNullable(IOHIDEventCreateDigitizerEvent(kCFAllocatorDefault, machTime,
         kIOHIDDigitizerTransducerTypeHand,
         0,
         0,
@@ -487,7 +487,7 @@ static InterpolationType interpolationFromString(NSString *string)
             } else if (eventType == StylusEventMoved)
                 eventMask = kIOHIDDigitizerEventPosition;
 
-            subEvent = adoptCF(IOHIDEventCreateDigitizerStylusEventWithPolarOrientation(kCFAllocatorDefault, machTime,
+            subEvent = adoptCFNullable(IOHIDEventCreateDigitizerStylusEventWithPolarOrientation(kCFAllocatorDefault, machTime,
                 pointInfo->identifier,
                 pointInfo->identifier,
                 eventMask,
@@ -508,7 +508,7 @@ static InterpolationType interpolationFromString(NSString *string)
                 IOHIDEventSetIntegerValue(subEvent.get(), kIOHIDEventFieldDigitizerDidUpdateMask, 0x0400);
 
         } else {
-            subEvent = adoptCF(IOHIDEventCreateDigitizerFingerEvent(kCFAllocatorDefault, machTime,
+            subEvent = adoptCFNullable(IOHIDEventCreateDigitizerFingerEvent(kCFAllocatorDefault, machTime,
                 pointInfo->identifier,
                 pointInfo->identifier,
                 eventMask,
@@ -563,7 +563,7 @@ static InterpolationType interpolationFromString(NSString *string)
     auto callbackID = [HIDEventGenerator nextEventCallbackID];
     [_eventCallbacks setObject:Block_copy(completionBlock) forKey:@(callbackID)];
 
-    auto markerEvent = adoptCF(IOHIDEventCreateVendorDefinedEvent(kCFAllocatorDefault,
+    auto markerEvent = adoptCFNullable(IOHIDEventCreateVendorDefinedEvent(kCFAllocatorDefault,
         mach_absolute_time(),
         kHIDPage_VendorDefinedStart + 100,
         0,
@@ -606,7 +606,7 @@ static InterpolationType interpolationFromString(NSString *string)
         [[GeneratedTouchesDebugWindow sharedGeneratedTouchesDebugWindow] updateDebugIndicatorForTouch:i withPointInWindowCoordinates:points[i] isTouching:YES];
     }
     
-    auto eventRef = adoptCF([self _createIOHIDEventType:handEventType]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventType:handEventType]);
     [self _sendHIDEvent:eventRef.get()];
 }
 
@@ -623,7 +623,7 @@ static InterpolationType interpolationFromString(NSString *string)
         [[GeneratedTouchesDebugWindow sharedGeneratedTouchesDebugWindow] updateDebugIndicatorForTouch:index withPointInWindowCoordinates:locations[index] isTouching:YES];
     }
 
-    auto eventRef = adoptCF([self _createIOHIDEventType:HandEventTouched]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventType:HandEventTouched]);
     [self _sendHIDEvent:eventRef.get()];
 }
 
@@ -654,7 +654,7 @@ static InterpolationType interpolationFromString(NSString *string)
 
     [[GeneratedTouchesDebugWindow sharedGeneratedTouchesDebugWindow] updateDebugIndicatorForTouch:0 withPointInWindowCoordinates:location isTouching:YES];
 
-    RetainPtr eventRef = adoptCF([self _createIOHIDEventType:HandEventTouched]);
+    RetainPtr eventRef = adoptCFNullable([self _createIOHIDEventType:HandEventTouched]);
     [self _sendHIDEvent:eventRef.get()];
 }
 
@@ -677,7 +677,7 @@ static InterpolationType interpolationFromString(NSString *string)
         [[GeneratedTouchesDebugWindow sharedGeneratedTouchesDebugWindow] updateDebugIndicatorForTouch:index withPointInWindowCoordinates:CGPointZero isTouching:NO];
     }
     
-    auto eventRef = adoptCF([self _createIOHIDEventType:HandEventLifted]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventType:HandEventLifted]);
     [self _sendHIDEvent:eventRef.get()];
     
     _activePointCount = newPointCount;
@@ -755,7 +755,7 @@ static InterpolationType interpolationFromString(NSString *string)
     _activePoints[0].azimuthAngle = std::numbers::pi * 2 - azimuthAngle;
     _activePoints[0].altitudeAngle = piOverTwoDouble - altitudeAngle;
 
-    auto eventRef = adoptCF([self _createIOHIDEventType:StylusEventTouched]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventType:StylusEventTouched]);
     [self _sendHIDEvent:eventRef.get()];
 }
 
@@ -769,7 +769,7 @@ static InterpolationType interpolationFromString(NSString *string)
     _activePoints[0].azimuthAngle = std::numbers::pi * 2 - azimuthAngle;
     _activePoints[0].altitudeAngle = piOverTwoDouble - altitudeAngle;
 
-    auto eventRef = adoptCF([self _createIOHIDEventType:StylusEventMoved]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventType:StylusEventMoved]);
     [self _sendHIDEvent:eventRef.get()];
 }
 
@@ -782,7 +782,7 @@ static InterpolationType interpolationFromString(NSString *string)
     _activePoints[0].azimuthAngle = 0;
     _activePoints[0].altitudeAngle = 0;
 
-    auto eventRef = adoptCF([self _createIOHIDEventType:StylusEventLifted]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventType:StylusEventLifted]);
     [self _sendHIDEvent:eventRef.get()];
 }
 
@@ -1100,7 +1100,7 @@ static inline uint32_t hidUsageCodeForCharacter(NSString *key)
 
 RetainPtr<IOHIDEventRef> createHIDKeyEvent(NSString *character, uint64_t timestamp, bool isKeyDown)
 {
-    return adoptCF(IOHIDEventCreateKeyboardEvent(kCFAllocatorDefault, timestamp, kHIDPage_KeyboardOrKeypad, hidUsageCodeForCharacter(character), isKeyDown, kIOHIDEventOptionNone));
+    return adoptCFNullable(IOHIDEventCreateKeyboardEvent(kCFAllocatorDefault, timestamp, kHIDPage_KeyboardOrKeypad, hidUsageCodeForCharacter(character), isKeyDown, kIOHIDEventOptionNone));
 }
 
 - (void)keyDown:(NSString *)character
@@ -1135,7 +1135,7 @@ RetainPtr<IOHIDEventRef> createHIDKeyEvent(NSString *character, uint64_t timesta
 {
     ASSERT([NSThread isMainThread]);
 
-    auto eventRef = adoptCF([self _createIOHIDEventWithInfo:eventInfo]);
+    auto eventRef = adoptCFNullable([self _createIOHIDEventWithInfo:eventInfo]);
     if (!eventRef)
         return;
 

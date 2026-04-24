@@ -80,7 +80,7 @@ static void cacheValueForKey(const void *key, const void *value, void *self)
     if (lookupTable())
         return;
 
-    lookupTable() = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFCopyStringDictionaryKeyCallBacks, NULL));
+    lookupTable() = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFCopyStringDictionaryKeyCallBacks, NULL));
 
     addLookupKey(WebElementDOMNodeKey, @selector(_domNode));
     addLookupKey(WebElementFrameKey, @selector(_webFrame));

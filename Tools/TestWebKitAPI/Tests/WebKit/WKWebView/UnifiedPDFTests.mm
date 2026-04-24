@@ -1194,8 +1194,8 @@ UNIFIED_PDF_TEST(WebViewFindAction)
 
 UNIFIED_PDF_TEST(WebViewBackgroundColor)
 {
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600) configuration:TestWebKitAPI::configurationForWebViewTestingUnifiedPDF().get() addToWindow:YES]);
 

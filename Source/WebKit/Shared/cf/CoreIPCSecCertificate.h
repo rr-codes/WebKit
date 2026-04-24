@@ -46,13 +46,13 @@ public:
     }
 
     CoreIPCSecCertificate(std::span<const uint8_t> data)
-        : m_certificateData(adoptCF(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
+        : m_certificateData(adoptCFNullable(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
     {
     }
 
     RetainPtr<SecCertificateRef> createSecCertificate() const
     {
-        auto certificate = adoptCF(SecCertificateCreateWithData(kCFAllocatorDefault, m_certificateData.get()));
+        auto certificate = adoptCFNullable(SecCertificateCreateWithData(kCFAllocatorDefault, m_certificateData.get()));
         ASSERT(certificate);
         return certificate;
     }
@@ -67,7 +67,7 @@ private:
     RetainPtr<CFDataRef> dataFromCertificate(SecCertificateRef certificate) const
     {
         ASSERT(certificate);
-        auto data = adoptCF(SecCertificateCopyData(certificate));
+        auto data = adoptCFNullable(SecCertificateCopyData(certificate));
         ASSERT(data);
         return data;
     }

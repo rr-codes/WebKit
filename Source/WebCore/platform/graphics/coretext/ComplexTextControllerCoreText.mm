@@ -159,9 +159,9 @@ NEVER_INLINE static RetainPtr<CFDictionaryRef> buildCoreTextTypesetterEmbeddingL
     auto embeddingLevelValue = std::to_underlying(embeddingLevel);
     static_assert(std::is_same_v<short, decltype(embeddingLevelValue)>);
     const void* optionKeys[] = { kCTTypesetterOptionForcedEmbeddingLevel };
-    RetainPtr cfEmbeddingLevelValue = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &embeddingLevelValue));
+    RetainPtr cfEmbeddingLevelValue = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberShortType, &embeddingLevelValue));
     const void* optionValues[] = { cfEmbeddingLevelValue.get() };
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, optionKeys, optionValues, std::size(optionKeys), &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, optionKeys, optionValues, std::size(optionKeys), &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 template<CoreTextTypesetterEmbeddingLevel embeddingLevel>
@@ -196,7 +196,7 @@ void ComplexTextController::collectComplexTextRunsForCharacters(std::span<const 
         effectiveFont = m_fontCascade->fallbackRangesAt(0).fontForCharacter(baseCharacter);
         if (!effectiveFont)
             effectiveFont = &m_fontCascade->fallbackRangesAt(0).fontForFirstRange();
-        stringAttributes = adoptCF(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, getCFStringAttributes(*effectiveFont, m_fontCascade->enableKerning(), effectiveFont->platformData().orientation(), m_fontCascade->fontDescription().computedLocale()).get()));
+        stringAttributes = adoptCFNullable(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, getCFStringAttributes(*effectiveFont, m_fontCascade->enableKerning(), effectiveFont->platformData().orientation(), m_fontCascade->fontDescription().computedLocale()).get()));
         // We don't know which font should be used to render this grapheme cluster, so enable CoreText's fallback mechanism by using the CTFont which doesn't have CoreText's fallback disabled.
         CFDictionarySetValue(const_cast<CFMutableDictionaryRef>(stringAttributes.get()), kCTFontAttributeName, effectiveFont->platformData().ctFont());
     } else
@@ -205,8 +205,8 @@ void ComplexTextController::collectComplexTextRunsForCharacters(std::span<const 
     RetainPtr<CTLineRef> line;
 
     LOG_WITH_STREAM(TextShaping,
-        stream << "Complex shaping " << characters.size() << " code units with info " << String(adoptCF(CFCopyDescription(stringAttributes.get())).get()) << ".\n";
-        stream << "Font attributes: " << String(adoptCF(CFCopyDescription(adoptCF(CTFontDescriptorCopyAttributes(adoptCF(CTFontCopyFontDescriptor(effectiveFont->platformData().ctFont())).get())).get())).get()) << "\n";
+        stream << "Complex shaping " << characters.size() << " code units with info " << String(adoptCFNullable(CFCopyDescription(stringAttributes.get())).get()) << ".\n";
+        stream << "Font attributes: " << String(adoptCFNullable(CFCopyDescription(adoptCFNullable(CTFontDescriptorCopyAttributes(adoptCFNullable(CTFontCopyFontDescriptor(effectiveFont->platformData().ctFont())).get())).get())).get()) << "\n";
         stream << "Code Units:";
         for (auto codePoint : characters)
             stream << " " << codePoint;
@@ -217,7 +217,7 @@ void ComplexTextController::collectComplexTextRunsForCharacters(std::span<const 
         ProviderInfo info { characters, stringAttributes.get() };
         // FIXME: Some SDKs complain that the second parameter below cannot be null.
         IGNORE_NULL_CHECK_WARNINGS_BEGIN
-        RetainPtr typesetter = adoptCF(CTTypesetterCreateWithUniCharProviderAndOptions(&provideStringAndAttributes, 0, &info, m_run->ltr() ? typesetterOptionsSingleton<CoreTextTypesetterEmbeddingLevel::LTR>() : typesetterOptionsSingleton<CoreTextTypesetterEmbeddingLevel::RTL>()));
+        RetainPtr typesetter = adoptCFNullable(CTTypesetterCreateWithUniCharProviderAndOptions(&provideStringAndAttributes, 0, &info, m_run->ltr() ? typesetterOptionsSingleton<CoreTextTypesetterEmbeddingLevel::LTR>() : typesetterOptionsSingleton<CoreTextTypesetterEmbeddingLevel::RTL>()));
         IGNORE_NULL_CHECK_WARNINGS_END
 
         if (!typesetter)
@@ -225,13 +225,13 @@ void ComplexTextController::collectComplexTextRunsForCharacters(std::span<const 
 
         LOG_WITH_STREAM(TextShaping, stream << "Forcing " << (m_run->ltr() ? "ltr" : "rtl"));
 
-        line = adoptCF(CTTypesetterCreateLine(typesetter.get(), CFRangeMake(0, 0)));
+        line = adoptCFNullable(CTTypesetterCreateLine(typesetter.get(), CFRangeMake(0, 0)));
     } else {
         LOG_WITH_STREAM(TextShaping, stream << "Not forcing direction");
 
         ProviderInfo info { characters, stringAttributes.get() };
 
-        line = adoptCF(CTLineCreateWithUniCharProvider(&provideStringAndAttributes, nullptr, &info));
+        line = adoptCFNullable(CTLineCreateWithUniCharProvider(&provideStringAndAttributes, nullptr, &info));
     }
 
     if (!line)
@@ -269,7 +269,7 @@ void ComplexTextController::collectComplexTextRunsForCharacters(std::span<const 
                     runFont = nullptr;
                 }
                 if (!runFont) {
-                    RetainPtr fontName = adoptCF(CTFontCopyPostScriptName(runCTFont.get()));
+                    RetainPtr fontName = adoptCFNullable(CTFontCopyPostScriptName(runCTFont.get()));
                     if (CFEqual(fontName.get(), CFSTR("LastResort"))) {
                         m_complexTextRuns.append(ComplexTextRun::create(protect(m_fontCascade->primaryFont()), characters, stringLocation, runRange.location, runRange.location + runRange.length, m_run->ltr()));
                         continue;

@@ -324,7 +324,7 @@ NSData *PDFPluginBase::liveData() const
 void PDFPluginBase::ensureDataBufferLength(uint64_t targetLength)
 {
     if (!m_data)
-        m_data = adoptCF(CFDataCreateMutable(0, 0));
+        m_data = adoptCFNullable(CFDataCreateMutable(0, 0));
 
     auto currentLength = CFDataGetLength(m_data.get());
     ASSERT(currentLength >= 0);
@@ -487,7 +487,7 @@ void PDFPluginBase::streamDidReceiveData(const SharedBuffer& buffer)
         Locker locker { m_streamedDataLock };
 
         if (!m_data)
-            m_data = adoptCF(CFDataCreateMutable(0, 0));
+            m_data = adoptCFNullable(CFDataCreateMutable(0, 0));
 
         ensureDataBufferLength(m_streamedBytes + buffer.size());
         auto bufferSpan = buffer.span();

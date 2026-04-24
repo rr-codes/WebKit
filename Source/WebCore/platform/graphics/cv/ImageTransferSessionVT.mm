@@ -51,7 +51,7 @@ static RetainPtr<VTPixelTransferSessionRef> createTransferSession(bool shouldUse
     auto status = VTPixelTransferSessionCreate(kCFAllocatorDefault, &rawTransferSession);
     if (status != kCVReturnSuccess)
         return nullptr;
-    RetainPtr transferSession = adoptCF(rawTransferSession);
+    RetainPtr transferSession = adoptCFNullable(rawTransferSession);
     auto setProperty = [&](CFStringRef key, CFTypeRef value) {
         auto status = VTSessionSetProperty(transferSession.get(), key, value);
         RELEASE_LOG_ERROR_IF(status != kCVReturnSuccess, Media, "VTSessionSetProperty(%{public}@) error: %d", key, static_cast<int>(status));
@@ -210,7 +210,7 @@ RetainPtr<CMSampleBufferRef> ImageTransferSessionVT::convertCMSampleBuffer(CMSam
         return nullptr;
     }
 
-    return adoptCF(resizedSampleBuffer);
+    return adoptCFNullable(resizedSampleBuffer);
 }
 
 RetainPtr<CVPixelBufferRef> ImageTransferSessionVT::createPixelBuffer(CGImageRef image, const IntSize& size)
@@ -228,8 +228,8 @@ RetainPtr<CVPixelBufferRef> ImageTransferSessionVT::createPixelBuffer(CGImageRef
 
     CVPixelBufferLockBaseAddress(rgbBuffer, 0);
     void* data = CVPixelBufferGetBaseAddress(rgbBuffer);
-    auto retainedRGBBuffer = adoptCF(rgbBuffer);
-    auto context = adoptCF(CGBitmapContextCreate(data, imageSize.width(), imageSize.height(), 8, CVPixelBufferGetBytesPerRow(rgbBuffer), sRGBColorSpaceSingleton(), (CGBitmapInfo) kCGImageAlphaNoneSkipFirst));
+    auto retainedRGBBuffer = adoptCFNullable(rgbBuffer);
+    auto context = adoptCFNullable(CGBitmapContextCreate(data, imageSize.width(), imageSize.height(), 8, CVPixelBufferGetBytesPerRow(rgbBuffer), sRGBColorSpaceSingleton(), (CGBitmapInfo) kCGImageAlphaNoneSkipFirst));
     if (!context) {
         RELEASE_LOG(Media, "ImageTransferSessionVT::createPixelBuffer: CGBitmapContextCreate returned nullptr");
         return nullptr;
@@ -271,7 +271,7 @@ RetainPtr<CMSampleBufferRef> ImageTransferSessionVT::createCMSampleBuffer(CVPixe
         return nullptr;
     }
 
-    return adoptCF(sampleBuffer);
+    return adoptCFNullable(sampleBuffer);
 }
 
 RetainPtr<CMSampleBufferRef> ImageTransferSessionVT::createCMSampleBuffer(CGImageRef image, const MediaTime& sampleTime, const IntSize& size)
@@ -374,7 +374,7 @@ RetainPtr<CVPixelBufferRef> ImageTransferSessionVT::convertPixelBuffer(CVPixelBu
     auto status = CVPixelBufferCreate(kCFAllocatorDefault, CVPixelBufferGetWidth(source), CVPixelBufferGetHeight(source), targetPixelFormat, bridge_cast(targetOptions), &rawTarget);
     if (status != kCVReturnSuccess)
         return nullptr;
-    RetainPtr target = adoptCF(rawTarget);
+    RetainPtr target = adoptCFNullable(rawTarget);
     status = VTPixelTransferSessionTransferImage(transferSession.get(), source, target.get());
     if (status != kCVReturnSuccess)
         return nullptr;

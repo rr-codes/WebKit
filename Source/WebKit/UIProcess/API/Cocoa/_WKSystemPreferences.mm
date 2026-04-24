@@ -40,14 +40,14 @@ constexpr auto CaptivePortalConfigurationIgnoreFileName = @"com.apple.WebKit.cpm
 
 + (BOOL)isCaptivePortalModeEnabled
 {
-    auto preferenceValue = adoptCF(CFPreferencesCopyValue(WKLockdownModeEnabledKeyCFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+    auto preferenceValue = adoptCFNullable(CFPreferencesCopyValue(WKLockdownModeEnabledKeyCFString, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
     if (preferenceValue.get() == kCFBooleanTrue)
         return true;
 
 #if HAVE(LOCKDOWN_MODE_FRAMEWORK)
     return PAL::isLockdownModeEnabled();
 #else
-    preferenceValue = adoptCF(CFPreferencesCopyValue(LDMEnabledKey, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+    preferenceValue = adoptCFNullable(CFPreferencesCopyValue(LDMEnabledKey, kCFPreferencesAnyApplication, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
     return preferenceValue.get() == kCFBooleanTrue;
 #endif
 }

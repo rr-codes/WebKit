@@ -1027,7 +1027,7 @@ auto VideoMediaSampleRenderer::copyDisplayedPixelBuffer() -> DisplayedPixelBuffe
     assertIsMainThread();
 
     if (!isUsingDecompressionSession()) {
-        RetainPtr buffer = adoptCF([renderer() copyDisplayedPixelBuffer]);
+        RetainPtr buffer = adoptCFNullable([renderer() copyDisplayedPixelBuffer]);
         if (RetainPtr surface = CVPixelBufferGetIOSurface(buffer.get()); surface && m_resourceOwner)
             IOSurface::setOwnershipIdentity(surface.get(), m_resourceOwner);
         return { WTF::move(buffer), MediaTime::invalidTime() };

@@ -61,7 +61,7 @@ static RetainPtr<CGPDFPageRef> loadARKitPDFPage(NSString *imageName)
     NSURL *url = [arKitBundle() URLForResource:imageName withExtension:@"pdf"];
     if (!url)
         return nullptr;
-    auto document = adoptCF(CGPDFDocumentCreateWithURL((CFURLRef)url));
+    auto document = adoptCFNullable(CGPDFDocumentCreateWithURL((CFURLRef)url));
     if (!document)
         return nullptr;
     if (!CGPDFDocumentGetNumberOfPages(document.get()))
@@ -114,7 +114,7 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
     CIImage *inputImage = [CIImage imageWithCGImage:m_image->nativeImage()->platformImage().get()];
 
     // Create a circle to be used for the clipping path in the badge, as well as the drop shadow.
-    RetainPtr<CGPathRef> circle = adoptCF(CGPathCreateWithRoundedRect(absoluteBadgeRect, badgeDimension / 2, badgeDimension / 2, nullptr));
+    RetainPtr<CGPathRef> circle = adoptCFNullable(CGPathCreateWithRoundedRect(absoluteBadgeRect, badgeDimension / 2, badgeDimension / 2, nullptr));
 
     if (graphicsContext.paintingDisabled())
         return;
@@ -135,7 +135,7 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
 
     // The circle must have an alpha channel value of 1 for the shadow color to appear.
     CGFloat circleColorComponents[4] = { 0, 0, 0, 1 };
-    RetainPtr<CGColorRef> circleColor = adoptCF(CGColorCreate(sRGBColorSpaceSingleton(), circleColorComponents));
+    RetainPtr<CGColorRef> circleColor = adoptCFNullable(CGColorCreate(sRGBColorSpaceSingleton(), circleColorComponents));
     CGContextSetFillColorWithColor(ctx, circleColor.get());
 
     // Clip out the circle to only show the shadow.
@@ -149,7 +149,7 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
     // black circle around the edges of the clipped path below.
     CGContextBeginPath(ctx);
     CGRect slightlySmallerAbsoluteBadgeRect = CGRectMake(absoluteBadgeRect.origin.x + 0.5, absoluteBadgeRect.origin.y + 0.5, badgeDimension - 1, badgeDimension - 1);
-    RetainPtr<CGPathRef> slightlySmallerCircle = adoptCF(CGPathCreateWithRoundedRect(slightlySmallerAbsoluteBadgeRect, slightlySmallerAbsoluteBadgeRect.size.width / 2, slightlySmallerAbsoluteBadgeRect.size.height / 2, nullptr));
+    RetainPtr<CGPathRef> slightlySmallerCircle = adoptCFNullable(CGPathCreateWithRoundedRect(slightlySmallerAbsoluteBadgeRect, slightlySmallerAbsoluteBadgeRect.size.width / 2, slightlySmallerAbsoluteBadgeRect.size.height / 2, nullptr));
     CGContextAddPath(ctx, slightlySmallerCircle.get());
     CGContextClosePath(ctx);
     CGContextFillPath(ctx);
@@ -202,7 +202,7 @@ void ARKitBadgeSystemImage::draw(GraphicsContext& graphicsContext, const FloatRe
         cgImage = badgeSurface->createImage(surfaceContext.get());
     } else
 #endif
-    cgImage = adoptCF([ciContext createCGImage:sourceOverFilter.outputImage fromRect:flippedInsetBadgeRect]);
+    cgImage = adoptCFNullable([ciContext createCGImage:sourceOverFilter.outputImage fromRect:flippedInsetBadgeRect]);
 
     // Before we render the result, we should clip to a circle around the badge rectangle.
     CGContextSaveGState(ctx);

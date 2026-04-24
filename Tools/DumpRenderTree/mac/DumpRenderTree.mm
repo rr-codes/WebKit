@@ -547,13 +547,13 @@ static void adjustFonts()
 
 static void activateFontIOS(const uint8_t* fontData, unsigned long length, std::string sectionName)
 {
-    auto data = adoptCF(CGDataProviderCreateWithData(nullptr, fontData, length, nullptr));
+    auto data = adoptCFNullable(CGDataProviderCreateWithData(nullptr, fontData, length, nullptr));
     if (!data) {
         fprintf(stderr, "Failed to create CGDataProviderRef for the %s font.\n", sectionName.c_str());
         exitProcess(1);
     }
 
-    auto cgFont = adoptCF(CGFontCreateWithDataProvider(data.get()));
+    auto cgFont = adoptCFNullable(CGFontCreateWithDataProvider(data.get()));
     if (!cgFont) {
         fprintf(stderr, "Failed to create CGFontRef for the %s font.\n", sectionName.c_str());
         exitProcess(1);

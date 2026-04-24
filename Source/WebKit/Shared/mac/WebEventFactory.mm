@@ -184,7 +184,7 @@ WebWheelEvent WebEventFactory::createWebWheelEvent(NSEvent *event, NSView *windo
         if (!cgEvent)
             return;
 
-        auto ioHIDEvent = adoptCF(CGEventCopyIOHIDEvent(cgEvent.get()));
+        auto ioHIDEvent = adoptCFNullable(CGEventCopyIOHIDEvent(cgEvent.get()));
         if (!ioHIDEvent)
             return;
 

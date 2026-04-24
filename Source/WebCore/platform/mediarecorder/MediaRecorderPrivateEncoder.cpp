@@ -338,7 +338,7 @@ void MediaRecorderPrivateEncoder::audioSamplesDescriptionChanged(const AudioStre
         m_hadError = true;
         return;
     }
-    m_audioFormatDescription = adoptCF(newFormat);
+    m_audioFormatDescription = adoptCFNullable(newFormat);
 
     if (m_audioConverter) {
         audioConverter()->finish();
@@ -427,7 +427,7 @@ void MediaRecorderPrivateEncoder::audioSamplesAvailable(const MediaTime& time, s
         m_hadError = true;
         return;
     }
-    RetainPtr sample = adoptCF(sampleBuffer);
+    RetainPtr sample = adoptCFNullable(sampleBuffer);
 
     m_lastRawAudioSample = time;
     audioConverter()->addSampleBuffer(sampleBuffer);

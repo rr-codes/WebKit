@@ -99,7 +99,7 @@ static void readFile(NSURL *fileURL, NSUInteger& fileSize, RetainPtr<NSString>& 
     if ([fileURL getResourceValue:&typeIdentifier forKey:NSURLTypeIdentifierKey error:nil])
         fileType = typeIdentifier;
 
-    mimeType = bridge_cast(adoptCF(UTTypeCopyPreferredTagWithClass(bridge_cast(typeIdentifier), kUTTagClassMIMEType)));
+    mimeType = bridge_cast(adoptCFNullable(UTTypeCopyPreferredTagWithClass(bridge_cast(typeIdentifier), kUTTagClassMIMEType)));
     fileData = adoptNS([[NSData alloc] initWithContentsOfURL:fileURL]);
 }
 

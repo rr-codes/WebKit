@@ -353,7 +353,7 @@ bool GraphicsContextGLImageExtractor::extractImage(bool premultiplyAlpha, bool i
         // the color table, which would allow us to avoid premultiplying the
         // alpha channel. Creation of a bitmap context with an alpha channel
         // doesn't seem to work unless it's premultiplied.
-        bitmapContext = adoptCF(CGBitmapContextCreate(0, m_imageWidth, m_imageHeight, 8, m_imageWidth * 4,
+        bitmapContext = adoptCFNullable(CGBitmapContextCreate(0, m_imageWidth, m_imageHeight, 8, m_imageWidth * 4,
             sRGBColorSpaceSingleton(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
         if (!bitmapContext)
             return false;
@@ -363,7 +363,7 @@ bool GraphicsContextGLImageExtractor::extractImage(bool premultiplyAlpha, bool i
         CGContextDrawImage(bitmapContext.get(), CGRectMake(0, 0, m_imageWidth, m_imageHeight), decodedImage->platformImage().get());
 
         // Now discard the original CG image and replace it with a copy from the bitmap context.
-        decodedImage = NativeImage::create(adoptCF(CGBitmapContextCreateImage(bitmapContext.get())));
+        decodedImage = NativeImage::create(adoptCFNullable(CGBitmapContextCreateImage(bitmapContext.get())));
     }
 
     if (!decodedImage)
@@ -463,7 +463,7 @@ bool GraphicsContextGLImageExtractor::extractImage(bool premultiplyAlpha, bool i
     if (m_imageSourceFormat == DataFormat::NumFormats)
         return false;
 
-    m_pixelData = adoptCF(CGDataProviderCopyData(CGImageGetDataProvider(decodedImage->platformImage().get())));
+    m_pixelData = adoptCFNullable(CGDataProviderCopyData(CGImageGetDataProvider(decodedImage->platformImage().get())));
     if (!m_pixelData)
         return false;
 
@@ -518,12 +518,12 @@ RefPtr<NativeImage> GraphicsContextGL::createNativeImageFromPixelBuffer(const Gr
 
     verifyImageBufferIsBigEnough(data);
 
-    auto dataProvider = adoptCF(CGDataProviderCreateWithData(&protectedPixelBuffer.leakRef(), data.data(), data.size(), [] (void* context, const void*, size_t) {
+    auto dataProvider = adoptCFNullable(CGDataProviderCreateWithData(&protectedPixelBuffer.leakRef(), data.data(), data.size(), [] (void* context, const void*, size_t) {
         static_cast<PixelBuffer*>(context)->deref();
     }));
 
     auto imageSize = pixelBuffer->size();
-    return NativeImage::create(adoptCF(CGImageCreate(imageSize.width(), imageSize.height(), 8, 32, 4 * imageSize.width(), pixelBuffer->format().colorSpace.platformColorSpace(), bitmapInfo, dataProvider.get(), 0, false, kCGRenderingIntentDefault)));
+    return NativeImage::create(adoptCFNullable(CGImageCreate(imageSize.width(), imageSize.height(), 8, 32, 4 * imageSize.width(), pixelBuffer->format().colorSpace.platformColorSpace(), bitmapInfo, dataProvider.get(), 0, false, kCGRenderingIntentDefault)));
 }
 
 } // namespace WebCore

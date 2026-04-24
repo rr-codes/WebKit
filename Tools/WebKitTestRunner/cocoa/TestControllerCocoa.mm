@@ -642,12 +642,12 @@ void TestController::addTestKeyToKeychain(const String& privateKeyBase64, const 
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        key = adoptCF(SecKeyCreateWithData(
+        key = adoptCFNullable(SecKeyCreateWithData(
             bridge_cast(adoptNS([[NSData alloc] initWithBase64EncodedString:privateKeyBase64.createNSString().get() options:NSDataBase64DecodingIgnoreUnknownCharacters]).get()),
             bridge_cast(options),
             &rawError
         ));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT keyError = adoptCF(rawError);
+        SUPPRESS_RETAINPTR_CTOR_ADOPT keyError = adoptCFNullable(rawError);
     }
     ASSERT(!keyError);
 

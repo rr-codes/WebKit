@@ -96,7 +96,7 @@ TEST(WebKit, LoadAndDecodeImage)
     };
 
     auto colorSpaceDescriptionForImage = [&] (Util::PlatformImage *image) -> NSString * {
-        return (__bridge NSString *)adoptCF(CFCopyDescription(colorSpaceForImage(image).get())).autorelease();
+        return (__bridge NSString *)adoptCFNullable(CFCopyDescription(colorSpaceForImage(image).get())).autorelease();
     };
 
     auto result1 = imageOrError("/terminate"_s);

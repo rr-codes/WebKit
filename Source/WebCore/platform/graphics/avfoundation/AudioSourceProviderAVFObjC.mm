@@ -293,7 +293,7 @@ void AudioSourceProviderAVFObjC::createMixIfNeeded()
             CFRelease(tap);
         return;
     }
-    m_tap = adoptCF(tap);
+    m_tap = adoptCFNullable(tap);
     m_tapStorage = WTF::move(tapStorage);
     m_avAudioMix = adoptNS([PAL::allocAVMutableAudioMixInstance() init]);
 

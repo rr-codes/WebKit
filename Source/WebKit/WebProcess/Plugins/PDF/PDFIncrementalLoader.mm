@@ -735,7 +735,7 @@ void PDFIncrementalLoader::dataProviderGetByteRanges(CFMutableArrayRef buffers, 
             protectedLoader->getResourceBytesAtPosition(ranges[i].length, ranges[i].location, [i, &dataResults, dataSemaphore, callbackAggregator](std::span<const uint8_t> bytes) {
                 if (dataSemaphore->wasSignaled())
                     return;
-                dataResults[i] = adoptCF(CFDataCreate(kCFAllocatorDefault, bytes.data(), bytes.size()));
+                dataResults[i] = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, bytes.data(), bytes.size()));
             });
         }
     });
@@ -749,7 +749,7 @@ void PDFIncrementalLoader::dataProviderGetByteRanges(CFMutableArrayRef buffers, 
 
     for (auto& result : dataResults) {
         if (!result)
-            result = adoptCF(CFDataCreate(kCFAllocatorDefault, 0, 0));
+            result = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, 0, 0));
         CFArrayAppendValue(buffers, result.get());
     }
 }
@@ -793,7 +793,7 @@ void PDFIncrementalLoader::threadEntry(Ref<PDFIncrementalLoader>&& loader)
     // Balanced by a deref inside of the dataProviderReleaseInfoCallback
     ref();
 
-    RetainPtr dataProvider = adoptCF(CGDataProviderCreateMultiRangeDirectAccess(this, kCGDataProviderIndeterminateSize, &dataProviderCallbacks));
+    RetainPtr dataProvider = adoptCFNullable(CGDataProviderCreateMultiRangeDirectAccess(this, kCGDataProviderIndeterminateSize, &dataProviderCallbacks));
     CGDataProviderSetProperty(dataProvider.get(), kCGDataProviderHasHighLatency, kCFBooleanTrue);
     m_backgroundThreadDocument = adoptNS([allocPDFDocumentInstance() initWithProvider:dataProvider.get()]);
 

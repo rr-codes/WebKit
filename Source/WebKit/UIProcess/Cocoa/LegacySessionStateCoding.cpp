@@ -396,7 +396,7 @@ static RetainPtr<CFDataRef> encodeSessionHistoryEntryData(const FrameState& fram
             },
             nullptr, // preferredSize
         };
-        return adoptCF(CFAllocatorCreate(kCFAllocatorDefault, &context));
+        return adoptCFNullable(CFAllocatorCreate(kCFAllocatorDefault, &context));
     }();
 
     size_t bufferSize;
@@ -418,19 +418,19 @@ static RetainPtr<CFDictionaryRef> createDictionary(std::initializer_list<std::pa
         values.append(keyValuePair.second);
     }
 
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys.mutableSpan().data(), values.mutableSpan().data(), keyValuePairs.size(), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys.mutableSpan().data(), values.mutableSpan().data(), keyValuePairs.size(), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 static RetainPtr<CFDictionaryRef> encodeSessionHistory(const BackForwardListState& backForwardListState)
 {
     ASSERT(!backForwardListState.currentIndex || backForwardListState.currentIndex.value() < backForwardListState.items.size());
 
-    auto sessionHistoryVersionNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &sessionHistoryVersion));
+    auto sessionHistoryVersionNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &sessionHistoryVersion));
 
     if (!backForwardListState.currentIndex)
         return createDictionary({ { sessionHistoryVersionKey, sessionHistoryVersionNumber.get() } });
 
-    auto entries = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, backForwardListState.items.size(), &kCFTypeArrayCallBacks));
+    auto entries = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, backForwardListState.items.size(), &kCFTypeArrayCallBacks));
     size_t totalDataSize = 0;
 
     for (auto& item : backForwardListState.items) {
@@ -441,9 +441,9 @@ static RetainPtr<CFDictionaryRef> encodeSessionHistory(const BackForwardListStat
         auto createdByJS = frameState->wasCreatedByJSWithoutUserInteraction ? kCFBooleanTrue : kCFBooleanFalse;
 
         auto shouldOpenExternalURLsPolicyValue = static_cast<uint64_t>(frameState->shouldOpenExternalURLsPolicy);
-        auto shouldOpenExternalURLsPolicy = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &shouldOpenExternalURLsPolicyValue));
+        auto shouldOpenExternalURLsPolicy = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &shouldOpenExternalURLsPolicyValue));
 
-        RetainPtr<CFMutableDictionaryRef> entryDictionary = adoptCF(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, createDictionary({
+        RetainPtr<CFMutableDictionaryRef> entryDictionary = adoptCFNullable(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, createDictionary({
             { sessionHistoryEntryURLKey, url.get() },
             { sessionHistoryEntryTitleKey, title.get() },
             { sessionHistoryEntryOriginalURLKey, originalURL.get() },
@@ -460,7 +460,7 @@ static RetainPtr<CFDictionaryRef> encodeSessionHistory(const BackForwardListStat
 
         if (item.navigatedFrameID) {
             auto navigatedFrameIDValue = static_cast<uint64_t>(item.navigatedFrameID->toUInt64());
-            auto navigatedFrameIDNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &navigatedFrameIDValue));
+            auto navigatedFrameIDNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &navigatedFrameIDValue));
             CFDictionarySetValue(entryDictionary.get(), sessionHistoryEntryNavigatedFrameIDKey, navigatedFrameIDNumber.get());
         }
 
@@ -468,7 +468,7 @@ static RetainPtr<CFDictionaryRef> encodeSessionHistory(const BackForwardListStat
     }
 
     uint32_t currentIndex = backForwardListState.currentIndex.value();
-    auto currentIndexNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &currentIndex));
+    auto currentIndexNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &currentIndex));
 
     return createDictionary({ { sessionHistoryVersionKey, sessionHistoryVersionNumber.get() }, { sessionHistoryCurrentIndexKey, currentIndexNumber.get() }, { sessionHistoryEntriesKey, entries.get() } });
 }
@@ -477,7 +477,7 @@ RefPtr<API::Data> encodeLegacySessionState(const SessionState& sessionState)
 {
     auto sessionHistoryDictionary = encodeSessionHistory(sessionState.backForwardListState);
     auto provisionalURLString = sessionState.provisionalURL.isNull() ? nullptr : sessionState.provisionalURL.string().createCFString();
-    RetainPtr<CFNumberRef> renderTreeSizeNumber(adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &sessionState.renderTreeSize)));
+    RetainPtr<CFNumberRef> renderTreeSizeNumber(adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &sessionState.renderTreeSize)));
     RetainPtr<CFBooleanRef> isAppInitiated = sessionState.isAppInitiated ? kCFBooleanTrue : kCFBooleanFalse;
 
     RetainPtr<CFDictionaryRef> stateDictionary;
@@ -496,7 +496,7 @@ RefPtr<API::Data> encodeLegacySessionState(const SessionState& sessionState)
         });
     }
 
-    auto writeStream = adoptCF(CFWriteStreamCreateWithAllocatedBuffers(kCFAllocatorDefault, nullptr));
+    auto writeStream = adoptCFNullable(CFWriteStreamCreateWithAllocatedBuffers(kCFAllocatorDefault, nullptr));
     if (!writeStream)
         return nullptr;
 
@@ -506,7 +506,7 @@ RefPtr<API::Data> encodeLegacySessionState(const SessionState& sessionState)
     if (!CFPropertyListWrite(stateDictionary.get(), writeStream.get(), kCFPropertyListBinaryFormat_v1_0, 0, nullptr))
         return nullptr;
 
-    auto data = adoptCF(checked_cf_cast<CFDataRef>(CFWriteStreamCopyProperty(writeStream.get(), kCFStreamPropertyDataWritten)));
+    auto data = adoptCFNullable(checked_cf_cast<CFDataRef>(CFWriteStreamCopyProperty(writeStream.get(), kCFStreamPropertyDataWritten)));
 
     CFIndex length = CFDataGetLength(data.get());
 
@@ -1155,7 +1155,7 @@ bool decodeLegacySessionState(std::span<const uint8_t> data, SessionState& sessi
     if (versionNumber != sessionStateDataVersion)
         return false;
 
-    auto cfPropertyList = adoptCF(CFPropertyListCreateWithData(kCFAllocatorDefault, adoptCF(CFDataCreate(kCFAllocatorDefault, data.subspan(sizeof(uint32_t)).data(), size - sizeof(uint32_t))).get(), kCFPropertyListImmutable, nullptr, nullptr));
+    auto cfPropertyList = adoptCFNullable(CFPropertyListCreateWithData(kCFAllocatorDefault, adoptCFNullable(CFDataCreate(kCFAllocatorDefault, data.subspan(sizeof(uint32_t)).data(), size - sizeof(uint32_t))).get(), kCFPropertyListImmutable, nullptr, nullptr));
     RetainPtr sessionStateDictionary = dynamic_cf_cast<CFDictionaryRef>(cfPropertyList.get());
     if (!sessionStateDictionary)
         return false;

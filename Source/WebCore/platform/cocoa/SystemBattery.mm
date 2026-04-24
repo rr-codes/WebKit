@@ -52,10 +52,10 @@ bool systemHasBattery()
 #elif PLATFORM(APPLETV)
             return false;
 #else
-            RetainPtr<CFTypeRef> powerSourcesInfo = adoptCF(IOPSCopyPowerSourcesInfo());
+            RetainPtr<CFTypeRef> powerSourcesInfo = adoptCFNullable(IOPSCopyPowerSourcesInfo());
             if (!powerSourcesInfo)
                 return false;
-            RetainPtr<CFArrayRef> powerSourcesList = adoptCF(IOPSCopyPowerSourcesList(powerSourcesInfo.get()));
+            RetainPtr<CFArrayRef> powerSourcesList = adoptCFNullable(IOPSCopyPowerSourcesList(powerSourcesInfo.get()));
             if (!powerSourcesList)
                 return false;
             for (CFIndex i = 0, count = CFArrayGetCount(powerSourcesList.get()); i < count; ++i) {
@@ -93,10 +93,10 @@ bool systemHasAC()
 #if PLATFORM(APPLETV)
             return true;
 #else
-            RetainPtr<CFTypeRef> powerSourcesInfo = adoptCF(IOPSCopyPowerSourcesInfo());
+            RetainPtr<CFTypeRef> powerSourcesInfo = adoptCFNullable(IOPSCopyPowerSourcesInfo());
             if (!powerSourcesInfo)
                 return false;
-            RetainPtr<CFArrayRef> powerSourcesList = adoptCF(IOPSCopyPowerSourcesList(powerSourcesInfo.get()));
+            RetainPtr<CFArrayRef> powerSourcesList = adoptCFNullable(IOPSCopyPowerSourcesList(powerSourcesInfo.get()));
             if (!powerSourcesList)
                 return false;
             for (CFIndex i = 0, count = CFArrayGetCount(powerSourcesList.get()); i < count; ++i) {

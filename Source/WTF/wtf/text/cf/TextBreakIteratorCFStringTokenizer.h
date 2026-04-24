@@ -68,10 +68,10 @@ public:
         auto stringObject = createString(string, priorContext);
         m_stringLength = string.length();
         m_priorContextLength = priorContext.length();
-        auto localeObject = adoptCF(CFLocaleCreate(kCFAllocatorDefault, locale.string().createCFString().get()));
-        m_stringTokenizer = adoptCF(CFStringTokenizerCreate(kCFAllocatorDefault, stringObject.get(), CFRangeMake(0, m_stringLength + m_priorContextLength), options, localeObject.get()));
+        auto localeObject = adoptCFNullable(CFLocaleCreate(kCFAllocatorDefault, locale.string().createCFString().get()));
+        m_stringTokenizer = adoptCFNullable(CFStringTokenizerCreate(kCFAllocatorDefault, stringObject.get(), CFRangeMake(0, m_stringLength + m_priorContextLength), options, localeObject.get()));
         if (!m_stringTokenizer)
-            m_stringTokenizer = adoptCF(CFStringTokenizerCreate(kCFAllocatorDefault, stringObject.get(), CFRangeMake(0, m_stringLength + m_priorContextLength), options, nullptr));
+            m_stringTokenizer = adoptCFNullable(CFStringTokenizerCreate(kCFAllocatorDefault, stringObject.get(), CFRangeMake(0, m_stringLength + m_priorContextLength), options, nullptr));
         ASSERT(m_stringTokenizer);
     }
 

@@ -261,7 +261,7 @@ int32_t LibWebRTCVPXInternalVideoDecoder::Decoded(webrtc::VideoFrame& frame)
     auto colorSpace = m_colorSpace ? m_colorSpace : m_configuration ? colorSpaceFromVPCodecConfigurationRecord(*m_configuration) : colorSpaceFromLibWebRTCVideoFrame(frame);
 
     auto videoFrame = VideoFrameLibWebRTC::create({ }, false, VideoFrame::Rotation::None, colorSpaceFromLibWebRTCVideoFrame(frame), toRef(frame.video_frame_buffer()), [protectedThis = Ref { *this }, colorSpace, isFullRange](auto& buffer) {
-        return adoptCF(webrtc::createPixelBufferFromFrameBuffer(buffer, [protectedThis, colorSpace, isFullRange](size_t width, size_t height, webrtc::BufferType bufferType) -> CVPixelBufferRef {
+        return adoptCFNullable(webrtc::createPixelBufferFromFrameBuffer(buffer, [protectedThis, colorSpace, isFullRange](size_t width, size_t height, webrtc::BufferType bufferType) -> CVPixelBufferRef {
             auto pixelBuffer = protectedThis->createPixelBuffer(width, height, bufferType, isFullRange);
             if (colorSpace)
                 attachColorSpaceToPixelBuffer(*colorSpace, pixelBuffer);

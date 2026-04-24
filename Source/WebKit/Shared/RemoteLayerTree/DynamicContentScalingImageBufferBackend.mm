@@ -62,7 +62,7 @@ static CFDictionaryRef makeContextOptions(const DynamicContentScalingImageBuffer
 class GraphicsContextDynamicContentScaling : public WebCore::GraphicsContextCG {
 public:
     GraphicsContextDynamicContentScaling(const DynamicContentScalingImageBufferBackend::Parameters& parameters, WebCore::RenderingMode renderingMode)
-        : GraphicsContextCG(adoptCF(RECGCommandsContextCreate(parameters.backendSize, makeContextOptions(parameters))).autorelease(), GraphicsContextCG::Unknown, renderingMode)
+        : GraphicsContextCG(adoptCFNullable(RECGCommandsContextCreate(parameters.backendSize, makeContextOptions(parameters))).autorelease(), GraphicsContextCG::Unknown, renderingMode)
     {
     }
 
@@ -94,7 +94,7 @@ DynamicContentScalingImageBufferBackend::DynamicContentScalingImageBufferBackend
     // FIXME: We should make callers always specify a cache and have an assertion here instead
     // of making a temporary one. RemoteLayerWithRemoteRenderingBackingStore currently does not.
     if (!m_resourceCache)
-        m_resourceCache = bridge_id_cast(adoptCF(RECGCommandsCacheCreate(nullptr)));
+        m_resourceCache = bridge_id_cast(adoptCFNullable(RECGCommandsCacheCreate(nullptr)));
 }
 
 DynamicContentScalingImageBufferBackend::~DynamicContentScalingImageBufferBackend() = default;
@@ -121,7 +121,7 @@ std::optional<DynamicContentScalingDisplayList> DynamicContentScalingImageBuffer
         };
     }
 
-    auto data = adoptCF(RECGCommandsContextCopyEncodedDataWithOptions(m_context->platformContext(), bridge_cast(options.get())));
+    auto data = adoptCFNullable(RECGCommandsContextCopyEncodedDataWithOptions(m_context->platformContext(), bridge_cast(options.get())));
     ASSERT(data);
 
     Vector<MachSendRight> sendRights;

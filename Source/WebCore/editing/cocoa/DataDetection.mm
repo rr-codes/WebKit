@@ -92,13 +92,13 @@ static std::optional<DetectedItem> detectItem(const VisiblePosition& position, c
     String fullPlainTextString = plainText(contextRange);
     CFIndex hitLocation = characterCount(*makeSimpleRange(contextRange.start, position));
 
-    RetainPtr scanner = adoptCF(DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
-    RetainPtr scanQuery = adoptCF(DDScanQueryCreateFromString(kCFAllocatorDefault, fullPlainTextString.createCFString().get(), CFRangeMake(0, fullPlainTextString.length())));
+    RetainPtr scanner = adoptCFNullable(DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
+    RetainPtr scanQuery = adoptCFNullable(DDScanQueryCreateFromString(kCFAllocatorDefault, fullPlainTextString.createCFString().get(), CFRangeMake(0, fullPlainTextString.length())));
 
     if (!DDScannerScanQuery(scanner.get(), scanQuery.get()))
         return { };
 
-    RetainPtr results = adoptCF(DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
+    RetainPtr results = adoptCFNullable(DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
 
     // Find the DDResultRef that intersects the hitTestResult's VisiblePosition.
     RetainPtr<DDResultRef> mainResult;
@@ -431,7 +431,7 @@ static void buildQuery(DDScanQueryRef scanQuery, const SimpleRange& contextRange
             continue;
         }
         
-        RetainPtr currentTextCFString = adoptCF(CFStringCreateWithCharacters(kCFAllocatorDefault, reinterpret_cast<const UniChar*>(currentTextUpconvertedCharactersWithSize.get()), currentTextLength));
+        RetainPtr currentTextCFString = adoptCFNullable(CFStringCreateWithCharacters(kCFAllocatorDefault, reinterpret_cast<const UniChar*>(currentTextUpconvertedCharactersWithSize.get()), currentTextLength));
 
         PAL::softLink_DataDetectorsCore_DDScanQueryAddTextFragment(scanQuery, currentTextCFString.get(), CFRangeMake(0, currentTextLength), (void *)iteratorCount, (DDTextFragmentMode)0, DDTextCoalescingTypeNone);
     }
@@ -555,7 +555,7 @@ static Vector<DDQueryFragmentCore> getFragmentsFromQuery(DDScanQueryRef scanQuer
 
 static NSArray * processDataDetectorScannerResults(DDScannerRef scanner, OptionSet<DataDetectorType> types, std::optional<double> referenceDateFromContext, DDScanQueryRef scanQuery, const SimpleRange& contextRange, const Vector<DDQueryFragmentCore>& oldFragments)
 {
-    RetainPtr scannerResults = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner, PAL::get_DataDetectorsCore_DDScannerCopyResultsOptionsForPassiveUseSingleton() | DDScannerCopyResultsOptionsCoalesceSignatures));
+    RetainPtr scannerResults = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner, PAL::get_DataDetectorsCore_DDScannerCopyResultsOptionsForPassiveUseSingleton() | DDScannerCopyResultsOptionsCoalesceSignatures));
 
     if (!scannerResults)
         return nil;
@@ -563,7 +563,7 @@ static NSArray * processDataDetectorScannerResults(DDScannerRef scanner, OptionS
     if (!CFArrayGetCount(scannerResults.get()))
         return nil;
 
-    RetainPtr tempScanQuery = adoptCF(PAL::softLink_DataDetectorsCore_DDScanQueryCreate(NULL));
+    RetainPtr tempScanQuery = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScanQueryCreate(NULL));
     buildQuery(tempScanQuery.get(), contextRange);
 
     auto fragments = getFragmentsFromQuery(tempScanQuery.get());
@@ -601,7 +601,7 @@ static NSArray * processDataDetectorScannerResults(DDScannerRef scanner, OptionS
     if (!allResultRanges)
         return nil;
 
-    RetainPtr tz = adoptCF(CFTimeZoneCopyDefault());
+    RetainPtr tz = adoptCFNullable(CFTimeZoneCopyDefault());
     NSDate *referenceDate = referenceDateFromContext ? [NSDate dateWithTimeIntervalSince1970:*referenceDateFromContext] : [NSDate date];
     RefPtr<Text> lastTextNodeToUpdate;
     String lastNodeContent;
@@ -727,11 +727,11 @@ void DataDetection::detectContentInFrame(LocalFrame* frame, OptionSet<DataDetect
 
     auto contextRange = makeRangeSelectingNodeContents(*document);
 
-    RetainPtr scanner = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
+    RetainPtr scanner = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
 #if HAVE(DDSCANNER_QOS_CONFIGURATION)
     PAL::softLink_DataDetectorsCore_DDScannerSetQOS(scanner.get(), DDQOSHighest);
 #endif
-    RetainPtr scanQuery = adoptCF(PAL::softLink_DataDetectorsCore_DDScanQueryCreate(NULL));
+    RetainPtr scanQuery = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScanQueryCreate(NULL));
 
     buildQuery(scanQuery.get(), contextRange);
 
@@ -761,8 +761,8 @@ void DataDetection::detectContentInFrame(LocalFrame* frame, OptionSet<DataDetect
 
 NSArray *DataDetection::detectContentInRange(const SimpleRange& contextRange, OptionSet<DataDetectorType> types, std::optional<double> referenceDateFromContext)
 {
-    RetainPtr scanner = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
-    RetainPtr scanQuery = adoptCF(PAL::softLink_DataDetectorsCore_DDScanQueryCreate(NULL));
+    RetainPtr scanner = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
+    RetainPtr scanQuery = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScanQueryCreate(NULL));
 
     buildQuery(scanQuery.get(), contextRange);
 
@@ -891,13 +891,13 @@ Vector<SimpleRange> DataDetection::detectRanges(const SimpleRange& contextRange,
     auto fullPlainTextString = plainText(contextRange);
     fullPlainTextString = makeStringByReplacingAll(fullPlainTextString, '\n', " "_s);
 
-    RetainPtr scanner = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
-    RetainPtr scanQuery = adoptCF(PAL::softLink_DataDetectorsCore_DDScanQueryCreateFromString(kCFAllocatorDefault, fullPlainTextString.createCFString().get(), CFRangeMake(0, fullPlainTextString.length())));
+    RetainPtr scanner = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
+    RetainPtr scanQuery = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScanQueryCreateFromString(kCFAllocatorDefault, fullPlainTextString.createCFString().get(), CFRangeMake(0, fullPlainTextString.length())));
 
     if (!PAL::softLink_DataDetectorsCore_DDScannerScanQuery(scanner.get(), scanQuery.get()))
         return ranges;
 
-    RetainPtr results = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
+    RetainPtr results = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
     for (id resultObject in static_cast<NSArray *>(results.get())) {
         RetainPtr ddResult = static_cast<DDResultRef>(resultObject);
         auto dataType = typeForResult(ddResult.get());

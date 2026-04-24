@@ -890,7 +890,7 @@ TEST(IPCTestingAPI, CGColorInNSSecureCoding)
     archiver.get().delegate = delegate.get();
 
     NSString *key = @"SomeString";
-    RetainPtr value = adoptCF(CGColorCreateSRGB(0.2, 0.3, 0.4, 0.5));
+    RetainPtr value = adoptCFNullable(CGColorCreateSRGB(0.2, 0.3, 0.4, 0.5));
     auto payload = @{ key : static_cast<id>(value.get()) };
     [archiver encodeObject:payload forKey:NSKeyedArchiveRootObjectKey];
     [archiver finishEncoding];
@@ -915,7 +915,7 @@ TEST(IPCTestingAPI, CGColorInNSSecureCoding)
     CGColorRef resultValue = static_cast<CGColorRef>(result.allValues[0]);
     ASSERT_EQ(CFGetTypeID(resultValue), CGColorGetTypeID());
     RetainPtr resultValueColorSpace = CGColorGetColorSpace(resultValue);
-    RetainPtr resultValueColorSpaceName = adoptCF(CGColorSpaceCopyName(resultValueColorSpace.get()));
+    RetainPtr resultValueColorSpaceName = adoptCFNullable(CGColorSpaceCopyName(resultValueColorSpace.get()));
     EXPECT_NE(CFStringFind(resultValueColorSpaceName.get(), CFSTR("SRGB"), 0).location, kCFNotFound);
     ASSERT_EQ(CGColorGetNumberOfComponents(resultValue), CGColorGetNumberOfComponents(value.get()));
     for (size_t i = 0; i < CGColorGetNumberOfComponents(resultValue); ++i)

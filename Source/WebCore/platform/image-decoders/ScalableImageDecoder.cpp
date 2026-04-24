@@ -106,7 +106,7 @@ static bool matchesAVIFSignature(std::span<const uint8_t> contents, FragmentedSh
     UNUSED_PARAM(contents);
     auto sharedBuffer = data.makeContiguous();
     auto cfData = sharedBuffer->createCFData();
-    auto imageSource = adoptCF(CGImageSourceCreateWithData(cfData.get(), nullptr));
+    auto imageSource = adoptCFNullable(CGImageSourceCreateWithData(cfData.get(), nullptr));
     auto uti = ImageDecoderCG::decodeUTI(imageSource.get(), sharedBuffer.get());
     return uti == "public.avif"_s || uti == "public.avis"_s;
 #else

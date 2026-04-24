@@ -374,7 +374,7 @@ TEST(RETAIN_PTR_TEST_NAME, BridgingAutorelease)
     uintptr_t nsStringPtr;
 
     AUTORELEASEPOOL_FOR_ARC_DEBUG {
-        RetainPtr<CFStringRef> string = adoptCF(CFStringCreateWithCString(nullptr, "hello world", kCFStringEncodingASCII));
+        RetainPtr<CFStringRef> string = adoptCFNullable(CFStringCreateWithCString(nullptr, "hello world", kCFStringEncodingASCII));
         nsString = string.bridgingAutorelease();
         nsStringPtr = reinterpret_cast<uintptr_t>(nsString);
     }
@@ -399,7 +399,7 @@ TEST(RETAIN_PTR_TEST_NAME, HashMapCFTypeDeletedValue)
 {
     HashMap<RetainPtr<CFStringRef>, int> map;
 
-    RetainPtr key = adoptCF(CFStringCreateWithCString(nullptr, "hello world", kCFStringEncodingASCII));
+    RetainPtr key = adoptCFNullable(CFStringCreateWithCString(nullptr, "hello world", kCFStringEncodingASCII));
     map.add(key, 1);
     EXPECT_EQ(true, map.contains(key));
     map.remove(key);

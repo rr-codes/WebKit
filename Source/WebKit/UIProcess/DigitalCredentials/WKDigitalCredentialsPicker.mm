@@ -205,7 +205,7 @@ static RetainPtr<NSArray<NSArray<WKIdentityDocumentPresentmentRequestAuthenticat
 
     for (auto&& certificateInfo : requestAuthentications) {
         RetainPtr<NSMutableArray<WKIdentityDocumentPresentmentRequestAuthenticationCertificate *>> mappedCertificateChain = adoptNS([[NSMutableArray alloc] init]);
-        auto certificateChain = adoptCF(SecTrustCopyCertificateChain(certificateInfo.trust().get()));
+        auto certificateChain = adoptCFNullable(SecTrustCopyCertificateChain(certificateInfo.trust().get()));
 
         CFIndex count = CFArrayGetCount(certificateChain.get());
         for (CFIndex i = 0; i < count; ++i) {

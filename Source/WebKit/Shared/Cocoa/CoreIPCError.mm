@@ -141,7 +141,7 @@ CoreIPCError::CoreIPCError(NSError *nsError)
                     m_clientCertificateChain = std::nullopt;
                     break;
                 }
-                m_clientCertificateChain->append(adoptCF(certificate));
+                m_clientCertificateChain->append(adoptCFNullable(certificate));
             }
         }
     }
@@ -150,7 +150,7 @@ CoreIPCError::CoreIPCError(NSError *nsError)
     if (!peerCertificateChain) {
         if (RetainPtr<id> candidatePeerTrust = [userInfo objectForKey:NSURLErrorFailingURLPeerTrustErrorKey]) {
             if (CFGetTypeID((__bridge CFTypeRef)candidatePeerTrust.get()) == SecTrustGetTypeID())
-                peerCertificateChain = bridge_cast(adoptCF(SecTrustCopyCertificateChain((__bridge SecTrustRef)candidatePeerTrust.get())));
+                peerCertificateChain = bridge_cast(adoptCFNullable(SecTrustCopyCertificateChain((__bridge SecTrustRef)candidatePeerTrust.get())));
         }
     }
 

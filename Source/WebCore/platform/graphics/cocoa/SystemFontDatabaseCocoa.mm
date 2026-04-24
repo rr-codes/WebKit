@@ -47,18 +47,18 @@ RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::smallCaptionFontDescr
 
 RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::menuFontDescriptor()
 {
-    return adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontMenuItem, [cocoaFontClassSingleton() systemFontSize], nullptr));
+    return adoptCFNullable(CTFontDescriptorCreateForUIType(kCTFontUIFontMenuItem, [cocoaFontClassSingleton() systemFontSize], nullptr));
 }
 
 RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::statusBarFontDescriptor()
 {
-    return adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, [cocoaFontClassSingleton() labelFontSize], nullptr));
+    return adoptCFNullable(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, [cocoaFontClassSingleton() labelFontSize], nullptr));
 }
 
 RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::miniControlFontDescriptor()
 {
 #if PLATFORM(IOS_FAMILY)
-    return adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontMiniSystem, 0, nullptr));
+    return adoptCFNullable(CTFontDescriptorCreateForUIType(kCTFontUIFontMiniSystem, 0, nullptr));
 #else
     auto font = [cocoaFontClassSingleton() systemFontOfSize:[cocoaFontClassSingleton() systemFontSizeForControlSize:NSControlSizeMini]];
     return static_cast<CTFontDescriptorRef>(font.fontDescriptor);
@@ -68,7 +68,7 @@ RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::miniControlFontDescri
 RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::smallControlFontDescriptor()
 {
 #if PLATFORM(IOS_FAMILY)
-    return adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontSmallSystem, 0, nullptr));
+    return adoptCFNullable(CTFontDescriptorCreateForUIType(kCTFontUIFontSmallSystem, 0, nullptr));
 #else
     auto font = [cocoaFontClassSingleton() systemFontOfSize:[cocoaFontClassSingleton() systemFontSizeForControlSize:NSControlSizeSmall]];
     return static_cast<CTFontDescriptorRef>(font.fontDescriptor);
@@ -78,7 +78,7 @@ RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::smallControlFontDescr
 RetainPtr<CTFontDescriptorRef> SystemFontDatabaseCoreText::controlFontDescriptor()
 {
 #if PLATFORM(IOS_FAMILY)
-    return adoptCF(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, 0, nullptr));
+    return adoptCFNullable(CTFontDescriptorCreateForUIType(kCTFontUIFontSystem, 0, nullptr));
 #else
     auto font = [cocoaFontClassSingleton() systemFontOfSize:[cocoaFontClassSingleton() systemFontSizeForControlSize:NSControlSizeRegular]];
     return static_cast<CTFontDescriptorRef>(font.fontDescriptor);

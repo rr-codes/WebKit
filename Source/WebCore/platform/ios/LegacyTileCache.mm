@@ -568,7 +568,7 @@ void LegacyTileCache::drawLayer(LegacyTileLayer* layer, CGContextRef context, Dr
 
     ++layer.paintCount;
     if (m_tilePaintCountersVisible) {
-        auto string = adoptCF(CFStringCreateWithFormat(0, 0, CFSTR("%d"), layer.paintCount));
+        auto string = adoptCFNullable(CFStringCreateWithFormat(0, 0, CFSTR("%d"), layer.paintCount));
 
         CGContextSaveGState(context);
 
@@ -586,12 +586,12 @@ void LegacyTileCache::drawLayer(LegacyTileLayer* layer, CGContextRef context, Dr
             CGContextSetRGBFillColor(context, 1, 1, 1, 0.6f);
 
         auto matrix = CGAffineTransformMakeScale(1, -1);
-        auto font = adoptCF(CTFontCreateWithName(CFSTR("Helvetica"), 25, &matrix));
+        auto font = adoptCFNullable(CTFontCreateWithName(CFSTR("Helvetica"), 25, &matrix));
         CFTypeRef keys[] = { kCTFontAttributeName, kCTForegroundColorFromContextAttributeName };
         CFTypeRef values[] = { font.get(), kCFBooleanTrue };
-        auto attributes = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-        auto attributedString = adoptCF(CFAttributedStringCreate(kCFAllocatorDefault, string.get(), attributes.get()));
-        auto line = adoptCF(CTLineCreateWithAttributedString(attributedString.get()));
+        auto attributes = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        auto attributedString = adoptCFNullable(CFAttributedStringCreate(kCFAllocatorDefault, string.get(), attributes.get()));
+        auto line = adoptCFNullable(CTLineCreateWithAttributedString(attributedString.get()));
         CGContextSetTextPosition(context, labelBounds.origin.x + 3, labelBounds.origin.y + 20);
         CTLineDraw(line.get(), context);
     

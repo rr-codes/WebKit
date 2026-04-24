@@ -848,7 +848,7 @@ static NSInteger swizzledEventButtonNumber()
 {
 #if !PLATFORM(IOS_FAMILY)
     CGScrollEventUnit unit = continuously ? kCGScrollEventUnitPixel : kCGScrollEventUnitLine;
-    auto cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent2(NULL, unit, 2, y, x, 0));
+    auto cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent2(NULL, unit, 2, y, x, 0));
     
     // Set the CGEvent location in flipped coords relative to the first screen, which
     // compensates for the behavior of +[NSEvent eventWithCGEvent:] when the event has
@@ -923,7 +923,7 @@ static NSInteger swizzledEventButtonNumber()
 
     constexpr uint32_t wheelCount = 2;
     // Note that the delta get converted to integral values here. NSEvent has float deltas, CGEvent has integral deltas.
-    auto cgScrollEvent = adoptCF(CGEventCreateScrollWheelEvent2(NULL, units, wheelCount, deltaY, deltaX, 0));
+    auto cgScrollEvent = adoptCFNullable(CGEventCreateScrollWheelEvent2(NULL, units, wheelCount, deltaY, deltaX, 0));
     CGEventSetTimestamp(cgScrollEvent.get(), timestamp);
 
     // Set the CGEvent location in flipped coords relative to the first screen, which

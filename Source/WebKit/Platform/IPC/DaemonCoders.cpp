@@ -58,7 +58,7 @@ std::optional<WTF::WallTime> Coder<WTF::WallTime>::decode(Decoder& decoder)
 void Coder<WebCore::CertificateInfo>::encode(Encoder& encoder, const WebCore::CertificateInfo& instance)
 {
 #if PLATFORM(COCOA)
-    RetainPtr data = adoptCF(SecTrustSerialize(instance.trust().get(), nullptr));
+    RetainPtr data = adoptCFNullable(SecTrustSerialize(instance.trust().get(), nullptr));
     if (!data) {
         encoder << false;
         return;
@@ -86,7 +86,7 @@ std::optional<WebCore::CertificateInfo> Coder<WebCore::CertificateInfo>::decode(
     std::span<const uint8_t> bytes = decoder.decodeFixedLengthReference(*length);
     if (bytes.size() != *length)
         return std::nullopt;
-    auto trust = adoptCF(SecTrustDeserialize(adoptCF(CFDataCreate(nullptr, bytes.data(), bytes.size())).get(), nullptr));
+    auto trust = adoptCFNullable(SecTrustDeserialize(adoptCFNullable(CFDataCreate(nullptr, bytes.data(), bytes.size())).get(), nullptr));
     if (!trust)
         return std::nullopt;
     return WebCore::CertificateInfo(WTF::move(trust));

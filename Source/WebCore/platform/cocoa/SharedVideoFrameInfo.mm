@@ -198,7 +198,7 @@ RetainPtr<CVPixelBufferRef> SharedVideoFrameInfo::createPixelBufferFromMemory(st
             return nullptr;
     }
 
-    RetainPtr pixelBuffer = adoptCF(rawPixelBuffer);
+    RetainPtr pixelBuffer = adoptCFNullable(rawPixelBuffer);
     auto status = CVPixelBufferLockBaseAddress(pixelBuffer.get(), 0);
     if (status != noErr)
         return nullptr;

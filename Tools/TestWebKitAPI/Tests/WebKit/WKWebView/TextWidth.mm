@@ -48,13 +48,13 @@ TEST(WebKit, TextWidth)
     }];
     TestWebKitAPI::Util::run(&didEvaluateJavaScript);
 
-    RetainPtr font = adoptCF(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, 24, CFSTR("en-US")));
+    RetainPtr font = adoptCFNullable(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, 24, CFSTR("en-US")));
     // Use CFAttributedString so we don't have to deal with NSFont / UIFont and have this code be platform-dependent.
     CFTypeRef keys[] = { kCTFontAttributeName };
     CFTypeRef values[] = { font.get() };
-    RetainPtr attributes = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    RetainPtr attributedString = adoptCF(CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("This is a test string"), attributes.get()));
-    RetainPtr line = adoptCF(CTLineCreateWithAttributedString(static_cast<CFAttributedStringRef>(attributedString)));
+    RetainPtr attributes = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr attributedString = adoptCFNullable(CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("This is a test string"), attributes.get()));
+    RetainPtr line = adoptCFNullable(CTLineCreateWithAttributedString(static_cast<CFAttributedStringRef>(attributedString)));
     double coreTextWidth = CTLineGetTypographicBounds(line.get(), nullptr, nullptr, nullptr);
 
     EXPECT_NEAR(webKitWidth, coreTextWidth, 3);

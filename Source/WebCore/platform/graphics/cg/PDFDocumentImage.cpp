@@ -214,8 +214,8 @@ void PDFDocumentImage::destroyDecodedData(bool)
 
 void PDFDocumentImage::createPDFDocument()
 {
-    auto dataProvider = adoptCF(CGDataProviderCreateWithCFData(data()->makeContiguous()->createCFData().get()));
-    m_document = adoptCF(CGPDFDocumentCreateWithProvider(dataProvider.get()));
+    auto dataProvider = adoptCFNullable(CGDataProviderCreateWithCFData(data()->makeContiguous()->createCFData().get()));
+    m_document = adoptCFNullable(CGPDFDocumentCreateWithProvider(dataProvider.get()));
 }
 
 void PDFDocumentImage::computeBoundsForCurrentPage()

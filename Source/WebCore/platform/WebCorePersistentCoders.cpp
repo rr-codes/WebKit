@@ -353,7 +353,7 @@ static std::optional<RetainPtr<CFDataRef>> decodeCFData(Decoder& decoder)
 
 static void encodeSecTrustRef(Encoder& encoder, SecTrustRef trust)
 {
-    auto data = adoptCF(SecTrustSerialize(trust, nullptr));
+    auto data = adoptCFNullable(SecTrustSerialize(trust, nullptr));
     if (!data) {
         encoder << false;
         return;
@@ -377,7 +377,7 @@ static std::optional<RetainPtr<SecTrustRef>> decodeSecTrustRef(Decoder& decoder)
     if (!trustData)
         return std::nullopt;
 
-    auto trust = adoptCF(SecTrustDeserialize(trustData->get(), nullptr));
+    auto trust = adoptCFNullable(SecTrustDeserialize(trustData->get(), nullptr));
     if (!trust)
         return std::nullopt;
 

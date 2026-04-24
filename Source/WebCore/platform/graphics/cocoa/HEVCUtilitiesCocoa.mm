@@ -75,7 +75,7 @@ std::optional<PlatformMediaCapabilitiesInfo> validateHEVCParameters(const HEVCPa
         || !canLoad_VideoToolbox_kVTHEVCDecoderProfileCapability_MaxPlaybackLevel())
         return std::nullopt;
 
-    auto capabilities = adoptCF(VTCopyHEVCDecoderCapabilitiesDictionary());
+    auto capabilities = adoptCFNullable(VTCopyHEVCDecoderCapabilitiesDictionary());
     if (!capabilities)
         return std::nullopt;
 
@@ -84,7 +84,7 @@ std::optional<PlatformMediaCapabilitiesInfo> validateHEVCParameters(const HEVCPa
         return std::nullopt;
 
     int16_t generalProfileIDC = parameters.generalProfileIDC;
-    auto cfGeneralProfileIDC = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &generalProfileIDC));
+    auto cfGeneralProfileIDC = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt16Type, &generalProfileIDC));
     auto searchRange = CFRangeMake(0, CFArrayGetCount(supportedProfiles.get()));
     if (!CFArrayContainsValue(supportedProfiles.get(), searchRange, cfGeneralProfileIDC.get()))
         return std::nullopt;
@@ -180,7 +180,7 @@ std::optional<PlatformMediaCapabilitiesInfo> validateDoViParameters(const DoViPa
         || !canLoad_VideoToolbox_kVTDolbyVisionDecoderCapability_IsHardwareAccelerated())
         return std::nullopt;
 
-    auto capabilities = adoptCF(VTCopyHEVCDecoderCapabilitiesDictionary());
+    auto capabilities = adoptCFNullable(VTCopyHEVCDecoderCapabilitiesDictionary());
     if (!capabilities)
         return std::nullopt;
 

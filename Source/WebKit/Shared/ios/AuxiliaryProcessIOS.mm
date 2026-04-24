@@ -71,18 +71,18 @@ void AuxiliaryProcess::populateMobileGestaltCache(std::optional<SandboxExtension
         MGGetSInt32Answer(kMGQMainScreenClass, MGScreenClassPad2);
         MGGetBoolAnswer(kMGQAppleInternalInstallCapability);
         MGGetBoolAnswer(kMGQiPadCapability);
-        auto deviceName = adoptCF(MGCopyAnswer(kMGQDeviceName, nullptr));
+        auto deviceName = adoptCFNullable(MGCopyAnswer(kMGQDeviceName, nullptr));
         MGGetSInt32Answer(kMGQDeviceClassNumber, MGDeviceClassInvalid);
         MGGetBoolAnswer(kMGQHasExtendedColorDisplay);
         MGGetFloat32Answer(kMGQDeviceCornerRadius, 0);
         MGGetBoolAnswer(kMGQSupportsForceTouch);
 
-        auto answer = adoptCF(MGCopyAnswer(kMGQBluetoothCapability, nullptr));
-        answer = adoptCF(MGCopyAnswer(kMGQDeviceProximityCapability, nullptr));
-        answer = adoptCF(MGCopyAnswer(kMGQDeviceSupportsARKit, nullptr));
-        answer = adoptCF(MGCopyAnswer(kMGQTimeSyncCapability, nullptr));
-        answer = adoptCF(MGCopyAnswer(kMGQWAPICapability, nullptr));
-        answer = adoptCF(MGCopyAnswer(kMGQMainDisplayRotation, nullptr));
+        auto answer = adoptCFNullable(MGCopyAnswer(kMGQBluetoothCapability, nullptr));
+        answer = adoptCFNullable(MGCopyAnswer(kMGQDeviceProximityCapability, nullptr));
+        answer = adoptCFNullable(MGCopyAnswer(kMGQDeviceSupportsARKit, nullptr));
+        answer = adoptCFNullable(MGCopyAnswer(kMGQTimeSyncCapability, nullptr));
+        answer = adoptCFNullable(MGCopyAnswer(kMGQWAPICapability, nullptr));
+        answer = adoptCFNullable(MGCopyAnswer(kMGQMainDisplayRotation, nullptr));
 
         ok = extension->revoke();
         ASSERT_UNUSED(ok, ok);

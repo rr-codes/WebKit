@@ -40,7 +40,7 @@ template<const CFStringRef& colorSpaceNameGlobalConstant> static CGColorSpaceRef
     static LazyNeverDestroyed<RetainPtr<CGColorSpaceRef>> colorSpace;
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [] {
-        colorSpace.construct(adoptCF(CGColorSpaceCreateWithName(RetainPtr { colorSpaceNameGlobalConstant }.get())));
+        colorSpace.construct(adoptCFNullable(CGColorSpaceCreateWithName(RetainPtr { colorSpaceNameGlobalConstant }.get())));
         ASSERT(colorSpace.get());
     });
     return colorSpace.get().get();
@@ -51,7 +51,7 @@ template<const CFStringRef& colorSpaceNameGlobalConstant> static CGColorSpaceRef
     static LazyNeverDestroyed<RetainPtr<CGColorSpaceRef>> colorSpace;
     static std::once_flag onceFlag;
     std::call_once(onceFlag, [] {
-        colorSpace.construct(adoptCF(CGColorSpaceCreateExtended(RetainPtr { namedColorSpace<colorSpaceNameGlobalConstant>() }.get())));
+        colorSpace.construct(adoptCFNullable(CGColorSpaceCreateExtended(RetainPtr { namedColorSpace<colorSpaceNameGlobalConstant>() }.get())));
         ASSERT(colorSpace.get());
     });
     return colorSpace.get().get();

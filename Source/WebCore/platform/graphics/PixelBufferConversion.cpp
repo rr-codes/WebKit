@@ -121,7 +121,7 @@ static void convertImagePixelsAccelerated(const ConstPixelBufferConversionView& 
         auto destinationCGImageFormat = makeVImageCGImageFormat(destination.format);
 
         vImage_Error converterCreateError = kvImageNoError;
-        auto converter = adoptCF(vImageConverter_CreateWithCGImageFormat(&sourceCGImageFormat, &destinationCGImageFormat, nullptr, kvImageNoFlags, &converterCreateError));
+        auto converter = adoptCFNullable(vImageConverter_CreateWithCGImageFormat(&sourceCGImageFormat, &destinationCGImageFormat, nullptr, kvImageNoFlags, &converterCreateError));
         if (converterCreateError != kvImageNoError)
             return;
 

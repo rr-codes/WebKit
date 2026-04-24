@@ -85,11 +85,11 @@ FontPlatformData::FontPlatformData(RetainPtr<CTFontRef>&& font, float size, bool
         // FIXME: Do something smarter than creating the CTFontRef twice <webkit.org/b/276635>
         int featureTypeValue = kTextSpacingType;
         int featureSelectorValue = mapFontWidthVariantToCTFeatureSelector(m_widthVariant);
-        RetainPtr<CTFontDescriptorRef> sourceDescriptor = adoptCF(CTFontCopyFontDescriptor(m_font.get()));
-        RetainPtr<CFNumberRef> featureType = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &featureTypeValue));
-        RetainPtr<CFNumberRef> featureSelector = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &featureSelectorValue));
-        RetainPtr<CTFontDescriptorRef> newDescriptor = adoptCF(CTFontDescriptorCreateCopyWithFeature(sourceDescriptor.get(), featureType.get(), featureSelector.get()));
-        RetainPtr<CTFontRef> newFont = adoptCF(CTFontCreateWithFontDescriptor(newDescriptor.get(), m_size, 0));
+        RetainPtr<CTFontDescriptorRef> sourceDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(m_font.get()));
+        RetainPtr<CFNumberRef> featureType = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &featureTypeValue));
+        RetainPtr<CFNumberRef> featureSelector = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &featureSelectorValue));
+        RetainPtr<CTFontDescriptorRef> newDescriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithFeature(sourceDescriptor.get(), featureType.get(), featureSelector.get()));
+        RetainPtr<CTFontRef> newFont = adoptCFNullable(CTFontCreateWithFontDescriptor(newDescriptor.get(), m_size, 0));
 
         if (newFont)
             m_font = WTF::move(newFont);
@@ -100,7 +100,7 @@ static RetainPtr<CTFontDescriptorRef> findFontDescriptor(CFURLRef url, CFStringR
 {
     if (!url)
         return nullptr;
-    auto fontDescriptors = adoptCF(CTFontManagerCreateFontDescriptorsFromURL(url));
+    auto fontDescriptors = adoptCFNullable(CTFontManagerCreateFontDescriptorsFromURL(url));
     if (!fontDescriptors || !CFArrayGetCount(fontDescriptors.get()))
         return nullptr;
     if (CFArrayGetCount(fontDescriptors.get()) == 1)
@@ -108,7 +108,7 @@ static RetainPtr<CTFontDescriptorRef> findFontDescriptor(CFURLRef url, CFStringR
 
     for (CFIndex i = 0; i < CFArrayGetCount(fontDescriptors.get()); ++i) {
         RetainPtr fontDescriptor = checked_cf_cast<CTFontDescriptorRef>(CFArrayGetValueAtIndex(fontDescriptors.get(), i));
-        RetainPtr currentPostScriptName = adoptCF(CTFontDescriptorCopyAttribute(fontDescriptor.get(), kCTFontNameAttribute));
+        RetainPtr currentPostScriptName = adoptCFNullable(CTFontDescriptorCopyAttribute(fontDescriptor.get(), kCTFontNameAttribute));
         if (CFEqual(currentPostScriptName.get(), postScriptName))
             return fontDescriptor;
     }
@@ -117,13 +117,13 @@ static RetainPtr<CTFontDescriptorRef> findFontDescriptor(CFURLRef url, CFStringR
 
 RetainPtr<CTFontRef> createCTFont(CFDictionaryRef attributes, float size, CTFontDescriptorOptions options, CFStringRef referenceURL, CFStringRef desiredPostScriptName)
 {
-    auto desiredReferenceURL = adoptCF(CFURLCreateWithString(kCFAllocatorDefault, referenceURL, nullptr));
+    auto desiredReferenceURL = adoptCFNullable(CFURLCreateWithString(kCFAllocatorDefault, referenceURL, nullptr));
 
-    auto fontDescriptor = adoptCF(CTFontDescriptorCreateWithAttributesAndOptions(attributes, options));
+    auto fontDescriptor = adoptCFNullable(CTFontDescriptorCreateWithAttributesAndOptions(attributes, options));
     if (fontDescriptor) {
-        RetainPtr font = adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), size, nullptr));
-        RetainPtr actualPostScriptName = adoptCF(CTFontCopyPostScriptName(font.get()));
-        RetainPtr actualReferenceURL = adoptCF(CTFontCopyAttribute(font.get(), kCTFontReferenceURLAttribute));
+        RetainPtr font = adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), size, nullptr));
+        RetainPtr actualPostScriptName = adoptCFNullable(CTFontCopyPostScriptName(font.get()));
+        RetainPtr actualReferenceURL = adoptCFNullable(CTFontCopyAttribute(font.get(), kCTFontReferenceURLAttribute));
         if (safeCFEqual(actualPostScriptName.get(), desiredPostScriptName) && safeCFEqual(desiredReferenceURL.get(), actualReferenceURL.get()))
             return font;
     }
@@ -132,11 +132,11 @@ RetainPtr<CTFontRef> createCTFont(CFDictionaryRef attributes, float size, CTFont
     // We can fall back to doing our best to find it ourself.
     fontDescriptor = findFontDescriptor(desiredReferenceURL.get(), desiredPostScriptName);
     if (fontDescriptor)
-        fontDescriptor = adoptCF(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor.get(), attributes));
+        fontDescriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor.get(), attributes));
     else
-        fontDescriptor = adoptCF(CTFontDescriptorCreateLastResort());
+        fontDescriptor = adoptCFNullable(CTFontDescriptorCreateLastResort());
     ASSERT(fontDescriptor);
-    return adoptCF(CTFontCreateWithFontDescriptorAndOptions(fontDescriptor.get(), size, nullptr, options));
+    return adoptCFNullable(CTFontCreateWithFontDescriptorAndOptions(fontDescriptor.get(), size, nullptr, options));
 }
 
 FontPlatformData FontPlatformData::create(const Attributes& data, const FontCustomPlatformData* custom)
@@ -145,8 +145,8 @@ FontPlatformData FontPlatformData::create(const Attributes& data, const FontCust
     if (custom) {
         RetainPtr baseFontDescriptor = custom->fontDescriptor.get();
         RELEASE_ASSERT(baseFontDescriptor);
-        RetainPtr fontDescriptor = adoptCF(CTFontDescriptorCreateCopyWithAttributes(baseFontDescriptor.get(), data.m_attributes.get()));
-        ctFont = adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), data.m_size, nullptr));
+        RetainPtr fontDescriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithAttributes(baseFontDescriptor.get(), data.m_attributes.get()));
+        ctFont = adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), data.m_size, nullptr));
     } else
         ctFont = createCTFont(data.m_attributes.get(), data.m_size, data.m_options, data.m_url.get(), data.m_psName.get());
 
@@ -162,17 +162,17 @@ RetainPtr<CTFontRef> FontPlatformData::registeredFont() const
 {
     RetainPtr platformFont = ctFont();
     ASSERT(platformFont);
-    if (platformFont && adoptCF(CTFontCopyAttribute(platformFont.get(), kCTFontURLAttribute)))
+    if (platformFont && adoptCFNullable(CTFontCopyAttribute(platformFont.get(), kCTFontURLAttribute)))
         return platformFont;
     return nullptr;
 }
 
 RetainPtr<CFTypeRef> FontPlatformData::objectForEqualityCheck(CTFontRef ctFont)
 {
-    auto fontDescriptor = adoptCF(CTFontCopyFontDescriptor(ctFont));
+    auto fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(ctFont));
     // FIXME: https://bugs.webkit.org/show_bug.cgi?id=138683 This is a shallow pointer compare for web fonts
     // because the URL contains the address of the font. This means we might erroneously get false negatives.
-    auto object = adoptCF(CTFontDescriptorCopyAttribute(fontDescriptor.get(), kCTFontReferenceURLAttribute));
+    auto object = adoptCFNullable(CTFontDescriptorCopyAttribute(fontDescriptor.get(), kCTFontReferenceURLAttribute));
     ASSERT(!object || CFGetTypeID(object.get()) == CFURLGetTypeID());
     return object;
 }
@@ -184,7 +184,7 @@ RetainPtr<CFTypeRef> FontPlatformData::objectForEqualityCheck() const
 
 RefPtr<SharedBuffer> FontPlatformData::openTypeTable(uint32_t table) const
 {
-    if (RetainPtr<CFDataRef> data = adoptCF(CTFontCopyTable(protect(ctFont()).get(), table, kCTFontTableOptionNoOptions)))
+    if (RetainPtr<CFDataRef> data = adoptCFNullable(CTFontCopyTable(protect(ctFont()).get(), table, kCTFontTableOptionNoOptions)))
         return SharedBuffer::create(data.get());
 
     return platformOpenTypeTable(table);
@@ -194,7 +194,7 @@ RefPtr<SharedBuffer> FontPlatformData::openTypeTable(uint32_t table) const
 
 String FontPlatformData::description() const
 {
-    String fontDescription { adoptCF(CFCopyDescription(ctFont())).get() };
+    String fontDescription { adoptCFNullable(CFCopyDescription(ctFont())).get() };
     return makeString(fontDescription, ' ', m_size,
         (m_syntheticBold ? " synthetic bold"_s : ""_s),
         (m_syntheticOblique ? " synthetic oblique"_s : ""_s),
@@ -206,7 +206,7 @@ String FontPlatformData::description() const
 String FontPlatformData::familyName() const
 {
     if (RetainPtr platformFont = ctFont())
-        return adoptCF(CTFontCopyFamilyName(platformFont.get())).get();
+        return adoptCFNullable(CTFontCopyFamilyName(platformFont.get())).get();
     return { };
 }
 
@@ -221,21 +221,21 @@ void FontPlatformData::updateSize(float size)
 {
     m_size = size;
     ASSERT(m_font.get());
-    m_font = adoptCF(CTFontCreateCopyWithAttributes(m_font.get(), m_size, nullptr, nullptr));
+    m_font = adoptCFNullable(CTFontCreateCopyWithAttributes(m_font.get(), m_size, nullptr, nullptr));
 }
 
 FontPlatformData::Attributes FontPlatformData::attributes() const
 {
     Attributes result(m_size, m_orientation, m_widthVariant, m_textRenderingMode, m_syntheticBold, m_syntheticOblique);
 
-    auto fontDescriptor = adoptCF(CTFontCopyFontDescriptor(m_font.get()));
-    result.m_attributes = adoptCF(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
+    auto fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(m_font.get()));
+    result.m_attributes = adoptCFNullable(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
 
     if (!m_customPlatformData) {
         result.m_options = CTFontDescriptorGetOptions(fontDescriptor.get());
-        auto referenceURL = adoptCF(checked_cf_cast<CFURLRef>(CTFontCopyAttribute(m_font.get(), kCTFontReferenceURLAttribute)));
+        auto referenceURL = adoptCFNullable(checked_cf_cast<CFURLRef>(CTFontCopyAttribute(m_font.get(), kCTFontReferenceURLAttribute)));
         result.m_url = CFURLGetString(referenceURL.get());
-        result.m_psName = adoptCF(CTFontCopyPostScriptName(m_font.get()));
+        result.m_psName = adoptCFNullable(CTFontCopyPostScriptName(m_font.get()));
     }
 
     return result;
@@ -258,8 +258,8 @@ FontPlatformData::FontPlatformData(float size, WebCore::FontOrientation&& orient
 FontPlatformData::IPCData FontPlatformData::toIPCData() const
 {
     RetainPtr font = ctFont();
-    RetainPtr fontDescriptor = adoptCF(CTFontCopyFontDescriptor(font.get()));
-    RetainPtr attributes = adoptCF(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
+    RetainPtr fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(font.get()));
+    RetainPtr attributes = adoptCFNullable(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
 
     const auto& data = creationData();
     if (data) {
@@ -276,9 +276,9 @@ FontPlatformData::IPCData FontPlatformData::toIPCData() const
     }
 
     auto options = CTFontDescriptorGetOptions(fontDescriptor.get());
-    RetainPtr referenceURL = adoptCF(checked_cf_cast<CFURLRef>(CTFontCopyAttribute(font.get(), kCTFontReferenceURLAttribute)));
+    RetainPtr referenceURL = adoptCFNullable(checked_cf_cast<CFURLRef>(CTFontCopyAttribute(font.get(), kCTFontReferenceURLAttribute)));
     RetainPtr urlString = retainPtr(CFURLGetString(referenceURL.get()));
-    RetainPtr postScriptName = adoptCF(CTFontCopyPostScriptName(font.get())).get();
+    RetainPtr postScriptName = adoptCFNullable(CTFontCopyPostScriptName(font.get())).get();
     return FontPlatformSerializedData { options, WTF::move(urlString), WTF::move(postScriptName), FontPlatformSerializedAttributes::fromCF(attributes.get()) };
 }
 
@@ -418,7 +418,7 @@ std::optional<FontPlatformSerializedAttributes> FontPlatformSerializedAttributes
 
 #define PAIR_VECTOR_TO_DICTIONARY(key, vector) \
     if (vector) { \
-        RetainPtr<CFMutableDictionaryRef> newResult = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks)); \
+        RetainPtr<CFMutableDictionaryRef> newResult = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks)); \
         for (auto& item : *vector) \
             CFDictionaryAddValue(newResult.get(), item.first.get(), item.second.get()); \
         CFDictionaryAddValue(result.get(), key, newResult.get()); \
@@ -426,7 +426,7 @@ std::optional<FontPlatformSerializedAttributes> FontPlatformSerializedAttributes
 
 RetainPtr<CFDictionaryRef> FontPlatformSerializedAttributes::toCFDictionary() const
 {
-    RetainPtr<CFMutableDictionaryRef> result = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr<CFMutableDictionaryRef> result = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     INJECT_STRING_VALUE(kCTFontNameAttribute, fontName);
     INJECT_STRING_VALUE(kCTFontDescriptorLanguageAttribute, descriptorLanguage);
@@ -450,9 +450,9 @@ RetainPtr<CFDictionaryRef> FontPlatformSerializedAttributes::toCFDictionary() co
 #endif
 
     if (featureSettings) {
-        RetainPtr settingsArray = adoptCF(CFArrayCreateMutable(nullptr, Checked<CFIndex>(featureSettings->size()), &kCFTypeArrayCallBacks));
+        RetainPtr settingsArray = adoptCFNullable(CFArrayCreateMutable(nullptr, Checked<CFIndex>(featureSettings->size()), &kCFTypeArrayCallBacks));
         for (const FontPlatformFeatureSetting& setting : *featureSettings) {
-            RetainPtr destinationSetting = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+            RetainPtr destinationSetting = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
             if (setting.type)
                 CFDictionaryAddValue(destinationSetting.get(), kCTFontFeatureTypeIdentifierKey, setting.type.get());
             if (setting.selector)
@@ -498,7 +498,7 @@ std::optional<FontPlatformSerializedTraits> FontPlatformSerializedTraits::fromCF
 
 RetainPtr<CFDictionaryRef> FontPlatformSerializedTraits::toCFDictionary() const
 {
-    RetainPtr<CFMutableDictionaryRef> result = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr<CFMutableDictionaryRef> result = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     INJECT_STRING_VALUE(kCTFontUIFontDesignTrait, uiFontDesign);
     INJECT_CF_VALUE(kCTFontWeightTrait, weight);
@@ -533,20 +533,20 @@ RetainPtr<CFTypeRef> FontPlatformOpticalSize::toCF() const
 
 RetainPtr<CTFontRef> InstalledFont::SystemUIFont::toCTFont(double pointSize) const
 {
-    return adoptCF(CTFontCreateUIFontForLanguage(static_cast<CTFontUIFontType>(systemUIFontType), pointSize, language.createCFString().get()));
+    return adoptCFNullable(CTFontCreateUIFontForLanguage(static_cast<CTFontUIFontType>(systemUIFontType), pointSize, language.createCFString().get()));
 }
 
 RetainPtr<CTFontRef> InstalledFont::PostScriptFont::toCTFont(double pointSize) const
 {
     RetainPtr<CTFontDescriptorRef> fontDescriptor;
     if (fontSerializedAttributes)
-        fontDescriptor = adoptCF(CTFontDescriptorCreateWithAttributesAndOptions(fontSerializedAttributes->toCFDictionary().get(), fontDescriptorOptions));
+        fontDescriptor = adoptCFNullable(CTFontDescriptorCreateWithAttributesAndOptions(fontSerializedAttributes->toCFDictionary().get(), fontDescriptorOptions));
     else
-        fontDescriptor = adoptCF(CTFontDescriptorCreateWithNameAndSize(postScriptName.createCFString().get(), pointSize));
+        fontDescriptor = adoptCFNullable(CTFontDescriptorCreateWithNameAndSize(postScriptName.createCFString().get(), pointSize));
 
-    RetainPtr font = adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), pointSize, nullptr));
-    if (String(adoptCF(CTFontCopyPostScriptName(font.get())).get()) != postScriptName)
-        font = adoptCF(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, pointSize, nullptr));
+    RetainPtr font = adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), pointSize, nullptr));
+    if (String(adoptCFNullable(CTFontCopyPostScriptName(font.get())).get()) != postScriptName)
+        font = adoptCFNullable(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, pointSize, nullptr));
 
     return font;
 }

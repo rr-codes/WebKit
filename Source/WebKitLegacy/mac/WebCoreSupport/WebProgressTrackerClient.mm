@@ -70,7 +70,7 @@ void WebProgressTrackerClient::progressEstimateChanged(WebCore::LocalFrame&)
     
     // Use a CFDictionary so we can add the CGColorRef without compile errors. And then thanks to
     // toll-free bridging we can pass the CFDictionary as an NSDictionary to postNotification.
-    auto userInfo = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto userInfo = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 2, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CFDictionaryAddValue(userInfo.get(), WebViewProgressEstimatedProgressKey, progress);
     if (bodyBackgroundColor)
         CFDictionaryAddValue(userInfo.get(), WebViewProgressBackgroundColorKey, bodyBackgroundColor);

@@ -45,7 +45,7 @@ static inline short NODELETE readShortFromTable(std::span<const UInt8> os2Data, 
 bool tryGetTypoMetrics(CTFontRef font, short& ascent, short& descent, short& lineGap)
 {
     bool result = false;
-    if (auto os2Table = adoptCF(CTFontCopyTable(font, kCTFontTableOS2, kCTFontTableOptionNoOptions))) {
+    if (auto os2Table = adoptCFNullable(CTFontCopyTable(font, kCTFontTableOS2, kCTFontTableOptionNoOptions))) {
         // For the structure of the OS/2 table, see
         // https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6OS2.html
         const CFIndex fsSelectionOffset = 16 * 2 + 10 + 4 * 4 + 4 * 1;

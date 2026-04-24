@@ -77,7 +77,7 @@ static WebCore::PlatformImagePtr squareImage(CGImageRef image)
         return image;
 
     CGRect squareCropRect = squareCropRectForSize(imageSize);
-    return adoptCF(CGImageCreateWithImageInRect(image, squareCropRect));
+    return adoptCFNullable(CGImageCreateWithImageInRect(image, squareCropRect));
 }
 
 static RetainPtr<CocoaImage> thumbnailSizedImageForImage(CGImageRef image)
@@ -90,14 +90,14 @@ static RetainPtr<CocoaImage> thumbnailSizedImageForImage(CGImageRef image)
 
     RetainPtr colorSpace = CGImageGetColorSpace(image);
     if (!CGColorSpaceSupportsOutput(colorSpace.get()))
-        colorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
 
-    auto context = adoptCF(CGBitmapContextCreate(nil, iconSideLength, iconSideLength, 8, 4 * iconSideLength, colorSpace.get(), kCGImageAlphaPremultipliedLast));
+    auto context = adoptCFNullable(CGBitmapContextCreate(nil, iconSideLength, iconSideLength, 8, 4 * iconSideLength, colorSpace.get(), kCGImageAlphaPremultipliedLast));
 
     CGContextSetInterpolationQuality(context.get(), kCGInterpolationHigh);
     CGContextDrawImage(context.get(), destinationRect, squaredImage.get());
 
-    auto scaledImage = adoptCF(CGBitmapContextCreateImage(context.get()));
+    auto scaledImage = adoptCFNullable(CGBitmapContextCreateImage(context.get()));
 
     RetainPtr thumbnailImage = scaledImage.get() ?: squaredImage.get();
 #if USE(APPKIT)
@@ -138,8 +138,8 @@ RetainPtr<CocoaImage> iconForImageFile(NSURL *file)
         (id)kCGImageSourceCreateThumbnailWithTransform: @YES,
         (id)kCGImageSourceEnableRestrictedDecoding: @YES
     };
-    RetainPtr<CGImageSource> imageSource = adoptCF(CGImageSourceCreateWithURL((CFURLRef)file, 0));
-    RetainPtr<CGImageRef> thumbnail = adoptCF(CGImageSourceCreateThumbnailAtIndex(imageSource.get(), 0, (CFDictionaryRef)options));
+    RetainPtr<CGImageSource> imageSource = adoptCFNullable(CGImageSourceCreateWithURL((CFURLRef)file, 0));
+    RetainPtr<CGImageRef> thumbnail = adoptCFNullable(CGImageSourceCreateThumbnailAtIndex(imageSource.get(), 0, (CFDictionaryRef)options));
     if (!thumbnail) {
         LOG_ERROR("Error creating thumbnail image for image: %@", file);
         return fallbackIconForFile(file);
@@ -158,7 +158,7 @@ RetainPtr<CocoaImage> iconForVideoFile(NSURL *file)
 
     NSError *error = nil;
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    RetainPtr<CGImageRef> imageRef = adoptCF([generator copyCGImageAtTime:PAL::kCMTimeZero actualTime:nil error:&error]);
+    RetainPtr<CGImageRef> imageRef = adoptCFNullable([generator copyCGImageAtTime:PAL::kCMTimeZero actualTime:nil error:&error]);
 ALLOW_DEPRECATED_DECLARATIONS_END
     if (!imageRef) {
         LOG_ERROR("Error creating image for video '%@': %@", file, error);

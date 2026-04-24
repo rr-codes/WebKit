@@ -71,13 +71,13 @@ std::unique_ptr<ImageBufferCGBitmapBackend> ImageBufferCGBitmapBackend::create(c
 
     verifyImageBufferIsBigEnough(data.span());
 
-    RetainPtr cgContext = adoptCF(CGBitmapContextCreate(data.mutableSpan().data(), backendSize.width(), backendSize.height(), 8, bytesPerRow, parameters.colorSpace.platformColorSpace(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
+    RetainPtr cgContext = adoptCFNullable(CGBitmapContextCreate(data.mutableSpan().data(), backendSize.width(), backendSize.height(), 8, bytesPerRow, parameters.colorSpace.platformColorSpace(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
     if (!cgContext)
         return nullptr;
 
     auto context = makeUnique<GraphicsContextCG>(cgContext.get());
 
-    RetainPtr dataProvider = adoptCF(CGDataProviderCreateWithData(nullptr, data.mutableSpan().data(), numBytes, [] (void*, const void* data, size_t) {
+    RetainPtr dataProvider = adoptCFNullable(CGDataProviderCreateWithData(nullptr, data.mutableSpan().data(), numBytes, [] (void*, const void* data, size_t) {
         fastFree(const_cast<void*>(data));
     }));
 
@@ -114,13 +114,13 @@ bool ImageBufferCGBitmapBackend::canMapBackingStore() const
 
 RefPtr<NativeImage> ImageBufferCGBitmapBackend::copyNativeImage()
 {
-    return NativeImage::create(adoptCF(CGBitmapContextCreateImage(context().platformContext())));
+    return NativeImage::create(adoptCFNullable(CGBitmapContextCreateImage(context().platformContext())));
 }
 
 RefPtr<NativeImage> ImageBufferCGBitmapBackend::createNativeImageReference()
 {
     auto backendSize = size();
-    return NativeImage::create(adoptCF(CGImageCreate(
+    return NativeImage::create(adoptCFNullable(CGImageCreate(
         backendSize.width(), backendSize.height(), 8, 32, bytesPerRow(),
         colorSpace().platformColorSpace(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host), m_dataProvider.get(),
         0, true, kCGRenderingIntentDefault)));

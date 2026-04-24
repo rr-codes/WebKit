@@ -842,7 +842,7 @@ void WebPage::getProcessDisplayName(CompletionHandler<void(String&&)>&& completi
 #if ENABLE(SET_WEBCONTENT_PROCESS_INFORMATION_IN_NETWORK_PROCESS)
     WebProcess::singleton().getProcessDisplayName(WTF::move(completionHandler));
 #else
-    completionHandler(adoptCF((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, _LSGetCurrentApplicationASN(), _kLSDisplayNameKey)).get());
+    completionHandler(adoptCFNullable((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, _LSGetCurrentApplicationASN(), _kLSDisplayNameKey)).get());
 #endif
 #else
     completionHandler({ });

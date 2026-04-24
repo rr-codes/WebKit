@@ -46,13 +46,13 @@ public:
     }
 
     CoreIPCSecAccessControl(std::span<const uint8_t> data)
-        : m_accessControlData(adoptCF(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
+        : m_accessControlData(adoptCFNullable(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
     {
     }
 
     RetainPtr<SecAccessControlRef> createSecAccessControl() const
     {
-        auto accessControl = adoptCF(SecAccessControlCreateFromData(kCFAllocatorDefault, m_accessControlData.get(), NULL));
+        auto accessControl = adoptCFNullable(SecAccessControlCreateFromData(kCFAllocatorDefault, m_accessControlData.get(), NULL));
         ASSERT(accessControl);
         return accessControl;
     }
@@ -68,7 +68,7 @@ private:
     RetainPtr<CFDataRef> dataFromAccessControl(SecAccessControlRef accessControl) const
     {
         ASSERT(accessControl);
-        auto data = adoptCF(SecAccessControlCopyData(accessControl));
+        auto data = adoptCFNullable(SecAccessControlCopyData(accessControl));
         ASSERT(data);
         return data;
     }

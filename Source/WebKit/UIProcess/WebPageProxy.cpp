@@ -15192,7 +15192,7 @@ void WebPageProxy::takeSnapshot(const IntRect& rect, const IntSize& bitmapSize, 
 
 #if HAVE(SUPPORT_HDR_DISPLAY_APIS)
             if (image && headroom > Headroom::None)
-                image = adoptCF(CGImageCreateCopyWithContentHeadroom(headroom.headroom, image.get()));
+                image = adoptCFNullable(CGImageCreateCopyWithContentHeadroom(headroom.headroom, image.get()));
 #endif
 
             callback(image.get());

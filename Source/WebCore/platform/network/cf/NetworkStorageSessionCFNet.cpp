@@ -37,7 +37,7 @@ namespace WebCore {
 
 RetainPtr<CFURLStorageSessionRef> NetworkStorageSession::createCFStorageSessionForIdentifier(CFStringRef identifier, ShouldDisableCFURLCache shouldDisableCFURLCache)
 {
-    auto storageSession = adoptCF(_CFURLStorageSessionCreate(kCFAllocatorDefault, identifier, nullptr));
+    auto storageSession = adoptCFNullable(_CFURLStorageSessionCreate(kCFAllocatorDefault, identifier, nullptr));
 
     if (!storageSession)
         return nullptr;
@@ -46,13 +46,13 @@ RetainPtr<CFURLStorageSessionRef> NetworkStorageSession::createCFStorageSessionF
         _CFURLStorageSessionDisableCache(storageSession.get());
 
     if (shouldDisableCFURLCache == ShouldDisableCFURLCache::No) {
-        auto cache = adoptCF(_CFURLStorageSessionCopyCache(kCFAllocatorDefault, storageSession.get()));
+        auto cache = adoptCFNullable(_CFURLStorageSessionCopyCache(kCFAllocatorDefault, storageSession.get()));
         if (!cache)
             return nullptr;
 
         CFURLCacheSetDiskCapacity(cache.get(), 0);
 
-        auto sharedCache = adoptCF(CFURLCacheCopySharedURLCache());
+        auto sharedCache = adoptCFNullable(CFURLCacheCopySharedURLCache());
         CFURLCacheSetMemoryCapacity(cache.get(), CFURLCacheMemoryCapacity(sharedCache.get()));
     }
 
@@ -61,7 +61,7 @@ RetainPtr<CFURLStorageSessionRef> NetworkStorageSession::createCFStorageSessionF
 
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanAccessRawCookies));
 
-    auto cookieStorage = adoptCF(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, storageSession.get()));
+    auto cookieStorage = adoptCFNullable(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, storageSession.get()));
     if (!cookieStorage)
         return nullptr;
 
@@ -97,7 +97,7 @@ RetainPtr<CFHTTPCookieStorageRef> NetworkStorageSession::cookieStorage() const
         return m_platformCookieStorage;
 
     if (m_platformSession)
-        return adoptCF(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, m_platformSession.get()));
+        return adoptCFNullable(_CFURLStorageSessionCopyCookieStorage(kCFAllocatorDefault, m_platformSession.get()));
 
     // When using NSURLConnection, we also use its shared cookie storage.
     return nullptr;

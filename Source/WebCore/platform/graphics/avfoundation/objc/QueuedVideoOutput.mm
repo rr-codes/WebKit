@@ -72,7 +72,7 @@ SPECIALIZE_TYPE_TRAITS_END()
         if (CMTIME_IS_INVALID(earliestTime))
             break;
 
-        auto pixelBuffer = adoptCF([videoOutput copyPixelBufferForItemTime:earliestTime itemTimeForDisplay:nil]);
+        auto pixelBuffer = adoptCFNullable([videoOutput copyPixelBufferForItemTime:earliestTime itemTimeForDisplay:nil]);
         if (!pixelBuffer)
             break;
 

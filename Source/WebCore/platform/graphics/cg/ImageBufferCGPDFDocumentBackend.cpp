@@ -49,17 +49,17 @@ std::unique_ptr<ImageBufferCGPDFDocumentBackend> ImageBufferCGPDFDocumentBackend
     if (backendSize.isEmpty())
         return nullptr;
 
-    auto data = adoptCF(CFDataCreateMutable(kCFAllocatorDefault, 0));
+    auto data = adoptCFNullable(CFDataCreateMutable(kCFAllocatorDefault, 0));
     if (!data)
         return nullptr;
 
-    auto dataConsumer = adoptCF(CGDataConsumerCreateWithCFData(data.get()));
+    auto dataConsumer = adoptCFNullable(CGDataConsumerCreateWithCFData(data.get()));
     if (!dataConsumer)
         return nullptr;
 
     auto mediaBox = CGRectMake(0, 0, backendSize.width(), backendSize.height());
 
-    auto pdfContext = adoptCF(CGPDFContextCreate(dataConsumer.get(), &mediaBox, nullptr));
+    auto pdfContext = adoptCFNullable(CGPDFContextCreate(dataConsumer.get(), &mediaBox, nullptr));
     if (!pdfContext)
         return nullptr;
 

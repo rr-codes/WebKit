@@ -2500,8 +2500,8 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 
 static NSURL *createUniqueWebDataURL()
 {
-    auto UUIDRef = adoptCF(CFUUIDCreate(kCFAllocatorDefault));
-    auto UUIDString = adoptCF(CFUUIDCreateString(kCFAllocatorDefault, UUIDRef.get()));
+    auto UUIDRef = adoptCFNullable(CFUUIDCreate(kCFAllocatorDefault));
+    auto UUIDString = adoptCFNullable(CFUUIDCreateString(kCFAllocatorDefault, UUIDRef.get()));
     return [NSURL URLWithString:[NSString stringWithFormat:@"applewebdata://%@", (__bridge NSString *)UUIDString.get()]];
 }
 

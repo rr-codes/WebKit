@@ -264,7 +264,7 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_BEGIN
         return nil;
 
     // FIXME: This looks like a static analysis false positive (rdar://145661220).
-    SUPPRESS_UNCOUNTED_ARG return adoptCF(JSStringCopyCFString(kCFAllocatorDefault, name.get())).bridgingAutorelease();
+    SUPPRESS_UNCOUNTED_ARG return adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, name.get())).bridgingAutorelease();
 }
 
 - (void)setName:(NSString *)name

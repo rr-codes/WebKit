@@ -2944,7 +2944,7 @@ static std::optional<WebCore::JSHandleIdentifier> jsHandleIdentifierInFrame(cons
             auto croppedTextRectInImageCoordinates = textRectInBoundingRectCoordinates;
             croppedTextRectInImageCoordinates.scale(contentImageScaleFactor);
 
-            RetainPtr textImage = adoptCF(CGImageCreateWithImageInRect(platformImage.get(), croppedTextRectInImageCoordinates));
+            RetainPtr textImage = adoptCFNullable(CGImageCreateWithImageInRect(platformImage.get(), croppedTextRectInImageCoordinates));
 
             auto presentationFrame = CGRectOffset(textRectInBoundingRectCoordinates, textBoundingRectInRootViewCoordinates.x(), textBoundingRectInRootViewCoordinates.y());
 
@@ -6720,7 +6720,7 @@ static Vector<Ref<API::TargetedElementInfo>> elementsFromWKElements(NSArray<_WKT
             auto croppedTextRectInImageCoordinates = textRectInBoundingRectCoordinates;
             croppedTextRectInImageCoordinates.scale(contentImageScaleFactor);
 
-            RetainPtr textImage = adoptCF(CGImageCreateWithImageInRect(platformImage.get(), croppedTextRectInImageCoordinates));
+            RetainPtr textImage = adoptCFNullable(CGImageCreateWithImageInRect(platformImage.get(), croppedTextRectInImageCoordinates));
 
             auto presentationFrame = CGRectOffset(textRectInBoundingRectCoordinates, textBoundingRectInRootViewCoordinates.x(), textBoundingRectInRootViewCoordinates.y());
 

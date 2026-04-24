@@ -355,7 +355,7 @@ void AuxiliaryProcessProxy::didFinishLaunching(ProcessLauncher* launcher, IPC::C
 #if PLATFORM(MAC) && USE(RUNNINGBOARD)
     enum class LifetimeActivityState { None, Background, Foreground };
     static LifetimeActivityState lifetimeActivityState = []() {
-        if (auto value = dynamic_cf_cast<CFStringRef>(adoptCF(CFPreferencesCopyAppValue(CFSTR("LifetimeActivityState"), kCFPreferencesCurrentApplication)))) {
+        if (auto value = dynamic_cf_cast<CFStringRef>(adoptCFNullable(CFPreferencesCopyAppValue(CFSTR("LifetimeActivityState"), kCFPreferencesCurrentApplication)))) {
             if (CFEqual(value, CFSTR("None")))
                 return LifetimeActivityState::None;
             if (CFEqual(value, CFSTR("BG")))

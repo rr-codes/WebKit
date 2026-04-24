@@ -49,7 +49,7 @@ static bool hasActionsForResult(DDScannerResult *dataDetectorResult)
 static bool resultIsPastDate(DDScannerResult *dataDetectorResult, PDFPage *pdfPage)
 {
     RetainPtr referenceDate = [retainPtr([[pdfPage document] documentAttributes]) objectForKey:get_PDFKit_PDFDocumentCreationDateAttributeSingleton()];
-    RetainPtr referenceTimeZone = adoptCF(CFTimeZoneCopyDefault());
+    RetainPtr referenceTimeZone = adoptCFNullable(CFTimeZoneCopyDefault());
     return PAL::softLink_DataDetectorsCore_DDResultIsPastDate(RetainPtr { [dataDetectorResult coreResult] }.get(), (CFDateRef)referenceDate.get(), (CFTimeZoneRef)referenceTimeZone.get());
 }
 

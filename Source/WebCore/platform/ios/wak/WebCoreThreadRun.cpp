@@ -181,7 +181,7 @@ void WebThreadInitRunQueue()
         runQueue = new WebThreadRunQueue;
 
         CFRunLoopSourceContext runSourceContext = { 0, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, HandleRunSource };
-        runSource() = adoptCF(CFRunLoopSourceCreate(nullptr, -1, &runSourceContext));
+        runSource() = adoptCFNullable(CFRunLoopSourceCreate(nullptr, -1, &runSourceContext));
         CFRunLoopAddSource(WebThreadRunLoop(), runSource().get(), kCFRunLoopDefaultMode);
     });
 }

@@ -120,7 +120,7 @@ public:
         : m_trustData() { };
 
     CoreIPCSecTrust(SecTrustRef trust)
-        : m_trustData(adoptCF(SecTrustSerialize(trust, NULL)))
+        : m_trustData(adoptCFNullable(SecTrustSerialize(trust, NULL)))
     {
     }
 
@@ -130,7 +130,7 @@ public:
     }
 
     CoreIPCSecTrust(std::span<const uint8_t> data)
-        : m_trustData(data.empty() ? nullptr : adoptCF(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
+        : m_trustData(data.empty() ? nullptr : adoptCFNullable(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
     {
     }
 
@@ -139,7 +139,7 @@ public:
         if (!m_trustData)
             return nullptr;
 
-        return adoptCF(SecTrustDeserialize(m_trustData.get(), NULL));
+        return adoptCFNullable(SecTrustDeserialize(m_trustData.get(), NULL));
     }
 
     std::span<const uint8_t> dataReference() const

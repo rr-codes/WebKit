@@ -38,7 +38,7 @@ RetainPtr<CFHTTPCookieStorageRef> cookieStorageFromIdentifyingData(const Vector<
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanAccessRawCookies));
 
     RetainPtr cookieStorageData = toCFData(data.span());
-    RetainPtr cookieStorage = adoptCF(CFHTTPCookieStorageCreateFromIdentifyingData(kCFAllocatorDefault, cookieStorageData.get()));
+    RetainPtr cookieStorage = adoptCFNullable(CFHTTPCookieStorageCreateFromIdentifyingData(kCFAllocatorDefault, cookieStorageData.get()));
     ASSERT(cookieStorage);
 
     CFHTTPCookieStorageScheduleWithRunLoop(cookieStorage.get(), RetainPtr { [NSURLConnection resourceLoaderRunLoop] }.get(), kCFRunLoopCommonModes);
@@ -49,7 +49,7 @@ RetainPtr<CFHTTPCookieStorageRef> cookieStorageFromIdentifyingData(const Vector<
 Vector<uint8_t> identifyingDataFromCookieStorage(CFHTTPCookieStorageRef cookieStorage)
 {
     ASSERT(hasProcessPrivilege(ProcessPrivilege::CanAccessRawCookies));
-    return makeVector(adoptCF(CFHTTPCookieStorageCreateIdentifyingData(kCFAllocatorDefault, cookieStorage)).get());
+    return makeVector(adoptCFNullable(CFHTTPCookieStorageCreateIdentifyingData(kCFAllocatorDefault, cookieStorage)).get());
 }
 
 } // namespace WebKit

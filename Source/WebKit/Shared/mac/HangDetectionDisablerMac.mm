@@ -42,7 +42,7 @@ static bool clientsMayIgnoreEvents()
     if (CGSCopyConnectionProperty(CGSMainConnectionID(), CGSMainConnectionID(), clientsMayIgnoreEventsKey, &valuePtr) != kCGErrorSuccess)
         return false;
 
-    return adoptCF(valuePtr) == kCFBooleanTrue;
+    return adoptCFNullable(valuePtr) == kCFBooleanTrue;
 }
 
 static void setClientsMayIgnoreEvents(bool clientsMayIgnoreEvents)

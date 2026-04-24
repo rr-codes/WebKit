@@ -50,7 +50,7 @@ public:
     }
 
     CoreIPCSecKeychainItem(std::span<const uint8_t> data)
-        : m_persistentRef(data.empty() ? nullptr : adoptCF(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
+        : m_persistentRef(data.empty() ? nullptr : adoptCFNullable(CFDataCreate(kCFAllocatorDefault, data.data(), data.size())))
     {
     }
 
@@ -69,7 +69,7 @@ public:
         SUPPRESS_UNRETAINED_LOCAL SecKeychainItemRef keychainItem = NULL;
         SecKeychainItemCopyFromPersistentReference(m_persistentRef.get(), &keychainItem);
         ALLOW_DEPRECATED_DECLARATIONS_END
-        return adoptCF(keychainItem);
+        return adoptCFNullable(keychainItem);
     }
 
     std::span<const uint8_t> dataReference() const
@@ -92,7 +92,7 @@ private:
         SecKeychainItemCreatePersistentReference(keychainItem, &data);
         ALLOW_DEPRECATED_DECLARATIONS_END
 
-        return adoptCF(data);
+        return adoptCFNullable(data);
     }
 
     const RetainPtr<CFDataRef> m_persistentRef;

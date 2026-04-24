@@ -67,7 +67,7 @@ AXTextMarker::AXTextMarker(PlatformTextMarkerData platformData)
 RetainPtr<PlatformTextMarkerData> AXTextMarker::platformData() const
 {
 #if PLATFORM(MAC)
-    return adoptCF(AXTextMarkerCreate(kCFAllocatorDefault, (const UInt8*)&m_data, sizeof(m_data)));
+    return adoptCFNullable(AXTextMarkerCreate(kCFAllocatorDefault, (const UInt8*)&m_data, sizeof(m_data)));
 #else // PLATFORM(IOS_FAMILY)
     return [NSData dataWithBytes:&m_data length:sizeof(m_data)];
 #endif
@@ -164,8 +164,8 @@ AXTextMarkerRange::AXTextMarkerRange(AXTextMarkerRangeRef textMarkerRangeRef)
         return;
     }
 
-    RetainPtr start = adoptCF(AXTextMarkerRangeCopyStartMarker(textMarkerRangeRef));
-    RetainPtr end = adoptCF(AXTextMarkerRangeCopyEndMarker(textMarkerRangeRef));
+    RetainPtr start = adoptCFNullable(AXTextMarkerRangeCopyStartMarker(textMarkerRangeRef));
+    RetainPtr end = adoptCFNullable(AXTextMarkerRangeCopyEndMarker(textMarkerRangeRef));
 
     m_start = start.get();
     m_end = end.get();
@@ -173,7 +173,7 @@ AXTextMarkerRange::AXTextMarkerRange(AXTextMarkerRangeRef textMarkerRangeRef)
 
 RetainPtr<AXTextMarkerRangeRef> AXTextMarkerRange::platformData() const
 {
-    return adoptCF(AXTextMarkerRangeCreate(kCFAllocatorDefault
+    return adoptCFNullable(AXTextMarkerRangeCreate(kCFAllocatorDefault
         , m_start.platformData().autorelease()
         , m_end.platformData().autorelease()
     ));

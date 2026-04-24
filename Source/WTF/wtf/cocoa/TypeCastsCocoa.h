@@ -51,7 +51,7 @@ template<typename T> inline typename NSTollFreeBridgingTraits<std::remove_pointe
 
 template<typename T> inline RetainPtr<typename NSTollFreeBridgingTraits<std::remove_pointer_t<T>>::BridgedType> bridge_cast(RetainPtr<T>&& object)
 {
-    return adoptCF(WTF_NS_TO_CF_BRIDGE_TRANSFER(typename NSTollFreeBridgingTraits<std::remove_pointer_t<T>>::BridgedType, object.leakRef()));
+    return adoptCFNullable(WTF_NS_TO_CF_BRIDGE_TRANSFER(typename NSTollFreeBridgingTraits<std::remove_pointer_t<T>>::BridgedType, object.leakRef()));
 }
 
 template<typename T> inline typename CFTollFreeBridgingTraits<T>::BridgedType bridge_cast(T object)

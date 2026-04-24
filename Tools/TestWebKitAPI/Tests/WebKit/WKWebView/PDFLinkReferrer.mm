@@ -52,13 +52,13 @@ static RetainPtr<NSData> createPDFWithLinkToURL(NSURL *url)
     CGDataConsumerCallbacks callbacks;
     callbacks.putBytes = (CGDataConsumerPutBytesCallback)putPDFBytesCallback;
     callbacks.releaseConsumer = (CGDataConsumerReleaseInfoCallback)emptyReleaseInfoCallback;
-    RetainPtr consumer = adoptCF(CGDataConsumerCreate(pdfData.get(), &callbacks));
-    RetainPtr contextDictionary = adoptCF(CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr consumer = adoptCFNullable(CGDataConsumerCreate(pdfData.get(), &callbacks));
+    RetainPtr contextDictionary = adoptCFNullable(CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CGRect rectangle = CGRectMake(0, 0, 1000, 1000);
-    RetainPtr pdfContext = adoptCF(CGPDFContextCreate(consumer.get(), &rectangle, contextDictionary.get()));
+    RetainPtr pdfContext = adoptCFNullable(CGPDFContextCreate(consumer.get(), &rectangle, contextDictionary.get()));
 
-    RetainPtr pageDictionary = adoptCF(CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    RetainPtr boxData = adoptCF(CFDataCreate(NULL, (const UInt8 *)&rectangle, sizeof(CGRect)));
+    RetainPtr pageDictionary = adoptCFNullable(CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr boxData = adoptCFNullable(CFDataCreate(NULL, (const UInt8 *)&rectangle, sizeof(CGRect)));
     CFDictionarySetValue(pageDictionary.get(), kCGPDFContextMediaBox, boxData.get());
     CGPDFContextBeginPage(pdfContext.get(), pageDictionary.get());
     

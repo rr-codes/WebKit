@@ -312,7 +312,7 @@ void MockAudioCaptureInternalUnit::reconfigure()
 
     CMFormatDescriptionRef formatDescription;
     PAL::CMAudioFormatDescriptionCreate(NULL, &m_streamFormat, 0, NULL, 0, NULL, NULL, &formatDescription);
-    m_formatDescription = adoptCF(formatDescription);
+    m_formatDescription = adoptCFNullable(formatDescription);
 
     size_t sampleCount = 2 * rate;
     m_bipBopBuffer.fill(0, sampleCount);

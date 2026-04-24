@@ -37,6 +37,7 @@
 namespace WTF {
 
 template<typename T> [[nodiscard]] constexpr RetainPtr<RetainPtrType<T>> adoptCF(T CF_RELEASES_ARGUMENT);
+template<typename T> [[nodiscard]] constexpr RetainPtr<RetainPtrType<T>> adoptCFNullable(T CF_RELEASES_ARGUMENT);
 
 template<typename T> [[nodiscard]] constexpr RetainPtr<RetainPtrType<T>> adoptNS(T NS_RELEASES_ARGUMENT);
 
@@ -56,14 +57,14 @@ template<typename T> [[nodiscard]] constexpr RetainPtr<RetainPtrType<T>> adoptNS
  * To create a RetainPtr, use one of the following:
  * @code
  * RetainPtr ptr = value;      // Retains the value (increments the ref count)
- * RetainPtr ptr = adoptCF(x); // Takes ownership without retaining
+ * RetainPtr ptr = adoptCFNullable(x); // Takes ownership without retaining
  * RetainPtr ptr = adoptNS(x); // Takes ownership without retaining
  * @endcode
  *
- * Use adoptCF() or adoptNS() when you receive an object that you already own (i.e., the object was
+ * Use adoptCFNullable() or adoptNS() when you receive an object that you already own (i.e., the object was
  * returned to you with a +1 retain count). This includes objects from Create/Copy CF functions (e.g.,
  * CFStringCreateCopy()) and Objective-C alloc/init/copy/new methods (e.g., [[NSString alloc] init]).
- * Using the regular RetainPtr constructor instead of adoptCF()/adoptNS() would add an extra retain,
+ * Using the regular RetainPtr constructor instead of adoptCFNullable()/adoptNS() would add an extra retain,
  * causing a leak when the RetainPtr is destroyed. Use the regular constructor when you want to add a
  * reference to an object you don't already own (e.g., a parameter passed to your function or a property
  * getter).
@@ -152,6 +153,7 @@ public:
     void swap(RetainPtr&);
 
     template<typename U> friend constexpr RetainPtr<RetainPtrType<U>> adoptCF(U CF_RELEASES_ARGUMENT);
+    template<typename U> friend constexpr RetainPtr<RetainPtrType<U>> adoptCFNullable(U CF_RELEASES_ARGUMENT);
 
     template<typename U> friend constexpr RetainPtr<RetainPtrType<U>> adoptNS(U NS_RELEASES_ARGUMENT);
 
@@ -324,9 +326,15 @@ template<typename T> constexpr RetainPtr<RetainPtrType<T>> adoptCF(T CF_RELEASES
     return { ptr, RetainPtr<RetainPtrType<T>>::Adopt };
 }
 
+template<typename T> constexpr RetainPtr<RetainPtrType<T>> adoptCFNullable(T CF_RELEASES_ARGUMENT ptr)
+{
+    static_assert(!IsNSType<T>, "Don't use adoptCFNullable with Objective-C pointer types, use adoptNS.");
+    return { ptr, RetainPtr<RetainPtrType<T>>::Adopt };
+}
+
 template<typename T> constexpr RetainPtr<RetainPtrType<T>> adoptNS(T NS_RELEASES_ARGUMENT ptr)
 {
-    static_assert(IsNSType<T>, "Don't use adoptNS with Core Foundation pointer types, use adoptCF.");
+    static_assert(IsNSType<T>, "Don't use adoptNS with Core Foundation pointer types, use adoptCFNullable.");
     return { ptr, RetainPtr<RetainPtrType<T>>::Adopt };
 }
 
@@ -428,6 +436,7 @@ ALWAYS_INLINE void lazyInitialize(const RetainPtr<T>& ptr, RetainPtr<U>&& obj)
 
 using WTF::RetainPtr;
 using WTF::adoptCF;
+using WTF::adoptCFNullable;
 using WTF::lazyInitialize;
 using WTF::protect;
 using WTF::retainPtr;

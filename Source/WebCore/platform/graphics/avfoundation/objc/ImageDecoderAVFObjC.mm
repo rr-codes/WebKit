@@ -407,7 +407,7 @@ void ImageDecoderAVFObjC::readSamples()
     [assetReader addOutput:referenceOutput.get()];
     [assetReader startReading];
 
-    while (auto sampleBuffer = adoptCF([referenceOutput copyNextSampleBuffer])) {
+    while (auto sampleBuffer = adoptCFNullable([referenceOutput copyNextSampleBuffer])) {
         // NOTE: Some samples emitted by the AVAssetReader simply denote the boundary of edits
         // and do not carry media data.
         if (!(PAL::CMSampleBufferGetNumSamples(sampleBuffer.get())))
@@ -474,7 +474,7 @@ bool ImageDecoderAVFObjC::storeSampleBuffer(CMSampleBufferRef sampleBuffer)
     // obtain RGBA IOSurface-backed CVPixelBuffer from the decoding session is enough
     // to ensure the pixel buffer is not replaced in VTCreateCGImageFromCVPixelBuffer.
 
-    protect(toSample(iter))->setImage(adoptCF(rawImage));
+    protect(toSample(iter))->setImage(adoptCFNullable(rawImage));
 
     return true;
 }
@@ -640,7 +640,7 @@ PlatformImagePtr ImageDecoderAVFObjC::createFrameImageAtIndex(size_t index, Subs
             if (!rawBlockBuffer)
                 return nullptr;
 
-            RetainPtr blockBuffer = adoptCF(rawBlockBuffer);
+            RetainPtr blockBuffer = adoptCFNullable(rawBlockBuffer);
             RetainPtr cursorSampleBuffer = cursorSample->sampleBuffer();
             if (noErr != PAL::CMSampleBufferSetDataBuffer(cursorSampleBuffer.get(), blockBuffer.get()))
                 return nullptr;

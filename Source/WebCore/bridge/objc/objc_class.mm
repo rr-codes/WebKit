@@ -51,7 +51,7 @@ static RetainPtr<CFMutableDictionaryRef>& NODELETE classesByIsA()
 static void _createClassesByIsAIfNecessary()
 {
     if (!classesByIsA())
-        classesByIsA() = adoptCF(CFDictionaryCreateMutable(NULL, 0, NULL, NULL));
+        classesByIsA() = adoptCFNullable(CFDictionaryCreateMutable(NULL, 0, NULL, NULL));
 }
 
 ObjcClass* ObjcClass::classForIsA(ClassStructPtr isa)

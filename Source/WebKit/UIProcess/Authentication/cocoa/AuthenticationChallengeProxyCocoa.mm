@@ -49,7 +49,7 @@ void AuthenticationChallengeProxy::sendClientCertificateCredentialOverXpc(IPC::C
     SUPPRESS_RETAINPTR_CTOR_ADOPT auto certificateDataArray = adoptOSObject(xpc_array_create(nullptr, 0));
     RetainPtr nsCredential = credential.nsCredential();
     for (id certificate in nsCredential.get().certificates) {
-        auto data = adoptCF(SecCertificateCopyData((SecCertificateRef)certificate));
+        auto data = adoptCFNullable(SecCertificateCopyData((SecCertificateRef)certificate));
         // FIXME: This is a false positive. <rdar://164843889>
         SUPPRESS_RETAINPTR_CTOR_ADOPT xpc_array_append_value(certificateDataArray.get(), adoptOSObject(xpc_data_create(CFDataGetBytePtr(data.get()), CFDataGetLength(data.get()))).get());
     }

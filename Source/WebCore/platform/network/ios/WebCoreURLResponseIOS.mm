@@ -66,7 +66,7 @@ void adjustMIMETypeIfNecessary(CFURLResponseRef response, IsMainResourceLoad isM
     // The shouldUseQuickLookForMIMEType function filters out the common MIME types so we don't do unnecessary work in those cases.
     if (isMainResourceLoad == IsMainResourceLoad::Yes && isNoSniffSet == IsNoSniffSet::No && shouldUseQuickLookForMIMEType(bridge_cast(type))) {
         RetainPtr<NSString> updatedType;
-        auto suggestedFilename = adoptCF(CFURLResponseCopySuggestedFilename(response));
+        auto suggestedFilename = adoptCFNullable(CFURLResponseCopySuggestedFilename(response));
         if (auto quickLookType = adoptNS(PAL::softLink_QuickLook_QLTypeCopyBestMimeTypeForFileNameAndMimeType(bridge_cast(suggestedFilename.get()), bridge_cast(type))))
             updatedType = quickLookType.get();
         else if (auto extension = filePathExtension(response))

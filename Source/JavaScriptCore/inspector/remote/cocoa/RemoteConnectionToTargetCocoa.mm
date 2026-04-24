@@ -88,7 +88,7 @@ static void RemoteTargetInitializeGlobalQueue()
         rwiQueue = new RemoteTargetQueue;
 
         CFRunLoopSourceContext runLoopSourceContext = { 0, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, RemoteTargetHandleRunSourceGlobal };
-        rwiRunLoopSource() = adoptCF(CFRunLoopSourceCreate(kCFAllocatorDefault, 1, &runLoopSourceContext));
+        rwiRunLoopSource() = adoptCFNullable(CFRunLoopSourceCreate(kCFAllocatorDefault, 1, &runLoopSourceContext));
 
         // Add to the default run loop mode for default handling, and the JSContext remote inspector run loop mode when paused.
         RetainPtr mainRunLoop = CFRunLoopGetMain();
@@ -278,7 +278,7 @@ void RemoteConnectionToTarget::setupRunLoop()
     m_runLoop = targetRunLoop;
 
     CFRunLoopSourceContext runLoopSourceContext = { 0, this, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, RemoteTargetHandleRunSourceWithInfo };
-    m_runLoopSource = adoptCF(CFRunLoopSourceCreate(kCFAllocatorDefault, 1, &runLoopSourceContext));
+    m_runLoopSource = adoptCFNullable(CFRunLoopSourceCreate(kCFAllocatorDefault, 1, &runLoopSourceContext));
 
     CFRunLoopAddSource(m_runLoop.get(), m_runLoopSource.get(), kCFRunLoopDefaultMode);
     RetainPtr mode = JSGlobalObjectDebugger::runLoopModeSingleton();

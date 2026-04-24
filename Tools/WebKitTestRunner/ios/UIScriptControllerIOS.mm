@@ -642,7 +642,7 @@ void UIScriptControllerIOS::longPressAtPoint(long x, long y, JSValueRef callback
 
 void UIScriptControllerIOS::enterText(JSStringRef text)
 {
-    auto textAsCFString = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, text));
+    auto textAsCFString = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, text));
     [webView() _simulateTextEntered:(NSString *)textAsCFString.get()];
 }
 
@@ -1287,7 +1287,7 @@ void UIScriptControllerIOS::setWillStartInputSessionCallback(JSValueRef callback
 
 void UIScriptControllerIOS::chooseMenuAction(JSStringRef jsAction, JSValueRef callback)
 {
-    auto action = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, jsAction));
+    auto action = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, jsAction));
     auto rect = rectForMenuAction(action.get());
     if (rect.isEmpty())
         return;
@@ -1341,7 +1341,7 @@ void UIScriptControllerIOS::setDidPresentViewControllerCallback(JSValueRef callb
 
 JSObjectRef UIScriptControllerIOS::rectForMenuAction(JSStringRef jsAction) const
 {
-    auto action = adoptCF(JSStringCopyCFString(kCFAllocatorDefault, jsAction));
+    auto action = adoptCFNullable(JSStringCopyCFString(kCFAllocatorDefault, jsAction));
     auto rect = rectForMenuAction(action.get());
     if (rect.isEmpty())
         return nullptr;

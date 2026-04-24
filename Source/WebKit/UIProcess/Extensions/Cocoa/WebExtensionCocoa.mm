@@ -155,7 +155,7 @@ SecStaticCodeRef WebExtension::bundleStaticCode() const
         return nullptr;
     }
 
-    m_bundleStaticCode = adoptCF(staticCodeRef);
+    m_bundleStaticCode = adoptCFNullable(staticCodeRef);
 
     return m_bundleStaticCode.get();
 }
@@ -334,7 +334,7 @@ Expected<Ref<WebCore::Icon>, RefPtr<API::Error>> WebExtension::iconForPath(const
 #if !USE(APPKIT)
     auto imageType = resourceMIMETypeForPath(imagePath);
     if (equalLettersIgnoringASCIICase(imageType, "image/svg+xml"_s)) {
-        RetainPtr document = adoptCF(CGSVGDocumentCreateFromData(bridge_cast(imageData), nullptr));
+        RetainPtr document = adoptCFNullable(CGSVGDocumentCreateFromData(bridge_cast(imageData), nullptr));
         if (!document)
             return makeUnexpected(nullptr);
 

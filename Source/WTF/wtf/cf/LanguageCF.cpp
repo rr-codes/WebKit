@@ -49,7 +49,7 @@ static String httpStyleLanguageCode(CFStringRef language, ShouldMinimizeLanguage
     RetainPtr<CFStringRef> preferredLanguageCode;
     // If we can minimize the language list to reduce fingerprinting, we can afford to be more lossless when canonicalizing the locale list.
     if (shouldMinimizeLanguages == ShouldMinimizeLanguages::No || canMinimizeLanguages())
-        preferredLanguageCode = adoptCF(CFLocaleCreateCanonicalLanguageIdentifierFromString(kCFAllocatorDefault, language));
+        preferredLanguageCode = adoptCFNullable(CFLocaleCreateCanonicalLanguageIdentifierFromString(kCFAllocatorDefault, language));
     else {
         SInt32 languageCode;
         SInt32 regionCode;
@@ -61,12 +61,12 @@ static String httpStyleLanguageCode(CFStringRef language, ShouldMinimizeLanguage
         // 2. Script Manager codes cannot represent all languages that are now supported by the platform, so the conversion is lossy.
         // 3. This should probably match what is sent by the network layer as Accept-Language, but currently, that's implemented separately.
         CFBundleGetLocalizationInfoForLocalization(language, &languageCode, &regionCode, &scriptCode, &stringEncoding);
-        preferredLanguageCode = adoptCF(CFBundleCopyLocalizationForLocalizationInfo(languageCode, regionCode, scriptCode, stringEncoding));
+        preferredLanguageCode = adoptCFNullable(CFBundleCopyLocalizationForLocalizationInfo(languageCode, regionCode, scriptCode, stringEncoding));
     }
 
     if (!preferredLanguageCode)
         preferredLanguageCode = language;
-    auto mutableLanguageCode = adoptCF(CFStringCreateMutableCopy(kCFAllocatorDefault, 0, preferredLanguageCode.get()));
+    auto mutableLanguageCode = adoptCFNullable(CFStringCreateMutableCopy(kCFAllocatorDefault, 0, preferredLanguageCode.get()));
 
     // Turn a '_' into a '-' if it appears after a 2-letter language code
     if (CFStringGetLength(mutableLanguageCode.get()) >= 3 && CFStringGetCharacterAtIndex(mutableLanguageCode.get(), 2) == '_')
@@ -87,7 +87,7 @@ void listenForLanguageChangeNotifications()
 
 Vector<String> platformUserPreferredLanguages(ShouldMinimizeLanguages shouldMinimizeLanguages)
 {
-    auto platformLanguages = adoptCF(CFLocaleCopyPreferredLanguages());
+    auto platformLanguages = adoptCFNullable(CFLocaleCopyPreferredLanguages());
 
     LOG_WITH_STREAM(Language, stream << "CFLocaleCopyPreferredLanguages() returned: "_s << reinterpret_cast<id>(const_cast<CFMutableArrayRef>(platformLanguages.get())));
 

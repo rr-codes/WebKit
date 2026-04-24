@@ -531,7 +531,7 @@ RetainPtr<CFDictionaryRef> extractImmersiveVideoMetadata(CMFormatDescriptionRef 
     if (!keysSet)
         return nullptr;
 
-    RetainPtr<CFMutableDictionaryRef> extensions = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, keysSet, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr<CFMutableDictionaryRef> extensions = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, keysSet, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     for (size_t index = 0; index < numberOfKeys; index++) {
         if (values[index])
@@ -542,7 +542,7 @@ RetainPtr<CFDictionaryRef> extractImmersiveVideoMetadata(CMFormatDescriptionRef 
 
 RetainPtr<CFDictionaryRef> formatDescriptionDictionaryFromImmersiveVideoMetadata(const ImmersiveVideoMetadata& metadata)
 {
-    RetainPtr<CFMutableDictionaryRef> extensions = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 9, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr<CFMutableDictionaryRef> extensions = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 9, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     auto kind = [](auto kind) -> CFStringRef {
         switch (kind) {
         case ImmersiveVideoMetadata::Kind::Rectilinear:
@@ -563,11 +563,11 @@ RetainPtr<CFDictionaryRef> formatDescriptionDictionaryFromImmersiveVideoMetadata
         CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_ProjectionKind, kind);
 
     if (metadata.horizontalFieldOfView)
-        CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_HorizontalFieldOfView, adoptCF(CFNumberCreate(nullptr, kCFNumberSInt32Type, &*metadata.horizontalFieldOfView)).get());
+        CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_HorizontalFieldOfView, adoptCFNullable(CFNumberCreate(nullptr, kCFNumberSInt32Type, &*metadata.horizontalFieldOfView)).get());
     if (metadata.stereoCameraBaseline)
-        CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_StereoCameraBaseline, adoptCF(CFNumberCreate(nullptr, kCFNumberSInt32Type, &*metadata.stereoCameraBaseline)).get());
+        CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_StereoCameraBaseline, adoptCFNullable(CFNumberCreate(nullptr, kCFNumberSInt32Type, &*metadata.stereoCameraBaseline)).get());
     if (metadata.horizontalDisparityAdjustment)
-        CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_HorizontalDisparityAdjustment, adoptCF(CFNumberCreate(nullptr, kCFNumberSInt32Type, &*metadata.horizontalDisparityAdjustment)).get());
+        CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_HorizontalDisparityAdjustment, adoptCFNullable(CFNumberCreate(nullptr, kCFNumberSInt32Type, &*metadata.horizontalDisparityAdjustment)).get());
 
     if (metadata.hasLeftStereoEyeView)
         CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_HasLeftStereoEyeView, *metadata.hasLeftStereoEyeView ? kCFBooleanTrue : kCFBooleanFalse);
@@ -598,9 +598,9 @@ RetainPtr<CFDictionaryRef> formatDescriptionDictionaryFromImmersiveVideoMetadata
         CFDictionaryAddValue(extensions.get(), PAL::kCMFormatDescriptionExtension_ViewPackingKind, viewPackingKind);
     }
 
-    RetainPtr array = adoptCF(CFArrayCreateMutable(nullptr, metadata.cameraCalibrationDataLensCollection.size(), &kCFTypeArrayCallBacks));
+    RetainPtr array = adoptCFNullable(CFArrayCreateMutable(nullptr, metadata.cameraCalibrationDataLensCollection.size(), &kCFTypeArrayCallBacks));
     for (auto& cameraCalibration : metadata.cameraCalibrationDataLensCollection) {
-        RetainPtr dictionary = adoptCF(CFDictionaryCreateMutable(nullptr, 13, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        RetainPtr dictionary = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 13, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
         auto lensAlgorithmKind = [](auto lensAlgorithmKind) {
             switch (lensAlgorithmKind) {
@@ -618,7 +618,7 @@ RetainPtr<CFDictionaryRef> formatDescriptionDictionaryFromImmersiveVideoMetadata
         }(cameraCalibration.lensDomain);
         CFDictionarySetValue(dictionary.get(), PAL::kCMFormatDescriptionCameraCalibration_LensDomain, lensDomain);
 
-        RetainPtr lensIdentifier = adoptCF(CFNumberCreate(nullptr, kCFNumberSInt32Type, &cameraCalibration.lensIdentifier));
+        RetainPtr lensIdentifier = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberSInt32Type, &cameraCalibration.lensIdentifier));
         CFDictionarySetValue(dictionary.get(), PAL::kCMFormatDescriptionCameraCalibration_LensIdentifier, lensIdentifier.get());
 
         auto lensRole = [](auto lensRole) {
@@ -642,16 +642,16 @@ RetainPtr<CFDictionaryRef> formatDescriptionDictionaryFromImmersiveVideoMetadata
         RetainPtr lensFrameAdjustmentsPolynomialY = createCFArray(cameraCalibration.lensFrameAdjustmentsPolynomialY);
         CFDictionarySetValue(dictionary.get(), PAL::kCMFormatDescriptionCameraCalibration_LensFrameAdjustmentsPolynomialY, lensFrameAdjustmentsPolynomialY.get());
 
-        RetainPtr radialAngleLimit = adoptCF(CFNumberCreate(nullptr, kCFNumberFloat32Type, &cameraCalibration.radialAngleLimit));
+        RetainPtr radialAngleLimit = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloat32Type, &cameraCalibration.radialAngleLimit));
         CFDictionarySetValue(dictionary.get(), PAL::kCMFormatDescriptionCameraCalibration_RadialAngleLimit, radialAngleLimit.get());
 
-        RetainPtr intrinsicMatrix = adoptCF(CFDataCreate(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&cameraCalibration.intrinsicMatrix), sizeof(cameraCalibration.intrinsicMatrix)));
+        RetainPtr intrinsicMatrix = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, reinterpret_cast<const UInt8*>(&cameraCalibration.intrinsicMatrix), sizeof(cameraCalibration.intrinsicMatrix)));
         CFDictionarySetValue(dictionary.get(), PAL::kCMFormatDescriptionCameraCalibration_IntrinsicMatrix, intrinsicMatrix.get());
 
-        RetainPtr intrinsicMatrixProjectionOffset = adoptCF(CFNumberCreate(nullptr, kCFNumberFloat32Type, &cameraCalibration.intrinsicMatrixProjectionOffset));
+        RetainPtr intrinsicMatrixProjectionOffset = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloat32Type, &cameraCalibration.intrinsicMatrixProjectionOffset));
         CFDictionarySetValue(dictionary.get(), PAL::kCMFormatDescriptionCameraCalibration_IntrinsicMatrixProjectionOffset, intrinsicMatrixProjectionOffset.get());
 
-        RetainPtr intrinsicMatrixReferenceDimensions = adoptCF(CGSizeCreateDictionaryRepresentation({
+        RetainPtr intrinsicMatrixReferenceDimensions = adoptCFNullable(CGSizeCreateDictionaryRepresentation({
             .width = CGFloat(cameraCalibration.intrinsicMatrixReferenceDimensions.width()),
             .height = CGFloat(cameraCalibration.intrinsicMatrixReferenceDimensions.height())
         }));

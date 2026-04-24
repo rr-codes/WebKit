@@ -40,14 +40,14 @@ bool hasEntitlement(SecTaskRef task, ASCIILiteral entitlement)
         return false;
     auto savedErrno = errno;
     auto string = entitlement.createCFString();
-    auto result = adoptCF(SecTaskCopyValueForEntitlement(task, string.get(), nullptr)) == kCFBooleanTrue;
+    auto result = adoptCFNullable(SecTaskCopyValueForEntitlement(task, string.get(), nullptr)) == kCFBooleanTrue;
     errno = savedErrno;
     return result;
 }
 
 bool hasEntitlement(audit_token_t token, ASCIILiteral entitlement)
 {
-    return hasEntitlement(adoptCF(SecTaskCreateWithAuditToken(kCFAllocatorDefault, token)).get(), entitlement);
+    return hasEntitlement(adoptCFNullable(SecTaskCreateWithAuditToken(kCFAllocatorDefault, token)).get(), entitlement);
 }
 
 bool hasEntitlement(xpc_connection_t connection, StringView entitlement)
@@ -66,28 +66,28 @@ bool hasEntitlement(xpc_connection_t connection, ASCIILiteral entitlement)
 
 bool processHasEntitlement(ASCIILiteral entitlement)
 {
-    return hasEntitlement(adoptCF(SecTaskCreateFromSelf(kCFAllocatorDefault)).get(), entitlement);
+    return hasEntitlement(adoptCFNullable(SecTaskCreateFromSelf(kCFAllocatorDefault)).get(), entitlement);
 }
 
 bool hasEntitlementValue(audit_token_t token, ASCIILiteral entitlement, ASCIILiteral value)
 {
-    auto secTaskForToken = adoptCF(SecTaskCreateWithAuditToken(kCFAllocatorDefault, token));
+    auto secTaskForToken = adoptCFNullable(SecTaskCreateWithAuditToken(kCFAllocatorDefault, token));
     if (!secTaskForToken)
         return false;
 
     auto string = entitlement.createCFString();
-    String entitlementValue = dynamic_cf_cast<CFStringRef>(adoptCF(SecTaskCopyValueForEntitlement(secTaskForToken.get(), string.get(), nullptr)).get());
+    String entitlementValue = dynamic_cf_cast<CFStringRef>(adoptCFNullable(SecTaskCopyValueForEntitlement(secTaskForToken.get(), string.get(), nullptr)).get());
     return entitlementValue == value;
 }
 
 bool hasEntitlementValueInArray(audit_token_t token, ASCIILiteral entitlement, ASCIILiteral value)
 {
-    auto secTaskForToken = adoptCF(SecTaskCreateWithAuditToken(kCFAllocatorDefault, token));
+    auto secTaskForToken = adoptCFNullable(SecTaskCreateWithAuditToken(kCFAllocatorDefault, token));
     if (!secTaskForToken)
         return false;
 
     auto string = entitlement.createCFString();
-    RetainPtr array = adoptCF(dynamic_cf_cast<CFArrayRef>(SecTaskCopyValueForEntitlement(secTaskForToken.get(), string.get(), nullptr)));
+    RetainPtr array = adoptCFNullable(dynamic_cf_cast<CFArrayRef>(SecTaskCopyValueForEntitlement(secTaskForToken.get(), string.get(), nullptr)));
     if (!array)
         return false;
 

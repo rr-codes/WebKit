@@ -51,7 +51,7 @@ namespace WebCore {
 template<std::size_t size>
 static MemoryCompactLookupOnlyRobinHoodHashSet<String> filterSupportedImageTypes(const std::array<ASCIILiteral, size>& imageTypes)
 {
-    auto systemSupportedCFImageTypes = adoptCF(CGImageSourceCopyTypeIdentifiers());
+    auto systemSupportedCFImageTypes = adoptCFNullable(CGImageSourceCopyTypeIdentifiers());
     CFIndex count = CFArrayGetCount(systemSupportedCFImageTypes.get());
 
     HashSet<String> systemSupportedImageTypes;

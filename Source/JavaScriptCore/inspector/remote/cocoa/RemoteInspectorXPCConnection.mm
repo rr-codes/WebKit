@@ -113,7 +113,7 @@ RetainPtr<NSDictionary> RemoteInspectorXPCConnection::deserializeMessage(xpc_obj
         return nil;
     }
 
-    RetainPtr dictionary = dynamic_cf_cast<CFDictionaryRef>(adoptCF(_CFXPCCreateCFObjectFromXPCMessage(xpcDictionary.get())));
+    RetainPtr dictionary = dynamic_cf_cast<CFDictionaryRef>(adoptCFNullable(_CFXPCCreateCFObjectFromXPCMessage(xpcDictionary.get())));
     ASSERT_WITH_MESSAGE(dictionary, "Unable to deserialize xpc message");
     return bridge_cast(WTF::move(dictionary));
 }

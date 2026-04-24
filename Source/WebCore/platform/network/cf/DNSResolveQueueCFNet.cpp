@@ -56,7 +56,7 @@ DNSResolveQueueCFNet::~DNSResolveQueueCFNet() = default;
 
 void DNSResolveQueueCFNet::updateIsUsingProxy()
 {
-    RetainPtr<CFDictionaryRef> proxySettings = adoptCF(CFNetworkCopySystemProxySettings());
+    RetainPtr<CFDictionaryRef> proxySettings = adoptCFNullable(CFNetworkCopySystemProxySettings());
     if (!proxySettings) {
         m_isUsingProxy = false;
         return;
@@ -65,8 +65,8 @@ void DNSResolveQueueCFNet::updateIsUsingProxy()
     RetainPtr<CFURLRef> httpCFURL = URL({ }, "http://example.com/"_s).createCFURL();
     RetainPtr<CFURLRef> httpsCFURL = URL({ }, "https://example.com/"_s).createCFURL();
 
-    RetainPtr<CFArrayRef> httpProxyArray = adoptCF(CFNetworkCopyProxiesForURL(httpCFURL.get(), proxySettings.get()));
-    RetainPtr<CFArrayRef> httpsProxyArray = adoptCF(CFNetworkCopyProxiesForURL(httpsCFURL.get(), proxySettings.get()));
+    RetainPtr<CFArrayRef> httpProxyArray = adoptCFNullable(CFNetworkCopyProxiesForURL(httpCFURL.get(), proxySettings.get()));
+    RetainPtr<CFArrayRef> httpsProxyArray = adoptCFNullable(CFNetworkCopyProxiesForURL(httpsCFURL.get(), proxySettings.get()));
 
     CFIndex httpProxyCount = CFArrayGetCount(httpProxyArray.get());
     CFIndex httpsProxyCount = CFArrayGetCount(httpsProxyArray.get());
@@ -119,9 +119,9 @@ static constexpr auto timeoutForDNSResolution = 60_s;
 
 void DNSResolveQueueCFNet::performDNSLookup(const String& hostname, Ref<CompletionHandlerWrapper>&& completionHandler)
 {
-    RetainPtr hostEndpoint = adoptCF(nw_endpoint_create_host(hostname.utf8().data(), "0"));
-    RetainPtr context = adoptCF(nw_context_create("WebKit DNS Lookup"));
-    RetainPtr parameters = adoptCF(nw_parameters_create());
+    RetainPtr hostEndpoint = adoptCFNullable(nw_endpoint_create_host(hostname.utf8().data(), "0"));
+    RetainPtr context = adoptCFNullable(nw_context_create("WebKit DNS Lookup"));
+    RetainPtr parameters = adoptCFNullable(nw_parameters_create());
 
 #if USE(SOURCE_APPLICATION_AUDIT_DATA)
     if (auto auditToken = applicationAuditToken())
@@ -133,9 +133,9 @@ void DNSResolveQueueCFNet::performDNSLookup(const String& hostname, Ref<Completi
 
     nw_context_set_privacy_level(context.get(), nw_context_privacy_level_silent);
     nw_parameters_set_context(parameters.get(), context.get());
-    RetainPtr pathEvaluator = adoptCF(nw_path_create_evaluator_for_endpoint(hostEndpoint.get(), parameters.get()));
-    RetainPtr path = adoptCF(nw_path_evaluator_copy_path(pathEvaluator.get()));
-    RetainPtr resolver = adoptCF(nw_resolver_create_with_path(path.get()));
+    RetainPtr pathEvaluator = adoptCFNullable(nw_path_create_evaluator_for_endpoint(hostEndpoint.get(), parameters.get()));
+    RetainPtr path = adoptCFNullable(nw_path_evaluator_copy_path(pathEvaluator.get()));
+    RetainPtr resolver = adoptCFNullable(nw_resolver_create_with_path(path.get()));
 
     RELEASE_ASSERT_WITH_MESSAGE(isMainThread(), "Always create timer on the main thread.");
     auto timeoutTimer = makeUnique<Timer>([resolver, completionHandler]() mutable {

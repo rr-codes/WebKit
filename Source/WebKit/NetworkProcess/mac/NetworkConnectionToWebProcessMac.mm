@@ -46,7 +46,7 @@ void NetworkConnectionToWebProcess::updateActivePages(String&& overrideDisplayNa
     // Setting and getting the display name of another process requires a private entitlement.
     RELEASE_LOG(Process, "NetworkConnectionToWebProcess::updateActivePages");
 #if USE(APPLE_INTERNAL_SDK)
-    auto asn = adoptCF(_LSCopyLSASNForAuditToken(kLSDefaultSessionID, auditToken.auditToken()));
+    auto asn = adoptCFNullable(_LSCopyLSASNForAuditToken(kLSDefaultSessionID, auditToken.auditToken()));
     if (!asn) {
 #if ENABLE(LAUNCHSERVICES_SANDBOX_EXTENSION_BLOCKING)
         // In this case, the WebContent process has not been checked in with Launch Services yet.
@@ -77,8 +77,8 @@ void NetworkConnectionToWebProcess::updateActivePages(String&& overrideDisplayNa
 void NetworkConnectionToWebProcess::getProcessDisplayName(CoreIPCAuditToken&& auditToken, CompletionHandler<void(const String&)>&& completionHandler)
 {
 #if USE(APPLE_INTERNAL_SDK)
-    auto asn = adoptCF(_LSCopyLSASNForAuditToken(kLSDefaultSessionID, auditToken.auditToken()));
-    return completionHandler(adoptCF((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, asn.get(), _kLSDisplayNameKey)).get());
+    auto asn = adoptCFNullable(_LSCopyLSASNForAuditToken(kLSDefaultSessionID, auditToken.auditToken()));
+    return completionHandler(adoptCFNullable((CFStringRef)_LSCopyApplicationInformationItem(kLSDefaultSessionID, asn.get(), _kLSDisplayNameKey)).get());
 #else
     completionHandler({ });
 #endif
@@ -90,13 +90,13 @@ void NetworkConnectionToWebProcess::checkInWebProcess(const CoreIPCAuditToken& a
     RELEASE_LOG(Process, "NetworkConnectionToWebProcess::checkInWebProcess");
 
     int dyldPlatform = dyld_get_active_platform();
-    RetainPtr dyldPlatformValue = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &dyldPlatform));
-    RetainPtr sdkExecutableVersion = adoptCF(_LSVersionNumberCopyStringRepresentation(_LSVersionNumberGetCurrentSystemVersion()));
-    RetainPtr bundleURL = adoptCF(CFURLCreateWithString(kCFAllocatorDefault, CFSTR("file:///System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc"), nil));
-    RetainPtr bundle = adoptCF(CFBundleCreate(kCFAllocatorDefault, bundleURL.get()));
-    RetainPtr infoDictionary  = adoptCF(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, CFBundleGetInfoDictionary(bundle.get())));
-    RetainPtr executableURL = adoptCF(CFBundleCopyExecutableURL(bundle.get()));
-    RetainPtr executablePath = adoptCF(CFURLCopyFileSystemPath(executableURL.get(), kCFURLPOSIXPathStyle));
+    RetainPtr dyldPlatformValue = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &dyldPlatform));
+    RetainPtr sdkExecutableVersion = adoptCFNullable(_LSVersionNumberCopyStringRepresentation(_LSVersionNumberGetCurrentSystemVersion()));
+    RetainPtr bundleURL = adoptCFNullable(CFURLCreateWithString(kCFAllocatorDefault, CFSTR("file:///System/Library/Frameworks/WebKit.framework/XPCServices/com.apple.WebKit.WebContent.xpc"), nil));
+    RetainPtr bundle = adoptCFNullable(CFBundleCreate(kCFAllocatorDefault, bundleURL.get()));
+    RetainPtr infoDictionary  = adoptCFNullable(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, CFBundleGetInfoDictionary(bundle.get())));
+    RetainPtr executableURL = adoptCFNullable(CFBundleCopyExecutableURL(bundle.get()));
+    RetainPtr executablePath = adoptCFNullable(CFURLCopyFileSystemPath(executableURL.get(), kCFURLPOSIXPathStyle));
 
     if (!infoDictionary) {
         RELEASE_LOG_ERROR(Process, "Failed to create dictionary for Launch Services checkin");

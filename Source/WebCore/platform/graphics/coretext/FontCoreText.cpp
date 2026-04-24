@@ -85,7 +85,7 @@ static const float kLineHeightAdjustment = 0.15f;
 
 static bool shouldUseAdjustment(CTFontRef font)
 {
-    RetainPtr<CFStringRef> familyName = adoptCF(CTFontCopyFamilyName(font));
+    RetainPtr<CFStringRef> familyName = adoptCFNullable(CTFontCopyFamilyName(font));
 
     if (!familyName || !CFStringGetLength(familyName.get()))
         return false;
@@ -141,7 +141,7 @@ void Font::platformInit()
         }
     }
 
-    auto familyName = adoptCF(CTFontCopyFamilyName(ctFont.get()));
+    auto familyName = adoptCFNullable(CTFontCopyFamilyName(ctFont.get()));
 
     // Disable antialiasing when rendering with Ahem because many tests require this.
     if (isAhemFont(familyName.get()))
@@ -212,7 +212,7 @@ void Font::platformInit()
     }
 
     if (CTFontGetSymbolicTraits(ctFont.get()) & kCTFontTraitColorGlyphs) {
-        if (RetainPtr cfBitVector = adoptCF(CTFontCopyColorGlyphCoverage(ctFont.get())))
+        if (RetainPtr cfBitVector = adoptCFNullable(CTFontCopyColorGlyphCoverage(ctFont.get())))
             m_emojiType = SomeEmojiGlyphs { BitVector(cfBitVector.get()) };
         else
             m_emojiType = NoEmojiGlyphs { };
@@ -236,14 +236,14 @@ void Font::platformCharWidthInit()
     m_maxCharWidth = 0;
 
     RetainPtr ctFont = this->ctFont();
-    auto os2Table = adoptCF(CTFontCopyTable(ctFont.get(), kCTFontTableOS2, kCTFontTableOptionNoOptions));
+    auto os2Table = adoptCFNullable(CTFontCopyTable(ctFont.get(), kCTFontTableOS2, kCTFontTableOptionNoOptions));
     if (os2Table && CFDataGetLength(os2Table.get()) >= 4) {
         auto os2 = span(os2Table.get());
         SInt16 os2AvgCharWidth = os2[2] * 256 + os2[3];
         m_avgCharWidth = scaleEmToUnits(os2AvgCharWidth, m_fontMetrics.unitsPerEm()) * m_platformData.size();
     }
 
-    auto headTable = adoptCF(CTFontCopyTable(ctFont.get(), kCTFontTableHead, kCTFontTableOptionNoOptions));
+    auto headTable = adoptCFNullable(CTFontCopyTable(ctFont.get(), kCTFontTableHead, kCTFontTableOptionNoOptions));
     if (headTable && CFDataGetLength(headTable.get()) >= 42) {
         auto head = span(headTable.get());
         unsigned uxMin = head[36] * 256 + head[37];
@@ -277,19 +277,19 @@ bool Font::variantCapsSupportedForSynthesis(FontVariantCaps fontVariantCaps) con
 
 static RetainPtr<CFDictionaryRef> smallCapsOpenTypeDictionary(CFStringRef key, int rawValue)
 {
-    RetainPtr<CFNumberRef> value = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawValue));
+    RetainPtr<CFNumberRef> value = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawValue));
     CFTypeRef keys[] = { kCTFontOpenTypeFeatureTag, kCTFontOpenTypeFeatureValue };
     CFTypeRef values[] = { key, value.get() };
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 static RetainPtr<CFDictionaryRef> smallCapsTrueTypeDictionary(int rawKey, int rawValue)
 {
-    RetainPtr<CFNumberRef> key = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawKey));
-    RetainPtr<CFNumberRef> value = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawValue));
+    RetainPtr<CFNumberRef> key = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawKey));
+    RetainPtr<CFNumberRef> value = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawValue));
     CFTypeRef keys[] = { kCTFontFeatureTypeIdentifierKey, kCTFontFeatureSelectorIdentifierKey };
     CFTypeRef values[] = { key.get(), value.get() };
-    return adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    return adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 }
 
 static void unionBitVectors(BitVector& result, CFBitVectorRef source)
@@ -308,13 +308,13 @@ static void unionBitVectors(BitVector& result, CFBitVectorRef source)
 
 static void injectOpenTypeCoverage(CFStringRef feature, CTFontRef font, BitVector& result)
 {
-    RetainPtr<CFBitVectorRef> source = adoptCF(CTFontCopyGlyphCoverageForFeature(font, smallCapsOpenTypeDictionary(feature, 1).get()));
+    RetainPtr<CFBitVectorRef> source = adoptCFNullable(CTFontCopyGlyphCoverageForFeature(font, smallCapsOpenTypeDictionary(feature, 1).get()));
     unionBitVectors(result, source.get());
 }
 
 static void injectTrueTypeCoverage(int type, int selector, CTFontRef font, BitVector& result)
 {
-    RetainPtr<CFBitVectorRef> source = adoptCF(CTFontCopyGlyphCoverageForFeature(font, smallCapsTrueTypeDictionary(type, selector).get()));
+    RetainPtr<CFBitVectorRef> source = adoptCFNullable(CTFontCopyGlyphCoverageForFeature(font, smallCapsTrueTypeDictionary(type, selector).get()));
     unionBitVectors(result, source.get());
 }
 
@@ -433,7 +433,7 @@ static inline std::pair<int, int> trueTypeFeature(CFDictionaryRef feature)
 
 static inline CFNumberRef defaultSelectorForTrueTypeFeature(int key, CTFontRef font)
 {
-    RetainPtr<CFArrayRef> features = adoptCF(CTFontCopyFeatures(font));
+    RetainPtr<CFArrayRef> features = adoptCFNullable(CTFontCopyFeatures(font));
     CFIndex featureCount = CFArrayGetCount(features.get());
     for (CFIndex i = 0; i < featureCount; ++i) {
         RetainPtr featureType = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(features.get(), i));
@@ -470,7 +470,7 @@ static inline RetainPtr<CFDictionaryRef> removedFeature(CFDictionaryRef feature,
     bool isTrueType = isTrueTypeFeature(feature);
     if (!isOpenType && !isTrueType)
         return feature; // We don't understand this font format.
-    RetainPtr<CFMutableDictionaryRef> result = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr<CFMutableDictionaryRef> result = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     if (isOpenType) {
         auto featureTag = openTypeFeature(feature);
         if (featureTag && (CFEqual(featureTag.value(), CFSTR("smcp"))
@@ -478,7 +478,7 @@ static inline RetainPtr<CFDictionaryRef> removedFeature(CFDictionaryRef feature,
             || CFEqual(featureTag.value(), CFSTR("pcap"))
             || CFEqual(featureTag.value(), CFSTR("c2pc")))) {
             int rawZero = 0;
-            RetainPtr<CFNumberRef> zero = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawZero));
+            RetainPtr<CFNumberRef> zero = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawZero));
             CFDictionaryAddValue(result.get(), kCTFontOpenTypeFeatureTag, featureTag.value());
             CFDictionaryAddValue(result.get(), kCTFontOpenTypeFeatureValue, zero.get());
         } else {
@@ -510,20 +510,20 @@ static inline RetainPtr<CFDictionaryRef> removedFeature(CFDictionaryRef feature,
 
 static RetainPtr<CTFontRef> createCTFontWithoutSynthesizableFeatures(CTFontRef font)
 {
-    RetainPtr<CFArrayRef> features = adoptCF(static_cast<CFArrayRef>(CTFontCopyAttribute(font, kCTFontFeatureSettingsAttribute)));
+    RetainPtr<CFArrayRef> features = adoptCFNullable(static_cast<CFArrayRef>(CTFontCopyAttribute(font, kCTFontFeatureSettingsAttribute)));
     if (!features)
         return font;
     CFIndex featureCount = CFArrayGetCount(features.get());
-    RetainPtr<CFMutableArrayRef> newFeatures = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, featureCount, &kCFTypeArrayCallBacks));
+    RetainPtr<CFMutableArrayRef> newFeatures = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, featureCount, &kCFTypeArrayCallBacks));
     for (CFIndex i = 0; i < featureCount; ++i) {
         RetainPtr feature = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(features.get(), i));
         CFArrayAppendValue(newFeatures.get(), removedFeature(feature.get(), font).get());
     }
     CFTypeRef keys[] = { kCTFontFeatureSettingsAttribute };
     CFTypeRef values[] = { newFeatures.get() };
-    RetainPtr<CFDictionaryRef> attributes = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    RetainPtr<CTFontDescriptorRef> newDescriptor = adoptCF(CTFontDescriptorCreateWithAttributes(attributes.get()));
-    return adoptCF(CTFontCreateCopyWithAttributes(font, CTFontGetSize(font), nullptr, newDescriptor.get()));
+    RetainPtr<CFDictionaryRef> attributes = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr<CTFontDescriptorRef> newDescriptor = adoptCFNullable(CTFontDescriptorCreateWithAttributes(attributes.get()));
+    return adoptCFNullable(CTFontCreateCopyWithAttributes(font, CTFontGetSize(font), nullptr, newDescriptor.get()));
 }
 
 RefPtr<Font> Font::createFontWithoutSynthesizableFeatures() const
@@ -540,15 +540,15 @@ RefPtr<Font> Font::platformCreateScaledFont(const FontDescription&, float scaleF
     float size = m_platformData.size() * scaleFactor;
     RetainPtr ctFont = this->ctFont();
     CTFontSymbolicTraits fontTraits = CTFontGetSymbolicTraits(ctFont.get());
-    RetainPtr<CTFontDescriptorRef> fontDescriptor = adoptCF(CTFontCopyFontDescriptor(ctFont.get()));
-    RetainPtr<CTFontRef> scaledFont = adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), size, nullptr));
+    RetainPtr<CTFontDescriptorRef> fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(ctFont.get()));
+    RetainPtr<CTFontRef> scaledFont = adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), size, nullptr));
 
     return createDerivativeFont(scaledFont.get(), size, m_platformData.orientation(), fontTraits, m_platformData.syntheticBold(), m_platformData.syntheticOblique(), m_platformData.widthVariant(), m_platformData.textRenderingMode(), protect(m_platformData.customPlatformData()).get());
 }
 
 bool supportsOpenTypeFeature(CTFontRef font, CFStringRef featureTag)
 {
-    RetainPtr<CFArrayRef> features = adoptCF(CTFontCopyFeatures(font));
+    RetainPtr<CFArrayRef> features = adoptCFNullable(CTFontCopyFeatures(font));
     CFIndex featureCount = CFArrayGetCount(features.get());
     for (CFIndex featureIndex = 0; featureIndex < featureCount; ++featureIndex) {
         RetainPtr feature = static_cast<CFDictionaryRef>(CFArrayGetValueAtIndex(features.get(), featureIndex));
@@ -583,22 +583,22 @@ RefPtr<Font> Font::platformCreateHalfWidthFont() const
         return nullptr;
 
     RetainPtr ctFont = this->ctFont();
-    RetainPtr<CTFontDescriptorRef> fontDescriptor = adoptCF(CTFontCopyFontDescriptor(ctFont.get()));
+    RetainPtr<CTFontDescriptorRef> fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(ctFont.get()));
     auto size = m_platformData.size();
     auto fontTraits = CTFontGetSymbolicTraits(ctFont.get());
     int enableHaltValue = 1;
     auto featureName = CFSTR("halt");
-    auto featureValue = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &enableHaltValue));
+    auto featureValue = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &enableHaltValue));
 
     const void* featureValues[] = { featureName, featureValue.get() };
-    auto fontFeatureSettings = adoptCF(CFArrayCreate(kCFAllocatorDefault, featureValues, std::size(featureValues), &kCFTypeArrayCallBacks));
+    auto fontFeatureSettings = adoptCFNullable(CFArrayCreate(kCFAllocatorDefault, featureValues, std::size(featureValues), &kCFTypeArrayCallBacks));
 
     CFTypeRef fontDescriptorKeys[] = { kCTFontFeatureSettingsAttribute };
     CFTypeRef fontDescriptorValues[] = { fontFeatureSettings.get() };
-    auto attributes = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, fontDescriptorKeys, fontDescriptorValues, std::size(fontDescriptorValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto attributes = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, fontDescriptorKeys, fontDescriptorValues, std::size(fontDescriptorValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
-    auto attributesDescriptor = adoptCF(CTFontDescriptorCreateWithAttributes(attributes.get()));
-    auto halfWidthFont = adoptCF(CTFontCreateCopyWithAttributes(ctFont.get(), size, nullptr, attributesDescriptor.get()));
+    auto attributesDescriptor = adoptCFNullable(CTFontDescriptorCreateWithAttributes(attributes.get()));
+    auto halfWidthFont = adoptCFNullable(CTFontCreateCopyWithAttributes(ctFont.get(), size, nullptr, attributesDescriptor.get()));
 
     return createDerivativeFont(halfWidthFont.get(), size, m_platformData.orientation(), fontTraits, m_platformData.syntheticBold(), m_platformData.syntheticOblique(), m_platformData.widthVariant(), m_platformData.textRenderingMode(), protect(m_platformData.customPlatformData()).get());
 }
@@ -657,8 +657,8 @@ GlyphBufferAdvance Font::applyTransforms(GlyphBuffer& glyphBuffer, unsigned begi
 
     RetainPtr ctFont = this->ctFont();
     LOG_WITH_STREAM(TextShaping,
-        stream << "Simple shaping " << numberOfInputGlyphs << " glyphs in font " << String(adoptCF(CTFontCopyPostScriptName(ctFont.get())).get()) << ".\n";
-        stream << "Font attributes: " << String(adoptCF(CFCopyDescription(adoptCF(CTFontDescriptorCopyAttributes(adoptCF(CTFontCopyFontDescriptor(ctFont.get())).get())).get())).get()) << "\n";
+        stream << "Simple shaping " << numberOfInputGlyphs << " glyphs in font " << String(adoptCFNullable(CTFontCopyPostScriptName(ctFont.get())).get()) << ".\n";
+        stream << "Font attributes: " << String(adoptCFNullable(CFCopyDescription(adoptCFNullable(CTFontDescriptorCopyAttributes(adoptCFNullable(CTFontCopyFontDescriptor(ctFont.get())).get())).get())).get()) << "\n";
         stream << "Locale: " << String(localeString.get()) << "\n";
         stream << "Options: " << options << "\n";
         auto glyphs = glyphBuffer.glyphs(beginningGlyphIndex);
@@ -768,11 +768,11 @@ void Font::determinePitch()
     // According to <rdar://problem/5454704>, we should not treat MonotypeCorsiva as fixed pitch.
     // Note that AppKit does report MonotypeCorsiva as fixed pitch.
 
-    auto fullName = adoptCF(CTFontCopyFullName(ctFont.get()));
-    auto familyName = adoptCF(CTFontCopyFamilyName(ctFont.get()));
+    auto fullName = adoptCFNullable(CTFontCopyFullName(ctFont.get()));
+    auto familyName = adoptCFNullable(CTFontCopyFamilyName(ctFont.get()));
 
-    int fixedPitch = extractNumber(adoptCF(static_cast<CFNumberRef>(CTFontCopyAttribute(ctFont.get(), kCTFontFixedAdvanceAttribute))).get());
-    bool userInstalled = extractBoolean(adoptCF(static_cast<CFBooleanRef>(CTFontCopyAttribute(ctFont.get(), kCTFontUserInstalledAttribute))).get());
+    int fixedPitch = extractNumber(adoptCFNullable(static_cast<CFNumberRef>(CTFontCopyAttribute(ctFont.get(), kCTFontFixedAdvanceAttribute))).get());
+    bool userInstalled = extractBoolean(adoptCFNullable(static_cast<CFBooleanRef>(CTFontCopyAttribute(ctFont.get(), kCTFontUserInstalledAttribute))).get());
     m_treatAsFixedPitch = (CTFontGetSymbolicTraits(ctFont.get()) & kCTFontMonoSpaceTrait) || fixedPitch || (caseInsensitiveCompare(fullName.get(), CFSTR("Osaka-Mono")) || caseInsensitiveCompare(fullName.get(), CFSTR("MS-PGothic")) || caseInsensitiveCompare(fullName.get(), CFSTR("MonotypeCorsiva")));
     if (familyName && caseInsensitiveCompare(familyName.get(), CFSTR("Courier New"))) {
 #if PLATFORM(IOS_FAMILY)
@@ -811,20 +811,20 @@ Vector<FloatRect, Font::inlineGlyphRunCapacity> Font::platformBoundsForGlyphs(co
 
 Path Font::platformPathForGlyph(Glyph glyph) const
 {
-    auto result = adoptCF(CTFontCreatePathForGlyph(protect(ctFont()).get(), glyph, nullptr));
+    auto result = adoptCFNullable(CTFontCreatePathForGlyph(protect(ctFont()).get(), glyph, nullptr));
     if (!result)
         return { };
 
     auto syntheticBoldOffset = this->syntheticBoldOffset();
     if (syntheticBoldOffset) {
-        auto newPath = adoptCF(CGPathCreateMutable());
+        auto newPath = adoptCFNullable(CGPathCreateMutable());
         CGPathAddPath(newPath.get(), nullptr, result.get());
         auto translation = CGAffineTransformMakeTranslation(syntheticBoldOffset, 0);
         CGPathAddPath(newPath.get(), &translation, result.get());
         return { PathCG::create(WTF::move(newPath)) };
     }
 
-    return { PathCG::create(adoptCF(CGPathCreateMutableCopy(result.get()))) };
+    return { PathCG::create(adoptCFNullable(CGPathCreateMutableCopy(result.get()))) };
 }
 
 bool Font::platformSupportsCodePoint(char32_t character, std::optional<char32_t> variation) const
@@ -879,7 +879,7 @@ bool Font::isProbablyOnlyUsedToRenderIcons() const
             return false;
     }
 
-    auto supportedCharacters = adoptCF(CTFontCopyCharacterSet(platformFont.get()));
+    auto supportedCharacters = adoptCFNullable(CTFontCopyCharacterSet(platformFont.get()));
     if (CFCharacterSetHasMemberInPlane(supportedCharacters.get(), 1) || CFCharacterSetHasMemberInPlane(supportedCharacters.get(), 2))
         return false;
 
@@ -889,7 +889,7 @@ bool Font::isProbablyOnlyUsedToRenderIcons() const
 const PAL::OTSVGTable& Font::otSVGTable() const
 {
     if (!m_otSVGTable) {
-        if (auto tableData = adoptCF(CTFontCopyTable(protect(ctFont()).get(), kCTFontTableSVG, kCTFontTableOptionNoOptions)))
+        if (auto tableData = adoptCFNullable(CTFontCopyTable(protect(ctFont()).get(), kCTFontTableSVG, kCTFontTableOptionNoOptions)))
             m_otSVGTable = PAL::OTSVGTable(tableData.get(), fontMetrics().unitsPerEm(), platformData().size());
         else
             m_otSVGTable = {{ }};
@@ -933,7 +933,7 @@ bool Font::hasComplexColorFormatTables() const
         return true;
 
 #if HAVE(CORE_TEXT_SBIX_IMAGE_SIZE_FUNCTIONS)
-    if (auto sbixTableData = adoptCF(CTFontCopyTable(protect(ctFont()).get(), kCTFontTableSbix, kCTFontTableOptionNoOptions)))
+    if (auto sbixTableData = adoptCFNullable(CTFontCopyTable(protect(ctFont()).get(), kCTFontTableSbix, kCTFontTableOptionNoOptions)))
         return true;
 #endif
 
@@ -1021,9 +1021,9 @@ std::optional<Ref<Font>> Font::fromIPCData(IPCFontData&& data)
                 return std::nullopt;
 
             RetainPtr<CFDictionaryRef> attributesDictionary = creationData.attributes ? creationData.attributes->toCFDictionary() : nullptr;
-            RetainPtr fontDescriptor = adoptCF(CTFontDescriptorCreateCopyWithAttributes(baseFontDescriptor.get(), attributesDictionary.get()));
+            RetainPtr fontDescriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithAttributes(baseFontDescriptor.get(), attributesDictionary.get()));
 
-            RetainPtr font = adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), creationData.metadata.pointSize, nullptr));
+            RetainPtr font = adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), creationData.metadata.pointSize, nullptr));
 
             return Font::create(FontPlatformData(creationData.metadata.pointSize, FontOrientation(creationData.metadata.orientation), FontWidthVariant(creationData.metadata.widthVariant), TextRenderingMode(creationData.metadata.textRenderingMode), creationData.metadata.syntheticBold, creationData.metadata.syntheticOblique, WTF::move(font), WTF::move(customPlatformData)));
         }
@@ -1050,17 +1050,17 @@ std::optional<InstalledFont> Font::toSerializableInstalledFont() const
         return InstalledFont {
             InstalledFont::SystemUIFont {
                 fontType,
-                adoptCF(checked_cf_cast<CFStringRef>(CTFontCopyAttribute(ctFont.get(), kCTFontDescriptorLanguageAttribute))).get()
+                adoptCFNullable(checked_cf_cast<CFStringRef>(CTFontCopyAttribute(ctFont.get(), kCTFontDescriptorLanguageAttribute))).get()
             },
             fontData
         };
     }
 
-    RetainPtr fontDescriptor = adoptCF(CTFontCopyFontDescriptor(ctFont.get()));
-    RetainPtr attributes = adoptCF(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
+    RetainPtr fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(ctFont.get()));
+    RetainPtr attributes = adoptCFNullable(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
     return InstalledFont {
         InstalledFont::PostScriptFont {
-            String(adoptCF(CTFontCopyPostScriptName(ctFont.get())).get()),
+            String(adoptCFNullable(CTFontCopyPostScriptName(ctFont.get())).get()),
             CTFontDescriptorGetOptions(fontDescriptor.get()),
             FontPlatformSerializedAttributes::fromCF(attributes.get())
         },
@@ -1075,8 +1075,8 @@ IPCFontData Font::toSerializableFont() const
         return { *installedFont };
 
     RetainPtr font = ctFont();
-    RetainPtr fontDescriptor = adoptCF(CTFontCopyFontDescriptor(font.get()));
-    RetainPtr attributes = adoptCF(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
+    RetainPtr fontDescriptor = adoptCFNullable(CTFontCopyFontDescriptor(font.get()));
+    RetainPtr attributes = adoptCFNullable(CTFontDescriptorCopyAttributes(fontDescriptor.get()));
 
     const auto& data = m_platformData.creationData();
     FontMetadata fontData = {

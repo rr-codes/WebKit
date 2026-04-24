@@ -49,7 +49,7 @@ static io_connect_t attachToAppleGraphicsControl()
     if (IOMainPort(MACH_PORT_NULL, &mainPort) != KERN_SUCCESS)
         return IO_OBJECT_NULL;
 
-    RetainPtr classToMatch = adoptCF(IOServiceMatching("AppleGraphicsControl"));
+    RetainPtr classToMatch = adoptCFNullable(IOServiceMatching("AppleGraphicsControl"));
     if (!classToMatch)
         return IO_OBJECT_NULL;
 

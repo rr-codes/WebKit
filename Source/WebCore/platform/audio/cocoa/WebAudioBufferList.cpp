@@ -130,7 +130,7 @@ RetainPtr<CMBlockBufferRef> WebAudioBufferList::setSampleCountWithBlockBuffer(si
         RELEASE_LOG_ERROR(Media, "WebAudioBufferList::setSampleCountWithBlockBuffer CMBlockBufferCreateWithMemoryBlock failed with: %d", static_cast<int>(error));
         return { };
     }
-    RetainPtr block = adoptCF(blockBuffer);
+    RetainPtr block = adoptCFNullable(blockBuffer);
 
     auto data = PAL::CMBlockBufferGetDataSpan(blockBuffer);
     if (!data.data()) {
@@ -164,7 +164,7 @@ WebAudioBufferList::WebAudioBufferList(const CAAudioStreamDescription& format, C
 
     CMBlockBufferRef buffer = nullptr;
     if (noErr == PAL::CMSampleBufferGetAudioBufferListWithRetainedBlockBuffer(sampleBuffer, nullptr, m_canonicalList.get(), PAL::allocationSize(*m_canonicalList), kCFAllocatorSystemDefault, kCFAllocatorSystemDefault, kCMSampleBufferFlag_AudioBufferList_Assure16ByteAlignment, &buffer))
-        m_blockBuffer = adoptCF(buffer);
+        m_blockBuffer = adoptCFNullable(buffer);
 
     reset();
 }

@@ -206,7 +206,7 @@ RetainPtr<CFStringRef> filePathExtension(CFURLResponseRef response)
     RetainPtr responseURL = CFURLResponseGetURL(response);
     if (![bridge_cast(responseURL.get()) isFileURL])
         return nullptr;
-    return adoptCF(CFURLCopyPathExtension(responseURL.get()));
+    return adoptCFNullable(CFURLCopyPathExtension(responseURL.get()));
 }
 
 }

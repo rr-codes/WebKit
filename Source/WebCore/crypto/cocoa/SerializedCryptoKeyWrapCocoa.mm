@@ -113,10 +113,10 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         WTFLogAlways("Cannot create a security access object for storing WebCrypto master key, error %d", (int)status);
         return std::nullopt;
     }
-    RetainPtr<SecAccessRef> access = adoptCF(accessRef);
+    RetainPtr<SecAccessRef> access = adoptCFNullable(accessRef);
 
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    RetainPtr<CFArrayRef> acls = adoptCF(SecAccessCopyMatchingACLList(accessRef, kSecACLAuthorizationExportClear));
+    RetainPtr<CFArrayRef> acls = adoptCFNullable(SecAccessCopyMatchingACLList(accessRef, kSecACLAuthorizationExportClear));
 ALLOW_DEPRECATED_DECLARATIONS_END
     SecACLRef acl = checked_cf_cast<SecACLRef>(CFArrayGetValueAtIndex(acls.get(), 0));
 
@@ -128,7 +128,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
         WTFLogAlways("Cannot create a trusted application object for storing WebCrypto master key, error %d", (int)status);
         return std::nullopt;
     }
-    RetainPtr<SecTrustedApplicationRef> trustedApp = adoptCF(trustedAppRef);
+    RetainPtr<SecTrustedApplicationRef> trustedApp = adoptCFNullable(trustedAppRef);
 
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
     status = SecACLSetContents(acl, (__bridge CFArrayRef)@[ (__bridge id)trustedApp.get() ], bridge_cast(localizedItemName.get()), kSecKeychainPromptRequirePassphase);
@@ -180,7 +180,7 @@ static std::optional<Vector<uint8_t>> findMasterKey()
             WTFLogAlways("Could not find WebCrypto master key in Keychain, error %d", (int)status);
         return std::nullopt;
     }
-    RetainPtr<CFDataRef> keyData = adoptCF(keyDataRef);
+    RetainPtr<CFDataRef> keyData = adoptCFNullable(keyDataRef);
     return base64Decode(span(keyData.get()));
 }
 

@@ -182,7 +182,7 @@ void SocketStreamHandleImpl::executePACFileURL(CFURLRef pacFileURL)
 {
     // CFNetwork returns an empty proxy array for WebSocket schemes, so use m_httpsURL.
     CFStreamClientContext clientContext = { 0, this, retainSocketStreamHandle, releaseSocketStreamHandle, copyPACExecutionDescription };
-    m_pacRunLoopSource = adoptCF(CFNetworkExecuteProxyAutoConfigurationURL(pacFileURL, m_httpsURL.get(), pacExecutionCallback, &clientContext));
+    m_pacRunLoopSource = adoptCFNullable(CFNetworkExecuteProxyAutoConfigurationURL(pacFileURL, m_httpsURL.get(), pacExecutionCallback, &clientContext));
     CFRunLoopAddSource(callbacksRunLoop(), m_pacRunLoopSource.get(), callbacksRunLoopMode());
     m_connectingSubstate = ExecutingPACFile;
 }
@@ -198,7 +198,7 @@ void SocketStreamHandleImpl::removePACRunLoopSource()
 
 void SocketStreamHandleImpl::chooseProxy()
 {
-    RetainPtr<CFDictionaryRef> proxyDictionary = adoptCF(CFNetworkCopySystemProxySettings());
+    RetainPtr<CFDictionaryRef> proxyDictionary = adoptCFNullable(CFNetworkCopySystemProxySettings());
 
     // SOCKS or HTTPS (AKA CONNECT) proxies are supported.
     // WebSocket protocol relies on handshake being transferred unchanged, so we need a proxy that will not modify headers.
@@ -212,7 +212,7 @@ void SocketStreamHandleImpl::chooseProxy()
 
     // CFNetworkCopyProxiesForURL doesn't know about WebSocket schemes, so pretend to use http.
     // Always use "https" to get HTTPS proxies in result - we'll try to use those for ws:// even though many are configured to reject connections to ports other than 443.
-    RetainPtr<CFArrayRef> proxyArray = adoptCF(CFNetworkCopyProxiesForURL(m_httpsURL.get(), proxyDictionary.get()));
+    RetainPtr<CFArrayRef> proxyArray = adoptCFNullable(CFNetworkCopyProxiesForURL(m_httpsURL.get(), proxyDictionary.get()));
 
     chooseProxyFromArray(proxyArray.get());
 }
@@ -277,7 +277,7 @@ static void setCONNECTProxyForStream(CFReadStreamRef stream, CFStringRef proxyHo
 {
     const void* proxyKeys[] = { kCFStreamPropertyCONNECTProxyHost, kCFStreamPropertyCONNECTProxyPort };
     const void* proxyValues[] = { proxyHost, proxyPort };
-    auto connectDictionary = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, proxyKeys, proxyValues, sizeof(proxyKeys) / sizeof(*proxyKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto connectDictionary = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, proxyKeys, proxyValues, sizeof(proxyKeys) / sizeof(*proxyKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CFReadStreamSetProperty(stream, kCFStreamPropertyCONNECTProxy, connectDictionary.get());
 }
 
@@ -309,8 +309,8 @@ void SocketStreamHandleImpl::createStreams()
         CFWriteStreamSetProperty(writeStream, kCFStreamPropertySourceApplication, m_auditData.sourceApplicationAuditData.get());
     }
 
-    m_readStream = adoptCF(readStream);
-    m_writeStream = adoptCF(writeStream);
+    m_readStream = adoptCFNullable(readStream);
+    m_writeStream = adoptCFNullable(writeStream);
 
     switch (m_connectionType) {
     case Unknown:
@@ -323,7 +323,7 @@ void SocketStreamHandleImpl::createStreams()
         // But SOCKS5 credentials don't work at the time of this writing anyway, see <rdar://6776698>.
         const void* proxyKeys[] = { kCFStreamPropertySOCKSProxyHost, kCFStreamPropertySOCKSProxyPort };
         const void* proxyValues[] = { m_proxyHost.get(), m_proxyPort.get() };
-        RetainPtr<CFDictionaryRef> connectDictionary = adoptCF(CFDictionaryCreate(0, proxyKeys, proxyValues, std::size(proxyKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        RetainPtr<CFDictionaryRef> connectDictionary = adoptCFNullable(CFDictionaryCreate(0, proxyKeys, proxyValues, std::size(proxyKeys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
         CFReadStreamSetProperty(m_readStream.get(), kCFStreamPropertySOCKSProxy, connectDictionary.get());
         break;
         }
@@ -344,7 +344,7 @@ void SocketStreamHandleImpl::createStreams()
             gLegacyTLSEnabled ? kCFStreamSocketSecurityLevelNegotiatedSSL : kCFStreamSocketSecurityLevelTLSv1_2,
             validateCertificateChain
         };
-        RetainPtr<CFDictionaryRef> settings = adoptCF(CFDictionaryCreate(0, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        RetainPtr<CFDictionaryRef> settings = adoptCFNullable(CFDictionaryCreate(0, keys, values, std::size(keys), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
         CFReadStreamSetProperty(m_readStream.get(), kCFStreamPropertySSLSettings, settings.get());
         CFWriteStreamSetProperty(m_writeStream.get(), kCFStreamPropertySSLSettings, settings.get());
     }
@@ -391,12 +391,12 @@ static ProtectionSpace::AuthenticationScheme authenticationSchemeFromAuthenticat
     
 static void setCONNECTProxyAuthorizationForStream(CFReadStreamRef stream, CFStringRef proxyAuthorizationString)
 {
-    auto originalCONNECTDictionary = adoptCF((CFDictionaryRef)CFReadStreamCopyProperty(stream, kCFStreamPropertyCONNECTProxy));
-    auto connectDictionary = adoptCF(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, originalCONNECTDictionary.get()));
+    auto originalCONNECTDictionary = adoptCFNullable((CFDictionaryRef)CFReadStreamCopyProperty(stream, kCFStreamPropertyCONNECTProxy));
+    auto connectDictionary = adoptCFNullable(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, originalCONNECTDictionary.get()));
 
     const void* headerFieldNames[] = { CFSTR("Proxy-Authorization") };
     const void* headerFieldValues[] = { proxyAuthorizationString };
-    auto additionalHeaderFields = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, headerFieldNames, headerFieldValues, sizeof(headerFieldNames) / sizeof(*headerFieldValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto additionalHeaderFields = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, headerFieldNames, headerFieldValues, sizeof(headerFieldNames) / sizeof(*headerFieldValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     CFDictionarySetValue(connectDictionary.get(), kCFStreamPropertyCONNECTAdditionalHeaders, additionalHeaderFields.get());
     CFReadStreamSetProperty(stream, kCFStreamPropertyCONNECTProxy, connectDictionary.get());
@@ -404,7 +404,7 @@ static void setCONNECTProxyAuthorizationForStream(CFReadStreamRef stream, CFStri
 
 void SocketStreamHandleImpl::addCONNECTCredentials(CFHTTPMessageRef proxyResponse)
 {
-    RetainPtr<CFHTTPAuthenticationRef> authentication = adoptCF(CFHTTPAuthenticationCreateFromResponse(0, proxyResponse));
+    RetainPtr<CFHTTPAuthenticationRef> authentication = adoptCFNullable(CFHTTPAuthenticationCreateFromResponse(0, proxyResponse));
 
     if (!CFHTTPAuthenticationRequiresUserNameAndPassword(authentication.get())) {
         // That's all we can offer...
@@ -414,8 +414,8 @@ void SocketStreamHandleImpl::addCONNECTCredentials(CFHTTPMessageRef proxyRespons
 
     int port = 0;
     CFNumberGetValue(m_proxyPort.get(), kCFNumberIntType, &port);
-    RetainPtr<CFStringRef> methodCF = adoptCF(CFHTTPAuthenticationCopyMethod(authentication.get()));
-    RetainPtr<CFStringRef> realmCF = adoptCF(CFHTTPAuthenticationCopyRealm(authentication.get()));
+    RetainPtr<CFStringRef> methodCF = adoptCFNullable(CFHTTPAuthenticationCopyMethod(authentication.get()));
+    RetainPtr<CFStringRef> realmCF = adoptCFNullable(CFHTTPAuthenticationCopyRealm(authentication.get()));
 
     if (!methodCF || !realmCF) {
         // This shouldn't happen, but on some OS versions we get incomplete authentication data, see <rdar://problem/10416316>.
@@ -429,12 +429,12 @@ void SocketStreamHandleImpl::addCONNECTCredentials(CFHTTPMessageRef proxyRespons
     if (!m_sentStoredCredentials && getStoredCONNECTProxyCredentials(protectionSpace, login, password)) {
         // Try to apply stored credentials, if we haven't tried those already.
         // Create a temporary request to make CFNetwork apply credentials to it. Unfortunately, this cannot work with NTLM authentication.
-        RetainPtr<CFHTTPMessageRef> dummyRequest = adoptCF(CFHTTPMessageCreateRequest(0, CFSTR("GET"), m_httpsURL.get(), kCFHTTPVersion1_1));
+        RetainPtr<CFHTTPMessageRef> dummyRequest = adoptCFNullable(CFHTTPMessageCreateRequest(0, CFSTR("GET"), m_httpsURL.get(), kCFHTTPVersion1_1));
 
         Boolean appliedCredentials = CFHTTPMessageApplyCredentials(dummyRequest.get(), authentication.get(), login.createCFString().get(), password.createCFString().get(), 0);
         ASSERT_UNUSED(appliedCredentials, appliedCredentials);
 
-        RetainPtr<CFStringRef> proxyAuthorizationString = adoptCF(CFHTTPMessageCopyHeaderFieldValue(dummyRequest.get(), CFSTR("Proxy-Authorization")));
+        RetainPtr<CFStringRef> proxyAuthorizationString = adoptCFNullable(CFHTTPMessageCopyHeaderFieldValue(dummyRequest.get(), CFSTR("Proxy-Authorization")));
 
         if (!proxyAuthorizationString) {
             // Fails e.g. for NTLM auth.
@@ -498,15 +498,15 @@ static void setResponseProxyURL(CFHTTPMessageRef message, CFURLRef proxyURL)
 
 static RetainPtr<CFHTTPMessageRef> copyCONNECTProxyResponse(CFReadStreamRef stream, CFURLRef responseURL, CFStringRef proxyHost, CFNumberRef proxyPort)
 {
-    auto message = adoptCF(checked_cf_cast<CFHTTPMessageRef>(CFReadStreamCopyProperty(stream, kCFStreamPropertyCONNECTResponse)));
+    auto message = adoptCFNullable(checked_cf_cast<CFHTTPMessageRef>(CFReadStreamCopyProperty(stream, kCFStreamPropertyCONNECTResponse)));
     // CFNetwork needs URL to be set on response in order to handle authentication - even though it doesn't seem to make sense to provide ultimate target URL when authenticating to a proxy.
     // This is set by CFNetwork internally for normal HTTP responses, but not for proxies.
     _CFHTTPMessageSetResponseURL(message.get(), responseURL);
 
 #if !PLATFORM(IOS_FAMILY)
     // Ditto for proxy URL.
-    auto proxyURLString = adoptCF(CFStringCreateWithFormat(kCFAllocatorDefault, nullptr, CFSTR("https://%@:%@"), proxyHost, proxyPort));
-    auto proxyURL = adoptCF(CFURLCreateWithString(kCFAllocatorDefault, proxyURLString.get(), nullptr));
+    auto proxyURLString = adoptCFNullable(CFStringCreateWithFormat(kCFAllocatorDefault, nullptr, CFSTR("https://%@:%@"), proxyHost, proxyPort));
+    auto proxyURL = adoptCFNullable(CFURLCreateWithString(kCFAllocatorDefault, proxyURLString.get(), nullptr));
     setResponseProxyURL(message.get(), proxyURL.get());
 #else
     UNUSED_PARAM(proxyHost);
@@ -582,7 +582,7 @@ void SocketStreamHandleImpl::readStreamCallback(CFStreamEventType type)
         ASSERT_NOT_REACHED();
         return;
     case kCFStreamEventErrorOccurred: {
-        RetainPtr<CFErrorRef> error = adoptCF(CFReadStreamCopyError(m_readStream.get()));
+        RetainPtr<CFErrorRef> error = adoptCFNullable(CFReadStreamCopyError(m_readStream.get()));
         reportErrorToClient(error.get());
         return;
     }
@@ -638,7 +638,7 @@ void SocketStreamHandleImpl::writeStreamCallback(CFStreamEventType type)
         return;
     }
     case kCFStreamEventErrorOccurred: {
-        RetainPtr<CFErrorRef> error = adoptCF(CFWriteStreamCopyError(m_writeStream.get()));
+        RetainPtr<CFErrorRef> error = adoptCFNullable(CFWriteStreamCopyError(m_writeStream.get()));
         reportErrorToClient(error.get());
         return;
     }
@@ -668,7 +668,7 @@ ALLOW_DEPRECATED_DECLARATIONS_END
 #endif
 
     if (description.isNull()) {
-        RetainPtr<CFStringRef> descriptionCF = adoptCF(CFErrorCopyDescription(error));
+        RetainPtr<CFStringRef> descriptionCF = adoptCFNullable(CFErrorCopyDescription(error));
         description = String(descriptionCF.get());
     }
 

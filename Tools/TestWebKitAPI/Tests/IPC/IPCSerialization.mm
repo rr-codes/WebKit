@@ -190,16 +190,16 @@ static bool secTrustRefsEqual(SecTrustRef trust1, SecTrustRef trust2)
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        trust1Plist = adoptCF(SecTrustCopyPropertyListRepresentation(trust1, &rawError));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT plistError = adoptCF(rawError);
+        trust1Plist = adoptCFNullable(SecTrustCopyPropertyListRepresentation(trust1, &rawError));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT plistError = adoptCFNullable(rawError);
     }
     EXPECT_FALSE(plistError);
     plistError = NULL;
     RetainPtr<CFPropertyListRef> trust2Plist;
     {
         CFErrorRef rawError = NULL;
-        trust2Plist = adoptCF(SecTrustCopyPropertyListRepresentation(trust2, &rawError));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT plistError = adoptCF(rawError);
+        trust2Plist = adoptCFNullable(SecTrustCopyPropertyListRepresentation(trust2, &rawError));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT plistError = adoptCFNullable(rawError);
     }
     EXPECT_FALSE(plistError);
     EXPECT_TRUE(CFGetTypeID(trust1Plist.get()) == CFDictionaryGetTypeID());
@@ -224,8 +224,8 @@ static bool secTrustRefsEqual(SecTrustRef trust1, SecTrustRef trust2)
     if (!equal)
         return false;
 
-    RetainPtr<CFDataRef> ex1 = adoptCF(SecTrustCopyExceptions(trust1));
-    RetainPtr<CFDataRef> ex2 = adoptCF(SecTrustCopyExceptions(trust2));
+    RetainPtr<CFDataRef> ex1 = adoptCFNullable(SecTrustCopyExceptions(trust1));
+    RetainPtr<CFDataRef> ex2 = adoptCFNullable(SecTrustCopyExceptions(trust2));
     EXPECT_TRUE(ex1);
     EXPECT_TRUE(ex2);
     equal = CFEqual(ex1.get(), ex2.get());
@@ -235,28 +235,28 @@ static bool secTrustRefsEqual(SecTrustRef trust1, SecTrustRef trust2)
     RetainPtr<CFPropertyListRef> ex1plist;
     {
         CFErrorRef rawError = NULL;
-        ex1plist = adoptCF(CFPropertyListCreateWithData(
+        ex1plist = adoptCFNullable(CFPropertyListCreateWithData(
             kCFAllocatorDefault,
             ex1.get(),
             kCFPropertyListImmutable,
             &format,
             &rawError
         ));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCF(rawError);
+        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCFNullable(rawError);
     }
     EXPECT_FALSE(error);
     error = NULL;
     RetainPtr<CFPropertyListRef> ex2plist;
     {
         CFErrorRef rawError = NULL;
-        ex2plist = adoptCF(CFPropertyListCreateWithData(
+        ex2plist = adoptCFNullable(CFPropertyListCreateWithData(
             kCFAllocatorDefault,
             ex2.get(),
             kCFPropertyListImmutable,
             &format,
             &rawError
         ));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCF(rawError);
+        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCFNullable(rawError);
     }
     EXPECT_FALSE(error);
     equal = CFEqual(ex1plist.get(), ex2plist.get());
@@ -840,7 +840,7 @@ String certDataBase64(""
 static RetainPtr<SecCertificateRef> createCertificate()
 {
     RetainPtr certData = adoptNS([[NSData alloc] initWithBase64EncodedString:certDataBase64.createNSString().get() options:0]);
-    RetainPtr cert = adoptCF(SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)certData.get()));
+    RetainPtr cert = adoptCFNullable(SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)certData.get()));
     EXPECT_NOT_NULL(cert);
     return cert;
 }
@@ -855,7 +855,7 @@ static RetainPtr<SecKeyRef> createPrivateKey()
         (id)kSecAttrKeyClass: (id)kSecAttrKeyClassPrivate
     };
 
-    RetainPtr privateKey = adoptCF(SecKeyCreateWithData((CFDataRef)keyData.get(), (CFDictionaryRef)keyAttrs, NULL));
+    RetainPtr privateKey = adoptCFNullable(SecKeyCreateWithData((CFDataRef)keyData.get(), (CFDictionaryRef)keyAttrs, NULL));
     EXPECT_NOT_NULL(privateKey);
     return privateKey;
 }
@@ -1012,7 +1012,7 @@ TEST(IPCSerialization, Basic)
 
     // NSData/CFData
     runTestNS({ [NSData dataWithBytes:"Data test" length:strlen("Data test")] });
-    RetainPtr cfData = adoptCF(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)"Data test", strlen("Data test")));
+    RetainPtr cfData = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)"Data test", strlen("Data test")));
     runTestCF({ cfData.get() });
 
     // NSDate
@@ -1030,14 +1030,14 @@ TEST(IPCSerialization, Basic)
     runTestCF({ kCFBooleanFalse });
 
     // CGColor
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     constexpr CGFloat testComponents[4] = { 1, .75, .5, .25 };
-    RetainPtr cgColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), testComponents));
+    RetainPtr cgColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), testComponents));
     runTestCF({ cgColor.get() });
 
     // CGColorSpace
     runTestCF({ sRGBColorSpace.get() });
-    RetainPtr grayColorSpace = adoptCF(CGColorSpaceCreateDeviceGray());
+    RetainPtr grayColorSpace = adoptCFNullable(CGColorSpaceCreateDeviceGray());
     runTestCF({ grayColorSpace.get() });
 
     auto runNumberTest = [&](NSNumber *number) {
@@ -1076,7 +1076,7 @@ TEST(IPCSerialization, Basic)
     runTestNS({ @{ @"Dictionary": @[ @"array value", @12 ] } });
 
     // CFDictionary with a non-toll-free bridged CFType, also run as NSDictionary
-    RetainPtr cfDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL));
+    RetainPtr cfDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 1, NULL, NULL));
     CFDictionaryAddValue(cfDictionary.get(), CFSTR("MyKey"), cgColor.get());
     runTestCF({ cfDictionary.get() });
     runTestNS({ bridge_cast(cfDictionary.get()) });
@@ -1084,7 +1084,7 @@ TEST(IPCSerialization, Basic)
     // NSError
     RetainPtr<SecCertificateRef> cert = createCertificate();
     RetainPtr<SecKeyRef> key = createPrivateKey();
-    RetainPtr<SecIdentityRef> identity = adoptCF(SecIdentityCreate(kCFAllocatorDefault, cert.get(), key.get()));
+    RetainPtr<SecIdentityRef> identity = adoptCFNullable(SecIdentityCreate(kCFAllocatorDefault, cert.get(), key.get()));
 
     NSError *error1 = [NSError errorWithDomain:@"TestWTFDomain" code:1 userInfo:@{ NSLocalizedDescriptionKey : @"TestWTF Error" }];
     runTestNS({ error1 });
@@ -1202,9 +1202,9 @@ TEST(IPCSerialization, Basic)
     // CFURL
     // The following URL described is quite nonsensical.
     const UInt8 baseBytes[10] = { 'h', 't', 't', 'p', ':', '/', '/', 0xE2, 0x80, 0x80 };
-    RetainPtr baseURL = adoptCF(CFURLCreateAbsoluteURLWithBytes(nullptr, baseBytes, 10, kCFStringEncodingUTF8, nullptr, true));
+    RetainPtr baseURL = adoptCFNullable(CFURLCreateAbsoluteURLWithBytes(nullptr, baseBytes, 10, kCFStringEncodingUTF8, nullptr, true));
     const UInt8 compoundBytes[10] = { 'p', 'a', 't', 'h' };
-    RetainPtr compoundURL = adoptCF(CFURLCreateAbsoluteURLWithBytes(nullptr, compoundBytes, 4, kCFStringEncodingUTF8, baseURL.get(), true));
+    RetainPtr compoundURL = adoptCFNullable(CFURLCreateAbsoluteURLWithBytes(nullptr, compoundBytes, 4, kCFStringEncodingUTF8, baseURL.get(), true));
     runTestCF({ baseURL.get() });
     runTestCF({ compoundURL.get() });
 
@@ -1224,10 +1224,10 @@ TEST(IPCSerialization, Basic)
 
     // SecTrust -- evaluate the trust of the cert created above
     SecTrustRef trustRef = NULL;
-    RetainPtr policy = adoptCF(SecPolicyCreateBasicX509());
+    RetainPtr policy = adoptCFNullable(SecPolicyCreateBasicX509());
     EXPECT_TRUE(SecTrustCreateWithCertificates(cert.get(), policy.get(), &trustRef) == errSecSuccess);
     EXPECT_NOT_NULL(trustRef);
-    RetainPtr trust = adoptCF(trustRef);
+    RetainPtr trust = adoptCFNullable(trustRef);
     runTestCF({ trust.get() });
 
     EXPECT_TRUE(SecTrustEvaluateWithError(trust.get(), NULL) == errSecSuccess);
@@ -1239,7 +1239,7 @@ TEST(IPCSerialization, Basic)
         (id)kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly : @(YES),
         (id)kSecAttrAccessibleWhenUnlocked: @(YES) };
     SecAccessControlCreateFlags flags = (kSecAccessControlDevicePasscode | kSecAccessControlBiometryAny | kSecAccessControlOr);
-    RetainPtr accessControlRef = adoptCF(SecAccessControlCreateWithFlags(kCFAllocatorDefault, (CFTypeRef)protection, flags, NULL));
+    RetainPtr accessControlRef = adoptCFNullable(SecAccessControlCreateWithFlags(kCFAllocatorDefault, (CFTypeRef)protection, flags, NULL));
     EXPECT_NOT_NULL(accessControlRef);
     runTestCF({ accessControlRef.get() });
 
@@ -1253,7 +1253,7 @@ TEST(IPCSerialization, Basic)
     CFArrayRef itemsPtr = NULL;
     EXPECT_TRUE(SecKeychainItemImport(certData, CFSTR(".pem"), NULL, NULL, 0, NULL, tempKeychain, &itemsPtr) == errSecSuccess);
     EXPECT_NOT_NULL(itemsPtr);
-    RetainPtr items = adoptCF(itemsPtr);
+    RetainPtr items = adoptCFNullable(itemsPtr);
     EXPECT_GT(CFArrayGetCount(items.get()), 0);
 
     RetainPtr keychainItemRef = (SecKeychainItemRef)CFArrayGetValueAtIndex(items.get(), 0);
@@ -1645,7 +1645,7 @@ TEST(IPCSerialization, SecTrustRef)
 
     // The inline dictionary above does not compare equal. Do a serialization loop to get types which will compare equal.
     CFErrorRef error = NULL;
-    RetainPtr<CFDataRef> dataBlob = adoptCF(CFPropertyListCreateData(
+    RetainPtr<CFDataRef> dataBlob = adoptCFNullable(CFPropertyListCreateData(
         kCFAllocatorDefault,
         appleCertificatePlist,
         kCFPropertyListBinaryFormat_v1_0,
@@ -1655,7 +1655,7 @@ TEST(IPCSerialization, SecTrustRef)
     EXPECT_FALSE(error);
 
     CFPropertyListFormat format;
-    RetainPtr<CFPropertyListRef> recreatedAppleCertificatePlist = adoptCF(CFPropertyListCreateWithData(
+    RetainPtr<CFPropertyListRef> recreatedAppleCertificatePlist = adoptCFNullable(CFPropertyListCreateWithData(
         kCFAllocatorDefault,
         dataBlob.get(),
         kCFPropertyListImmutable,
@@ -1664,10 +1664,10 @@ TEST(IPCSerialization, SecTrustRef)
     ));
     EXPECT_FALSE(error);
 
-    RetainPtr<SecTrustRef> trust = adoptCF(SecTrustCreateFromPropertyListRepresentation(recreatedAppleCertificatePlist.get(), &error));
+    RetainPtr<SecTrustRef> trust = adoptCFNullable(SecTrustCreateFromPropertyListRepresentation(recreatedAppleCertificatePlist.get(), &error));
     EXPECT_FALSE(error);
 
-    RetainPtr<CFPropertyListRef> plistFromGeneratedObject = adoptCF(SecTrustCopyPropertyListRepresentation(trust.get(), &error));
+    RetainPtr<CFPropertyListRef> plistFromGeneratedObject = adoptCFNullable(SecTrustCopyPropertyListRepresentation(trust.get(), &error));
 
     bool loopedPlistEqual = CFEqual(recreatedAppleCertificatePlist.get(), plistFromGeneratedObject.get());
     EXPECT_TRUE(loopedPlistEqual);
@@ -1906,13 +1906,13 @@ TEST(IPCSerialization, PKPayment)
 
 static RetainPtr<DDScannerResult> fakeDataDetectorResultForTesting()
 {
-    RetainPtr scanner = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
+    RetainPtr scanner = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCreate(DDScannerTypeStandard, 0, nullptr));
     auto stringToScan = CFSTR("webkit.org");
-    RetainPtr query = adoptCF(PAL::softLink_DataDetectorsCore_DDScanQueryCreateFromString(kCFAllocatorDefault, stringToScan, CFRangeMake(0, CFStringGetLength(stringToScan))));
+    RetainPtr query = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScanQueryCreateFromString(kCFAllocatorDefault, stringToScan, CFRangeMake(0, CFStringGetLength(stringToScan))));
     if (!PAL::softLink_DataDetectorsCore_DDScannerScanQuery(scanner.get(), query.get()))
         return nil;
 
-    RetainPtr results = adoptCF(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
+    RetainPtr results = adoptCFNullable(PAL::softLink_DataDetectorsCore_DDScannerCopyResultsWithOptions(scanner.get(), DDScannerCopyResultsOptionsNoOverlap));
     if (!CFArrayGetCount(results.get()))
         return nil;
 
@@ -2223,69 +2223,69 @@ TEST(CoreIPCCFDictionary, InsertDifferentValueTypes)
     // Test that a CoreIPCCFDictionary can be created, encoded, and decoded with valid key-value pairs.
     // Keys will be string type (CFStringRef).
     // Values will be all possible variants from IPC::CFType.
-    RetainPtr cfDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr cfDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     // CFBooleanRef
-    RetainPtr booleanKey = adoptCF(CFSTR("booleanKey"));
-    RetainPtr booleanValue = adoptCF(kCFBooleanFalse);
+    RetainPtr booleanKey = adoptCFNullable(CFSTR("booleanKey"));
+    RetainPtr booleanValue = adoptCFNullable(kCFBooleanFalse);
     CFDictionaryAddValue(cfDictionary.get(), booleanKey.get(), booleanValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 1);
 
     // CFCharacterSetRef
-    RetainPtr charSetKey = adoptCF(CFSTR("charSetKey"));
-    RetainPtr charSetValue = adoptCF(CFCharacterSetCreateWithCharactersInString(kCFAllocatorDefault, CFSTR("ABC")));
+    RetainPtr charSetKey = adoptCFNullable(CFSTR("charSetKey"));
+    RetainPtr charSetValue = adoptCFNullable(CFCharacterSetCreateWithCharactersInString(kCFAllocatorDefault, CFSTR("ABC")));
     CFDictionaryAddValue(cfDictionary.get(), charSetKey.get(), charSetValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 2);
 
     // CFDataRef
-    RetainPtr dataKey = adoptCF(CFSTR("dataKey"));
-    RetainPtr dataValue = adoptCF(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)"Data test", strlen("Data test")));
+    RetainPtr dataKey = adoptCFNullable(CFSTR("dataKey"));
+    RetainPtr dataValue = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)"Data test", strlen("Data test")));
     CFDictionaryAddValue(cfDictionary.get(), dataKey.get(), dataValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 3);
 
     // CFDateRef
-    RetainPtr dateKey = adoptCF(CFSTR("dateKey"));
-    RetainPtr dateValue = adoptCF(CFDateCreate(kCFAllocatorDefault, 1.23));
+    RetainPtr dateKey = adoptCFNullable(CFSTR("dateKey"));
+    RetainPtr dateValue = adoptCFNullable(CFDateCreate(kCFAllocatorDefault, 1.23));
     CFDictionaryAddValue(cfDictionary.get(), dateKey.get(), dateValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 4);
 
     // CFDictionaryRef
-    RetainPtr dictKey = adoptCF(CFSTR("dictKey"));
-    RetainPtr dictValue = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    RetainPtr key1 = adoptCF(CFSTR("key1"));
-    RetainPtr value1 = adoptCF(CFSTR("value1"));
+    RetainPtr dictKey = adoptCFNullable(CFSTR("dictKey"));
+    RetainPtr dictValue = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr key1 = adoptCFNullable(CFSTR("key1"));
+    RetainPtr value1 = adoptCFNullable(CFSTR("value1"));
     CFDictionaryAddValue(dictValue.get(), key1.get(), value1.get());
     CFDictionaryAddValue(cfDictionary.get(), dictKey.get(), dictValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 5);
 
     // CFNullRef
-    RetainPtr nullKey = adoptCF(CFSTR("nullKey"));
-    RetainPtr nullValue = adoptCF(kCFNull);
+    RetainPtr nullKey = adoptCFNullable(CFSTR("nullKey"));
+    RetainPtr nullValue = adoptCFNullable(kCFNull);
     CFDictionaryAddValue(cfDictionary.get(), nullKey.get(), nullValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 6);
 
     // CFNumberRef
-    RetainPtr numberKey = adoptCF(CFSTR("numberKey"));
+    RetainPtr numberKey = adoptCFNullable(CFSTR("numberKey"));
     int32_t num = 123;
-    RetainPtr numberValue = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)&num));
+    RetainPtr numberValue = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)&num));
     CFDictionaryAddValue(cfDictionary.get(), numberKey.get(), numberValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 7);
 
     // CFStringRef
-    RetainPtr stringKey = adoptCF(CFSTR("stringKey"));
-    RetainPtr stringValue = adoptCF(CFSTR("stringValue"));
+    RetainPtr stringKey = adoptCFNullable(CFSTR("stringKey"));
+    RetainPtr stringValue = adoptCFNullable(CFSTR("stringValue"));
     CFDictionaryAddValue(cfDictionary.get(), stringKey.get(), stringValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 8);
 
     // CFURLRef
-    RetainPtr urlKey = adoptCF(CFSTR("urlKey"));
-    RetainPtr url = adoptCF(CFSTR("localhost.com"));
-    RetainPtr urlValue = adoptCF(CFURLCreateWithString(kCFAllocatorDefault, url.get(), NULL));
+    RetainPtr urlKey = adoptCFNullable(CFSTR("urlKey"));
+    RetainPtr url = adoptCFNullable(CFSTR("localhost.com"));
+    RetainPtr urlValue = adoptCFNullable(CFURLCreateWithString(kCFAllocatorDefault, url.get(), NULL));
     CFDictionaryAddValue(cfDictionary.get(), urlKey.get(), urlValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 9);
 
     // SecCertificateRef
-    RetainPtr secCertificateKey = adoptCF(CFSTR("secCertificateKey"));
+    RetainPtr secCertificateKey = adoptCFNullable(CFSTR("secCertificateKey"));
     auto secCertificateValue = createCertificate();
     CFDictionaryAddValue(cfDictionary.get(), secCertificateKey.get(), secCertificateValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 10);
@@ -2293,42 +2293,42 @@ TEST(CoreIPCCFDictionary, InsertDifferentValueTypes)
     // SecTrustRef
     auto certificate = createCertificate();
     NSArray* certArray = @[(__bridge id) certificate.get()];
-    RetainPtr policy = adoptCF(SecPolicyCreateBasicX509());
+    RetainPtr policy = adoptCFNullable(SecPolicyCreateBasicX509());
     SecTrustRef trust;
     SecTrustCreateWithCertificates((__bridge CFTypeRef) certArray, policy.get(), &trust);
 
-    RetainPtr secTrustKey = adoptCF(CFSTR("secTrustKey"));
-    RetainPtr secTrustValue = adoptCF(trust);
+    RetainPtr secTrustKey = adoptCFNullable(CFSTR("secTrustKey"));
+    RetainPtr secTrustValue = adoptCFNullable(trust);
     CFDictionaryAddValue(cfDictionary.get(), secTrustKey.get(), secTrustValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 11);
 
     // CGColorSpaceRef
-    RetainPtr colorSpaceKey = adoptCF(CFSTR("colorSpaceKey"));
-    RetainPtr colorSpaceValue = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr colorSpaceKey = adoptCFNullable(CFSTR("colorSpaceKey"));
+    RetainPtr colorSpaceValue = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
     CFDictionaryAddValue(cfDictionary.get(), colorSpaceKey.get(), colorSpaceValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 12);
 
     // CGColorRef
-    RetainPtr colorKey = adoptCF(CFSTR("colorKey"));
-    RetainPtr colorValue = adoptCF(CGColorCreateSRGB(1.0, 0.0, 0.0, 1.0));
+    RetainPtr colorKey = adoptCFNullable(CFSTR("colorKey"));
+    RetainPtr colorValue = adoptCFNullable(CGColorCreateSRGB(1.0, 0.0, 0.0, 1.0));
     CFDictionaryAddValue(cfDictionary.get(), colorKey.get(), colorValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 13);
 
     // SecAccessControlRef
-    RetainPtr secAccessControlKey = adoptCF(CFSTR("secAccessControlKey"));
+    RetainPtr secAccessControlKey = adoptCFNullable(CFSTR("secAccessControlKey"));
     SecAccessControlCreateFlags flags = (kSecAccessControlDevicePasscode | kSecAccessControlBiometryAny | kSecAccessControlOr);
     NSDictionary *protection = @{
         (id)kSecUseDataProtectionKeychain : @(YES),
         (id)kSecAttrSynchronizable : @(NO),
         (id)kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly : @(YES),
         (id)kSecAttrAccessibleWhenUnlocked: @(YES) };
-    RetainPtr secAccessControlValue = adoptCF(SecAccessControlCreateWithFlags(kCFAllocatorDefault, (CFTypeRef)protection, flags, NULL));
+    RetainPtr secAccessControlValue = adoptCFNullable(SecAccessControlCreateWithFlags(kCFAllocatorDefault, (CFTypeRef)protection, flags, NULL));
     CFDictionaryAddValue(cfDictionary.get(), secAccessControlKey.get(), secAccessControlValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 14);
 
     // CFSocketRef (should not be accepted by CoreIPCCFDictionary)
-    RetainPtr socketKey = adoptCF(CFSTR("socketKey"));
-    RetainPtr socketValue = adoptCF(CFSocketCreate(kCFAllocatorDefault, 0, 0, 0, 0, NULL, NULL));
+    RetainPtr socketKey = adoptCFNullable(CFSTR("socketKey"));
+    RetainPtr socketValue = adoptCFNullable(CFSocketCreate(kCFAllocatorDefault, 0, 0, 0, 0, NULL, NULL));
     CFDictionaryAddValue(cfDictionary.get(), socketKey.get(), socketValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 15);
 
@@ -2376,94 +2376,94 @@ TEST(CoreIPCCFDictionary, InsertDifferentKeyTypes)
     // Test that a CoreIPCCFDictionary can be created, encoded, and decoded with valid key-value pairs.
     // Keys will be all possible variants from CoreIPCCFDictionary::KeyType
     // Values will be string type (CFStringRef).
-    RetainPtr cfDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr cfDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     // CFBooleanRef
-    RetainPtr booleanKey = adoptCF(kCFBooleanFalse);
-    RetainPtr booleanValue = adoptCF(CFSTR("booleanValue"));
+    RetainPtr booleanKey = adoptCFNullable(kCFBooleanFalse);
+    RetainPtr booleanValue = adoptCFNullable(CFSTR("booleanValue"));
     CFDictionaryAddValue(cfDictionary.get(), booleanKey.get(), booleanValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 1);
 
     // CFCharacterSetRef
-    RetainPtr charSetKey = adoptCF(CFCharacterSetCreateWithCharactersInString(kCFAllocatorDefault, CFSTR("ABC")));
-    RetainPtr charSetValue = adoptCF(CFSTR("charSetValue"));
+    RetainPtr charSetKey = adoptCFNullable(CFCharacterSetCreateWithCharactersInString(kCFAllocatorDefault, CFSTR("ABC")));
+    RetainPtr charSetValue = adoptCFNullable(CFSTR("charSetValue"));
     CFDictionaryAddValue(cfDictionary.get(), charSetKey.get(), charSetValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 2);
 
     // CFDataRef
-    RetainPtr dataKey = adoptCF(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)"Data test", strlen("Data test")));
-    RetainPtr dataValue = adoptCF(CFSTR("dataValue"));
+    RetainPtr dataKey = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)"Data test", strlen("Data test")));
+    RetainPtr dataValue = adoptCFNullable(CFSTR("dataValue"));
     CFDictionaryAddValue(cfDictionary.get(), dataKey.get(), dataValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 3);
 
     // CFDateRef
-    RetainPtr dateKey = adoptCF(CFDateCreate(kCFAllocatorDefault, 1.23));
-    RetainPtr dateValue = adoptCF(CFSTR("dateValue"));
+    RetainPtr dateKey = adoptCFNullable(CFDateCreate(kCFAllocatorDefault, 1.23));
+    RetainPtr dateValue = adoptCFNullable(CFSTR("dateValue"));
     CFDictionaryAddValue(cfDictionary.get(), dateKey.get(), dateValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 4);
 
     // CFDictionaryRef
-    RetainPtr dictKey = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
-    RetainPtr dictValue = adoptCF(CFSTR("dictValue"));
-    RetainPtr key1 = adoptCF(CFSTR("key1"));
-    RetainPtr value1 = adoptCF(CFSTR("value1"));
+    RetainPtr dictKey = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr dictValue = adoptCFNullable(CFSTR("dictValue"));
+    RetainPtr key1 = adoptCFNullable(CFSTR("key1"));
+    RetainPtr value1 = adoptCFNullable(CFSTR("value1"));
     CFDictionaryAddValue(dictKey.get(), key1.get(), value1.get());
     CFDictionaryAddValue(cfDictionary.get(), dictKey.get(), dictValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 5);
 
     // CFNullRef
-    RetainPtr nullKey = adoptCF(kCFNull);
-    RetainPtr nullValue = adoptCF(CFSTR("nullValue"));
+    RetainPtr nullKey = adoptCFNullable(kCFNull);
+    RetainPtr nullValue = adoptCFNullable(CFSTR("nullValue"));
     CFDictionaryAddValue(cfDictionary.get(), nullKey.get(), nullValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 6);
 
     // CFNumberRef
     int32_t num = 123;
-    RetainPtr numberKey = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)&num));
-    RetainPtr numberValue = adoptCF(CFSTR("numberValue"));
+    RetainPtr numberKey = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, (const void*)&num));
+    RetainPtr numberValue = adoptCFNullable(CFSTR("numberValue"));
     CFDictionaryAddValue(cfDictionary.get(), numberKey.get(), numberValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 7);
 
     // CFStringRef
-    RetainPtr stringKey = adoptCF(CFSTR("stringKey"));
-    RetainPtr stringValue = adoptCF(CFSTR("stringValue"));
+    RetainPtr stringKey = adoptCFNullable(CFSTR("stringKey"));
+    RetainPtr stringValue = adoptCFNullable(CFSTR("stringValue"));
     CFDictionaryAddValue(cfDictionary.get(), stringKey.get(), stringValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 8);
 
     // CFURLRef
-    RetainPtr url = adoptCF(CFSTR("localhost.com"));
-    RetainPtr urlKey = adoptCF(CFURLCreateWithString(kCFAllocatorDefault, url.get(), NULL));
-    RetainPtr urlValue = adoptCF(CFSTR("urlValue"));
+    RetainPtr url = adoptCFNullable(CFSTR("localhost.com"));
+    RetainPtr urlKey = adoptCFNullable(CFURLCreateWithString(kCFAllocatorDefault, url.get(), NULL));
+    RetainPtr urlValue = adoptCFNullable(CFSTR("urlValue"));
     CFDictionaryAddValue(cfDictionary.get(), urlKey.get(), urlValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 9);
 
     // SecCertificateRef
     auto secCertificateKey = createCertificate();
-    RetainPtr secCertificateValue = adoptCF(CFSTR("secCertificateValue"));
+    RetainPtr secCertificateValue = adoptCFNullable(CFSTR("secCertificateValue"));
     CFDictionaryAddValue(cfDictionary.get(), secCertificateKey.get(), secCertificateValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 10);
 
     // SecTrustRef
     auto certificate = createCertificate();
     NSArray* certArray = @[(__bridge id) certificate.get()];
-    RetainPtr policy = adoptCF(SecPolicyCreateBasicX509());
+    RetainPtr policy = adoptCFNullable(SecPolicyCreateBasicX509());
     SecTrustRef trust;
     SecTrustCreateWithCertificates((__bridge CFTypeRef) certArray, policy.get(), &trust);
 
-    RetainPtr secTrustKey = adoptCF(trust);
-    RetainPtr secTrustValue = adoptCF(CFSTR("secTrustValue"));
+    RetainPtr secTrustKey = adoptCFNullable(trust);
+    RetainPtr secTrustValue = adoptCFNullable(CFSTR("secTrustValue"));
     CFDictionaryAddValue(cfDictionary.get(), secTrustKey.get(), secTrustValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 11);
 
     // CGColorSpaceRef
-    RetainPtr colorSpaceKey = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr colorSpaceValue = adoptCF(CFSTR("colorSpaceValue"));
+    RetainPtr colorSpaceKey = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr colorSpaceValue = adoptCFNullable(CFSTR("colorSpaceValue"));
     CFDictionaryAddValue(cfDictionary.get(), colorSpaceKey.get(), colorSpaceValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 12);
 
     // CGColorRef
-    RetainPtr colorKey = adoptCF(CGColorCreateSRGB(1.0, 0.0, 0.0, 1.0));
-    RetainPtr colorValue = adoptCF(CFSTR("colorValue"));
+    RetainPtr colorKey = adoptCFNullable(CGColorCreateSRGB(1.0, 0.0, 0.0, 1.0));
+    RetainPtr colorValue = adoptCFNullable(CFSTR("colorValue"));
     CFDictionaryAddValue(cfDictionary.get(), colorKey.get(), colorValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 13);
 
@@ -2474,14 +2474,14 @@ TEST(CoreIPCCFDictionary, InsertDifferentKeyTypes)
         (id)kSecAttrSynchronizable : @(NO),
         (id)kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly : @(YES),
         (id)kSecAttrAccessibleWhenUnlocked: @(YES) };
-    RetainPtr secAccessControlKey = adoptCF(SecAccessControlCreateWithFlags(kCFAllocatorDefault, (CFTypeRef)protection, flags, NULL));
-    RetainPtr secAccessControlValue = adoptCF(CFSTR("secAccessControlValue"));
+    RetainPtr secAccessControlKey = adoptCFNullable(SecAccessControlCreateWithFlags(kCFAllocatorDefault, (CFTypeRef)protection, flags, NULL));
+    RetainPtr secAccessControlValue = adoptCFNullable(CFSTR("secAccessControlValue"));
     CFDictionaryAddValue(cfDictionary.get(), secAccessControlKey.get(), secAccessControlValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 14);
 
     // CFSocketRef (should not be accepted by CoreIPCCFDictionary)
-    RetainPtr socketKey = adoptCF(CFSocketCreate(kCFAllocatorDefault, 0, 0, 0, 0, NULL, NULL));
-    RetainPtr socketValue = adoptCF(CFSTR("socketValue"));
+    RetainPtr socketKey = adoptCFNullable(CFSocketCreate(kCFAllocatorDefault, 0, 0, 0, 0, NULL, NULL));
+    RetainPtr socketValue = adoptCFNullable(CFSTR("socketValue"));
     CFDictionaryAddValue(cfDictionary.get(), socketKey.get(), socketValue.get());
     EXPECT_EQ(CFDictionaryGetCount(cfDictionary.get()), 15);
 

@@ -2050,8 +2050,8 @@ RetainPtr<CGImageRef> MediaPlayerPrivateAVFoundationObjC::createImageForTimeInRe
 
     [m_imageGenerator setMaximumSize:CGSize(rect.size())];
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    RetainPtr rawImage = adoptCF([m_imageGenerator copyCGImageAtTime:PAL::CMTimeMakeWithSeconds(time, 600) actualTime:nil error:nil]);
-    RetainPtr image = adoptCF(CGImageCreateCopyWithColorSpace(rawImage.get(), sRGBColorSpaceSingleton()));
+    RetainPtr rawImage = adoptCFNullable([m_imageGenerator copyCGImageAtTime:PAL::CMTimeMakeWithSeconds(time, 600) actualTime:nil error:nil]);
+    RetainPtr image = adoptCFNullable(CGImageCreateCopyWithColorSpace(rawImage.get(), sRGBColorSpaceSingleton()));
 ALLOW_DEPRECATED_DECLARATIONS_END
 
     INFO_LOG(LOGIDENTIFIER, "creating image took ", (MonotonicTime::now() - start).seconds());
@@ -3417,7 +3417,7 @@ static RetainPtr<NSString> externalDeviceDisplayNameForPlayer(AVPlayer *player)
     if (player.externalPlaybackType != AVPlayerExternalPlaybackTypeAirPlay)
         return nil;
 
-    auto pickableRoutes = adoptCF(MRMediaRemoteCopyPickableRoutes());
+    auto pickableRoutes = adoptCFNullable(MRMediaRemoteCopyPickableRoutes());
     if (!pickableRoutes || !CFArrayGetCount(pickableRoutes.get()))
         return nil;
 

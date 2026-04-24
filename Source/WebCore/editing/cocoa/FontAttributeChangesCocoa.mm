@@ -52,7 +52,7 @@ const String& FontChanges::platformFontFamilyNameForCSS() const
     description.setIsItalic(m_italic.value_or(false));
     description.setWeight(FontSelectionValue { m_bold.value_or(false) ? 900 : 500 });
     if (auto font = protect(FontCache::forCurrentThread())->fontForFamily(description, m_fontFamily))
-        fontNameFromDescription = adoptCF(CTFontCopyPostScriptName(font->ctFont()));
+        fontNameFromDescription = adoptCFNullable(CTFontCopyPostScriptName(font->ctFont()));
 
     if (fontNameFromDescription && CFStringCompare(cfFontName.get(), fontNameFromDescription.get(), 0) == kCFCompareEqualTo)
         return m_fontFamily;

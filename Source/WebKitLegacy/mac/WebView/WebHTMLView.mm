@@ -6884,7 +6884,7 @@ static CGImageRef imageFromRect(WebCore::LocalFrame* frame, CGRect rect)
     size_t bitsPerComponent = 8;
     size_t bitsPerPixel = 4 * bitsPerComponent;
     size_t bytesPerRow = ((bitsPerPixel + 7) / 8) * width;
-    RetainPtr<CGContextRef> context = adoptCF(CGBitmapContextCreate(NULL, width, height, bitsPerComponent, bytesPerRow, WebCore::sRGBColorSpaceSingleton(), kCGImageAlphaPremultipliedLast));
+    RetainPtr<CGContextRef> context = adoptCFNullable(CGBitmapContextCreate(NULL, width, height, bitsPerComponent, bytesPerRow, WebCore::sRGBColorSpaceSingleton(), kCGImageAlphaPremultipliedLast));
     if (!context)
         return nil;
     
@@ -6902,7 +6902,7 @@ static CGImageRef imageFromRect(WebCore::LocalFrame* frame, CGRect rect)
     
     CGContextRestoreGState(contextRef);
     
-    RetainPtr<CGImageRef> resultImage = adoptCF(CGBitmapContextCreateImage(contextRef));
+    RetainPtr<CGImageRef> resultImage = adoptCFNullable(CGBitmapContextCreateImage(contextRef));
     
     WKSetCurrentGraphicsContext(oldContext);
     frame->view()->setPaintBehavior(oldPaintBehavior);

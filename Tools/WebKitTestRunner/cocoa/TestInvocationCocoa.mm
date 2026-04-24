@@ -46,8 +46,8 @@ static RetainPtr<CGContextRef> createCGContextFromCGImage(CGImageRef image)
     size_t rowBytes = (4 * pixelsWide + 63) & ~63;
 
     // Creating this bitmap in the device color space should prevent any color conversion when the image of the web view is drawn into it.
-    auto colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
-    auto context = adoptCF(CGBitmapContextCreate(0, pixelsWide, pixelsHigh, 8, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
+    auto colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
+    auto context = adoptCFNullable(CGBitmapContextCreate(0, pixelsWide, pixelsHigh, 8, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
     if (!context)
         return nullptr;
 
@@ -57,7 +57,7 @@ static RetainPtr<CGContextRef> createCGContextFromCGImage(CGImageRef image)
 
 static RetainPtr<CGContextRef> createCGContextFromImage(WKImageRef wkImage)
 {
-    auto image = adoptCF(WKImageCreateCGImage(wkImage));
+    auto image = adoptCFNullable(WKImageCreateCGImage(wkImage));
     return createCGContextFromCGImage(image.get());
 }
 
@@ -120,8 +120,8 @@ static std::optional<std::string> hashForBlackImageOfSize(WKSize size)
     size_t pixelsHigh = size.height;
     size_t rowBytes = (4 * pixelsWide + 63) & ~63;
 
-    auto colorSpace = adoptCF(CGColorSpaceCreateDeviceRGB());
-    auto context = adoptCF(CGBitmapContextCreate(nullptr, pixelsWide, pixelsHigh, 8, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
+    auto colorSpace = adoptCFNullable(CGColorSpaceCreateDeviceRGB());
+    auto context = adoptCFNullable(CGBitmapContextCreate(nullptr, pixelsWide, pixelsHigh, 8, rowBytes, colorSpace.get(), static_cast<uint32_t>(kCGImageAlphaPremultipliedFirst) | static_cast<uint32_t>(kCGBitmapByteOrder32Host)));
     if (!context)
         return { };
 
@@ -136,15 +136,15 @@ static std::optional<std::string> hashForBlackImageOfSize(WKSize size)
 
 static void dumpBitmap(CGContextRef bitmapContext, const std::string& checksum, WKSize imageSize, WKSize windowSize)
 {
-    auto image = adoptCF(CGBitmapContextCreateImage(bitmapContext));
-    auto imageData = adoptCF(CFDataCreateMutable(0, 0));
-    auto imageDest = adoptCF(CGImageDestinationCreateWithData(imageData.get(), bridge_cast(UTTypePNG.identifier), 1, 0));
+    auto image = adoptCFNullable(CGBitmapContextCreateImage(bitmapContext));
+    auto imageData = adoptCFNullable(CFDataCreateMutable(0, 0));
+    auto imageDest = adoptCFNullable(CGImageDestinationCreateWithData(imageData.get(), bridge_cast(UTTypePNG.identifier), 1, 0));
 
-    auto propertiesDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto propertiesDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     double resolutionWidth = 72.0 * imageSize.width / windowSize.width;
     double resolutionHeight = 72.0 * imageSize.height / windowSize.height;
-    auto resolutionWidthNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionWidth));
-    auto resolutionHeightNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionHeight));
+    auto resolutionWidthNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionWidth));
+    auto resolutionHeightNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberDoubleType, &resolutionHeight));
     CFDictionarySetValue(propertiesDictionary.get(), kCGImagePropertyDPIWidth, resolutionWidthNumber.get());
     CFDictionarySetValue(propertiesDictionary.get(), kCGImagePropertyDPIHeight, resolutionHeightNumber.get());
 

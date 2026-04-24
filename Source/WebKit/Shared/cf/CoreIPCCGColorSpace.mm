@@ -40,7 +40,7 @@ CGColorSpaceSerialization CoreIPCCGColorSpace::serializableColorSpace(CGColorSpa
     if (RetainPtr<CFStringRef> name = CGColorSpaceGetName(cgColorSpace))
         return WTF::move(name);
 
-    if (auto propertyList = adoptCF(CGColorSpaceCopyPropertyList(cgColorSpace))) {
+    if (auto propertyList = adoptCFNullable(CGColorSpaceCopyPropertyList(cgColorSpace))) {
         if (auto data = dynamic_cf_cast<CFDataRef>(propertyList.get()))
             return ICCData { makeVector(data), ExtendedRangeDerivative::kNone };
 
@@ -88,37 +88,37 @@ RetainPtr<CGColorSpaceRef> CoreIPCCGColorSpace::toCF() const
         return RetainPtr { cachedNullableCGColorSpaceSingleton(colorSpace) };
     },
     [](RetainPtr<CFStringRef> name) -> RetainPtr<CGColorSpaceRef> {
-        return adoptCF(CGColorSpaceCreateWithName(name.get()));
+        return adoptCFNullable(CGColorSpaceCreateWithName(name.get()));
     },
     [](const ICCData& iccdata) -> RetainPtr<CGColorSpaceRef> {
         if (iccdata.derivative == ExtendedRangeDerivative::kNone)
-            return adoptCF(CGColorSpaceCreateWithPropertyList(toCFData(iccdata.data).get()));
+            return adoptCFNullable(CGColorSpaceCreateWithPropertyList(toCFData(iccdata.data).get()));
 
         const void* keys[] = { kCGColorSpaceICCData, kCGColorSpaceExtendedRange, iccdata.derivative == ExtendedRangeDerivative::kExtendedRangeDisplayReferredDerivative ? kCGColorSpaceDisplayReferredDerivative : kCGColorSpaceSceneReferredDerivative };
         RetainPtr data = toCFData(iccdata.data);
         const void* vals[] = { data.get(), kCFBooleanTrue, kCFBooleanTrue };
-        RetainPtr propertyList = adoptCF(CFDictionaryCreate(NULL,
+        RetainPtr propertyList = adoptCFNullable(CFDictionaryCreate(NULL,
             (const void **)keys,
             (const void **)vals,
             iccdata.derivative == ExtendedRangeDerivative::kExtendedRange ? 2 : 3,
             &kCFTypeDictionaryKeyCallBacks,
             &kCFTypeDictionaryValueCallBacks));
-        return adoptCF(CGColorSpaceCreateWithPropertyList(propertyList.get()));
+        return adoptCFNullable(CGColorSpaceCreateWithPropertyList(propertyList.get()));
     },
     [](const IndexedColorSpace& colorSpace) -> RetainPtr<CGColorSpaceRef> {
         RetainPtr innerColorSpace = colorSpace.colorSpace->toCF();
-        RetainPtr innerPropertyList = adoptCF(CGColorSpaceCopyPropertyList(innerColorSpace.get()));
-        RetainPtr lastIndex = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt8Type, &colorSpace.index));
-        RetainPtr table = adoptCF(CGColorSpaceCreateWithPropertyList(toCFData(colorSpace.table).get()));
+        RetainPtr innerPropertyList = adoptCFNullable(CGColorSpaceCopyPropertyList(innerColorSpace.get()));
+        RetainPtr lastIndex = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt8Type, &colorSpace.index));
+        RetainPtr table = adoptCFNullable(CGColorSpaceCreateWithPropertyList(toCFData(colorSpace.table).get()));
         const void* keys[] = { kCGIndexedBaseColorSpaceKey, kCGLastIndexKey, kCGIndexedColorTableKey };
         const void* vals[] = { innerPropertyList.get(), lastIndex.get(), table.get() };
-        RetainPtr propertyList = adoptCF(CFDictionaryCreate(NULL,
+        RetainPtr propertyList = adoptCFNullable(CFDictionaryCreate(NULL,
             (const void **)keys,
             (const void **)vals,
             3,
             &kCFTypeDictionaryKeyCallBacks,
             &kCFTypeDictionaryValueCallBacks));
-        return adoptCF(CGColorSpaceCreateWithPropertyList(propertyList.get()));
+        return adoptCFNullable(CGColorSpaceCreateWithPropertyList(propertyList.get()));
     });
     if (!colorSpace) [[unlikely]]
         return nullptr;

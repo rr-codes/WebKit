@@ -104,7 +104,7 @@ void SecItemShimProxy::secItemRequest(IPC::Connection& connection, const SecItem
     case SecItemRequestData::Type::CopyMatching: {
         CFTypeRef resultRawObject = nullptr;
         OSStatus resultCode = SecItemCopyMatching(protect(request.query()).get(), &resultRawObject);
-        auto result = adoptCF(resultRawObject);
+        auto result = adoptCFNullable(resultRawObject);
 
         SecItemResponseData::Result resultData;
         if (result) {

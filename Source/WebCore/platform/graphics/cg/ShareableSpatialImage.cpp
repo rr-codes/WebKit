@@ -49,39 +49,39 @@ static RetainPtr<CFDictionaryRef> spatialImageEyePropertiesToDictionary(const Sp
     //         kIIOMetadata_CameraModelKey modelDict
     //             kIIOCameraModel_Intrinsics intrinsicsArray
 
-    RetainPtr result = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr result = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     // Build kCGImagePropertyGroups dictionary.
-    RetainPtr groupsDict = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr groupsDict = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
-    RetainPtr groupIndex = adoptCF(CFNumberCreate(nullptr, kCFNumberIntType, &properties.groupMetadata.groupIndex));
+    RetainPtr groupIndex = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberIntType, &properties.groupMetadata.groupIndex));
     CFDictionarySetValue(groupsDict.get(), kCGImagePropertyGroupIndex, groupIndex.get());
 
     CFDictionarySetValue(groupsDict.get(), kCGImagePropertyGroupType, kCGImagePropertyGroupTypeStereoPair);
 
     CFDictionarySetValue(groupsDict.get(), groupImageSide, kCFBooleanTrue);
 
-    RetainPtr disparity = adoptCF(CFNumberCreate(nullptr, kCFNumberFloatType, &properties.groupMetadata.disparityAdjustment));
+    RetainPtr disparity = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloatType, &properties.groupMetadata.disparityAdjustment));
     CFDictionarySetValue(groupsDict.get(), kCGImagePropertyGroupImageDisparityAdjustment, disparity.get());
 
     CFDictionarySetValue(result.get(), kCGImagePropertyGroups, groupsDict.get());
 
     // Build kCGImagePropertyHEIFDictionary.
-    RetainPtr heifDict = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr heifDict = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     // Camera extrinsics.
-    RetainPtr extrinsicsDict = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr extrinsicsDict = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
-    RetainPtr positionArray = adoptCF(CFArrayCreateMutable(nullptr, 3, &kCFTypeArrayCallBacks));
+    RetainPtr positionArray = adoptCFNullable(CFArrayCreateMutable(nullptr, 3, &kCFTypeArrayCallBacks));
     for (auto& value : properties.cameraMetadata.extrinsics.position) {
-        RetainPtr num = adoptCF(CFNumberCreate(nullptr, kCFNumberFloatType, &value));
+        RetainPtr num = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloatType, &value));
         CFArrayAppendValue(positionArray.get(), num.get());
     }
     CFDictionarySetValue(extrinsicsDict.get(), kIIOCameraExtrinsics_Position, positionArray.get());
 
-    RetainPtr rotationArray = adoptCF(CFArrayCreateMutable(nullptr, 9, &kCFTypeArrayCallBacks));
+    RetainPtr rotationArray = adoptCFNullable(CFArrayCreateMutable(nullptr, 9, &kCFTypeArrayCallBacks));
     for (auto& value : properties.cameraMetadata.extrinsics.rotation) {
-        RetainPtr num = adoptCF(CFNumberCreate(nullptr, kCFNumberFloatType, &value));
+        RetainPtr num = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloatType, &value));
         CFArrayAppendValue(rotationArray.get(), num.get());
     }
     CFDictionarySetValue(extrinsicsDict.get(), kIIOCameraExtrinsics_Rotation, rotationArray.get());
@@ -89,11 +89,11 @@ static RetainPtr<CFDictionaryRef> spatialImageEyePropertiesToDictionary(const Sp
     CFDictionarySetValue(heifDict.get(), kIIOMetadata_CameraExtrinsicsKey, extrinsicsDict.get());
 
     // Camera intrinsics.
-    RetainPtr modelDict = adoptCF(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr modelDict = adoptCFNullable(CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
-    RetainPtr intrinsicsArray = adoptCF(CFArrayCreateMutable(nullptr, 9, &kCFTypeArrayCallBacks));
+    RetainPtr intrinsicsArray = adoptCFNullable(CFArrayCreateMutable(nullptr, 9, &kCFTypeArrayCallBacks));
     for (auto& value : properties.cameraMetadata.intrinsics.matrix) {
-        RetainPtr num = adoptCF(CFNumberCreate(nullptr, kCFNumberFloatType, &value));
+        RetainPtr num = adoptCFNullable(CFNumberCreate(nullptr, kCFNumberFloatType, &value));
         CFArrayAppendValue(intrinsicsArray.get(), num.get());
     }
     CFDictionarySetValue(modelDict.get(), kIIOCameraModel_Intrinsics, intrinsicsArray.get());
@@ -163,8 +163,8 @@ RetainPtr<CFDataRef> ShareableSpatialImage::createHEICData() const
     RetainPtr leftDict = spatialImageEyePropertiesToDictionary(m_leftMetadata, kCGImagePropertyGroupImageIsLeftImage);
     RetainPtr rightDict = spatialImageEyePropertiesToDictionary(m_rightMetadata, kCGImagePropertyGroupImageIsRightImage);
 
-    RetainPtr destinationData = adoptCF(CFDataCreateMutable(nullptr, 0));
-    RetainPtr destination = adoptCF(CGImageDestinationCreateWithData(destinationData.get(), CFSTR("public.heic"), 2, nullptr));
+    RetainPtr destinationData = adoptCFNullable(CFDataCreateMutable(nullptr, 0));
+    RetainPtr destination = adoptCFNullable(CGImageDestinationCreateWithData(destinationData.get(), CFSTR("public.heic"), 2, nullptr));
     CGImageDestinationAddImage(destination.get(), leftImage.get(), leftDict.get());
     CGImageDestinationAddImage(destination.get(), rightImage.get(), rightDict.get());
 

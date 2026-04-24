@@ -88,7 +88,7 @@ static CGColorSpaceRef getColorSpace(CGContextDelegateRef delegate, CGRenderingS
 
 UniqueRef<GraphicsContext> DrawGlyphsRecorder::createInternalContext()
 {
-    auto contextDelegate = adoptCF(CGContextDelegateCreate(this));
+    auto contextDelegate = adoptCFNullable(CGContextDelegateCreate(this));
     CGContextDelegateSetCallback(contextDelegate.get(), deBeginLayer, reinterpret_cast<CGContextDelegateCallback>(&beginLayer));
     CGContextDelegateSetCallback(contextDelegate.get(), deEndLayer, reinterpret_cast<CGContextDelegateCallback>(&endLayer));
     CGContextDelegateSetCallback(contextDelegate.get(), deDrawGlyphs, reinterpret_cast<CGContextDelegateCallback>(&WebCore::drawGlyphs));
@@ -97,7 +97,7 @@ UniqueRef<GraphicsContext> DrawGlyphsRecorder::createInternalContext()
     CGContextDelegateSetCallback(contextDelegate.get(), deGetColorSpace, reinterpret_cast<CGContextDelegateCallback>(&getColorSpace));
 
     auto contextType = kCGContextTypeUnknown;
-    auto context = adoptCF(CGContextCreateWithDelegate(contextDelegate.get(), contextType, nullptr, nullptr));
+    auto context = adoptCFNullable(CGContextCreateWithDelegate(contextDelegate.get(), contextType, nullptr, nullptr));
     return makeUniqueRef<GraphicsContextCG>(context.get());
 }
 
@@ -309,7 +309,7 @@ void DrawGlyphsRecorder::recordDrawGlyphs(CGRenderingStateRef, CGGStateRef gstat
         return;
 
     RetainPtr usedFont = CGGStateGetFont(gstate);
-    if (m_deriveFontFromContext == DeriveFontFromContext::No && usedFont != adoptCF(CTFontCopyGraphicsFont(protect(m_originalFont->platformData().ctFont()).get(), nullptr)).get())
+    if (m_deriveFontFromContext == DeriveFontFromContext::No && usedFont != adoptCFNullable(CTFontCopyGraphicsFont(protect(m_originalFont->platformData().ctFont()).get(), nullptr)).get())
         return;
 
     updateCTM(*CGGStateGetCTM(gstate));
@@ -342,7 +342,7 @@ void DrawGlyphsRecorder::recordDrawGlyphs(CGRenderingStateRef, CGGStateRef gstat
     updateShadow(CGGStateGetStyle(gstate));
 
     auto fontSize = CGGStateGetFontSize(gstate);
-    Ref font = m_deriveFontFromContext == DeriveFontFromContext::No ? *m_originalFont : Font::create(FontPlatformData(adoptCF(CTFontCreateWithGraphicsFont(usedFont.get(), fontSize, nullptr, nullptr)), fontSize));
+    Ref font = m_deriveFontFromContext == DeriveFontFromContext::No ? *m_originalFont : Font::create(FontPlatformData(adoptCFNullable(CTFontCreateWithGraphicsFont(usedFont.get(), fontSize, nullptr, nullptr)), fontSize));
 
     // The above does the work of ensuring the right CTM (which is the combination of CG's CTM and
     // CG's text matrix) is set for the replayer, but in order to provide the right values to
@@ -393,7 +393,7 @@ void DrawGlyphsRecorder::recordDrawPath(CGRenderingStateRef, CGGStateRef gstate,
     updateCTM(*ctm);
     // The path we get has already CTM applied to it but we should serialize the non-transformed version to correctly apply line width.
     CGAffineTransform invertTransform = CGAffineTransformInvert(*ctm);
-    auto localPath = adoptCF(CGPathCreateMutableCopyByTransformingPath(coreGraphicsPath, &invertTransform));
+    auto localPath = adoptCFNullable(CGPathCreateMutableCopyByTransformingPath(coreGraphicsPath, &invertTransform));
     Path path { PathCG::create(WTF::move(localPath)) };
 
     updateShadow(CGGStateGetStyle(gstate));

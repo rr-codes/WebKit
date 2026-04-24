@@ -56,9 +56,9 @@ CGFloat UnrealizedCoreTextFont::getSize() const
     }
 
     auto sizeAttribute = WTF::switchOn(m_baseFont, [](const RetainPtr<CTFontRef>& font) {
-        return adoptCF(static_cast<CFNumberRef>(CTFontCopyAttribute(font.get(), kCTFontSizeAttribute)));
+        return adoptCFNullable(static_cast<CFNumberRef>(CTFontCopyAttribute(font.get(), kCTFontSizeAttribute)));
     }, [](const RetainPtr<CTFontDescriptorRef>& fontDescriptor) {
-        return adoptCF(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor.get(), kCTFontSizeAttribute)));
+        return adoptCFNullable(static_cast<CFNumberRef>(CTFontDescriptorCopyAttribute(fontDescriptor.get(), kCTFontSizeAttribute)));
     });
     if (sizeAttribute) {
         if (auto result = getCGFloatValue(sizeAttribute.get()))
@@ -96,26 +96,26 @@ void UnrealizedCoreTextFont::addAttributesForOpticalSizing(CFMutableDictionaryRe
 
 static inline void appendOpenTypeFeature(CFMutableArrayRef features, const FontFeature& feature)
 {
-    auto featureKey = adoptCF(CFStringCreateWithBytes(kCFAllocatorDefault, byteCast<UInt8>(feature.tag().data()), feature.tag().size() * sizeof(FontTag::value_type), kCFStringEncodingASCII, false));
+    auto featureKey = adoptCFNullable(CFStringCreateWithBytes(kCFAllocatorDefault, byteCast<UInt8>(feature.tag().data()), feature.tag().size() * sizeof(FontTag::value_type), kCFStringEncodingASCII, false));
     int rawFeatureValue = feature.value();
-    auto featureValue = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawFeatureValue));
+    auto featureValue = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &rawFeatureValue));
     CFTypeRef featureDictionaryKeys[] = { kCTFontOpenTypeFeatureTag, kCTFontOpenTypeFeatureValue };
     CFTypeRef featureDictionaryValues[] = { featureKey.get(), featureValue.get() };
-    auto featureDictionary = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, featureDictionaryKeys, featureDictionaryValues, std::size(featureDictionaryValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto featureDictionary = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, featureDictionaryKeys, featureDictionaryValues, std::size(featureDictionaryValues), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     CFArrayAppendValue(features, featureDictionary.get());
 }
 
 static void addLightPalette(CFMutableDictionaryRef attributes)
 {
     CFIndex light = kCTFontPaletteLight;
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &light));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &light));
     CFDictionarySetValue(attributes, kCTFontPaletteAttribute, number.get());
 }
 
 static void addDarkPalette(CFMutableDictionaryRef attributes)
 {
     CFIndex dark = kCTFontPaletteDark;
-    auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &dark));
+    auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberCFIndexType, &dark));
     CFDictionarySetValue(attributes, kCTFontPaletteAttribute, number.get());
 }
 
@@ -131,7 +131,7 @@ static void addAttributesForCustomFontPalettes(CFMutableDictionaryRef attributes
             break;
         case FontPaletteIndex::Type::Integer: {
             int64_t rawIndex = basePalette->integer; // There is no kCFNumberUIntType.
-            auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &rawIndex));
+            auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &rawIndex));
             CFDictionarySetValue(attributes, kCTFontPaletteAttribute, number.get());
             break;
         }
@@ -139,11 +139,11 @@ static void addAttributesForCustomFontPalettes(CFMutableDictionaryRef attributes
     }
 
     if (!overrideColors.isEmpty()) {
-        auto overrideDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        auto overrideDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
         for (const auto& pair : overrideColors) {
             const auto& color = pair.second;
             int64_t rawIndex = pair.first; // There is no kCFNumberUIntType.
-            auto number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &rawIndex));
+            auto number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &rawIndex));
             auto colorObject = cachedCGColor(color);
             CFDictionarySetValue(overrideDictionary.get(), number.get(), colorObject.get());
         }
@@ -178,9 +178,9 @@ static void applyFeatures(CFMutableDictionaryRef attributes, const FeaturesMap& 
 
     RetainPtr<CFMutableArrayRef> featureArray;
     if (RetainPtr fontFeatureSettings = static_cast<CFArrayRef>(CFDictionaryGetValue(attributes, kCTFontFeatureSettingsAttribute)))
-        featureArray = adoptCF(CFArrayCreateMutableCopy(kCFAllocatorDefault, 0, fontFeatureSettings.get()));
+        featureArray = adoptCFNullable(CFArrayCreateMutableCopy(kCFAllocatorDefault, 0, fontFeatureSettings.get()));
     else
-        featureArray = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
+        featureArray = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
 
     for (auto& p : featuresToBeApplied) {
         auto feature = FontFeature(p.key, p.value);
@@ -197,14 +197,14 @@ void UnrealizedCoreTextFont::applyVariations(CFMutableDictionaryRef attributes, 
 
     RetainPtr<CFMutableDictionaryRef> variationDictionary;
     if (RetainPtr fontVariations = static_cast<CFDictionaryRef>(CFDictionaryGetValue(attributes, kCTFontVariationAttribute)))
-        variationDictionary = adoptCF(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, fontVariations.get()));
+        variationDictionary = adoptCFNullable(CFDictionaryCreateMutableCopy(kCFAllocatorDefault, 0, fontVariations.get()));
     else
-        variationDictionary = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        variationDictionary = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     for (auto& p : variationsToBeApplied) {
         long long bitwiseTag = p.key[0] << 24 | p.key[1] << 16 | p.key[2] << 8 | p.key[3];
-        auto tagNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongLongType, &bitwiseTag));
-        auto valueNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &p.value));
+        auto tagNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberLongLongType, &bitwiseTag));
+        auto valueNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &p.value));
         CFDictionarySetValue(variationDictionary.get(), tagNumber.get(), valueNumber.get());
     }
 
@@ -326,15 +326,15 @@ RetainPtr<CTFontRef> UnrealizedCoreTextFont::realize() const
             return nullptr;
         if (!CFDictionaryGetCount(m_attributes.get()))
             return font;
-        auto modification = adoptCF(CTFontDescriptorCreateWithAttributes(m_attributes.get()));
-        return adoptCF(CTFontCreateCopyWithAttributes(font.get(), m_size, nullptr, modification.get()));
+        auto modification = adoptCFNullable(CTFontDescriptorCreateWithAttributes(m_attributes.get()));
+        return adoptCFNullable(CTFontCreateCopyWithAttributes(font.get(), m_size, nullptr, modification.get()));
     }, [this](const RetainPtr<CTFontDescriptorRef>& fontDescriptor) -> RetainPtr<CTFontRef> {
         if (!fontDescriptor)
             return nullptr;
         if (!CFDictionaryGetCount(m_attributes.get()))
-            return adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), m_size, nullptr));
-        auto updatedFontDescriptor = adoptCF(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor.get(), m_attributes.get()));
-        return adoptCF(CTFontCreateWithFontDescriptor(updatedFontDescriptor.get(), m_size, nullptr));
+            return adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), m_size, nullptr));
+        auto updatedFontDescriptor = adoptCFNullable(CTFontDescriptorCreateCopyWithAttributes(fontDescriptor.get(), m_attributes.get()));
+        return adoptCFNullable(CTFontCreateWithFontDescriptor(updatedFontDescriptor.get(), m_size, nullptr));
     });
     ASSERT(font);
 
@@ -368,7 +368,7 @@ RetainPtr<CTFontRef> UnrealizedCoreTextFont::realize() const
             else
                 variationsToBeApplied.set({ { 's', 'l', 'n', 't' } }, slope);
 
-            RetainPtr attributes = adoptCF(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+            RetainPtr attributes = adoptCFNullable(CFDictionaryCreateMutable(kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
             addAttributesForOpticalSizing(attributes.get(), variationsToBeApplied, m_opticalSizingType, m_size);
 
@@ -377,8 +377,8 @@ RetainPtr<CTFontRef> UnrealizedCoreTextFont::realize() const
 
             applyVariations(attributes.get(), variationsToBeApplied);
 
-            RetainPtr modification = adoptCF(CTFontDescriptorCreateWithAttributes(attributes.get()));
-            return adoptCF(CTFontCreateCopyWithAttributes(font.get(), m_size, nullptr, modification.get()));
+            RetainPtr modification = adoptCFNullable(CTFontDescriptorCreateWithAttributes(attributes.get()));
+            return adoptCFNullable(CTFontCreateCopyWithAttributes(font.get(), m_size, nullptr, modification.get()));
         }
     }
 

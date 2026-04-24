@@ -85,7 +85,7 @@ void RunLoopObserver::schedule(PlatformRunLoop runLoop, OptionSet<Activity> acti
         return;
 
     CFRunLoopObserverContext context = { 0, this, 0, 0, 0 };
-    m_runLoopObserver = adoptCF(CFRunLoopObserverCreate(kCFAllocatorDefault, cfRunLoopActivity(activity), isRepeating(), cfRunLoopOrder(m_order), runLoopObserverFired, &context));
+    m_runLoopObserver = adoptCFNullable(CFRunLoopObserverCreate(kCFAllocatorDefault, cfRunLoopActivity(activity), isRepeating(), cfRunLoopOrder(m_order), runLoopObserverFired, &context));
 
     CFRunLoopAddObserver(effectiveRunLoop.get(), m_runLoopObserver.get(), kCFRunLoopCommonModes);
 }

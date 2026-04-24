@@ -54,8 +54,8 @@ TEST(ApplicationManifest, Coding)
     EXPECT_STREQ("https://test.com/app/index.html", manifest.get().startURL.absoluteString.UTF8String);
     EXPECT_EQ(_WKApplicationManifestDisplayModeMinimalUI,  manifest.get().displayMode);
 
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
     EXPECT_TRUE(CGColorEqualToColor(manifest.get().themeColor.CGColor, redColor.get()));
 }
 
@@ -110,8 +110,8 @@ TEST(ApplicationManifest, Basic)
         EXPECT_TRUE([manifest.startURL isEqual:[NSURL URLWithString:@"http://example.com/app/start"]]);
         EXPECT_TRUE([manifest.scope isEqual:[NSURL URLWithString:@"http://example.com/app"]]);
 
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         EXPECT_TRUE(CGColorEqualToColor(manifest.themeColor.CGColor, redColor.get()));
 
         done = true;
@@ -160,16 +160,16 @@ TEST(ApplicationManifest, AlwaysFetchData)
     [webView synchronouslyLoadHTMLString:[NSString stringWithFormat:@"<link rel=\"manifest\" href=\"data:application/manifest+json;charset=utf-8;base64,%@\">", json]];
 
     {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         while (!CGColorEqualToColor([webView themeColor].CGColor, redColor.get()))
             Util::runFor(1_s);
     }
 
     __block bool done = false;
     [webView _getApplicationManifestWithCompletionHandler:^(_WKApplicationManifest *manifest) {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         EXPECT_TRUE(CGColorEqualToColor(manifest.themeColor.CGColor, redColor.get()));
 
         done = true;
@@ -188,16 +188,16 @@ TEST(ApplicationManifest, OnlyFirstManifest)
     [webView synchronouslyLoadHTMLString:[NSString stringWithFormat:@"<link rel=\"manifest\" href=\"data:application/manifest+json;charset=utf-8;base64,%@\"><link rel=\"manifest\" href=\"data:application/manifest+json;charset=utf-8;base64,%@\">", json1, json2]];
 
     {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         while (!CGColorEqualToColor([webView themeColor].CGColor, redColor.get()))
             Util::runFor(1_s);
     }
 
     __block bool done = false;
     [webView _getApplicationManifestWithCompletionHandler:^(_WKApplicationManifest *manifest) {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         EXPECT_TRUE(CGColorEqualToColor(manifest.themeColor.CGColor, redColor.get()));
 
         done = true;
@@ -233,16 +233,16 @@ TEST(ApplicationManifest, MediaAttriute)
     [webView synchronouslyLoadHTMLString:[NSString stringWithFormat:@"<link rel=\"manifest\" href=\"data:application/manifest+json;charset=utf-8;base64,%@\" media=\"invalid\"><link rel=\"manifest\" href=\"data:application/manifest+json;charset=utf-8;base64,%@\" media=\"screen\">", json1, json2]];
 
     {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         while (!CGColorEqualToColor([webView themeColor].CGColor, redColor.get()))
             Util::runFor(1_s);
     }
 
     __block bool done = false;
     [webView _getApplicationManifestWithCompletionHandler:^(_WKApplicationManifest *manifest) {
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         EXPECT_TRUE(CGColorEqualToColor(manifest.themeColor.CGColor, redColor.get()));
 
         done = true;
@@ -327,8 +327,8 @@ TEST(ApplicationManifest, Icons)
         EXPECT_TRUE([manifest.startURL isEqual:[NSURL URLWithString:@"http://example.com/app/start"]]);
         EXPECT_TRUE([manifest.scope isEqual:[NSURL URLWithString:@"http://example.com/app"]]);
 
-        RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-        RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+        RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
         EXPECT_TRUE(CGColorEqualToColor(manifest.themeColor.CGColor, redColor.get()));
 
         size_t iconIndex = 0;

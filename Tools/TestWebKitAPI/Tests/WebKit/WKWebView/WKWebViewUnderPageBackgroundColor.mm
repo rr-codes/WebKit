@@ -51,8 +51,8 @@ static RetainPtr<CGColor> defaultBackgroundColor()
 
     // Some of the above can sometimes be a monochrome color, so convert it to sRGB so the comparisons below work.
     // `WebCore::ColorSpace` doesn't have an equivalent monochrome enum value, but treats `CGColor` with only two components as monochrome and converts them to `SRGB`.
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr sRGBColor = adoptCF(CGColorCreateCopyByMatchingToColorSpace(sRGBColorSpace.get(), kCGRenderingIntentDefault, [color CGColor], NULL));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr sRGBColor = adoptCFNullable(CGColorCreateCopyByMatchingToColorSpace(sRGBColorSpace.get(), kCGRenderingIntentDefault, [color CGColor], NULL));
     return sRGBColor.get();
 }
 
@@ -64,8 +64,8 @@ TEST(WKWebViewUnderPageBackgroundColor, OnLoad)
 
 TEST(WKWebViewUnderPageBackgroundColor, SingleSolidColor)
 {
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(CGColorEqualToColor([webView underPageBackgroundColor].CGColor, defaultBackgroundColor().get()));
@@ -89,8 +89,8 @@ TEST(WKWebViewUnderPageBackgroundColor, SingleBlendedColor)
 
 TEST(WKWebViewUnderPageBackgroundColor, MultipleSolidColors)
 {
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(CGColorEqualToColor([webView underPageBackgroundColor].CGColor, defaultBackgroundColor().get()));
@@ -181,9 +181,9 @@ TEST(WKWebViewUnderPageBackgroundColor, MultipleBlendedColors)
 
 TEST(WKWebViewUnderPageBackgroundColor, KVO)
 {
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
-    RetainPtr blueColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr blueColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     RetainPtr underPageBackgroundColorObserver = adoptNS([[WKWebViewUnderPageBackgroundColorObserver alloc] initWithWebView:webView.get()]);
@@ -285,10 +285,10 @@ constexpr CGFloat whiteColorComponents[4] = { 1, 1, 1, 1 };
 
 TEST(WKWebViewUnderPageBackgroundColor, MatchesScrollView)
 {
-    RetainPtr sRGBColorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    RetainPtr redColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
-    RetainPtr blueColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
-    RetainPtr whiteColor = adoptCF(CGColorCreate(sRGBColorSpace.get(), whiteColorComponents));
+    RetainPtr sRGBColorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+    RetainPtr redColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), redColorComponents));
+    RetainPtr blueColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), blueColorComponents));
+    RetainPtr whiteColor = adoptCFNullable(CGColorCreate(sRGBColorSpace.get(), whiteColorComponents));
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:NSMakeRect(0, 0, 800, 600)]);
     EXPECT_TRUE(CGColorEqualToColor([webView underPageBackgroundColor].CGColor, defaultBackgroundColor().get()));

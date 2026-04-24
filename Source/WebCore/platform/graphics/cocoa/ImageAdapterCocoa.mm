@@ -80,9 +80,9 @@ RetainPtr<CFDataRef> ImageAdapter::tiffRepresentation(const Vector<Ref<NativeIma
     if (!nativeImages.size())
         return nullptr;
 
-    RetainPtr<CFMutableDataRef> data = adoptCF(CFDataCreateMutable(0, 0));
+    RetainPtr<CFMutableDataRef> data = adoptCFNullable(CFDataCreateMutable(0, 0));
 
-    RetainPtr<CGImageDestinationRef> destination = adoptCF(CGImageDestinationCreateWithData(data.get(), bridge_cast(UTTypeTIFF.identifier), nativeImages.size(), 0));
+    RetainPtr<CGImageDestinationRef> destination = adoptCFNullable(CGImageDestinationCreateWithData(data.get(), bridge_cast(UTTypeTIFF.identifier), nativeImages.size(), 0));
     if (!destination)
         return nullptr;
 

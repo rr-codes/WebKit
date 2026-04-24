@@ -147,7 +147,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
         eventMask |= kIOHIDDigitizerEventIdentity;
 
     uint64_t machTime = mach_absolute_time();
-    RetainPtr<IOHIDEventRef> eventRef = adoptCF(IOHIDEventCreateDigitizerEvent(kCFAllocatorDefault, machTime,
+    RetainPtr<IOHIDEventRef> eventRef = adoptCFNullable(IOHIDEventCreateDigitizerEvent(kCFAllocatorDefault, machTime,
         kIOHIDDigitizerTransducerTypeHand,
         0,
         0,
@@ -180,7 +180,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
         CGPoint point = pointInfo->point;
         point = CGPointMake(roundf(point.x), roundf(point.y));
 
-        RetainPtr<IOHIDEventRef> subEvent = adoptCF(IOHIDEventCreateDigitizerFingerEvent(kCFAllocatorDefault, machTime,
+        RetainPtr<IOHIDEventRef> subEvent = adoptCFNullable(IOHIDEventCreateDigitizerFingerEvent(kCFAllocatorDefault, machTime,
             pointInfo->identifier,
             pointInfo->identifier,
             eventMask,
@@ -204,7 +204,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
 - (BOOL)_sendHIDEvent:(IOHIDEventRef)eventRef window:(UIWindow *)window
 {
     if (!_ioSystemClient)
-        _ioSystemClient = adoptCF(IOHIDEventSystemClientCreate(kCFAllocatorDefault));
+        _ioSystemClient = adoptCFNullable(IOHIDEventSystemClientCreate(kCFAllocatorDefault));
 
     if (eventRef) {
         auto contextId = window._contextId;
@@ -223,7 +223,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
     auto callbackID = [_WKTouchEventGenerator nextEventCallbackID];
     SUPPRESS_UNRETAINED_ARG [protect(_eventCallbacks) setObject:Block_copy(completionBlock) forKey:@(callbackID)];
 
-    auto markerEvent = adoptCF(IOHIDEventCreateVendorDefinedEvent(kCFAllocatorDefault,
+    auto markerEvent = adoptCFNullable(IOHIDEventCreateVendorDefinedEvent(kCFAllocatorDefault,
         mach_absolute_time(),
         kHIDPage_VendorDefinedStart + 100,
         0,
@@ -266,7 +266,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
         _activePoints[i].point = point;
 
     // This is the result of a "create" function so adopting here is correct.
-    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr<IOHIDEventRef> eventRef = adoptCF([self _createIOHIDEventType:handEventType]);
+    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr<IOHIDEventRef> eventRef = adoptCFNullable([self _createIOHIDEventType:handEventType]);
     [self _sendHIDEvent:eventRef.get() window:window];
 }
 
@@ -281,7 +281,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
         _activePoints[i].point = location;
 
     // This is the result of a "create" function so adopting here is correct.
-    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr<IOHIDEventRef> eventRef = adoptCF([self _createIOHIDEventType:HandEventTouched]);
+    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr<IOHIDEventRef> eventRef = adoptCFNullable([self _createIOHIDEventType:HandEventTouched]);
     [self _sendHIDEvent:eventRef.get() window:window];
 }
 
@@ -303,7 +303,7 @@ static void delayBetweenMove(int eventIndex, double elapsed)
         _activePoints[newPointCount + i].point = location;
 
     // This is the result of a "create" function so adopting here is correct.
-    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr<IOHIDEventRef> eventRef = adoptCF([self _createIOHIDEventType:HandEventLifted]);
+    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr<IOHIDEventRef> eventRef = adoptCFNullable([self _createIOHIDEventType:HandEventLifted]);
     [self _sendHIDEvent:eventRef.get() window:window];
 
     _activePointCount = newPointCount;

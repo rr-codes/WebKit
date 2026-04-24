@@ -60,8 +60,8 @@ RetainPtr<SecKeyRef> createPrivateKey()
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        key = adoptCF(SecKeyCreateRandomKey(bridge_cast(options), &rawError));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCF(rawError);
+        key = adoptCFNullable(SecKeyCreateRandomKey(bridge_cast(options), &rawError));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCFNullable(rawError);
     }
     if (error)
         return nullptr;
@@ -72,11 +72,11 @@ std::pair<Vector<uint8_t>, Vector<uint8_t>> credentialIdAndCosePubKeyForPrivateK
 {
     RetainPtr<NSData> nsPublicKeyData;
     {
-        RetainPtr publicKey = adoptCF(SecKeyCopyPublicKey(privateKey.get()));
+        RetainPtr publicKey = adoptCFNullable(SecKeyCopyPublicKey(privateKey.get()));
         CFErrorRef rawError = nullptr;
-        nsPublicKeyData = bridge_cast(adoptCF(SecKeyCopyExternalRepresentation(publicKey.get(), &rawError)));
+        nsPublicKeyData = bridge_cast(adoptCFNullable(SecKeyCopyExternalRepresentation(publicKey.get(), &rawError)));
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-        SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr error = adoptCF(rawError);
+        SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr error = adoptCFNullable(rawError);
         ASSERT(!error);
         ASSERT(nsPublicKeyData.get().length == (1 + 2 * ES256FieldElementLength)); // 04 | X | Y
     }
@@ -103,9 +103,9 @@ std::pair<Vector<uint8_t>, Vector<uint8_t>> credentialIdAndCosePubKeyForPrivateK
 String base64PrivateKey(RetainPtr<SecKeyRef> privateKey)
 {
     CFErrorRef rawError = nullptr;
-    RetainPtr nsPrivateKeyRep = bridge_cast(adoptCF(SecKeyCopyExternalRepresentation((__bridge SecKeyRef)((id)privateKey.get()), &rawError)));
+    RetainPtr nsPrivateKeyRep = bridge_cast(adoptCFNullable(SecKeyCopyExternalRepresentation((__bridge SecKeyRef)((id)privateKey.get()), &rawError)));
     // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCF(rawError)) {
+    SUPPRESS_RETAINPTR_CTOR_ADOPT if (RetainPtr error = adoptCFNullable(rawError)) {
         ASSERT_NOT_REACHED();
         return emptyString();
     }
@@ -125,8 +125,8 @@ RetainPtr<SecKeyRef> privateKeyFromBase64(const String& base64PrivateKey)
     {
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
         CFErrorRef rawError = NULL;
-        key = adoptCF(SecKeyCreateWithData(bridge_cast(privateKey.get()), bridge_cast(options), &rawError));
-        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCF(rawError);
+        key = adoptCFNullable(SecKeyCreateWithData(bridge_cast(privateKey.get()), bridge_cast(options), &rawError));
+        SUPPRESS_RETAINPTR_CTOR_ADOPT error = adoptCFNullable(rawError);
     }
     if (error)
         return nullptr;
@@ -140,9 +140,9 @@ Vector<uint8_t> signatureForPrivateKey(RetainPtr<SecKeyRef> privateKey, const Ve
     RetainPtr<CFDataRef> signature;
     {
         CFErrorRef rawError = nullptr;
-        signature = adoptCF(SecKeyCreateSignature((__bridge SecKeyRef)((id)privateKey.get()), kSecKeyAlgorithmECDSASignatureMessageX962SHA256, bridge_cast(dataToSign.get()), &rawError));
+        signature = adoptCFNullable(SecKeyCreateSignature((__bridge SecKeyRef)((id)privateKey.get()), kSecKeyAlgorithmECDSASignatureMessageX962SHA256, bridge_cast(dataToSign.get()), &rawError));
         // FIXME: The Security framework API is missing the `CF_RETURNS_RETAINED` annotation (rdar://161546781).
-        SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr error = adoptCF(rawError);
+        SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr error = adoptCFNullable(rawError);
         ASSERT(!error);
     }
 

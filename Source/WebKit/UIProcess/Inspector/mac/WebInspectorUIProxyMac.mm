@@ -961,7 +961,7 @@ String WebInspectorUIProxy::inspectorTestPageURL()
 
 DebuggableInfoData WebInspectorUIProxy::infoForLocalDebuggable()
 {
-    RetainPtr plist = bridge_cast(adoptCF(_CFCopySystemVersionDictionary()));
+    RetainPtr plist = bridge_cast(adoptCFNullable(_CFCopySystemVersionDictionary()));
 
     DebuggableInfoData result;
     result.debuggableType = Inspector::DebuggableType::WebPage;

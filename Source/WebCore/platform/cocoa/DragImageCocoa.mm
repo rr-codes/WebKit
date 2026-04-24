@@ -219,7 +219,7 @@ LinkImageLayout::LinkImageLayout(URL& url, const String& titleString)
         paragraphStyleSettings.spec = kCTParagraphStyleSpecifierLineBreakMode;
         paragraphStyleSettings.valueSize = sizeof(CTLineBreakMode);
         paragraphStyleSettings.value = &lineBreakMode;
-        RetainPtr<CTParagraphStyleRef> paragraphStyle = adoptCF(CTParagraphStyleCreate(&paragraphStyleSettings, 1));
+        RetainPtr<CTParagraphStyleRef> paragraphStyle = adoptCFNullable(CTParagraphStyleCreate(&paragraphStyleSettings, 1));
 
         NSDictionary *textAttributes = @{
             (id)kCTFontAttributeName: font,
@@ -231,13 +231,13 @@ LinkImageLayout::LinkImageLayout(URL& url, const String& titleString)
         };
 
         RetainPtr<NSAttributedString> attributedText = adoptNS([[NSAttributedString alloc] initWithString:text attributes:textAttributes]);
-        RetainPtr<CTFramesetterRef> textFramesetter = adoptCF(CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText.get()));
+        RetainPtr<CTFramesetterRef> textFramesetter = adoptCFNullable(CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText.get()));
 
         CFRange fitRange;
         CGSize textSize = CTFramesetterSuggestFrameSizeWithConstraints(textFramesetter.get(), CFRangeMake(0, 0), (CFDictionaryRef)frameAttributes, CGSizeMake(maximumAvailableWidth, CGFLOAT_MAX), &fitRange);
 
-        RetainPtr<CGPathRef> textPath = adoptCF(CGPathCreateWithRect(CGRectMake(0, 0, textSize.width, textSize.height), nullptr));
-        RetainPtr<CTFrameRef> textFrame = adoptCF(CTFramesetterCreateFrame(textFramesetter.get(), fitRange, textPath.get(), (CFDictionaryRef)frameAttributes));
+        RetainPtr<CGPathRef> textPath = adoptCFNullable(CGPathCreateWithRect(CGRectMake(0, 0, textSize.width, textSize.height), nullptr));
+        RetainPtr<CTFrameRef> textFrame = adoptCFNullable(CTFramesetterCreateFrame(textFramesetter.get(), fitRange, textPath.get(), (CFDictionaryRef)frameAttributes));
 
         CFArrayRef ctLines = CTFrameGetLines(textFrame.get());
         CFIndex lineCount = CFArrayGetCount(ctLines);

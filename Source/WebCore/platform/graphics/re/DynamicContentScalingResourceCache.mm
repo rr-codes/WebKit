@@ -37,7 +37,7 @@ namespace WebCore {
 
 DynamicContentScalingResourceCache DynamicContentScalingResourceCache::create()
 {
-    return bridge_id_cast(adoptCF(RECGCommandsCacheCreate(nullptr)));
+    return bridge_id_cast(adoptCFNullable(RECGCommandsCacheCreate(nullptr)));
 }
 
 }

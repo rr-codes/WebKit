@@ -322,7 +322,7 @@ void GraphicsContextCG::drawNativeImage(const NativeImage& nativeImage, const Fl
         if (!(CGImageGetCachingFlags(image) & kCGImageCachingTransient))
             return CGSubimageCacheWithTimer::getSubimage(image, physicalSubimageRect);
 #endif
-        return adoptCF(CGImageCreateWithImageInRect(image, physicalSubimageRect));
+        return adoptCFNullable(CGImageCreateWithImageInRect(image, physicalSubimageRect));
     };
 
 #if HAVE(SUPPORT_HDR_DISPLAY_APIS)
@@ -331,14 +331,14 @@ void GraphicsContextCG::drawNativeImage(const NativeImage& nativeImage, const Fl
         float cdrStrength = dynamicRangeLimit == 0.5 ? 1 : 0;
         unsigned averageLightLevel = CGImageGetContentAverageLightLevelNits(image);
 
-        RetainPtr edrStrengthNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &edrStrength));
-        RetainPtr cdrStrengthNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &cdrStrength));
-        RetainPtr averageLightLevelNumber = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &averageLightLevel));
+        RetainPtr edrStrengthNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &edrStrength));
+        RetainPtr cdrStrengthNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberFloatType, &cdrStrength));
+        RetainPtr averageLightLevelNumber = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &averageLightLevel));
 
         CFTypeRef toneMappingKeys[] = { kCGContentEDRStrength, kCGContentAverageLightLevel, kCGConstrainedDynamicRange };
         CFTypeRef toneMappingValues[] = { edrStrengthNumber.get(), averageLightLevelNumber.get(), cdrStrengthNumber.get() };
 
-        RetainPtr toneMappingOptions = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, toneMappingKeys, toneMappingValues, sizeof(toneMappingKeys) / sizeof(toneMappingKeys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+        RetainPtr toneMappingOptions = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, toneMappingKeys, toneMappingValues, sizeof(toneMappingKeys) / sizeof(toneMappingKeys[0]), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
         CGContentToneMappingInfo toneMappingInfo = { kCGToneMappingReferenceWhiteBased, toneMappingOptions.get() };
         CGContextSetContentToneMappingInfo(context, toneMappingInfo);
@@ -456,7 +456,7 @@ static void drawPatternCallback(void* info, CGContextRef context)
 
 static void patternReleaseCallback(void* info)
 {
-    callOnMainThread([image = adoptCF(static_cast<CGImageRef>(info))] { });
+    callOnMainThread([image = adoptCFNullable(static_cast<CGImageRef>(info))] { });
 }
 
 void GraphicsContextCG::drawPattern(const NativeImage& nativeImage, const FloatRect& destRect, const FloatRect& tileRect, const AffineTransform& patternTransform, const FloatPoint& phase, const FloatSize& spacing, ImagePaintingOptions options)
@@ -493,7 +493,7 @@ void GraphicsContextCG::drawPattern(const NativeImage& nativeImage, const FloatR
         // Copying a sub-image out of a partially-decoded image stops the decoding of the original image. It should never happen
         // because sub-images are only used for border-image, which only renders when the image is fully decoded.
         ASSERT(h == imageSize.height());
-        subImage = adoptCF(CGImageCreateWithImageInRect(image.get(), tileRect));
+        subImage = adoptCFNullable(CGImageCreateWithImageInRect(image.get(), tileRect));
     }
 
     // If we need to paint gaps between tiles because we have a partially loaded image or non-zero spacing,
@@ -513,7 +513,7 @@ void GraphicsContextCG::drawPattern(const NativeImage& nativeImage, const FloatR
         RetainPtr<CGPatternRef> pattern;
 #if HAVE(CGPATTERN_CREATE_WITH_IMAGE_TRANSFORM_STEP)
         if (PAL::canLoad_CoreGraphics_CGPatternCreateWithImageTransformStep()) {
-            pattern = adoptCF(PAL::softLink_CoreGraphics_CGPatternCreateWithImageTransformStep(subImage.get(), matrix,
+            pattern = adoptCFNullable(PAL::softLink_CoreGraphics_CGPatternCreateWithImageTransformStep(subImage.get(), matrix,
                 tileRect.width() + spacing.width() * (1 / narrowPrecisionToFloat(patternTransform.a())),
                 tileRect.height() + spacing.height() * (1 / narrowPrecisionToFloat(patternTransform.d())),
                 kCGPatternTilingConstantSpacing));
@@ -521,7 +521,7 @@ void GraphicsContextCG::drawPattern(const NativeImage& nativeImage, const FloatR
 #endif
         {
             CGImageRef platformImage = CGImageRetain(subImage.get());
-            pattern = adoptCF(CGPatternCreate(platformImage, CGRectMake(0, 0, tileRect.width(), tileRect.height()), matrix,
+            pattern = adoptCFNullable(CGPatternCreate(platformImage, CGRectMake(0, 0, tileRect.width(), tileRect.height()), matrix,
                 tileRect.width() + spacing.width() * (1 / narrowPrecisionToFloat(patternTransform.a())),
                 tileRect.height() + spacing.height() * (1 / narrowPrecisionToFloat(patternTransform.d())),
                 kCGPatternTilingConstantSpacing, true, &patternCallbacks));
@@ -530,10 +530,10 @@ void GraphicsContextCG::drawPattern(const NativeImage& nativeImage, const FloatR
         if (!pattern)
             return;
 
-        RetainPtr<CGColorSpaceRef> patternSpace = adoptCF(CGColorSpaceCreatePattern(nullptr));
+        RetainPtr<CGColorSpaceRef> patternSpace = adoptCFNullable(CGColorSpaceCreatePattern(nullptr));
 
         CGFloat alpha = 1;
-        RetainPtr<CGColorRef> color = adoptCF(CGColorCreateWithPattern(patternSpace.get(), pattern.get(), &alpha));
+        RetainPtr<CGColorRef> color = adoptCFNullable(CGColorCreateWithPattern(patternSpace.get(), pattern.get(), &alpha));
         CGContextSetFillColorSpace(context, patternSpace.get());
 
         CGContextSetBaseCTM(context, CGAffineTransformIdentity);
@@ -652,7 +652,7 @@ void GraphicsContextCG::applyStrokePattern()
     if (!platformPattern)
         return;
 
-    RetainPtr<CGColorSpaceRef> patternSpace = adoptCF(CGColorSpaceCreatePattern(0));
+    RetainPtr<CGColorSpaceRef> patternSpace = adoptCFNullable(CGColorSpaceCreatePattern(0));
     CGContextSetStrokeColorSpace(cgContext, patternSpace.get());
 
     const CGFloat patternAlpha = 1;
@@ -672,7 +672,7 @@ void GraphicsContextCG::applyFillPattern()
     if (!platformPattern)
         return;
 
-    RetainPtr<CGColorSpaceRef> patternSpace = adoptCF(CGColorSpaceCreatePattern(nullptr));
+    RetainPtr<CGColorSpaceRef> patternSpace = adoptCFNullable(CGColorSpaceCreatePattern(nullptr));
     CGContextSetFillColorSpace(cgContext, patternSpace.get());
 
     const CGFloat patternAlpha = 1;
@@ -743,7 +743,7 @@ void GraphicsContextCG::fillPath(const Path& path)
             FloatRect rect = path.fastBoundingRect();
             FloatSize layerSize = getCTM().mapSize(rect.size());
 
-            auto layer = adoptCF(CGLayerCreateWithContext(context, layerSize, 0));
+            auto layer = adoptCFNullable(CGLayerCreateWithContext(context, layerSize, 0));
             CGContextRef layerContext = CGLayerGetContext(layer.get());
 
             CGContextScaleCTM(layerContext, layerSize.width() / rect.width(), layerSize.height() / rect.height());
@@ -797,7 +797,7 @@ void GraphicsContextCG::strokePath(const Path& path)
 
             FloatSize layerSize = getCTM().mapSize(FloatSize(adjustedWidth, adjustedHeight));
 
-            auto layer = adoptCF(CGLayerCreateWithContext(context, layerSize, 0));
+            auto layer = adoptCFNullable(CGLayerCreateWithContext(context, layerSize, 0));
             CGContextRef layerContext = CGLayerGetContext(layer.get());
             CGContextSetLineWidth(layerContext, lineWidth);
 
@@ -876,7 +876,7 @@ void GraphicsContextCG::fillRect(const FloatRect& rect, Gradient& gradient, cons
     if (hasDropShadow()) {
         FloatSize layerSize = getCTM().mapSize(rect.size());
 
-        auto layer = adoptCF(CGLayerCreateWithContext(context, layerSize, 0));
+        auto layer = adoptCFNullable(CGLayerCreateWithContext(context, layerSize, 0));
         CGContextRef layerContext = CGLayerGetContext(layer.get());
 
         CGContextScaleCTM(layerContext, layerSize.width() / rect.width(), layerSize.height() / rect.height());
@@ -1131,7 +1131,7 @@ void GraphicsContextCG::setCGDropShadow(const std::optional<GraphicsDropShadow>&
 
     CGContextSetAlpha(context, shadow->opacity);
 
-    auto style = adoptCF(CGStyleCreateShadow2(offset, blurRadius, cachedCGColorInDestinationStandardRange(shadow->color, colorSpace()).get()));
+    auto style = adoptCFNullable(CGStyleCreateShadow2(offset, blurRadius, cachedCGColorInDestinationStandardRange(shadow->color, colorSpace()).get()));
     CGContextSetStyle(context, style.get());
 }
 
@@ -1151,7 +1151,7 @@ void GraphicsContextCG::setCGGaussianBlur(const GraphicsGaussianBlur& gaussianBl
     CGFloat blurRadius = scaledBlurRadius(gaussianBlur.radius.width(), userToBaseCTM, shadowsIgnoreTransforms);
 
     CGGaussianBlurStyle gaussianBlurStyle = { 1, blurRadius };
-    auto style = adoptCF(CGStyleCreateGaussianBlur(&gaussianBlurStyle));
+    auto style = adoptCFNullable(CGStyleCreateGaussianBlur(&gaussianBlurStyle));
     CGContextSetStyle(context, style.get());
 }
 
@@ -1162,7 +1162,7 @@ void GraphicsContextCG::setCGColorMatrix(const GraphicsColorMatrix& colorMatrix)
     CGColorMatrixStyle cgColorMatrix = { 1, { 0 } };
     for (auto [dst, src] : zippedRange(cgColorMatrix.matrix, colorMatrix.values))
         dst = src;
-    auto style = adoptCF(CGStyleCreateColorMatrix(&cgColorMatrix));
+    auto style = adoptCFNullable(CGStyleCreateColorMatrix(&cgColorMatrix));
     CGContextSetStyle(context, style.get());
 }
 #endif
@@ -1281,7 +1281,7 @@ void GraphicsContextCG::strokeRect(const FloatRect& rect, float lineWidth)
             float adjustedHeight = ceilf(rect.height() + doubleLineWidth);
             FloatSize layerSize = getCTM().mapSize(FloatSize(adjustedWidth, adjustedHeight));
 
-            auto layer = adoptCF(CGLayerCreateWithContext(context, layerSize, 0));
+            auto layer = adoptCFNullable(CGLayerCreateWithContext(context, layerSize, 0));
 
             CGContextRef layerContext = CGLayerGetContext(layer.get());
             CGContextSetLineWidth(layerContext, lineWidth);
@@ -1535,11 +1535,11 @@ void GraphicsContextCG::beginPage(const FloatRect& pageRect)
     }
 
     auto mediaBox = CGRectMake(pageRect.x(), pageRect.y(), pageRect.width(), pageRect.height());
-    auto mediaBoxData = adoptCF(CFDataCreate(nullptr, (const UInt8 *)&mediaBox, sizeof(CGRect)));
+    auto mediaBoxData = adoptCFNullable(CFDataCreate(nullptr, (const UInt8 *)&mediaBox, sizeof(CGRect)));
 
     const void* key = kCGPDFContextMediaBox;
     const void* value = mediaBoxData.get();
-    auto pageInfo = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto pageInfo = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     CGPDFContextBeginPage(context, pageInfo.get());
 }

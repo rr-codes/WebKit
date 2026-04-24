@@ -126,7 +126,7 @@ RetainPtr<CGImageRef> PresentationContextIOSurface::getTextureAsNativeImage(uint
         break;
     }
 
-    auto colorSpace = adoptCF(CGColorSpaceCreateWithName(colorSpaceName));
+    auto colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(colorSpaceName));
     auto bytesPerPixel = fp16 ? 8 : 4;
     auto width = mtlTexture.width;
     auto height = mtlTexture.height;
@@ -146,8 +146,8 @@ RetainPtr<CGImageRef> PresentationContextIOSurface::getTextureAsNativeImage(uint
     auto freeImageBytes = [](void* imageBytes, const void*, size_t) {
         FastMalloc::free(imageBytes);
     };
-    auto dataProvider = adoptCF(CGDataProviderCreateWithData(imageBytes, imageBytes, imageBytesSize, freeImageBytes));
-    return adoptCF(CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace.get(), bitmapInfo, dataProvider.get(), 0, false, kCGRenderingIntentDefault));
+    auto dataProvider = adoptCFNullable(CGDataProviderCreateWithData(imageBytes, imageBytes, imageBytesSize, freeImageBytes));
+    return adoptCFNullable(CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace.get(), bitmapInfo, dataProvider.get(), 0, false, kCGRenderingIntentDefault));
 }
 
 static void generateAValidationError(Device& device, NSString* message, bool generateValidationError)

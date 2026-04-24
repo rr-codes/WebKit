@@ -68,7 +68,7 @@ TEST(VectorCF, CreateCFArrayWithFunctor_CFNumber)
     Vector<double> doubles = { 1, 2, 3 };
 
     auto cfNumbers = createCFArray(doubles, [] (const double& number) {
-        return adoptCF(CFNumberCreate(nullptr, kCFNumberDoubleType, &number));
+        return adoptCFNullable(CFNumberCreate(nullptr, kCFNumberDoubleType, &number));
     });
 
     CFIndex count = CFArrayGetCount(cfNumbers.get());
@@ -86,7 +86,7 @@ TEST(VectorCF, CreateCFArrayWithFunctor_CFNumber)
 TEST(VectorCF, MakeVector_CFString)
 {
     const size_t elementCount = 3;
-    RetainPtr cfStrings = adoptCF(CFArrayCreateMutable(nullptr, elementCount, &kCFTypeArrayCallBacks));
+    RetainPtr cfStrings = adoptCFNullable(CFArrayCreateMutable(nullptr, elementCount, &kCFTypeArrayCallBacks));
     CFArrayAppendValue(cfStrings.get(), CFSTR("one"));
     CFArrayAppendValue(cfStrings.get(), CFSTR("two"));
     CFArrayAppendValue(cfStrings.get(), CFSTR("three"));
@@ -104,7 +104,7 @@ TEST(VectorCF, MakeVector_CFString)
 TEST(VectorCF, MakeVector_CFNumber)
 {
     const size_t elementCount = 3;
-    RetainPtr cfNumbers = adoptCF(CFArrayCreateMutable(nullptr, elementCount, &kCFTypeArrayCallBacks));
+    RetainPtr cfNumbers = adoptCFNullable(CFArrayCreateMutable(nullptr, elementCount, &kCFTypeArrayCallBacks));
     float number = 1;
     CFArrayAppendValue(cfNumbers.get(), CFNumberCreate(nullptr, kCFNumberFloatType, &number));
     number = 2;
@@ -125,7 +125,7 @@ TEST(VectorCF, MakeVector_CFNumber)
 TEST(VectorCF, MakeVectorWithFunctor)
 {
     const size_t elementCount = 3;
-    RetainPtr cfNumbers = adoptCF(CFArrayCreateMutable(nullptr, elementCount, &kCFTypeArrayCallBacks));
+    RetainPtr cfNumbers = adoptCFNullable(CFArrayCreateMutable(nullptr, elementCount, &kCFTypeArrayCallBacks));
     double number = 1;
     CFArrayAppendValue(cfNumbers.get(), CFNumberCreate(nullptr, kCFNumberDoubleType, &number));
     number = 2;
@@ -153,7 +153,7 @@ TEST(VectorCF, VectorFromCFData)
     uint8_t bytes[] = { 0x01, 0x02, 0x03, 0x04 };
     auto byteLength = sizeof(bytes);
     EXPECT_EQ(elementCount, byteLength);
-    RetainPtr cfData = adoptCF(CFDataCreate(nullptr, static_cast<const UInt8*>(&bytes[0]), Checked<CFIndex>(byteLength)));
+    RetainPtr cfData = adoptCFNullable(CFDataCreate(nullptr, static_cast<const UInt8*>(&bytes[0]), Checked<CFIndex>(byteLength)));
 
     auto vectorData = makeVector(cfData.get());
 

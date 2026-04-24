@@ -108,7 +108,7 @@ void RemoteCommandListenerCocoa::updateSupportedCommands()
     if (m_currentCommands == currentCommands)
         return;
 
-    auto commandInfoArray = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, currentCommands.size(), &kCFTypeArrayCallBacks));
+    auto commandInfoArray = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, currentCommands.size(), &kCFTypeArrayCallBacks));
     for (auto platformCommand : currentCommands) {
         if (isSeekCommand(platformCommand) && !supportsSeeking())
             continue;
@@ -118,7 +118,7 @@ void RemoteCommandListenerCocoa::updateSupportedCommands()
         if (!command)
             continue;
 
-        auto commandInfo = adoptCF(MRMediaRemoteCommandInfoCreate(kCFAllocatorDefault));
+        auto commandInfo = adoptCFNullable(MRMediaRemoteCommandInfoCreate(kCFAllocatorDefault));
         MRMediaRemoteCommandInfoSetCommand(commandInfo.get(), command.value());
         MRMediaRemoteCommandInfoSetEnabled(commandInfo.get(), true);
         if (platformCommand == PlatformMediaSession::RemoteControlCommandType::SkipForwardCommand || platformCommand == PlatformMediaSession::RemoteControlCommandType::SkipBackwardCommand)

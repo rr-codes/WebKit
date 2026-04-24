@@ -54,7 +54,7 @@ RefPtr<NativeImage> NativeImage::createTransient(PlatformImagePtr&& image)
     // FIXME: GraphicsContextCG caching should be made better and this should be the default mode
     // for NativeImage, as we cannot guarantee all the places that draw images to not cache unwanted
     // images.
-    RetainPtr<CGImage> transientImage = adoptCF(CGImageCreateCopy(image.get())); // Make a shallow copy so the metadata change doesn't affect the caller.
+    RetainPtr<CGImage> transientImage = adoptCFNullable(CGImageCreateCopy(image.get())); // Make a shallow copy so the metadata change doesn't affect the caller.
     if (!transientImage)
         return nullptr;
     image = nullptr;
@@ -97,7 +97,7 @@ std::optional<Color> NativeImage::singlePixelSolidColor() const
         return std::nullopt;
 
     std::array<uint8_t, 4> pixel; // RGBA
-    auto bitmapContext = adoptCF(CGBitmapContextCreate(pixel.data(), 1, 1, 8, pixel.size(), sRGBColorSpaceSingleton(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
+    auto bitmapContext = adoptCFNullable(CGBitmapContextCreate(pixel.data(), 1, 1, 8, pixel.size(), sRGBColorSpaceSingleton(), static_cast<uint32_t>(kCGImageAlphaPremultipliedLast) | static_cast<uint32_t>(kCGBitmapByteOrder32Big)));
 
     if (!bitmapContext)
         return std::nullopt;

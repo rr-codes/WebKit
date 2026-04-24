@@ -211,7 +211,7 @@ void MediaSampleAVFObjC::offsetTimestampsBy(const MediaTime& offset)
     
     m_presentationTime += offset;
     m_decodeTime += offset;
-    m_sample = adoptCF(newSample);
+    m_sample = adoptCFNullable(newSample);
 }
 
 void MediaSampleAVFObjC::setTimestamps(const WTF::MediaTime &presentationTimestamp, const WTF::MediaTime &decodeTimestamp)
@@ -236,7 +236,7 @@ void MediaSampleAVFObjC::setTimestamps(const WTF::MediaTime &presentationTimesta
     
     m_presentationTime = presentationTimestamp;
     m_decodeTime = decodeTimestamp;
-    m_sample = adoptCF(newSample);
+    m_sample = adoptCFNullable(newSample);
 }
 
 bool MediaSampleAVFObjC::isDivisable() const
@@ -302,13 +302,13 @@ std::pair<RefPtr<MediaSample>, RefPtr<MediaSample>> MediaSampleAVFObjC::divide(c
     CFRange rangeBefore = CFRangeMake(0, samplesBeforePresentationTime);
     if (PAL::CMSampleBufferCopySampleBufferForRange(kCFAllocatorDefault, m_sample.get(), rangeBefore, &rawSampleBefore) != noErr)
         return { nullptr, nullptr };
-    RetainPtr<CMSampleBufferRef> sampleBefore = adoptCF(rawSampleBefore);
+    RetainPtr<CMSampleBufferRef> sampleBefore = adoptCFNullable(rawSampleBefore);
 
     CMSampleBufferRef rawSampleAfter = nullptr;
     CFRange rangeAfter = CFRangeMake(samplesBeforePresentationTime, sampleCount - samplesBeforePresentationTime);
     if (PAL::CMSampleBufferCopySampleBufferForRange(kCFAllocatorDefault, m_sample.get(), rangeAfter, &rawSampleAfter) != noErr)
         return { nullptr, nullptr };
-    RetainPtr<CMSampleBufferRef> sampleAfter = adoptCF(rawSampleAfter);
+    RetainPtr<CMSampleBufferRef> sampleAfter = adoptCFNullable(rawSampleAfter);
 
     return { MediaSampleAVFObjC::create(sampleBefore.get(), m_id), MediaSampleAVFObjC::create(sampleAfter.get(), m_id) };
 }
@@ -332,7 +332,7 @@ Ref<MediaSample> MediaSampleAVFObjC::createNonDisplayingCopy() const
         }
     }
 
-    return MediaSampleAVFObjC::create(adoptCF(newSampleBuffer).get(), m_id);
+    return MediaSampleAVFObjC::create(adoptCFNullable(newSampleBuffer).get(), m_id);
 }
 
 bool MediaSampleAVFObjC::isHomogeneous() const
@@ -400,7 +400,7 @@ Vector<Ref<MediaSampleAVFObjC>> MediaSampleAVFObjC::divideIntoHomogeneousSamples
         CMSampleBufferRef rawSample = nullptr;
         if (PAL::CMSampleBufferCopySampleBufferForRange(kCFAllocatorDefault, m_sample.get(), range, &rawSample) != noErr || !rawSample)
             return { };
-        samples.append(MediaSampleAVFObjC::create(adoptCF(rawSample).get(), m_id));
+        samples.append(MediaSampleAVFObjC::create(adoptCFNullable(rawSample).get(), m_id));
     }
     return samples;
 }

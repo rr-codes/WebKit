@@ -126,12 +126,12 @@ static RetainPtr<CFArrayRef> createMVHEVCVideoLayersArray(CMVideoFormatDescripti
     if (auto status = PAL::CMVideoFormatDescriptionCopyTagCollectionArray(videoFormatDescription, &rawTagCollectionArray); status != noErr)
         return { };
 
-    RetainPtr tagCollectionArray = adoptCF(rawTagCollectionArray);
+    RetainPtr tagCollectionArray = adoptCFNullable(rawTagCollectionArray);
     // Get the layer IDs to decode
     if (CFArrayGetCount(tagCollectionArray.get()) <= 1)
         return { };
 
-    RetainPtr layersArray = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, 1, &kCFTypeArrayCallBacks));
+    RetainPtr layersArray = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, 1, &kCFTypeArrayCallBacks));
     if (!layersArray)
         return { };
 
@@ -141,7 +141,7 @@ static RetainPtr<CFArrayRef> createMVHEVCVideoLayersArray(CMVideoFormatDescripti
         CMItemCount numberOfTagsCopied = 0;
         if (auto status = PAL::CMTagCollectionGetTagsWithCategory(tagCollection.get(), kCMTagCategory_VideoLayerID, &videoLayerIDTag, 1, &numberOfTagsCopied); status == noErr && numberOfTagsCopied == 1) {
             auto videoLayerID = PAL::CMTagGetSInt64Value(videoLayerIDTag);
-            if (RetainPtr number = adoptCF(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &videoLayerID)))
+            if (RetainPtr number = adoptCFNullable(CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt64Type, &videoLayerID)))
                 CFArrayAppendValue(layersArray.get(), number.get());
         }
     }
@@ -155,7 +155,7 @@ static std::map<int64_t, uint64_t> createMVHEVCStereoViewMap(CMVideoFormatDescri
     if (auto status = PAL::CMVideoFormatDescriptionCopyTagCollectionArray(videoFormatDescription, &rawTagCollectionArray); status != noErr)
         return { };
 
-    RetainPtr tagCollectionArray = adoptCF(rawTagCollectionArray);
+    RetainPtr tagCollectionArray = adoptCFNullable(rawTagCollectionArray);
     // Get the layer IDs to decode
     if (CFArrayGetCount(tagCollectionArray.get()) <= 1)
         return { };
@@ -183,7 +183,7 @@ static RetainPtr<CFArrayRef> createTagCollectionRequiredFromVideoToolboxOutput(C
     ASSERT(bufferGroup);
 
     CFIndex bufferGroupCount = PAL::CMTaggedBufferGroupGetCount(bufferGroup);
-    RetainPtr tagCollections = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, bufferGroupCount, &kCFTypeArrayCallBacks));
+    RetainPtr tagCollections = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, bufferGroupCount, &kCFTypeArrayCallBacks));
 
     for (CFIndex index = 0; index < bufferGroupCount; ++index) {
         CMTag videoLayerIDTag = PAL::kCMTagInvalid;
@@ -211,7 +211,7 @@ static RetainPtr<CFArrayRef> createTagCollectionRequiredFromVideoToolboxOutput(C
             RELEASE_LOG_ERROR(Media, "Unable to allocate CMTagCollection for layer:%lld with error:%d", videoLayerValue, int(status));
             return nullptr;
         }
-        RetainPtr refinedTagCollection = adoptCF(rawRefinedTagCollection);
+        RetainPtr refinedTagCollection = adoptCFNullable(rawRefinedTagCollection);
         CFArrayAppendValue(tagCollections.get(), refinedTagCollection.get());
     }
     if (!CFArrayGetCount(tagCollections.get()))
@@ -231,7 +231,7 @@ static RetainPtr<CMTaggedBufferGroupRef> createTaggedBufferGroupWithRequiredVide
         return nullptr;
     }
 
-    RetainPtr buffers = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, bufferGroupCount, &kCFTypeArrayCallBacks));
+    RetainPtr buffers = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, bufferGroupCount, &kCFTypeArrayCallBacks));
     for (CFIndex index = 0; index < bufferGroupCount; ++index) {
         RetainPtr pbuf = PAL::CMTaggedBufferGroupGetCVPixelBufferAtIndex(bufferGroup, index);
         if (!pbuf)
@@ -244,7 +244,7 @@ static RetainPtr<CMTaggedBufferGroupRef> createTaggedBufferGroupWithRequiredVide
         RELEASE_LOG_ERROR(Media, "Unable to allocate CMTaggedBufferGroup with error:%d", int(status));
         return bufferGroup;
     }
-    return adoptCF(refinedTaggedBufferGroup);
+    return adoptCFNullable(refinedTaggedBufferGroup);
 }
 
 Expected<RefPtr<VideoDecoderVTB>, OSStatus> WebCoreDecompressionSession::ensureDecoderForSample(CMSampleBufferRef cmSample)
@@ -300,7 +300,7 @@ static bool NODELETE isNonRecoverableError(OSStatus status)
 static RetainPtr<CFDictionaryRef> cfDictionaryCreateCombined(CFDictionaryRef a, CFDictionaryRef b)
 {
     ASSERT(a && b);
-    RetainPtr result = adoptCF(CFDictionaryCreateMutable(NULL, CFDictionaryGetCount(a) + CFDictionaryGetCount(b), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    RetainPtr result = adoptCFNullable(CFDictionaryCreateMutable(NULL, CFDictionaryGetCount(a) + CFDictionaryGetCount(b), &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
     auto copyKeyValue = [](CFTypeRef key, CFTypeRef value, void* context) {
         CFMutableDictionaryRef dict = static_cast<CFMutableDictionaryRef>(context);
@@ -329,7 +329,7 @@ static RetainPtr<CMFormatDescriptionRef> NODELETE copyDescriptionExtensionValues
         CMVideoFormatDescriptionRef newTaggedGroupDescription;
         if (auto status = PAL::CMTaggedBufferGroupFormatDescriptionCreateForTaggedBufferGroupWithExtensions(kCFAllocatorDefault, group, copyExtensions.get(), &newTaggedGroupDescription); status != noErr)
             return description;
-        return adoptCF(newTaggedGroupDescription);
+        return adoptCFNullable(newTaggedGroupDescription);
     }
     auto codecType = PAL::CMFormatDescriptionGetMediaSubType(description.get());
     auto dimensions = PAL::CMVideoFormatDescriptionGetDimensions(description.get());
@@ -337,7 +337,7 @@ static RetainPtr<CMFormatDescriptionRef> NODELETE copyDescriptionExtensionValues
     CMVideoFormatDescriptionRef newImageDescription;
     if (auto status = PAL::CMVideoFormatDescriptionCreate(kCFAllocatorDefault, codecType, dimensions.width, dimensions.height, copyExtensions.get(), &newImageDescription); status != noErr)
         return description;
-    return adoptCF(newImageDescription);
+    return adoptCFNullable(newImageDescription);
 #else
     UNUSED_PARAM(originalDescription);
     UNUSED_PARAM(group);
@@ -361,13 +361,13 @@ static Expected<RetainPtr<CMSampleBufferRef>, OSStatus> handleDecompressionOutpu
             CMTaggedBufferGroupFormatDescriptionRef rawBufferGroupFormatDescription = nullptr;
             if (auto status = PAL::CMTaggedBufferGroupFormatDescriptionCreateForTaggedBufferGroup(kCFAllocatorDefault, group, &rawBufferGroupFormatDescription); status != noErr)
                 return makeUnexpected(status);
-            groupFormatDescription = copyDescriptionExtensionValuesIfNeeded(adoptCF(rawBufferGroupFormatDescription), description, group);
+            groupFormatDescription = copyDescriptionExtensionValuesIfNeeded(adoptCFNullable(rawBufferGroupFormatDescription), description, group);
         }
         ASSERT(PAL::CMFormatDescriptionGetMediaType(groupFormatDescription.get()) == kCMMediaType_TaggedBufferGroup);
         CMSampleBufferRef rawGroupSampleBuffer;
         if (auto status = PAL::CMSampleBufferCreateForTaggedBufferGroup(kCFAllocatorDefault, group, presentationTimeStamp, presentationDuration, groupFormatDescription.get(), &rawGroupSampleBuffer); status != noErr)
             return makeUnexpected(status);
-        return adoptCF(rawGroupSampleBuffer);
+        return adoptCFNullable(rawGroupSampleBuffer);
     }
 
     RetainPtr imageBufferDescription = currentImageDescription;
@@ -375,7 +375,7 @@ static Expected<RetainPtr<CMSampleBufferRef>, OSStatus> handleDecompressionOutpu
         CMVideoFormatDescriptionRef rawImageBufferDescription = nullptr;
         if (auto status = PAL::CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imageBuffer, &rawImageBufferDescription); status != noErr)
             return makeUnexpected(status);
-        imageBufferDescription = copyDescriptionExtensionValuesIfNeeded(adoptCF(rawImageBufferDescription), description, nullptr);
+        imageBufferDescription = copyDescriptionExtensionValuesIfNeeded(adoptCFNullable(rawImageBufferDescription), description, nullptr);
     }
     ASSERT(PAL::CMFormatDescriptionGetMediaType(imageBufferDescription.get()) == kCMMediaType_Video);
     CMSampleTimingInfo imageBufferTiming {
@@ -388,7 +388,7 @@ static Expected<RetainPtr<CMSampleBufferRef>, OSStatus> handleDecompressionOutpu
     if (auto status = PAL::CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imageBuffer, imageBufferDescription.get(), &imageBufferTiming, &rawImageSampleBuffer); status != noErr)
         return makeUnexpected(status);
 
-    return adoptCF(rawImageSampleBuffer);
+    return adoptCFNullable(rawImageSampleBuffer);
 }
 
 auto WebCoreDecompressionSession::decodeSample(CMSampleBufferRef sample, DecodingFlags flags) -> Ref<DecodingPromise>
@@ -470,7 +470,7 @@ Ref<WebCoreDecompressionSession::DecodingPromise> WebCoreDecompressionSession::d
                     CMBlockBufferRef contiguousBuffer;
                     if (auto status = PAL::CMBlockBufferCreateContiguous(nullptr, rawBuffer.get(), nullptr, nullptr, 0, 0, 0, &contiguousBuffer))
                         return DecodingPromise::createAndReject(status);
-                    buffer = adoptCF(contiguousBuffer);
+                    buffer = adoptCFNullable(contiguousBuffer);
                 }
                 auto data = PAL::CMBlockBufferGetDataSpan(buffer.get());
                 if (!data.data())

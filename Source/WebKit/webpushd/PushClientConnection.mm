@@ -92,13 +92,13 @@ static String bundleIdentifierFromAuditToken(audit_token_t token)
     return "com.apple.WebKit.TestWebKitAPI"_s;
 #elif PLATFORM(MAC)
     LSSessionID sessionID = (LSSessionID)audit_token_to_asid(token);
-    auto auditTokenDataRef = adoptCF(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)(&token), sizeof(token)));
+    auto auditTokenDataRef = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, (const UInt8 *)(&token), sizeof(token)));
     CFTypeRef keys[] = { _kLSAuditTokenKey };
     CFTypeRef values[] = { auditTokenDataRef.get() };
-    auto matchingAppsRef = adoptCF(_LSCopyMatchingApplicationsWithItems(sessionID, 1, keys, values));
+    auto matchingAppsRef = adoptCFNullable(_LSCopyMatchingApplicationsWithItems(sessionID, 1, keys, values));
     if (matchingAppsRef && CFArrayGetCount(matchingAppsRef.get())) {
         LSASNRef asnRef = (LSASNRef)CFArrayGetValueAtIndex(matchingAppsRef.get(), 0);
-        auto bundleIdentifierRef = adoptCF((CFStringRef)_LSCopyApplicationInformationItem(sessionID, asnRef, kCFBundleIdentifierKey));
+        auto bundleIdentifierRef = adoptCFNullable((CFStringRef)_LSCopyApplicationInformationItem(sessionID, asnRef, kCFBundleIdentifierKey));
         if (bundleIdentifierRef && CFStringGetLength(bundleIdentifierRef.get()))
             return bundleIdentifierRef.get();
     }

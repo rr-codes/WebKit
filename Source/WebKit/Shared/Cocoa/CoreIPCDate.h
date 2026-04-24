@@ -55,7 +55,7 @@ public:
 
     RetainPtr<CFDateRef> createCFDate() const
     {
-        return adoptCF(CFDateCreate(0, m_absoluteTime));
+        return adoptCFNullable(CFDateCreate(0, m_absoluteTime));
     }
 
     double get() const

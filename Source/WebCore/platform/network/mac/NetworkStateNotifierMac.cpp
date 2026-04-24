@@ -38,8 +38,8 @@ void NetworkStateNotifier::updateStateWithoutNotifying()
     if (!m_store)
         return;
 
-    auto key = adoptCF(SCDynamicStoreKeyCreateNetworkInterface(0, kSCDynamicStoreDomainState));
-    auto propertyList = dynamic_cf_cast<CFDictionaryRef>(adoptCF(SCDynamicStoreCopyValue(m_store.get(), key.get())));
+    auto key = adoptCFNullable(SCDynamicStoreKeyCreateNetworkInterface(0, kSCDynamicStoreDomainState));
+    auto propertyList = dynamic_cf_cast<CFDictionaryRef>(adoptCFNullable(SCDynamicStoreCopyValue(m_store.get(), key.get())));
     if (!propertyList)
         return;
 
@@ -64,8 +64,8 @@ void NetworkStateNotifier::updateStateWithoutNotifying()
         if (CFStringHasPrefix(interfaceName.get(), CFSTR("vmnet")))
             continue;
 
-        auto key = adoptCF(SCDynamicStoreKeyCreateNetworkInterfaceEntity(0, kSCDynamicStoreDomainState, interfaceName.get(), kSCEntNetIPv4));
-        if (auto value = adoptCF(SCDynamicStoreCopyValue(m_store.get(), key.get()))) {
+        auto key = adoptCFNullable(SCDynamicStoreKeyCreateNetworkInterfaceEntity(0, kSCDynamicStoreDomainState, interfaceName.get(), kSCEntNetIPv4));
+        if (auto value = adoptCFNullable(SCDynamicStoreCopyValue(m_store.get(), key.get()))) {
             m_isOnLine = true;
             return;
         }
@@ -77,25 +77,25 @@ void NetworkStateNotifier::updateStateWithoutNotifying()
 void NetworkStateNotifier::startObserving()
 {
     SCDynamicStoreContext context = { 0, this, 0, 0, 0 };
-    m_store = adoptCF(SCDynamicStoreCreate(0, CFSTR("com.apple.WebCore"), [] (SCDynamicStoreRef, CFArrayRef, void*) {
+    m_store = adoptCFNullable(SCDynamicStoreCreate(0, CFSTR("com.apple.WebCore"), [] (SCDynamicStoreRef, CFArrayRef, void*) {
         // Calling updateState() could be expensive so we coalesce calls with a timer.
         singleton().updateStateSoon();
     }, &context));
     if (!m_store)
         return;
 
-    auto source = adoptCF(SCDynamicStoreCreateRunLoopSource(0, m_store.get(), 0));
+    auto source = adoptCFNullable(SCDynamicStoreCreateRunLoopSource(0, m_store.get(), 0));
     if (!source)
         return;
 
     CFRunLoopAddSource(RetainPtr { CFRunLoopGetMain() }.get(), source.get(), kCFRunLoopCommonModes);
 
-    auto keys = adoptCF(CFArrayCreateMutable(0, 0, &kCFTypeArrayCallBacks));
-    CFArrayAppendValue(keys.get(), adoptCF(SCDynamicStoreKeyCreateNetworkGlobalEntity(0, kSCDynamicStoreDomainState, kSCEntNetIPv4)).get());
-    CFArrayAppendValue(keys.get(), adoptCF(SCDynamicStoreKeyCreateNetworkGlobalEntity(0, kSCDynamicStoreDomainState, kSCEntNetDNS)).get());
+    auto keys = adoptCFNullable(CFArrayCreateMutable(0, 0, &kCFTypeArrayCallBacks));
+    CFArrayAppendValue(keys.get(), adoptCFNullable(SCDynamicStoreKeyCreateNetworkGlobalEntity(0, kSCDynamicStoreDomainState, kSCEntNetIPv4)).get());
+    CFArrayAppendValue(keys.get(), adoptCFNullable(SCDynamicStoreKeyCreateNetworkGlobalEntity(0, kSCDynamicStoreDomainState, kSCEntNetDNS)).get());
 
-    auto patterns = adoptCF(CFArrayCreateMutable(0, 0, &kCFTypeArrayCallBacks));
-    CFArrayAppendValue(patterns.get(), adoptCF(SCDynamicStoreKeyCreateNetworkInterfaceEntity(0, kSCDynamicStoreDomainState, kSCCompAnyRegex, kSCEntNetIPv4)).get());
+    auto patterns = adoptCFNullable(CFArrayCreateMutable(0, 0, &kCFTypeArrayCallBacks));
+    CFArrayAppendValue(patterns.get(), adoptCFNullable(SCDynamicStoreKeyCreateNetworkInterfaceEntity(0, kSCDynamicStoreDomainState, kSCCompAnyRegex, kSCEntNetIPv4)).get());
 
     SCDynamicStoreSetNotificationKeys(m_store.get(), keys.get(), patterns.get());
 }

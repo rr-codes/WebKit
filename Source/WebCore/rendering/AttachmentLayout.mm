@@ -86,7 +86,7 @@ static Color titleTextColorForAttachment(const RenderAttachment& attachment, Att
 void AttachmentLayout::layOutTitle(const RenderAttachment& attachment)
 {
     CFStringRef language = nullptr; // By not specifying a language we use the system language.
-    auto font = adoptCF(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, attachmentTitleFontSize, language));
+    auto font = adoptCFNullable(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, attachmentTitleFontSize, language));
     baseline = CGRound(attachmentIconBackgroundSize + attachmentIconToTitleMargin + CTFontGetAscent(font.get()));
     wrappingWidth = attachmentTitleMaximumWidth;
     widthPadding = attachmentIconBackgroundSize;
@@ -137,7 +137,7 @@ void AttachmentLayout::layOutSubtitle(const RenderAttachment& attachment)
     auto subtitleColor = colorResolver.colorApplyingColorFilter(attachmentSubtitleTextColor);
 
     CFStringRef language = nullptr; // By not specifying a language we use the system language.
-    auto font = adoptCF(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, attachmentSubtitleFontSize, language));
+    auto font = adoptCFNullable(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, attachmentSubtitleFontSize, language));
     NSDictionary *textAttributes = @{
         (__bridge id)kCTFontAttributeName: (__bridge id)font.get(),
         (__bridge id)kCTForegroundColorAttributeName: (__bridge id)cachedCGColor(subtitleColor).get()
@@ -217,9 +217,9 @@ static RetainPtr<CTFontRef> attachmentActionFont()
     auto style = kCTUIFontTextStyleFootnote;
     auto size = contentSizeCategory();
     auto attributes = static_cast<CFDictionaryRef>(@{ (id)kCTFontTraitsAttribute: @{ (id)kCTFontSymbolicTrait: @(kCTFontTraitTightLeading | kCTFontTraitEmphasized) } });
-    auto emphasizedFontDescriptor = adoptCF(CTFontDescriptorCreateWithTextStyleAndAttributes(style, size, attributes));
+    auto emphasizedFontDescriptor = adoptCFNullable(CTFontDescriptorCreateWithTextStyleAndAttributes(style, size, attributes));
 
-    return adoptCF(CTFontCreateWithFontDescriptor(emphasizedFontDescriptor.get(), 0, nullptr));
+    return adoptCFNullable(CTFontCreateWithFontDescriptor(emphasizedFontDescriptor.get(), 0, nullptr));
 }
 
 static RetainPtr<UIColor> attachmentActionColor(const RenderAttachment& attachment)
@@ -229,8 +229,8 @@ static RetainPtr<UIColor> attachmentActionColor(const RenderAttachment& attachme
 
 static RetainPtr<CTFontRef> attachmentTitleFont()
 {
-    auto fontDescriptor = adoptCF(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleShortCaption1, contentSizeCategory(), 0));
-    return adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), 0, nullptr));
+    auto fontDescriptor = adoptCFNullable(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleShortCaption1, contentSizeCategory(), 0));
+    return adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), 0, nullptr));
 }
 
 static UIColor *attachmentTitleColor(const RenderAttachment& renderer)
@@ -244,8 +244,8 @@ static UIColor *attachmentSubtitleColor(const RenderAttachment& renderer) { retu
 
 static CGFloat shortCaptionPointSizeWithContentSizeCategory(CFStringRef contentSizeCategory)
 {
-    auto descriptor = adoptCF(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleShortCaption1, contentSizeCategory, 0));
-    auto pointSize = adoptCF(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontSizeAttribute));
+    auto descriptor = adoptCFNullable(CTFontDescriptorCreateWithTextStyle(kCTUIFontTextStyleShortCaption1, contentSizeCategory, 0));
+    auto pointSize = adoptCFNullable(CTFontDescriptorCopyAttribute(descriptor.get(), kCTFontSizeAttribute));
     return [dynamic_objc_cast<NSNumber>((__bridge id)pointSize.get()) floatValue];
 }
 
@@ -345,13 +345,13 @@ void AttachmentLayout::buildWrappedLines(String& text, CTFontRef font, NSDiction
         return;
     
     RetainPtr attributedText = adoptNS([[NSAttributedString alloc] initWithString:text.createNSString().get() attributes:textAttributes]);
-    RetainPtr framesetter = adoptCF(CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText.get()));
+    RetainPtr framesetter = adoptCFNullable(CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText.get()));
     
     CFRange fitRange;
     auto textSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter.get(), CFRangeMake(0, 0), nullptr, CGSizeMake(wrappingWidth, CGFLOAT_MAX), &fitRange);
     
-    auto textPath = adoptCF(CGPathCreateWithRect(CGRectMake(0, 0, textSize.width, textSize.height), nullptr));
-    auto textFrame = adoptCF(CTFramesetterCreateFrame(framesetter.get(), fitRange, textPath.get(), nullptr));
+    auto textPath = adoptCFNullable(CGPathCreateWithRect(CGRectMake(0, 0, textSize.width, textSize.height), nullptr));
+    auto textFrame = adoptCFNullable(CTFramesetterCreateFrame(framesetter.get(), fitRange, textPath.get(), nullptr));
     
     auto ctLines = CTFrameGetLines(textFrame.get());
     auto lineCount = CFArrayGetCount(ctLines);
@@ -374,12 +374,12 @@ void AttachmentLayout::buildWrappedLines(String& text, CTFontRef font, NSDiction
     auto firstRemainingLine = (CTLineRef)CFArrayGetValueAtIndex(ctLines, lineIndex);
     auto remainingRangeStart = CTLineGetStringRange(firstRemainingLine).location;
     auto remainingRange = CFRangeMake(remainingRangeStart, [attributedText length] - remainingRangeStart);
-    auto remainingPath = adoptCF(CGPathCreateWithRect(CGRectMake(0, 0, CGFLOAT_MAX, CGFLOAT_MAX), nullptr));
-    auto remainingFrame = adoptCF(CTFramesetterCreateFrame(framesetter.get(), remainingRange, remainingPath.get(), nullptr));
+    auto remainingPath = adoptCFNullable(CGPathCreateWithRect(CGRectMake(0, 0, CGFLOAT_MAX, CGFLOAT_MAX), nullptr));
+    auto remainingFrame = adoptCFNullable(CTFramesetterCreateFrame(framesetter.get(), remainingRange, remainingPath.get(), nullptr));
     auto ellipsisString = adoptNS([[NSAttributedString alloc] initWithString:@"\u2026" attributes:textAttributes]);
-    auto ellipsisLine = adoptCF(CTLineCreateWithAttributedString((CFAttributedStringRef)ellipsisString.get()));
+    auto ellipsisLine = adoptCFNullable(CTLineCreateWithAttributedString((CFAttributedStringRef)ellipsisString.get()));
     auto remainingLine = (CTLineRef)CFArrayGetValueAtIndex(CTFrameGetLines(remainingFrame.get()), 0);
-    auto truncatedLine = adoptCF(CTLineCreateTruncatedLine(remainingLine, wrappingWidth, kCTLineTruncationMiddle, ellipsisLine.get()));
+    auto truncatedLine = adoptCFNullable(CTLineCreateTruncatedLine(remainingLine, wrappingWidth, kCTLineTruncationMiddle, ellipsisLine.get()));
     
     if (!truncatedLine)
         truncatedLine = remainingLine;
@@ -393,7 +393,7 @@ void AttachmentLayout::buildSingleLine(const String& text, CTFontRef font, NSDic
         return;
 
     RetainPtr attributedText = adoptNS([[NSAttributedString alloc] initWithString:text.createNSString().get() attributes:textAttributes]);
-    addLine(font, adoptCF(CTLineCreateWithAttributedString((CFAttributedStringRef)attributedText.get())).get(), true);
+    addLine(font, adoptCFNullable(CTLineCreateWithAttributedString((CFAttributedStringRef)attributedText.get())).get(), true);
 }
 
 } // namespace WebCore

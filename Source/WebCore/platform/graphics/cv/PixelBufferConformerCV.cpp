@@ -44,7 +44,7 @@ RetainPtr<VTPixelBufferConformerRef> PixelBufferConformerCV::createPixelConforme
     VTPixelBufferConformerRef conformer = nullptr;
     VTPixelBufferConformerCreateWithAttributes(kCFAllocatorDefault, attributes, &conformer);
     ASSERT(conformer);
-    return adoptCF(conformer);
+    return adoptCFNullable(conformer);
 }
 
 PixelBufferConformerCV::PixelBufferConformerCV(CFDictionaryRef attributes)
@@ -61,7 +61,7 @@ RetainPtr<CVPixelBufferRef> PixelBufferConformerCV::convert(CVPixelBufferRef raw
         OSStatus status = VTPixelBufferConformerCopyConformedPixelBuffer(m_pixelConformer.get(), buffer.get(), false, &outputBuffer);
         if (status != noErr || !outputBuffer)
             return nullptr;
-        return adoptCF(outputBuffer);
+        return adoptCFNullable(outputBuffer);
     }
     return nullptr;
 }
@@ -76,7 +76,7 @@ RetainPtr<CGImageRef> PixelBufferConformerCV::createImageFromPixelBuffer(CVPixel
         OSStatus status = VTPixelBufferConformerCopyConformedPixelBuffer(m_pixelConformer.get(), buffer.get(), false, &outputBuffer);
         if (status != noErr || !outputBuffer)
             return nullptr;
-        buffer = adoptCF(outputBuffer);
+        buffer = adoptCFNullable(outputBuffer);
     }
 
     return createImageFrom32BGRAPixelBuffer(WTF::move(buffer), colorSpace.get());

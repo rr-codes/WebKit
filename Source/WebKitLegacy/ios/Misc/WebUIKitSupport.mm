@@ -58,7 +58,7 @@ static void LoadWebLocalizedStringsTimerCallback(CFRunLoopTimerRef timer, void *
 
 static void LoadWebLocalizedStrings()
 {
-    auto timer = adoptCF(CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent(), 0, 0, 0, &LoadWebLocalizedStringsTimerCallback, NULL));
+    auto timer = adoptCFNullable(CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent(), 0, 0, 0, &LoadWebLocalizedStringsTimerCallback, NULL));
     CFRunLoopAddTimer(CFRunLoopGetCurrent(), timer.get(), kCFRunLoopCommonModes);
 }
 

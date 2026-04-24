@@ -345,8 +345,8 @@ static void makeResponderFirstResponderIfDescendantOfView(NSWindow *window, NSRe
 
 static RetainPtr<CGDataProviderRef> createImageProviderWithCopiedData(CGDataProviderRef sourceProvider)
 {
-    RetainPtr<CFDataRef> data = adoptCF(CGDataProviderCopyData(sourceProvider));
-    return adoptCF(CGDataProviderCreateWithCFData(data.get()));
+    RetainPtr<CFDataRef> data = adoptCFNullable(CGDataProviderCopyData(sourceProvider));
+    return adoptCFNullable(CGDataProviderCreateWithCFData(data.get()));
 }
 
 static RetainPtr<CGImageRef> createImageWithCopiedData(CGImageRef sourceImage)
@@ -362,7 +362,7 @@ static RetainPtr<CGImageRef> createImageWithCopiedData(CGImageRef sourceImage)
     bool shouldInterpolate = CGImageGetShouldInterpolate(sourceImage);
     CGColorRenderingIntent intent = CGImageGetRenderingIntent(sourceImage);
 
-    return adoptCF(CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace.get(), bitmapInfo, provider.get(), 0, shouldInterpolate, intent));
+    return adoptCFNullable(CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpace.get(), bitmapInfo, provider.get(), 0, shouldInterpolate, intent));
 }
 
 - (void)_continueEnteringFullscreenAfterPostingNotification:(CompletionHandler<void(bool)>&&)completionHandler
@@ -658,7 +658,7 @@ static RetainPtr<CGImageRef> takeWindowSnapshot(CGSWindowID windowID, bool captu
     CGSWindowCaptureOptions options = kCGSCaptureIgnoreGlobalClipShape;
     if (captureAtNominalResolution)
         options |= kCGSWindowCaptureNominalResolution;
-    RetainPtr<CFArrayRef> windowSnapshotImages = adoptCF(CGSHWCaptureWindowList(CGSMainConnectionID(), &windowID, 1, options));
+    RetainPtr<CFArrayRef> windowSnapshotImages = adoptCFNullable(CGSHWCaptureWindowList(CGSMainConnectionID(), &windowID, 1, options));
 
     if (windowSnapshotImages && CFArrayGetCount(windowSnapshotImages.get()))
         return checked_cf_cast<CGImageRef>(CFArrayGetValueAtIndex(windowSnapshotImages.get(), 0));
@@ -701,7 +701,7 @@ static RetainPtr<CGImageRef> takeWindowSnapshot(CGSWindowID windowID, bool captu
 
     RetainPtr webView = _webView.get();
     RetainPtr<CGImageRef> webViewContents = takeWindowSnapshot([[webView window] windowNumber], true);
-    webViewContents = adoptCF(CGImageCreateWithImageInRect(webViewContents.get(), NSRectToCGRect(exitPlaceholderScreenRect)));
+    webViewContents = adoptCFNullable(CGImageCreateWithImageInRect(webViewContents.get(), NSRectToCGRect(exitPlaceholderScreenRect)));
     
     _exitPlaceholder = adoptNS([[NSView alloc] initWithFrame:[webView frame]]);
     [_exitPlaceholder setWantsLayer: YES];

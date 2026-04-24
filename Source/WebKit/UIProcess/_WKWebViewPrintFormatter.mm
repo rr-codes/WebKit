@@ -202,7 +202,7 @@
         return;
     }
 
-    RetainPtr pageImage = adoptCF(CGImageCreateWithImageInRect(documentImage.get(), CGRectMake(0, pageIndex * pageImageHeight, pageImageWidth, pageImageHeight)));
+    RetainPtr pageImage = adoptCFNullable(CGImageCreateWithImageInRect(documentImage.get(), CGRectMake(0, pageIndex * pageImageHeight, pageImageWidth, pageImageHeight)));
 
     CGContextTranslateCTM(context.get(), CGRectGetMinX(rect), CGRectGetMaxY(rect));
     CGContextScaleCTM(context.get(), 1, -1);

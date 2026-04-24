@@ -39,7 +39,7 @@ PlatformVideoTarget VideoTargetFactory::createTargetFromEndpoint(const VideoRece
     if (status != noErr)
         return nullptr;
 
-    return adoptCF(videoTarget);
+    return adoptCFNullable(videoTarget);
 }
 
 }

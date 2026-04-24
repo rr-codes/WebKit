@@ -33,12 +33,12 @@ void CertificateInfo::dump() const
 {
     if (m_trust) {
 
-        auto chain = adoptCF(SecTrustCopyCertificateChain(trust().get()));
+        auto chain = adoptCFNullable(SecTrustCopyCertificateChain(trust().get()));
         CFIndex entries = CFArrayGetCount(chain.get());
         NSLog(@"CertificateInfo SecTrust\n");
         NSLog(@"  Entries: %ld\n", entries);
         for (CFIndex i = 0; i < entries; ++i) {
-            RetainPtr<CFStringRef> summary = adoptCF(SecCertificateCopySubjectSummary(checked_cf_cast<SecCertificateRef>(CFArrayGetValueAtIndex(chain.get(), i))));
+            RetainPtr<CFStringRef> summary = adoptCFNullable(SecCertificateCopySubjectSummary(checked_cf_cast<SecCertificateRef>(CFArrayGetValueAtIndex(chain.get(), i))));
             NSLog(@"  %@", (__bridge NSString *)summary.get());
         }
         return;

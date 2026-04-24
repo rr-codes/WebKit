@@ -74,11 +74,11 @@ NetworkTransportSession::NetworkTransportSession(NetworkConnectionToWebProcess& 
 static bool leafCertificateMatchesWebTransportHash(sec_trust_t trust, const Vector<WebCore::WebTransportHash>& hashes)
 {
     // https://www.w3.org/TR/webtransport/#verify-a-certificate-hash
-    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr secTrust = adoptCF(sec_trust_copy_ref(trust));
+    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr secTrust = adoptCFNullable(sec_trust_copy_ref(trust));
     if (!secTrust)
         return false;
 
-    RetainPtr chain = adoptCF(SecTrustCopyCertificateChain(secTrust.get()));
+    RetainPtr chain = adoptCFNullable(SecTrustCopyCertificateChain(secTrust.get()));
     if (!chain || !CFArrayGetCount(chain.get()))
         return false;
 
@@ -100,10 +100,10 @@ static bool leafCertificateMatchesWebTransportHash(sec_trust_t trust, const Vect
         return false;
 
     // https://www.w3.org/TR/webtransport/#custom-certificate-requirements
-    RetainPtr validityBegin = adoptCF(SecCertificateCopyNotValidBeforeDate(leafCertificate.get()));
+    RetainPtr validityBegin = adoptCFNullable(SecCertificateCopyNotValidBeforeDate(leafCertificate.get()));
     if (!validityBegin)
         return false;
-    RetainPtr validityEnd = adoptCF(SecCertificateCopyNotValidAfterDate(leafCertificate.get()));
+    RetainPtr validityEnd = adoptCFNullable(SecCertificateCopyNotValidAfterDate(leafCertificate.get()));
     if (!validityEnd)
         return false;
     CFAbsoluteTime currentTime = CFAbsoluteTimeGetCurrent();
@@ -126,7 +126,7 @@ static void didReceiveServerTrustChallenge(NetworkConnectionToWebProcess& connec
         return completion(leafCertificateMatchesWebTransportHash(trust, hashes));
 
     uint16_t port = url.port() ? *url.port() : *defaultPortForProtocol(url.protocol());
-    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr secTrust = adoptCF(sec_trust_copy_ref(trust));
+    SUPPRESS_RETAINPTR_CTOR_ADOPT RetainPtr secTrust = adoptCFNullable(sec_trust_copy_ref(trust));
     RetainPtr protectionSpace = adoptNS([[NSURLProtectionSpace alloc] initWithHost:url.host().createNSString().get() port:port protocol:NSURLProtectionSpaceHTTPS realm:nil authenticationMethod:NSURLAuthenticationMethodServerTrust]);
     [protectionSpace _setServerTrust:secTrust.get()];
 

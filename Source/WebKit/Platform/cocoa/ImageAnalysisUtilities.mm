@@ -296,8 +296,8 @@ void requestBackgroundRemoval(CGImageRef image, CompletionHandler<void(CGImageRe
         return;
     }
 
-    auto transcodedImageSource = adoptCF(CGImageSourceCreateWithData((__bridge CFDataRef)tiffData.get(), nullptr));
-    auto transcodedImage = adoptCF(CGImageSourceCreateImageAtIndex(transcodedImageSource.get(), 0, nullptr));
+    auto transcodedImageSource = adoptCFNullable(CGImageSourceCreateWithData((__bridge CFDataRef)tiffData.get(), nullptr));
+    auto transcodedImage = adoptCFNullable(CGImageSourceCreateImageAtIndex(transcodedImageSource.get(), 0, nullptr));
     if (!transcodedImage) {
         completion(nullptr);
         return;
@@ -377,14 +377,14 @@ static RetainPtr<CGImageRef> imageFilledWithWhiteBackground(CGImageRef image)
 
     RetainPtr colorSpace = CGImageGetColorSpace(image);
     if (!CGColorSpaceSupportsOutput(colorSpace.get()))
-        colorSpace = adoptCF(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+        colorSpace = adoptCFNullable(CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
 
-    auto context = adoptCF(CGBitmapContextCreate(nil, CGRectGetWidth(imageRect), CGRectGetHeight(imageRect), 8, 4 * CGRectGetWidth(imageRect), colorSpace.get(), kCGImageAlphaPremultipliedLast));
+    auto context = adoptCFNullable(CGBitmapContextCreate(nil, CGRectGetWidth(imageRect), CGRectGetHeight(imageRect), 8, 4 * CGRectGetWidth(imageRect), colorSpace.get(), kCGImageAlphaPremultipliedLast));
     CGContextSetFillColorWithColor(context.get(), cachedCGColor(WebCore::Color::white).get());
     CGContextFillRect(context.get(), imageRect);
     CGContextDrawImage(context.get(), imageRect, image);
 
-    return adoptCF(CGBitmapContextCreateImage(context.get()));
+    return adoptCFNullable(CGBitmapContextCreateImage(context.get()));
 }
 
 void requestPayloadForQRCode(CGImageRef image, CompletionHandler<void(NSString *)>&& completion)

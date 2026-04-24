@@ -616,7 +616,7 @@ static String cocoaTypeFromHTMLClipboardType(const String& type)
     auto utiType = UTIFromMIMEType(type);
     if (!utiType.isEmpty()) {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-        if (auto pbType = adoptCF(UTTypeCopyPreferredTagWithClass(utiType.createCFString().get(), kUTTagClassNSPboardType)))
+        if (auto pbType = adoptCFNullable(UTTypeCopyPreferredTagWithClass(utiType.createCFString().get(), kUTTagClassNSPboardType)))
             return pbType.get();
 ALLOW_DEPRECATED_DECLARATIONS_END
     }
@@ -658,8 +658,8 @@ Vector<String> Pasteboard::readPlatformValuesAsStrings(const String& domType, in
 static String utiTypeFromCocoaType(const String& type)
 {
 ALLOW_DEPRECATED_DECLARATIONS_BEGIN
-    if (RetainPtr<CFStringRef> utiType = adoptCF(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, type.createCFString().get(), 0))) {
-        if (RetainPtr<CFStringRef> mimeType = adoptCF(UTTypeCopyPreferredTagWithClass(utiType.get(), kUTTagClassMIMEType)))
+    if (RetainPtr<CFStringRef> utiType = adoptCFNullable(UTTypeCreatePreferredIdentifierForTag(kUTTagClassNSPboardType, type.createCFString().get(), 0))) {
+        if (RetainPtr<CFStringRef> mimeType = adoptCFNullable(UTTypeCopyPreferredTagWithClass(utiType.get(), kUTTagClassMIMEType)))
             return String(mimeType.get());
     }
 ALLOW_DEPRECATED_DECLARATIONS_END
@@ -855,14 +855,14 @@ RefPtr<WebCore::SharedBuffer> Pasteboard::bufferConvertedToPasteboardType(const 
 
     const void* key = kCGImageSourceTypeIdentifierHint;
     const void* value = sourceType.get();
-    auto options = adoptCF(CFDictionaryCreate(kCFAllocatorDefault, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
+    auto options = adoptCFNullable(CFDictionaryCreate(kCFAllocatorDefault, &key, &value, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
 
-    auto source = adoptCF(CGImageSourceCreateWithData(sourceData.get(), options.get()));
+    auto source = adoptCFNullable(CGImageSourceCreateWithData(sourceData.get(), options.get()));
     if (!source)
         return nullptr;
 
-    auto data = adoptCF(CFDataCreateMutable(0, 0));
-    auto destination = adoptCF(CGImageDestinationCreateWithData(data.get(), bridge_cast(UTTypeTIFF.identifier), 1, NULL));
+    auto data = adoptCFNullable(CFDataCreateMutable(0, 0));
+    auto destination = adoptCFNullable(CGImageDestinationCreateWithData(data.get(), bridge_cast(UTTypeTIFF.identifier), 1, NULL));
     if (!destination)
         return nullptr;
 

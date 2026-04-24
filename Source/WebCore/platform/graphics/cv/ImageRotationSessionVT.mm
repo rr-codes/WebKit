@@ -94,7 +94,7 @@ void ImageRotationSessionVT::initialize(const RotationProperties& rotation, Floa
 
     VTImageRotationSessionRef rawRotationSession = nullptr;
     VTImageRotationSessionCreate(kCFAllocatorDefault, m_rotationProperties.angle, &rawRotationSession);
-    m_rotationSession = adoptCF(rawRotationSession);
+    m_rotationSession = adoptCFNullable(rawRotationSession);
     VTImageRotationSessionSetProperty(m_rotationSession.get(), kVTImageRotationPropertyKey_EnableHighSpeedTransfer, kCFBooleanTrue);
 
     if (m_rotationProperties.flipY)
@@ -125,7 +125,7 @@ RetainPtr<CVPixelBufferRef> ImageRotationSessionVT::rotate(CVPixelBufferRef pixe
         RELEASE_LOG_ERROR(WebRTC, "ImageRotationSessionVT failed creating buffer from pool with error %d", status);
         return nullptr;
     }
-    result = adoptCF(rawRotatedBuffer);
+    result = adoptCFNullable(rawRotatedBuffer);
 
     status = VTImageRotationSessionTransferImage(m_rotationSession.get(), pixelBuffer, rawRotatedBuffer);
     if (status != noErr) {

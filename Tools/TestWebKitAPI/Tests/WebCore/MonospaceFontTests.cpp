@@ -48,11 +48,11 @@ TEST(MonospaceFontsTest, EnsureMonospaceFontInvariants)
 #endif
 {
     RetainPtr collection = CTFontCollectionCreateFromAvailableFonts(nullptr);
-    RetainPtr results = adoptCF(CTFontCollectionCreateMatchingFontDescriptors(collection.get()));
+    RetainPtr results = adoptCFNullable(CTFontCollectionCreateMatchingFontDescriptors(collection.get()));
     if (results) {
         for (unsigned i = 0, count = CFArrayGetCount(results.get()); i < count; ++i) {
             RetainPtr fontDescriptor = static_cast<CTFontDescriptorRef>(CFArrayGetValueAtIndex(results.get(), i));
-            RetainPtr ctFont = adoptCF(CTFontCreateWithFontDescriptor(fontDescriptor.get(), 16.0, nullptr));
+            RetainPtr ctFont = adoptCFNullable(CTFontCreateWithFontDescriptor(fontDescriptor.get(), 16.0, nullptr));
             FontPlatformData platformData(ctFont.get(), 16.0);
             FontCascade fontCascade(platformData);
             if (fontCascade.canTakeFixedPitchFastContentMeasuring()) {

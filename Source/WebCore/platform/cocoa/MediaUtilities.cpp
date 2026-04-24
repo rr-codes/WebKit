@@ -42,7 +42,7 @@ RetainPtr<CMFormatDescriptionRef> createAudioFormatDescription(const AudioStream
         LOG_ERROR("createAudioFormatDescription failed with %d", static_cast<int>(error));
         return nullptr;
     }
-    return adoptCF(format);
+    return adoptCFNullable(format);
 }
 
 RetainPtr<CMSampleBufferRef> createAudioSampleBuffer(const PlatformAudioData& data, const AudioStreamDescription& description, CMTime time, size_t sampleCount)
@@ -58,7 +58,7 @@ RetainPtr<CMSampleBufferRef> createAudioSampleBuffer(const PlatformAudioData& da
         LOG_ERROR("createAudioSampleBuffer with packet descriptions failed - %d", static_cast<int>(error));
         return nullptr;
     }
-    auto buffer = adoptCF(sampleBuffer);
+    auto buffer = adoptCFNullable(sampleBuffer);
 
     error = PAL::CMSampleBufferSetDataBufferFromAudioBufferList(buffer.get(), kCFAllocatorDefault, kCFAllocatorDefault, 0, downcast<WebAudioBufferList>(data).list());
     if (error) {
@@ -74,7 +74,7 @@ RetainPtr<CMSampleBufferRef> createVideoSampleBuffer(CVPixelBufferRef pixelBuffe
     auto status = PAL::CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, pixelBuffer, &formatDescription);
     if (status)
         return nullptr;
-    auto retainedFormatDescription = adoptCF(formatDescription);
+    auto retainedFormatDescription = adoptCFNullable(formatDescription);
 
     CMSampleTimingInfo timingInfo { PAL::kCMTimeInvalid, presentationTime, PAL::kCMTimeInvalid };
     CMSampleBufferRef sampleBuffer;
@@ -82,7 +82,7 @@ RetainPtr<CMSampleBufferRef> createVideoSampleBuffer(CVPixelBufferRef pixelBuffe
     if (status)
         return nullptr;
 
-    return adoptCF(sampleBuffer);
+    return adoptCFNullable(sampleBuffer);
 }
 
 } // namespace WebCore

@@ -54,19 +54,19 @@ static RetainPtr<SecTrustRef> createSecTrustForChain(const Vector<RetainPtr<SecC
     if (chain.isEmpty())
         return nullptr;
 
-    RetainPtr cfChain = adoptCF(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
+    RetainPtr cfChain = adoptCFNullable(CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
 
     for (RetainPtr cert : chain)
         CFArrayAppendValue(cfChain.get(), cert.get());
 
-    SUPPRESS_UNRETAINED_LOCAL RetainPtr policy = adoptCF(SecPolicyCreateBasicX509());
+    SUPPRESS_UNRETAINED_LOCAL RetainPtr policy = adoptCFNullable(SecPolicyCreateBasicX509());
 
     SecTrustRef rawTrust = nullptr;
     OSStatus status = SecTrustCreateWithCertificates(cfChain.get(), policy.get(), &rawTrust);
     if (status != errSecSuccess || !rawTrust)
         return nullptr;
 
-    return adoptCF(rawTrust);
+    return adoptCFNullable(rawTrust);
 }
 
 static Vector<WebCore::CertificateInfo> buildRequestAuthentications(WKIdentityDocumentPresentmentMobileDocumentRequest *mobileDocumentRequest)

@@ -2119,7 +2119,7 @@ TEST(DragAndDropTests, DataTransferSanitizeHTML)
 
 static BOOL isCompletelyWhite(UIImage *image)
 {
-    RetainPtr data = adoptCF(CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage)));
+    RetainPtr data = adoptCFNullable(CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage)));
     auto* dataPtr = CFDataGetBytePtr(data.get());
     int imageWidth = image.size.width;
     for (int row = 0; row < image.size.height; ++row) {

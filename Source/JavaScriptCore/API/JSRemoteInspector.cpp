@@ -60,7 +60,7 @@ void JSRemoteInspectorStart(void)
 void JSRemoteInspectorSetParentProcessInformation(ProcessID pid, const uint8_t* auditData, size_t auditLength)
 {
 #if ENABLE(REMOTE_INSPECTOR) && PLATFORM(COCOA)
-    RetainPtr<CFDataRef> auditDataRef = adoptCF(CFDataCreate(kCFAllocatorDefault, auditData, auditLength));
+    RetainPtr<CFDataRef> auditDataRef = adoptCFNullable(CFDataCreate(kCFAllocatorDefault, auditData, auditLength));
     RemoteInspector::singleton().setParentProcessInformation(pid, auditDataRef);
 #else
     UNUSED_PARAM(pid);

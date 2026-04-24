@@ -136,7 +136,7 @@ void activateFonts()
 
 void installFakeHelvetica(WKStringRef configuration)
 {
-    auto configurationString = adoptCF(WKStringCopyCFString(kCFAllocatorDefault, configuration));
+    auto configurationString = adoptCFNullable(WKStringCopyCFString(kCFAllocatorDefault, configuration));
     NSURL *resourceURL = [resourcesDirectoryURL() URLByAppendingPathComponent:[NSString stringWithFormat:@"FakeHelvetica-%@.ttf", configurationString.get()] isDirectory:NO];
     CFErrorRef error = nullptr;
     if (!CTFontManagerRegisterFontsForURL((__bridge CFURLRef)resourceURL, kCTFontManagerScopeProcess, &error)) {
