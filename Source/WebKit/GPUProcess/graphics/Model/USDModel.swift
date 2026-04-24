@@ -548,7 +548,8 @@ extension WKBridgeReceiver {
         self.fallbackTexture = makeFallBackTextureResource(
             renderContext,
             commandQueue: configuration.commandQueue,
-            device: configuration.device
+            device: configuration.device,
+            memoryOwner: configuration.appRenderer.memoryOwner
         )
     }
 
@@ -1580,9 +1581,7 @@ private func makeConstantSGNode(from constant: WKBridgeConstantContainer) throws
         let comps =
             (0..<n).map { CGFloat(values[$0].number.floatValue) }
             + (n == 3 ? [CGFloat(1.0)] : [])
-        let cs = CGColorSpace(name: CGColorSpace.extendedLinearSRGB)
-        return cs.flatMap { unsafe CGColor(colorSpace: $0, components: comps) }
-            ?? CGColor(red: comps[0], green: comps[1], blue: comps[2], alpha: comps.count > 3 ? comps[3] : 1)
+        return CGColor(red: comps[0], green: comps[1], blue: comps[2], alpha: comps.count > 3 ? comps[3] : 1)
     }
 
     switch constant.constant {
@@ -1899,11 +1898,6 @@ private func fromWKBridgeConstant(_ constant: WKBridgeConstantContainer) -> _Pro
             CGFloat(values[2].number.floatValue),
             1.0,
         ]
-        if let cs = CGColorSpace(name: CGColorSpace.extendedLinearSRGB),
-            let color = unsafe CGColor(colorSpace: cs, components: components3)
-        {
-            return .cgColor3(color)
-        }
         return .cgColor3(CGColor(red: components3[0], green: components3[1], blue: components3[2], alpha: 1.0))
     case .cgColor4:
         guard values.count >= 4 else {
@@ -1917,11 +1911,6 @@ private func fromWKBridgeConstant(_ constant: WKBridgeConstantContainer) -> _Pro
             CGFloat(values[2].number.floatValue),
             CGFloat(values[3].number.floatValue),
         ]
-        if let cs = CGColorSpace(name: CGColorSpace.extendedLinearSRGB),
-            let color = unsafe CGColor(colorSpace: cs, components: components4)
-        {
-            return .cgColor4(color)
-        }
         return .cgColor4(CGColor(red: components4[0], green: components4[1], blue: components4[2], alpha: components4[3]))
     case .color4f:
         // USD/MaterialX color4f or color4h — encoded as 4 raw floats without CGColor clamping.
@@ -1935,11 +1924,6 @@ private func fromWKBridgeConstant(_ constant: WKBridgeConstantContainer) -> _Pro
             CGFloat(values[2].number.floatValue),
             CGFloat(values[3].number.floatValue),
         ]
-        if let cs = CGColorSpace(name: CGColorSpace.extendedLinearSRGB),
-            let color = unsafe CGColor(colorSpace: cs, components: components4f)
-        {
-            return .cgColor4(color)
-        }
         return .cgColor4(CGColor(red: components4f[0], green: components4f[1], blue: components4f[2], alpha: components4f[3]))
     case .color3f:
         // USD/MaterialX color3f or color3h — encoded as 3 raw floats without CGColor clamping.
@@ -1953,11 +1937,6 @@ private func fromWKBridgeConstant(_ constant: WKBridgeConstantContainer) -> _Pro
             CGFloat(values[2].number.floatValue),
             1.0,
         ]
-        if let cs = CGColorSpace(name: CGColorSpace.extendedLinearSRGB),
-            let color = unsafe CGColor(colorSpace: cs, components: components3f)
-        {
-            return .cgColor3(color)
-        }
         return .cgColor3(CGColor(red: components3f[0], green: components3f[1], blue: components3f[2], alpha: 1.0))
     @unknown default:
         fatalError("fromWKBridgeConstant: unhandled constant type \(constant.constant) for '\(constant.name)'")
@@ -2257,7 +2236,8 @@ extension WKBridgeModelLoader {
 private func makeFallBackTextureResource(
     _ renderContext: any _Proto_LowLevelRenderContext_v1,
     commandQueue: any MTLCommandQueue,
-    device: any MTLDevice
+    device: any MTLDevice,
+    memoryOwner: task_id_token_t
 ) -> _Proto_LowLevelTextureResource_v1 {
     // Create 1x1 white fallback texture
     let fallbackDescriptor = _Proto_LowLevelTextureResource_v1.Descriptor(
@@ -2274,11 +2254,7 @@ private func makeFallBackTextureResource(
     // White color: RGBA = (255, 255, 255, 255)
     let whitePixel: [UInt8] = [255, 255, 255, 255]
 
-    // Create staging buffer for white pixel data
-    let stagingBuffer = unsafe whitePixel.withUnsafeBytes { bytes in
-        // swift-format-ignore: NeverForceUnwrap
-        unsafe device.makeBuffer(bytes: bytes.baseAddress!, length: bytes.count, options: .storageModeShared)!
-    }
+    let stagingBuffer = device.makeBuffer(fromSpan: whitePixel.span, length: whitePixel.count, memoryOwner: memoryOwner)
 
     // Create command buffer to upload white pixel data
     // swift-format-ignore: NeverForceUnwrap
