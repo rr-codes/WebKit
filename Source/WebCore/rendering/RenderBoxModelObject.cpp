@@ -204,7 +204,7 @@ RenderBlock* RenderBoxModelObject::containingBlockForAutoHeightDetectionGeneric(
     // Anonymous block boxes are ignored when resolving percentage values that
     // would refer to it: the closest non-anonymous ancestor box is used instead.
     auto* ancestor = containingBlock();
-    while (ancestor && ancestor->isAnonymousForPercentageResolution())
+    while (ancestor && ancestor->shouldSkipForPercentageResolution())
         ancestor = ancestor->containingBlock();
     if (!ancestor) {
         ASSERT_NOT_REACHED();
@@ -343,7 +343,7 @@ static bool hasDefiniteHeightByStyle(const RenderBlock& containingBlock)
     // Percentage and stretch heights are only definite if the ancestor they resolve against is definite.
     auto ancestorHasDefiniteHeight = [&] {
         for (CheckedPtr ancestor = containingBlock.containingBlock(); ancestor; ancestor = ancestor->containingBlock()) {
-            if (!ancestor->isAnonymousForPercentageResolution())
+            if (!ancestor->shouldSkipForPercentageResolution())
                 return hasDefiniteHeightByStyle(*ancestor);
         }
         ASSERT_NOT_REACHED();

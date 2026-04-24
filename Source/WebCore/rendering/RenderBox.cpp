@@ -3797,10 +3797,6 @@ bool RenderBox::skipContainingBlockForPercentHeightCalculation(const RenderBox& 
     if (containingBlock.isRenderFragmentedFlow() && !isPerpendicularWritingMode)
         return true;
 
-    // Render view is not considered auto height.
-    if (is<RenderView>(containingBlock))
-        return false;
-
     // If the writing mode of the containing block is orthogonal to ours, it means
     // that we shouldn't skip anything, since we're going to resolve the
     // percentage height against a containing block *width*.
@@ -3814,11 +3810,10 @@ bool RenderBox::skipContainingBlockForPercentHeightCalculation(const RenderBox& 
     // anonymous inline-blocks, so skip those too. All other types of anonymous
     // objects, such as table-cells and flexboxes, will be treated as if they were
     // non-anonymous.
-    if (containingBlock.isAnonymousForPercentageResolution())
+    if (containingBlock.shouldSkipForPercentageResolution())
         return containingBlock.style().display() == Style::DisplayType::BlockFlow || containingBlock.style().display() == Style::DisplayType::InlineFlowRoot;
 
-    // For quirks mode, we skip most auto-height containing blocks when computing
-    // percentages.
+    // For quirks mode, we skip most auto-height containing blocks when computing percentages.
     auto shouldSkipContainingBlockInQuirksMode = [&] {
         ASSERT(document().inQuirksMode());
         if (containingBlock.isFlexItem() && downcast<RenderFlexibleBox>(containingBlock.parent())->canUseFlexItemForPercentageResolution(containingBlock))
@@ -3830,6 +3825,8 @@ bool RenderBox::skipContainingBlockForPercentHeightCalculation(const RenderBox& 
         if (containingBlock.isRenderGrid())
             return false;
         if (containingBlock.isFlexibleBoxIncludingDeprecated())
+            return false;
+        if (is<RenderView>(containingBlock))
             return false;
         return containingBlock.style().logicalHeight().isAuto();
     };

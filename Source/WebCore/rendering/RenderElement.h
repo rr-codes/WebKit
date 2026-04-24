@@ -320,7 +320,7 @@ public:
     bool hasCachedSVGResource() const { return m_hasCachedSVGResource; }
 
     bool isAnonymousBlock() const;
-    bool isAnonymousForPercentageResolution() const { return isAnonymous() && !isViewTransitionPseudo() && !isRenderView(); }
+    bool shouldSkipForPercentageResolution() const { return isAnonymous() && !isViewTransitionPseudo() && !isRenderView(); }
     inline bool isBlockBox() const;
     inline bool isBlockLevelBox() const;
     inline bool isBlockContainer() const;
