@@ -860,7 +860,6 @@ Vector<IntRect, 1> SkiaCompositingLayer::computeConsolidatedOverlapRegionRects(c
     computeOverlapRegions(data, context.accumulatedReplicaTransform, IncludesReplica::No);
 
     auto rects = data.overlapRegion.rects();
-    static constexpr size_t cOverlapRegionConsolidationThreshold = 4;
     if (rects.size() > cOverlapRegionConsolidationThreshold) {
         rects.clear();
         rects.append(data.overlapRegion.bounds());
@@ -972,7 +971,6 @@ void SkiaCompositingLayer::paintUsingOverlapRegions(SkCanvas& canvas, PaintConte
     }
 
     auto overlapRects = data.overlapRegion.rects();
-    static constexpr size_t cOverlapRegionConsolidationThreshold = 4;
     if (data.nonOverlapRegion.isEmpty() && overlapRects.size() > cOverlapRegionConsolidationThreshold) {
         overlapRects.clear();
         overlapRects.append(data.overlapRegion.bounds());
