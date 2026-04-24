@@ -3271,7 +3271,7 @@ void HTMLMediaElement::dispatchPlayPauseEventsIfNeedsQuirks()
     if (!protect(document())->quirks().needsAutoplayPlayPauseEvents())
         return;
 
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(DispatchPlayPauseEventsIfNeedsQuirks);
     scheduleEvent(eventNames().playingEvent);
     scheduleEvent(eventNames().pauseEvent);
 }
@@ -3285,7 +3285,7 @@ void HTMLMediaElement::durationChanged()
 
 void HTMLMediaElement::applyConfiguration(const RemotePlaybackConfiguration& configuration)
 {
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(ApplyConfiguration);
 
     if (configuration.currentTime)
         setCurrentTime(configuration.currentTime);
@@ -4968,7 +4968,7 @@ void HTMLMediaElement::hardwareMutedStateDidChange(const AudioSession& session)
     if (effectiveMuted() || !volume())
         return;
 
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(HardwareMutedStateDidChange);
     userDidInterfereWithAutoplay();
 }
 #endif
@@ -6073,7 +6073,7 @@ void HTMLMediaElement::seekToPlaybackPositionEndedTimerFired()
 
 void HTMLMediaElement::mediaPlayerVolumeChanged()
 {
-    ALWAYS_LOG(LOGIDENTIFIER);
+    HTMLMEDIAELEMENT_RELEASE_LOG(MediaPlayerVolumeChanged);
 
     beginProcessingMediaPlayerCallback();
     if (RefPtr player = m_player) {
