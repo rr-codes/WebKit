@@ -1940,3 +1940,6 @@ strict-origin
 origin-when-cross-origin
 strict-origin-when-cross-origin
 unsafe-url
+
+// <will-change>
+will-change
