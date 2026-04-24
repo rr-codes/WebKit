@@ -55,6 +55,7 @@
 #endif
 
 #if OS(DARWIN)
+#include <array>
 #include <sys/sysctl.h>
 #include <unistd.h>
 #include <wtf/OSObjectPtr.h>
@@ -412,9 +413,9 @@ bool WTFIsDebuggerAttached()
 {
 #if OS(DARWIN)
     struct kinfo_proc info;
-    int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid() };
+    std::array mib { CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid() };
     size_t size = sizeof(info);
-    if (sysctl(mib, sizeof(mib) / sizeof(mib[0]), &info, &size, nullptr, 0) == -1)
+    if (sysctl(mib.data(), mib.size(), &info, &size, nullptr, 0) == -1)
         return false;
     return info.kp_proc.p_flag & P_TRACED;
 #else
