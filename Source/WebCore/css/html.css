@@ -1045,8 +1045,6 @@ select {
     -webkit-rtl-ordering: logical;
 }
 
-/* FIXME: Implement revert-rule CSS keyword so we can de-duplicate some of this. */
-
 select:-internal-uses-menulist {
 #if defined(WTF_PLATFORM_IOS_FAMILY) && WTF_PLATFORM_IOS_FAMILY
     padding-inline: -internal-auto-base(0.4em, 0.5em);
@@ -1080,27 +1078,11 @@ select:-internal-uses-menulist {
 }
 
 select:-internal-uses-menulist:enabled:hover {
-#if defined(WTF_PLATFORM_IOS_FAMILY) && WTF_PLATFORM_IOS_FAMILY
-#if defined(WTF_PLATFORM_VISION) && WTF_PLATFORM_VISION
-    background-color: -internal-auto-base(rgba(0, 0, 0, 0.04), color-mix(currentColor 10%, transparent));
-#else
-    background-color: -internal-auto-base(-apple-system-opaque-secondary-fill, color-mix(currentColor 10%, transparent));
-#endif /* defined(WTF_PLATFORM_VISION) && WTF_PLATFORM_VISION */
-#else
-    background-color: -internal-auto-base(Canvas, color-mix(currentColor 10%, transparent));
-#endif /* defined(WTF_PLATFORM_IOS_FAMILY) && WTF_PLATFORM_IOS_FAMILY */
+    background-color: -internal-auto-base(revert-rule, color-mix(currentColor 10%, transparent));
 }
 
 select:-internal-uses-menulist:enabled:active {
-#if defined(WTF_PLATFORM_IOS_FAMILY) && WTF_PLATFORM_IOS_FAMILY
-#if defined(WTF_PLATFORM_VISION) && WTF_PLATFORM_VISION
-    background-color: -internal-auto-base(rgba(0, 0, 0, 0.04), color-mix(currentColor 20%, transparent));
-#else
-    background-color: -internal-auto-base(-apple-system-opaque-secondary-fill, color-mix(currentColor 20%, transparent));
-#endif /* defined(WTF_PLATFORM_VISION) && WTF_PLATFORM_VISION */
-#else
-    background-color: -internal-auto-base(Canvas, color-mix(currentColor 20%, transparent));
-#endif /* defined(WTF_PLATFORM_IOS_FAMILY) && WTF_PLATFORM_IOS_FAMILY */
+    background-color: -internal-auto-base(revert-rule, color-mix(currentColor 20%, transparent));
 }
 
 select:-internal-uses-menulist:disabled {
