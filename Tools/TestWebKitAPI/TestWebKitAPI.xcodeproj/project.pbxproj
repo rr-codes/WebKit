@@ -1278,6 +1278,7 @@
 				WTF/ScopedLambda.cpp = "-fno-elide-constructors";
 				WTF/cocoa/RetainPtrARC.mm = "-fobjc-arc";
 				WTF/cocoa/RetainPtrHashingCocoaARC.mm = "-fobjc-arc";
+				WTF/cocoa/RetainRefARC.mm = "-fobjc-arc";
 				WTF/cocoa/TypeCastsCocoaARC.mm = "-fobjc-arc";
 				WTF/darwin/OSObjectPtrCocoaARC.mm = "-fobjc-arc";
 				WTF/darwin/TypeCastsOSObjectCocoaARC.mm = "-fobjc-arc";
@@ -1293,6 +1294,7 @@
 				WTF/BumpPointerAllocator.cpp,
 				WTF/cf/RetainPtr.cpp,
 				WTF/cf/RetainPtrHashing.cpp,
+				WTF/cf/RetainRef.cpp,
 				WTF/cf/StringCF.cpp,
 				WTF/cf/VectorCF.cpp,
 				WTF/CharacterProperties.cpp,
@@ -1306,6 +1308,8 @@
 				WTF/cocoa/RetainPtrARC.mm,
 				WTF/cocoa/RetainPtrHashingCocoa.mm,
 				WTF/cocoa/RetainPtrHashingCocoaARC.mm,
+				WTF/cocoa/RetainRef.mm,
+				WTF/cocoa/RetainRefARC.mm,
 				WTF/cocoa/TextStreamCocoa.cpp,
 				WTF/cocoa/TextStreamCocoa.mm,
 				WTF/cocoa/TypeCastsCocoa.mm,
