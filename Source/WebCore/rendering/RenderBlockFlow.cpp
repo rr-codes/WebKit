@@ -4989,11 +4989,7 @@ void RenderBlockFlow::computeInlinePreferredLogicalWidths(LayoutUnit& minLogical
             auto blocMaxWidth = LayoutUnit { };
             computeChildPreferredLogicalWidths(downcast<RenderBox>(*child), blockMinWidth, blocMaxWidth);
 
-            auto marginsInInlineDirection = LayoutUnit { };
-            if (auto fixedMarginStart = child->style().marginStart(writingMode()).tryFixed())
-                marginsInInlineDirection += LayoutUnit::fromFloatCeil(fixedMarginStart->resolveZoom(child->style().usedZoomForLength()));
-            if (auto fixedMarginEnd = child->style().marginEnd(writingMode()).tryFixed())
-                marginsInInlineDirection += LayoutUnit::fromFloatCeil(fixedMarginEnd->resolveZoom(child->style().usedZoomForLength()));
+            auto marginsInInlineDirection = marginIntrinsicLogicalWidthForChild(downcast<RenderBox>(*child));
 
             minLogicalWidth = std::max(minLogicalWidth, blockMinWidth + marginsInInlineDirection);
             maxLogicalWidth = std::max(maxLogicalWidth, blocMaxWidth + marginsInInlineDirection);
