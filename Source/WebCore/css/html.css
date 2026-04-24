@@ -1203,9 +1203,13 @@ select option:not(:checked)::checkmark {
     visibility: hidden;
 }
 
-select optgroup {
+optgroup {
     display: block;
     font-weight: bolder;
+}
+
+option {
+    display: block;
 }
 
 select optgroup option {

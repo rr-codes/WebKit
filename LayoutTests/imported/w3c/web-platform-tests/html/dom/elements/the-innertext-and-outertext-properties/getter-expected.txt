@@ -140,10 +140,10 @@ PASS <select> containing text node child ("<select class='poke'></select>")
 PASS <optgroup> containing <optgroup> ("<select><optgroup class='poke-optgroup'></select>")
 PASS <optgroup> containing <option> ("<select><optgroup><option>abc</select>")
 FAIL <div> in <option> ("<select><option class='poke-div'>123</select>") assert_equals: innerText expected "123\nabc" but got "123abc"
-FAIL empty <optgroup> in <div> ("<div>a<optgroup></optgroup>bc") assert_equals: innerText expected "a\nbc" but got "abc"
-FAIL <optgroup> in <div> ("<div>a<optgroup>123</optgroup>bc") assert_equals: innerText expected "a\nbc" but got "a123bc"
-FAIL empty <option> in <div> ("<div>a<option></option>bc") assert_equals: innerText expected "a\nbc" but got "abc"
-FAIL <option> in <div> ("<div>a<option>123</option>bc") assert_equals: innerText expected "a\n123\nbc" but got "a123bc"
+PASS empty <optgroup> in <div> ("<div>a<optgroup></optgroup>bc")
+FAIL <optgroup> in <div> ("<div>a<optgroup>123</optgroup>bc") assert_equals: innerText expected "a\nbc" but got "a\n123\nbc"
+PASS empty <option> in <div> ("<div>a<option></option>bc")
+PASS <option> in <div> ("<div>a<option>123</option>bc")
 PASS undefined ("<select><option>one</option><div><optgroup label=optgroup><div><option><span>two")
 PASS <button> contents preserved ("<div><button>abc")
 PASS <fieldset> contents preserved ("<div><fieldset>abc")
