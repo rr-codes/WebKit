@@ -363,6 +363,9 @@ static bool hasDefiniteHeightByStyle(const RenderBlock& containingBlock)
     if (logicalHeight.isStretch())
         return ancestorHasDefiniteHeight();
 
+    if (containingBlock.shouldComputeLogicalHeightFromAspectRatio())
+        return true;
+
     return !logicalHeight.isAuto() && !logicalHeight.isIntrinsic();
 }
 
