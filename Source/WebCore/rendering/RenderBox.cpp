@@ -4149,8 +4149,6 @@ LayoutRange RenderBox::containingBlockRangeForPositioned(const RenderBoxModelObj
 
     if (isFixedPositioned()) {
         if (auto* renderView = dynamicDowncast<RenderView>(container)) {
-            if (!style().positionArea().isNone() && renderView->hasRenderOverflow())
-                return getScrollableContainingBlockRange(*renderView, physicalAxis);
             return isContainerInlineAxis
                 ? LayoutRange(startEdge, renderView->clientLogicalWidthForFixedPosition())
                 : LayoutRange(startEdge, renderView->clientLogicalHeightForFixedPosition());
