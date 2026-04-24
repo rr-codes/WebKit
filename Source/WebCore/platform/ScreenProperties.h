@@ -67,10 +67,6 @@ struct ScreenData {
     float scaleFactor { 1 };
 #endif
 
-#if PLATFORM(MAC)
-    bool reserved { false };
-#endif
-
     bool operator==(const ScreenData&) const = default;
 };
 

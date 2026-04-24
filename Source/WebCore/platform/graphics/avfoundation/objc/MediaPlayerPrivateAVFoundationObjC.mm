@@ -142,14 +142,6 @@
 
 #import <pal/cocoa/MediaToolboxSoftLink.h>
 
-#if PLATFORM(MAC)
-#if USE(APPLE_INTERNAL_SDK) && __has_include(<WebKitAdditions/AVPlayerAdditions.mm>)
-#import <WebKitAdditions/AVPlayerAdditions.mm>
-#else
-static void setPlayerScreenReserved(AVPlayer *, bool) { }
-#endif
-#endif
-
 // Note: This must be defined before our SOFT_LINK macros:
 @class AVMediaSelectionOption;
 @interface AVMediaSelectionOption (OutOfBandExtensions)
@@ -1170,10 +1162,6 @@ void MediaPlayerPrivateAVFoundationObjC::createAVPlayer()
         INFO_LOG(LOGIDENTIFIER, "Setting videoTarget");
         [m_avPlayer addVideoTarget:m_videoTarget];
     }
-#endif
-
-#if PLATFORM(MAC)
-    setPlayerScreenReserved(m_avPlayer.get(), player->screenReserved());
 #endif
 
     if (m_isGatheringVideoFrameMetadata)
@@ -4331,14 +4319,6 @@ bool MediaPlayerPrivateAVFoundationObjC::shouldAttachLayerToPlayer()
 
     return true;
 }
-
-#if PLATFORM(MAC)
-void MediaPlayerPrivateAVFoundationObjC::screenReservedChanged(bool reserved)
-{
-    setPlayerScreenReserved(m_avPlayer.get(), reserved);
-}
-#endif
-
 
 NSArray* assetMetadataKeyNames()
 {

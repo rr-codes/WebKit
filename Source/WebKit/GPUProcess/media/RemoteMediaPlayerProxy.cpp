@@ -1411,13 +1411,6 @@ void RemoteMediaPlayerProxy::sendInternalMessage(const WebCore::MessageForTestin
     protect(m_webProcessConnection)->send(Messages::MediaPlayerPrivateRemote::SendInternalMessage { message }, m_id);
 }
 
-#if PLATFORM(MAC)
-void RemoteMediaPlayerProxy::screenReservedChanged(bool reserved)
-{
-    protect(m_player)->setScreenReserved(reserved);
-}
-#endif
-
 } // namespace WebKit
 
 #endif // ENABLE(GPU_PROCESS) && ENABLE(VIDEO)

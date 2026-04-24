@@ -326,10 +326,6 @@ private:
     void cancelPendingSeek();
     void completeSeek(const MediaTime&);
 
-#if PLATFORM(MAC)
-    void screenReservedChanged(bool) final;
-#endif
-
     // Remote layer support
     WebCore::HostingContext hostingContext() const final;
     void setVideoLayerSizeFenced(const WebCore::FloatSize&, WTF::MachSendRightAnnotated&&) final;

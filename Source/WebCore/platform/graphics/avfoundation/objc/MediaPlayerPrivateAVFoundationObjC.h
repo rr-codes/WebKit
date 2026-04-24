@@ -410,10 +410,6 @@ private:
     void updateLayerAttachment();
     bool shouldAttachLayerToPlayer();
 
-#if PLATFORM(MAC)
-    void screenReservedChanged(bool) final;
-#endif
-
     RetainPtr<AVURLAsset> m_avAsset;
     RetainPtr<AVPlayer> m_avPlayer;
     RetainPtr<AVPlayerItem> m_avPlayerItem;

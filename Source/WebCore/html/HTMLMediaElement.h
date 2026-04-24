@@ -138,7 +138,6 @@ class RemotePlayback;
 
 using CueInterval = PODInterval<MediaTime, TextTrackCue*>;
 using CueList = Vector<CueInterval>;
-using PlatformDisplayID = uint32_t;
 
 using MediaProvider = Variant<
 #if ENABLE(MEDIA_STREAM)
@@ -1195,11 +1194,6 @@ private:
     void rebuildMediaEngineForWirelessPlayback();
 #endif
 
-    void screenPropertiesChanged(PlatformDisplayID);
-#if PLATFORM(MAC)
-    void setScreenReserved(bool);
-#endif
-
     Timer m_progressEventTimer;
     Timer m_playbackProgressTimer;
     Timer m_scanTimer;
@@ -1516,13 +1510,6 @@ private:
     RefPtr<AggregateMessageClientForTesting> m_internalMessageClient;
 
     bool m_forceStereoDecoding { false };
-
-    using ScreenPropertiesChangedObserver = Observer<void(PlatformDisplayID)>;
-    RefPtr<ScreenPropertiesChangedObserver> m_screenPropertiesChangedObserver;
-
-#if PLATFORM(MAC)
-    bool m_screenReserved { false };
-#endif
 };
 
 String convertEnumerationToString(HTMLMediaElement::AutoplayEventPlaybackState);
