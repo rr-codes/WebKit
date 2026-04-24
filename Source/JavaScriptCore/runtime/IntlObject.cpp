@@ -2119,6 +2119,11 @@ TimeZoneID utcTimeZoneIDSlow()
     return utcTimeZoneIDStorage;
 }
 
+void initializeAvailableTimeZones()
+{
+    utcTimeZoneID();
+}
+
 // https://tc39.es/ecma402/#sec-availableprimarytimezoneidentifiers
 static JSArray* availablePrimaryTimeZoneIdentifiers(JSGlobalObject* globalObject)
 {

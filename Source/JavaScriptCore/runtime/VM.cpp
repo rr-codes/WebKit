@@ -65,6 +65,7 @@
 #include "IncrementalSweeper.h"
 #include "Interpreter.h"
 #include "IntlCache.h"
+#include "IntlObject.h"
 #include "JITCode.h"
 #include "JITOperationList.h"
 #include "JITSizeStatistics.h"
@@ -511,6 +512,8 @@ WTF_ALLOW_UNSAFE_BUFFER_USAGE_END
 #endif
 
     Config::finalize();
+
+    initializeAvailableTimeZones();
 
     // We must set this at the end only after the VM is fully initialized.
     WTF::storeStoreFence();
