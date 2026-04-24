@@ -2106,7 +2106,7 @@ bool RenderFlexibleBox::resolveFlexibleLengths(FlexSign flexSign, FlexLayoutItem
         LayoutUnit flexItemSize = flexLayoutItem.flexBaseContentSize;
         double extraSpace = 0;
         if (remainingFreeSpace > 0 && totalFlexGrow > 0 && flexSign == FlexSign::PositiveFlexibility && std::isfinite(totalFlexGrow))
-            extraSpace = remainingFreeSpace * flexItemStyle.flexGrow().value / totalFlexGrow;
+            extraSpace = remainingFreeSpace * (flexItemStyle.flexGrow().value / totalFlexGrow);
         else if (remainingFreeSpace < 0 && totalWeightedFlexShrink > 0 && flexSign == FlexSign::NegativeFlexibility && std::isfinite(totalWeightedFlexShrink) && !flexItemStyle.flexShrink().isZero())
             extraSpace = remainingFreeSpace * flexItemStyle.flexShrink().value * flexLayoutItem.flexBaseContentSize / totalWeightedFlexShrink;
         if (std::isfinite(extraSpace))
