@@ -329,6 +329,35 @@ double MediaPlayerPrivateWirelessPlayback::rate() const
     return 0;
 }
 
+void MediaPlayerPrivateWirelessPlayback::setVolumeLocked(bool volumeLocked)
+{
+    if (m_volumeLocked == volumeLocked)
+        return;
+
+    ALWAYS_LOG(LOGIDENTIFIER, volumeLocked);
+    m_volumeLocked = volumeLocked;
+}
+
+void MediaPlayerPrivateWirelessPlayback::setVolume(float volume)
+{
+    if (m_volumeLocked)
+        return;
+
+    RefPtr route = this->route();
+    if (!route || route->volume() == volume)
+        return;
+
+    ALWAYS_LOG(LOGIDENTIFIER, volume);
+    route->setVolume(volume);
+}
+
+float MediaPlayerPrivateWirelessPlayback::volume() const
+{
+    if (RefPtr route = this->route())
+        return route->volume();
+    return 1;
+}
+
 void MediaPlayerPrivateWirelessPlayback::setNetworkState(MediaPlayer::NetworkState networkState)
 {
     if (networkState == m_networkState)
