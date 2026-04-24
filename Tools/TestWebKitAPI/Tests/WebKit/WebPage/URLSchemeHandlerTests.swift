@@ -25,6 +25,7 @@
 
 import Testing
 import WebKit
+import struct _Concurrency.Task
 import struct Swift.String
 import struct Foundation.URL
 private import TestWebKitAPILibrary

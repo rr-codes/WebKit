@@ -27,6 +27,7 @@ import Foundation
 import WebKit
 import SwiftUI
 import struct Swift.String
+import struct _Concurrency.Task
 import Testing
 private import TestWebKitAPILibrary
 
