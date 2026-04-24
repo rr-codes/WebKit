@@ -3568,6 +3568,7 @@ http/tests/ipc/gpu-load-error-empty-user-info-crssh.html [ Skip ]
 
 # ATTACHMENT_ELEMENT is disabled in glib ports.
 ipc/restrictedendpoints/allow-access-attachmentElement.html [ Skip ]
+ipc/restrictedendpoints/deny-access-attachmentElement.html [ Skip ]
 
 # libwebrtc-specific.
 ipc/videoEncode.html [ Skip ]
@@ -3593,7 +3594,6 @@ ipc/stream-sync-reply-shared-memory.html [ Failure ]
 ipc/decode-feConvolveMatrix-kernelSize-overflow.html [ Failure ]
 ipc/invalid-addSourceBuffer-to-GPU-process-crash.html [ Failure ]
 ipc/restore-empty-stack-crash.html [ Failure ]
-ipc/restrictedendpoints/deny-access-attachmentElement.html [ Failure ]
 ipc/serialized-type-info.html [ Failure ]
 
 ipc/restrictedendpoints/deny-access-testOnlyIPC.html [ Crash ]

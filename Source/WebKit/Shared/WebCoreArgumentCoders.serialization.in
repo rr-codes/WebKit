@@ -7941,6 +7941,7 @@ header: <WebCore/WebCodecsEncodedAudioChunk.h>
 
 #if USE(LIBRICE)
 header: <WebCore/RiceGatherResult.h>
+using WebCore::RiceSocket = std::pair<String, WebCore::RTCIceProtocol>;
 [CustomHeader] struct WebCore::RiceGatherResult {
     HashMap<WebCore::RiceSocket, String> addresses;
     Vector<WebCore::RiceSocket> turnAddresses;
