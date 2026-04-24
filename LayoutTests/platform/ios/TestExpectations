@@ -8636,6 +8636,9 @@ webgl/2.0.y/conformance/textures/image_bitmap_from_image_bitmap/tex-2d-rgba-rgba
 
 webkit.org/b/311222 [ Release ] imported/w3c/web-platform-tests/navigation-api/navigate-event/signal-abort-window-stop-after-intercept.html [ Skip ]
 
+# WebAuthn authenticator setup races against abort under stress mode; can timeout or produce wrong rejection
+webkit.org/b/312120 imported/w3c/web-platform-tests/credential-management/credentialscontainer-get-basics.https.html [ Pass Failure Timeout ]
+
 # rdar://173890240 ([iOS] imported/w3c/web-platform-tests/css/css-images/gradient/gradient-analogous-missing-components-003.html has 2 component pixel difference)
 imported/w3c/web-platform-tests/css/css-images/gradient/gradient-analogous-missing-components-003.html [ Pass ImageOnlyFailure ]
 
