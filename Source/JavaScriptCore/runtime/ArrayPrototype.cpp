@@ -695,7 +695,16 @@ JSC_DEFINE_HOST_FUNCTION(arrayProtoFuncShift, (JSGlobalObject* globalObject, Cal
 {
     VM& vm = globalObject->vm();
     auto scope = DECLARE_THROW_SCOPE(vm);
-    JSObject* thisObj = callFrame->thisValue().toThis(globalObject, ECMAMode::strict()).toObject(globalObject);
+
+    JSValue thisValue = callFrame->thisValue().toThis(globalObject, ECMAMode::strict());
+
+    if (isJSArray(thisValue)) [[likely]] {
+        JSValue result = asArray(thisValue)->fastShift(vm);
+        if (result)
+            RELEASE_AND_RETURN(scope, JSValue::encode(result));
+    }
+
+    JSObject* thisObj = thisValue.toObject(globalObject);
     EXCEPTION_ASSERT(!!scope.exception() == !thisObj);
     if (!thisObj) [[unlikely]]
         return encodedJSValue();
