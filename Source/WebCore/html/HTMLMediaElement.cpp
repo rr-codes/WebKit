@@ -673,10 +673,6 @@ HTMLMediaElement::HTMLMediaElement(const QualifiedName& tagName, Document& docum
 #if ENABLE(WIRELESS_PLAYBACK_TARGET)
     , m_remote(RemotePlayback::create(*this))
 #endif
-    , m_screenPropertiesChangedObserver { ScreenPropertiesChangedObserver::create([weakThis = WeakPtr { *this }] (PlatformDisplayID displayId) {
-        if (RefPtr protectedThis = weakThis.get())
-            protectedThis->screenPropertiesChanged(displayId);
-    }) }
 {
     RefPtr page = document.page();
     m_shouldAudioPlaybackRequireUserGesture = page && page->requiresUserGestureForAudioPlayback() && !processingUserGestureForMedia();
@@ -929,7 +925,13 @@ void HTMLMediaElement::registerWithDocument(Document& document)
 #endif
 
     document.addAudioProducer(*this);
-    document.addScreenPropertiesChangedObserver(m_screenPropertiesChangedObserver);
+
+    ASSERT(!m_screenPropertiesChangedObserver, "Cannot add the same element to two documents");
+    m_screenPropertiesChangedObserver = ScreenPropertiesChangedObserver::create([weakThis = WeakPtr { *this }] (PlatformDisplayID displayId) {
+        if (RefPtr protectedThis = weakThis.get())
+            protectedThis->screenPropertiesChanged(displayId);
+    });
+    document.addScreenPropertiesChangedObserver(*m_screenPropertiesChangedObserver);
 }
 
 void HTMLMediaElement::unregisterWithDocument(Document& document)
@@ -958,6 +960,8 @@ void HTMLMediaElement::unregisterWithDocument(Document& document)
 #endif
 
     document.removeAudioProducer(*this);
+
+    m_screenPropertiesChangedObserver = nullptr;
 }
 
 void HTMLMediaElement::didMoveToNewDocument(Document& oldDocument, Document& newDocument)
