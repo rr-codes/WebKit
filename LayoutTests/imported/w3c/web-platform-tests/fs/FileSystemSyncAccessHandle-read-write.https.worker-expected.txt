@@ -1,5 +1,7 @@
 
 PASS Test reading an empty file through a sync access handle.
+PASS Test using an empty ArrayBuffer.
+PASS Test using an ArrayBuffer.
 PASS Test writing and reading through a sync access handle.
 PASS Test second write that is bigger than the first write
 PASS Test second write that is smaller than the first write
@@ -10,6 +12,5 @@ PASS Test read with default options
 PASS Test write with default options
 PASS Test reading at a negative offset fails.
 PASS Test writing at a negative offset fails.
-PASS Test that writing moves the file position cursor
-PASS Test that reading moves the file position cursor
+PASS Test reading and writing a file using the cursor
 
