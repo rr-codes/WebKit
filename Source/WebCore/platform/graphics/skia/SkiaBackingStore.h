@@ -69,6 +69,8 @@ private:
         float m_scale { 1. };
         FloatRect m_rect;
         sk_sp<SkSurface> m_surface;
+        unsigned m_textureID { 0 };
+        sk_sp<SkImage> m_cachedImage;
     };
 
     HashMap<uint32_t, Tile> m_tiles;

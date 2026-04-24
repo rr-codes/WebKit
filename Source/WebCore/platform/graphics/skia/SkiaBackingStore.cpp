@@ -118,6 +118,7 @@ bool SkiaBackingStore::Tile::tryEnsureSurface(const IntSize& size, CoordinatedTi
 
     auto* grContext = PlatformDisplay::sharedDisplay().skiaGrContext();
     auto texture = BitmapTexturePool::singleton().acquireTexture(size, flags);
+    unsigned textureID = texture->id();
     GrBackendTexture backendTexture = texture->createSkiaBackendTexture();
     auto surface = SkSurfaces::WrapBackendTexture(grContext, backendTexture, kTopLeft_GrSurfaceOrigin, 0, kRGBA_8888_SkColorType, SkColorSpace::MakeSRGB(), nullptr, +[](void* userData) {
         static_cast<BitmapTexture*>(userData)->deref();
@@ -131,6 +132,8 @@ bool SkiaBackingStore::Tile::tryEnsureSurface(const IntSize& size, CoordinatedTi
 
     canvas->clear(SK_ColorTRANSPARENT);
     m_surface = WTF::move(surface);
+    m_textureID = textureID;
+    m_cachedImage = nullptr;
     return true;
 }
 
@@ -154,11 +157,13 @@ void SkiaBackingStore::Tile::update(const IntRect& dirtyRect, const IntRect& til
         GrBackendTexture backendTexture = texture->createSkiaBackendTexture();
         if (dirtyRect.size() == tileRect.size()) {
             // Fast path: whole tile content changed -- take ownership of the incoming texture, replacing the existing tile buffer (avoiding texture copies).
+            m_textureID = texture->id();
+            m_cachedImage = nullptr;
+
             if (m_surface) {
                 m_surface->replaceBackendTexture(backendTexture, kTopLeft_GrSurfaceOrigin, SkSurface::kDiscard_ContentChangeMode, +[](void* userData) {
                     static_cast<BitmapTexture*>(userData)->deref();
                 }, &texture.leakRef());
-                m_surface->notifyContentWillChange(SkSurface::kDiscard_ContentChangeMode);
             } else {
                 auto* grContext = PlatformDisplay::sharedDisplay().skiaGrContext();
                 m_surface = SkSurfaces::WrapBackendTexture(grContext, backendTexture, kTopLeft_GrSurfaceOrigin, 0, kRGBA_8888_SkColorType, SkColorSpace::MakeSRGB(), nullptr, +[](void* userData) {
@@ -182,7 +187,18 @@ void SkiaBackingStore::Tile::update(const IntRect& dirtyRect, const IntRect& til
 
 sk_sp<SkImage> SkiaBackingStore::Tile::image()
 {
-    return m_surface ? m_surface->makeImageSnapshot() : nullptr;
+    // SkSurface::makeImageSnapshot() does a copy-on-write, but when the surface is wrapping an
+    // external texture, it always copies because it doesn't know if the texture will be modified
+    // externally. We know the texture won't change, so we can use our own cached image wihtout copying.
+    if (!m_cachedImage && m_surface) {
+        GrGLTextureInfo externalTexture;
+        externalTexture.fTarget = GL_TEXTURE_2D;
+        externalTexture.fID = m_textureID;
+        externalTexture.fFormat = GL_RGBA8;
+        auto backendTexture = GrBackendTextures::MakeGL(m_surface->width(), m_surface->height(), skgpu::Mipmapped::kNo, externalTexture);
+        m_cachedImage = SkImages::BorrowTextureFrom(PlatformDisplay::sharedDisplay().skiaGrContext(), backendTexture, kTopLeft_GrSurfaceOrigin, kRGBA_8888_SkColorType, kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+    }
+    return m_cachedImage;
 }
 
 } // namespace WebCore
