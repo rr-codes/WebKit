@@ -524,6 +524,8 @@ webkit.org/b/236298 fast/inline-block/hidpi-margin-top-with-subpixel-value-and-o
 
 webkit.org/b/131347 svg/custom/hidpi-masking-clipping.svg [ ImageOnlyFailure ]
 
+webkit.org/b/131934 fast/dom/Window/mozilla-focus-blur.html [ Failure ]
+
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of Expected failures.
 #////////////////////////////////////////////////////////////////////////////////////////
@@ -1360,10 +1362,11 @@ webkit.org/b/278719 fast/events/touch/touch-handler-count.html [ Failure ]
 webkit.org/b/278719 fast/events/touch/touch-inside-iframe.html [ Timeout ]
 webkit.org/b/278719 fast/events/touch/touch-inside-iframe-scrolled.html [ Timeout ]
 webkit.org/b/278719 fast/events/touch/touch-slider.html [ Crash Failure ]
-webkit.org/b/278719 fast/events/touch/touch-slider-no-js-touch-listener.html [ Crash Failure ]
 webkit.org/b/278719 fast/events/touch/touch-stale-node-crash.html [ Timeout ]
 webkit.org/b/278719 imported/w3c/web-platform-tests/touch-events/idlharness.window.html [ Failure ]
 webkit.org/b/278719 imported/w3c/web-platform-tests/touch-events/touch-globaleventhandler-interface.html [ Failure ]
+
+webkit.org/b/208984 fast/events/touch/touch-slider-no-js-touch-listener.html [ Failure ]
 
 imported/w3c/web-platform-tests/css/css-view-transitions/element-is-grouping-during-animation.html [ ImageOnlyFailure Pass ]
 
@@ -1422,6 +1425,8 @@ webkit.org/b/305509 http/tests/inspector/network/har/har-page.html [ Failure Pas
 webkit.org/b/305509 imported/w3c/web-platform-tests/css/css-pseudo/marker-animate-002.html [ ImageOnlyFailure Pass ]
 webkit.org/b/305509 imported/w3c/web-platform-tests/css/css-view-transitions/start-view-transtion-skips-active.html [ Failure Pass ]
 webkit.org/b/305509 imported/w3c/web-platform-tests/event-timing/interactionid-orphan-pointerup.html [ Failure Pass ]
+
+webkit.org/b/305514 webanimations/focus-accelerated-animated-element-initially-in-overflow.html [ Failure ]
 
 # [GTK] Some SVG tests sometimes fail with a very differently sized layer
 webkit.org/b/308976 svg/filters/feMerge.svg [ Pass Failure ImageOnlyFailure ]
