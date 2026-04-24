@@ -3557,6 +3557,14 @@ ipc/pasteboard-write-custom-data.html [ Skip ]
 ipc/remotedisplaylistrecorder-drawcontrolpart-slidertrackpart-crash.html [ Skip ]
 http/tests/ipc/gpu-load-error-empty-user-info-crssh.html [ Skip ]
 
+# These tests are specific to Cocoa's definition of WebCore::PlatformColorSpace which is different from Skia's.
+ipc/decode-feConvolveMatrix-kernelSize-overflow.html [ Skip ]
+ipc/insufficient-svgfilter-inputs-crash.html [ Skip ]
+ipc/invalid-feConvolveMatrix-crash.html [ Skip ]
+ipc/invalid-svgfilter-expression-crash.html [ Skip ]
+ipc/mark-surfaces-volatile-during-prepare-for-display.html [ Skip ]
+ipc/restore-empty-stack-crash.html [ Skip ]
+
 # ATTACHMENT_ELEMENT is disabled in glib ports.
 ipc/restrictedendpoints/allow-access-attachmentElement.html [ Skip ]
 ipc/restrictedendpoints/deny-access-attachmentElement.html [ Skip ]
@@ -3581,18 +3589,13 @@ ipc/stream-sync-reply-shared-memory.html [ Failure ]
 
 ### NEEDS PROPER TRIAGGING/GARDENING
 
-ipc/decode-feConvolveMatrix-kernelSize-overflow.html [ Failure ]
 ipc/invalid-addSourceBuffer-to-GPU-process-crash.html [ Failure ]
-ipc/restore-empty-stack-crash.html [ Failure ]
 ipc/serialized-type-info.html [ Failure ]
 
 ipc/restrictedendpoints/deny-access-testOnlyIPC.html [ Crash ]
 ipc/restrictedendpoints/deny-access-webGPU.html [ Crash ]
 ipc/validate-message-check-in-networkconnectiontowebproces-crash.html [ Crash ]
 
-ipc/insufficient-svgfilter-inputs-crash.html [ Timeout ]
-ipc/invalid-feConvolveMatrix-crash.html [ Timeout ]
-ipc/invalid-svgfilter-expression-crash.html [ Timeout ]
 ipc/restrictedendpoints/deny-access-updateQuotaBasedOnSpaceUsageForTesting.html [ Timeout ]
 ipc/restrictedendpoints/deny-access-webPush.html [ Timeout ]
 
