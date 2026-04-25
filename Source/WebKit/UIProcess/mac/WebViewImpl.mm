@@ -4702,6 +4702,9 @@ void WebViewImpl::startDrag(const WebCore::DragItem& item, ShareableBitmap::Hand
         // FIXME: The `dragLocationInWindowCoordinates` is in window coordinates (equivalent to root view), but `convertPointToMainFrameCoordinates`
         // expects the input to be in content coordinates of the frame corresponding to the given frame ID.
         m_page->convertPointToMainFrameCoordinates(item.dragLocationInWindowCoordinates, item.rootFrameID, [weakThis = WeakPtr { *this }, promisedAttachmentInfo = item.promisedAttachmentInfo, dragNSImage = WTF::move(dragNSImage), size, lastMouseDownEvent = m_lastMouseDownEvent, frameID, &sourceAction = item.sourceAction] (std::optional<FloatPoint> dragLocationInMainFrameCoordinates) mutable {
+
+            BEGIN_BLOCK_OBJC_EXCEPTIONS
+
             CheckedPtr protectedThis = weakThis.get();
             if (!protectedThis || !dragLocationInMainFrameCoordinates)
                 return;
@@ -4796,6 +4799,8 @@ void WebViewImpl::startDrag(const WebCore::DragItem& item, ShareableBitmap::Hand
                 [pasteboard setString:@"" forType:PasteboardTypes::WebDummyPboardType];
                 page->didStartDrag(frameID);
             }
+
+            END_BLOCK_OBJC_EXCEPTIONS
         });
     }
 }
