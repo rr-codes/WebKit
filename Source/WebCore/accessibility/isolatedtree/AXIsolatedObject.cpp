@@ -1638,11 +1638,12 @@ FloatRect AXIsolatedObject::convertFrameToSpace(const FloatRect& rect, Accessibi
         auto screenTransform = frameScreenTransform();
         auto scaledRect = screenTransform.mapRect(rect);
 
-        // The root scroll view represents the viewport, which doesn't account for it scroll.
-        // Undo the scroll component to get the viewport's fixed screen position.
+        // screenPosition tracks the document origin, which moves with scroll.
+        // The viewport is fixed on screen, so subtract the scroll and content
+        // inset offsets that contentsToView baked into screenPosition.
         if (isScrollArea() && !parent()) {
-            auto scrollOffset = screenTransform.mapPoint(FloatPoint(tree().frameScrollPosition()));
-            screenPosition.move(-roundToInt(scrollOffset.x()), -roundToInt(scrollOffset.y()));
+            auto viewOriginScrollPosition = screenTransform.mapPoint(FloatPoint(tree().frameViewOriginScrollPosition()));
+            screenPosition.move(-roundToInt(viewOriginScrollPosition.x()), -roundToInt(viewOriginScrollPosition.y()));
         }
 
         // Screen coordinates use bottom-left origin (on macOS).

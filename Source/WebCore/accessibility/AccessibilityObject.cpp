@@ -589,12 +589,13 @@ FloatRect AccessibilityObject::convertFrameToSpace(const FloatRect& frameRect, A
         auto scaledRect = geometry.screenTransform.mapRect(FloatRect(snappedFrameRect));
 
         auto screenPosition = geometry.screenPosition;
-        // The root scroll view represents the viewport, which doesn't account for it scroll.
-        // Undo the scroll component to get the viewport's fixed screen position.
+        // screenPosition tracks the document origin, which moves with scroll.
+        // The viewport is fixed on screen, so subtract the scroll and content
+        // inset offsets that contentsToView baked into screenPosition.
         if (this == rootScrollView.get()) {
             if (RefPtr scrollView = rootScrollView->scrollView()) {
-                auto scrollOffset = geometry.screenTransform.mapPoint(FloatPoint(scrollView->scrollPosition()));
-                screenPosition.move(-roundToInt(scrollOffset.x()), -roundToInt(scrollOffset.y()));
+                auto viewOriginScrollPosition = geometry.screenTransform.mapPoint(FloatPoint(scrollView->documentScrollPositionRelativeToViewOrigin()));
+                screenPosition.move(-roundToInt(viewOriginScrollPosition.x()), -roundToInt(viewOriginScrollPosition.y()));
             }
         }
 

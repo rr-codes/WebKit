@@ -1131,8 +1131,12 @@ void LocalFrameView::obscuredContentInsetsDidChange(const FloatBoxExtent& newObs
             tiledBacking->setObscuredContentInsets(newObscuredContentInsets);
     }
 
-    if (RefPtr page = m_frame->page())
+    if (RefPtr page = m_frame->page()) {
         page->chrome().client().setNeedsFixedContainerEdgesUpdate();
+#if ENABLE(ACCESSIBILITY_LOCAL_FRAME)
+        page->chrome().client().scheduleAccessibilityFrameGeometryUpdate();
+#endif
+    }
 }
 
 void LocalFrameView::topContentDirectionDidChange()

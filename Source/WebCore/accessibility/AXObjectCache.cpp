@@ -1194,10 +1194,10 @@ void AXObjectCache::setFrameGeometry(LocalFrame& frame, const AXFrameGeometry& g
 
 #if ENABLE(ACCESSIBILITY_ISOLATED_TREE)
     if (RefPtr tree = AXIsolatedTree::treeForFrameID(m_frameID)) {
-        IntPoint scrollPosition;
+        IntPoint viewOriginScrollPosition;
         if (CheckedPtr view = frame.view())
-            scrollPosition = view->scrollPosition();
-        tree->setFrameGeometry(AXFrameGeometry { geometry }, scrollPosition);
+            viewOriginScrollPosition = IntPoint(view->documentScrollPositionRelativeToViewOrigin());
+        tree->setFrameGeometry(AXFrameGeometry { geometry }, viewOriginScrollPosition);
     }
 #endif
 }
