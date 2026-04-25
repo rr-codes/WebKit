@@ -1009,6 +1009,7 @@ public:
     JSC::JSValue cloneArrayBuffer(JSC::JSGlobalObject&, JSC::JSValue, JSC::JSValue, JSC::JSValue);
 
     String composedTreeAsText(Node&);
+    String composedTreeAsTextFromNode(Node& root, Node& startNode);
 
     bool isProcessingUserGesture();
     double NODELETE lastHandledUserGestureTimestamp();

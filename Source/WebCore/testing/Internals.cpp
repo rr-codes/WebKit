@@ -6272,6 +6272,13 @@ String Internals::composedTreeAsText(Node& node)
     return WebCore::composedTreeAsText(downcast<ContainerNode>(node));
 }
 
+String Internals::composedTreeAsTextFromNode(Node& root, Node& startNode)
+{
+    if (!is<ContainerNode>(root))
+        return emptyString();
+    return WebCore::composedTreeAsTextFromNode(downcast<ContainerNode>(root), startNode);
+}
+
 bool Internals::isProcessingUserGesture()
 {
     return UserGestureIndicator::processingUserGesture();

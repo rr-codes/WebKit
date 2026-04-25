@@ -1179,6 +1179,7 @@ enum ContentsFormat {
     undefined setCanShowModalDialogOverride(boolean allow);
 
     DOMString composedTreeAsText(Node parent);
+    DOMString composedTreeAsTextFromNode(Node root, Node startNode);
 
     boolean isProcessingUserGesture();
     double lastHandledUserGestureTimestamp();
