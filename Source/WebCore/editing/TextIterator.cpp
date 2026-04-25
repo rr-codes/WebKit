@@ -1142,6 +1142,12 @@ void TextIterator::representNodeOffsetZero()
     // before encountering shouldRepresentNodeOffsetZero()s worse case behavior.
     RefPtr currentNode = m_currentNode;
     bool emitsNewlinesPerInnerTextSpec = m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec);
+
+    if (emitsNewlinesPerInnerTextSpec) {
+        if (auto* renderer = currentNode->renderer(); renderer && renderer->style().visibility() != Visibility::Visible)
+            return;
+    }
+
     if (shouldEmitTabBeforeNode(*currentNode)) {
         if (shouldRepresentNodeOffsetZero()) {
             RefPtr parentNode = currentNode->parentNode();
@@ -1214,9 +1220,14 @@ void TextIterator::exitNode(Node* exitedNode)
     // therefore look like a blank line.
     if (!m_hasEmitted)
         return;
-        
+    
+    if (m_behaviors.contains(TextIteratorBehavior::EmitsNewlinesPerInnerTextSpec)) {
+        if (auto* renderer = m_currentNode->renderer(); renderer && renderer->style().visibility() != Visibility::Visible)
+            return;
+    }
+
     // Emit with a position *inside* m_currentNode, after m_currentNode's contents, in
-    // case it is a block, because the run should start where the 
+    // case it is a block, because the run should start where the
     // emitted character is positioned visually.
     RefPtr baseNode = exitedNode;
     // FIXME: This shouldn't require the m_lastTextNode to be true, but we can't change that without making
