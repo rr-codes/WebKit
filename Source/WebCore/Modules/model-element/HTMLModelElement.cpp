@@ -1482,56 +1482,6 @@ void HTMLModelElement::setAnimationCurrentTime(double currentTime, DOMPromiseDef
     });
 }
 
-// MARK: - Audio support.
-
-void HTMLModelElement::hasAudio(HasAudioPromise&& promise)
-{
-    RefPtr modelPlayer = m_modelPlayer;
-    if (!modelPlayer) {
-        promise.reject();
-        return;
-    }
-
-    modelPlayer->isPlayingAnimation([promise = WTF::move(promise)](std::optional<bool> hasAudio) mutable {
-        if (!hasAudio)
-            promise.reject();
-        else
-            promise.resolve(*hasAudio);
-    });
-}
-
-void HTMLModelElement::isMuted(IsMutedPromise&& promise)
-{
-    RefPtr modelPlayer = m_modelPlayer;
-    if (!modelPlayer) {
-        promise.reject();
-        return;
-    }
-
-    modelPlayer->isPlayingAnimation([promise = WTF::move(promise)](std::optional<bool> isMuted) mutable {
-        if (!isMuted)
-            promise.reject();
-        else
-            promise.resolve(*isMuted);
-    });
-}
-
-void HTMLModelElement::setIsMuted(bool isMuted, DOMPromiseDeferred<void>&& promise)
-{
-    RefPtr modelPlayer = m_modelPlayer;
-    if (!modelPlayer) {
-        promise.reject();
-        return;
-    }
-
-    modelPlayer->setIsMuted(isMuted, [promise = WTF::move(promise)](bool success) mutable {
-        if (success)
-            promise.resolve();
-        else
-            promise.reject();
-    });
-}
-
 #if ENABLE(MODEL_ELEMENT_IMMERSIVE)
 
 bool HTMLModelElement::immersive() const

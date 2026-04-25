@@ -422,18 +422,6 @@ void WebModelPlayer::setAnimationCurrentTime(Seconds, CompletionHandler<void(boo
 {
 }
 
-void WebModelPlayer::hasAudio(CompletionHandler<void(std::optional<bool>&&)>&&)
-{
-}
-
-void WebModelPlayer::isMuted(CompletionHandler<void(std::optional<bool>&&)>&&)
-{
-}
-
-void WebModelPlayer::setIsMuted(bool, CompletionHandler<void(bool success)>&&)
-{
-}
-
 void WebModelPlayer::updateScene()
 {
 }
