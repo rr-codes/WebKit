@@ -4940,9 +4940,7 @@ webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/backgrou
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-attachment-local/attachment-local-positioning-4.html [ ImageOnlyFailure ]
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/background-size-vector-008.html [ ImageOnlyFailure ]
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/background-size-vector-014.html [ ImageOnlyFailure ]
-webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/tall--auto-32px--nonpercent-width-omitted-height-viewbox.html [ ImageOnlyFailure ]
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/tall--auto-32px--nonpercent-width-omitted-height.html [ ImageOnlyFailure ]
-webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/tall--auto-32px--nonpercent-width-percent-height-viewbox.html [ ImageOnlyFailure ]
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/tall--auto-32px--nonpercent-width-percent-height.html [ ImageOnlyFailure ]
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/tall--contain--nonpercent-width-omitted-height.html [ ImageOnlyFailure ]
 webkit.org/b/206753 imported/w3c/web-platform-tests/css/css-backgrounds/background-size/vector/tall--contain--nonpercent-width-percent-height.html [ ImageOnlyFailure ]
@@ -5257,7 +5255,6 @@ imported/w3c/web-platform-tests/css/css-lists/counters-scope-004.html [ ImageOnl
 imported/w3c/web-platform-tests/css/css-lists/nested-marker-styling.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-lists/counter-list-item-2.html [ ImageOnlyFailure ]
 imported/w3c/web-platform-tests/css/css-lists/counter-list-item-slot-order.html [ ImageOnlyFailure ]
-imported/w3c/web-platform-tests/css/css-lists/counter-list-item.html [ ImageOnlyFailure ]
 
 # No support for reversed(<counter-name>) syntax
 imported/w3c/web-platform-tests/css/css-lists/counter-reset-reversed-list-item-start.html [ ImageOnlyFailure ]

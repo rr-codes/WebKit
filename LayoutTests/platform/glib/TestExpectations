@@ -3596,8 +3596,8 @@ ipc/restrictedendpoints/deny-access-testOnlyIPC.html [ Crash ]
 ipc/restrictedendpoints/deny-access-webGPU.html [ Crash ]
 ipc/validate-message-check-in-networkconnectiontowebproces-crash.html [ Crash ]
 
-ipc/restrictedendpoints/deny-access-updateQuotaBasedOnSpaceUsageForTesting.html [ Timeout ]
-ipc/restrictedendpoints/deny-access-webPush.html [ Timeout ]
+webkit.org/b/313204 ipc/restrictedendpoints/deny-access-updateQuotaBasedOnSpaceUsageForTesting.html [ Timeout ]
+webkit.org/b/313204 ipc/restrictedendpoints/deny-access-webPush.html [ Timeout ]
 
 #////////////////////////////////////////////////////////////////////////////////////////
 # End of IPC testing
@@ -4048,7 +4048,6 @@ webkit.org/b/85969 http/tests/loading/post-in-iframe-with-back-navigation.html [
 
 webkit.org/b/98146 accessibility/svg-bounds.html [ Failure ]
 webkit.org/b/105954 http/tests/navigation/reload-subframe-object.html [ Failure ]
-webkit.org/b/116259 http/tests/cache/willsendrequest-returns-null-for-memory-cache-load.html [ Failure ]
 webkit.org/b/117582 fast/flexbox/clear-overflow-before-scroll-update.html [ Failure ]
 webkit.org/b/118220 http/tests/cache/partitioned-cache-iframe.html [ Failure ]
 webkit.org/b/120105 http/tests/navigation/post-frames-goback1-uncached.html [ Failure ]
@@ -4770,7 +4769,6 @@ imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-mode
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/white-space_normal_wrapped.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/white-space_nowrap_wrapped.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/white-space_pre-line_wrapped.html [ Pass ]
-imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/cue/white-space_pre.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/default_styles/bold_object_default_font-style.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/default_styles/italic_object_default_font-style.html [ Pass ]
 imported/w3c/web-platform-tests/webvtt/rendering/cues-with-video/processing-model/selectors/default_styles/underline_object_default_font-style.html [ Pass ]
@@ -5397,7 +5395,6 @@ webkit.org/b/311276 imported/w3c/web-platform-tests/css/selectors/invalidation/m
 # Skipped in main file, let's skip as it's timing out in EWS after 311870@main
 imported/w3c/web-platform-tests/css/selectors/invalidation/has-complexity.html [ Skip ]
 
-webkit.org/b/257624 http/tests/frame-throttling/raf-throttle-in-cross-origin-subframe.html [ Failure ]
 webkit.org/b/261024 fast/multicol/pagination/RightToLeft-rl-hittest.html [ Failure ]
 webkit.org/b/146731 fast/backgrounds/hidpi-background-image-contain-cover-scale-needs-more-precision.html [ ImageOnlyFailure ]
 webkit.org/b/197473 imported/w3c/web-platform-tests/resource-timing/resource-timing-level1.sub.html [ Failure ]
