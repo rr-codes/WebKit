@@ -598,7 +598,6 @@ FocusableElementSearchResult FocusController::findFocusableElementContinuingFrom
         }
 
         // Chrome doesn't want focus, so we should wrap focus.
-        // FIXME: We probably want to travel up the document tree
         RefPtr localTopDocument = m_page->localTopDocument();
         if (!localTopDocument)
             return findResult;
