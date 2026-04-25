@@ -459,7 +459,7 @@ bool AudioVideoRendererAVFObjC::paused() const
 
 bool AudioVideoRendererAVFObjC::timeIsProgressing() const
 {
-    return m_isPlaying && [m_synchronizer rate];
+    return m_isPlaying && synchronizerRate();
 }
 
 MediaTime AudioVideoRendererAVFObjC::currentTime() const
@@ -487,8 +487,10 @@ void AudioVideoRendererAVFObjC::setRate(double rate)
         setAudioTimePitchAlgorithm(renderer, algorithm.get());
     });
 
-    if (shouldBePlaying())
+    if (shouldBePlaying()) {
         [m_synchronizer setRate:m_rate];
+        m_lastSetSyncRate = m_rate;
+    }
 }
 
 double AudioVideoRendererAVFObjC::effectiveRate() const
@@ -522,6 +524,7 @@ void AudioVideoRendererAVFObjC::notifyTimeReachedAndStall(const MediaTime& timeB
 
         // Experimentation shows that between the time the boundary time observer is called, the time have progressed by a few milliseconds. Re-adjust time. This seek doesn't require re-enqueuing/flushing.
         [protectedThis->m_synchronizer setRate:0 time:PAL::toCMTime(timeBoundary)];
+        protectedThis->m_lastSetSyncRate = 0;
 
         callback(now);
     }).get()];
@@ -620,6 +623,7 @@ Ref<MediaTimePromise> AudioVideoRendererAVFObjC::prepareToSeek(const MediaTime& 
     m_lastSeekTime = seekTime;
     m_isSynchronizerSeeking = isSynchronizerSeeking;
     [m_synchronizer setRate:0 time:PAL::toCMTime(seekTime)];
+    m_lastSetSyncRate = 0;
     return MediaTimePromise::createAndResolve(MediaTime::indefiniteTime());
 }
 
@@ -1079,9 +1083,10 @@ void AudioVideoRendererAVFObjC::updateAllRenderersHaveAvailableSamples()
 
     if (allRenderersHaveAvailableSamples)
         maybeCompleteSeek();
-    if (shouldBePlaying() && [m_synchronizer rate] != m_rate)
+    if (shouldBePlaying() && synchronizerRate() != m_rate) {
         [m_synchronizer setRate:m_rate];
-    else if (!shouldBePlaying() && [m_synchronizer rate])
+        m_lastSetSyncRate = m_rate;
+    } else if (!shouldBePlaying() && synchronizerRate())
         stall();
 }
 
@@ -1782,6 +1787,7 @@ void AudioVideoRendererAVFObjC::setSynchronizerRate(float rate, std::optional<Mo
         [m_synchronizer setRate:rate time:PAL::kCMTimeInvalid atHostTime:cmHostTime];
     } else
         [m_synchronizer setRate:rate];
+    m_lastSetSyncRate = rate;
 
     // If we are pausing the synchronizer, update the last image to ensure we have something
     // to display if and when the decoders are purged while in the background. And vice-versa,
