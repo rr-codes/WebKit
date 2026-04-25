@@ -4802,7 +4802,7 @@ struct WebCore::NavigationRequester {
     bool hasLoadedThirdPartyScript;
     bool hasLoadedThirdPartyFrame;
     bool hasHadUserInteraction;
-    RefPtr<WebCore::SecurityOrigin> parentFrameSecurityOrigin;
+    bool parentOriginIsSameAsTopOrigin;
 };
 
 struct WebCore::PolicyContainer {

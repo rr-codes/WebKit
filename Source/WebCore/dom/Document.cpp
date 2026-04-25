@@ -5141,9 +5141,7 @@ bool Document::isNavigationBlockedByThirdPartyIFrameRedirectBlocking(const Navig
     // Also require the parent that set the sandbox to be same-origin with the target.
     bool sandboxIsFromElementAttribute = !requester.sandboxFlags.isEmpty() && requester.frameSandboxFlags == requester.sandboxFlags;
     if (sandboxIsFromElementAttribute) {
-        RefPtr targetOrigin = targetFrame.frameDocumentSecurityOrigin();
-        bool parentIsFirstParty = requester.parentFrameSecurityOrigin && targetOrigin && requester.parentFrameSecurityOrigin->isSameOriginDomain(*targetOrigin);
-        if (parentIsFirstParty)
+        if (requester.parentOriginIsSameAsTopOrigin)
             return false;
     }
 
