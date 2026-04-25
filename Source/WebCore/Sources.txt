@@ -958,7 +958,6 @@ css/CSSPositionTryRule.cpp
 css/CSSPositionValue.cpp
 css/CSSPrimitiveValue.cpp
 css/CSSProperty.cpp
-css/CSSPropertyIdentifierValue.cpp
 css/CSSPropertyInitialValues.cpp
 css/CSSPropertyRule.cpp
 css/CSSPropertySourceData.cpp
@@ -1192,7 +1191,6 @@ css/values/primitives/CSSPrimitiveNumericTypes+ComputedStyleDependencies.cpp
 css/values/primitives/CSSPrimitiveNumericTypes+Serialization.cpp
 css/values/primitives/CSSPrimitiveNumericTypes+SymbolReplacement.cpp
 css/values/primitives/CSSPrimitiveNumericUnits.cpp
-css/values/primitives/CSSPropertyIdentifier.cpp
 css/values/primitives/CSSRatio.cpp
 css/values/primitives/CSSString.cpp
 css/values/primitives/CSSSymbol.cpp
@@ -3398,7 +3396,6 @@ style/values/primitives/StyleLengthWrapper+DeprecatedCSSValueConversion.cpp
 style/values/primitives/StyleLengthWrapperData.cpp
 style/values/primitives/StylePosition.cpp
 style/values/primitives/StylePrimitiveNumericTypes+Conversions.cpp
-style/values/primitives/StylePropertyIdentifier.cpp
 style/values/primitives/StyleRatio.cpp
 style/values/primitives/StyleString.cpp
 style/values/primitives/StyleURL.cpp
