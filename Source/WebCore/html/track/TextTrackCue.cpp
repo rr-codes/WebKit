@@ -80,6 +80,8 @@ TextTrackCueBox::TextTrackCueBox(Document& document, TextTrackCue& cue)
 {
 }
 
+TextTrackCueBox::~TextTrackCueBox() = default;
+
 void TextTrackCueBox::initialize()
 {
     setUserAgentPart(UserAgentParts::webkitMediaTextTrackDisplay());

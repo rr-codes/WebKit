@@ -33,6 +33,7 @@
 
 #include <WebCore/EventTarget.h>
 #include <WebCore/Node.h>
+#include <WebCore/WebCoreOpaqueRoot.h>
 
 namespace WebCore {
 
@@ -53,6 +54,13 @@ inline void EventTarget::deref()
     else
         derefEventTarget();
 }
+
+#if !PLATFORM(WIN)
+inline WebCoreOpaqueRoot EventTarget::opaqueRoot() const
+{
+    return WebCoreOpaqueRoot { const_cast<EventTarget*>(this) };
+}
+#endif
 
 inline bool EventTarget::hasEventListeners() const
 {

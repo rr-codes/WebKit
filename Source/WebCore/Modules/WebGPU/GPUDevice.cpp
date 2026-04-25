@@ -29,6 +29,7 @@
 #include "ContextDestructionObserverInlines.h"
 #include "DOMPromiseProxy.h"
 #include "EventNames.h"
+#include "EventTargetInlines.h"
 #include "GPUAdapterInfo.h"
 #include "GPUBindGroup.h"
 #include "GPUBindGroupDescriptor.h"

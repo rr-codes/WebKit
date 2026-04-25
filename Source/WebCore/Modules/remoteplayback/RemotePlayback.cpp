@@ -67,7 +67,7 @@ RemotePlayback::RemotePlayback(HTMLMediaElement& element)
 
 RemotePlayback::~RemotePlayback() = default;
 
-WebCoreOpaqueRoot RemotePlayback::opaqueRootConcurrently() const
+WebCoreOpaqueRoot RemotePlayback::opaqueRoot() const
 {
     // Cannot ref m_mediaElement here since this may get called on a GC thread.
     SUPPRESS_UNCOUNTED_ARG return root(m_mediaElement.get());

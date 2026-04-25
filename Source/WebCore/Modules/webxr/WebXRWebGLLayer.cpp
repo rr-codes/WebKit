@@ -30,6 +30,7 @@
 #if ENABLE(WEBXR)
 
 #include "ContextDestructionObserverInlines.h"
+#include "EventTargetInlines.h"
 #include "ExceptionOr.h"
 #include "HTMLCanvasElement.h"
 #include "IntSize.h"
