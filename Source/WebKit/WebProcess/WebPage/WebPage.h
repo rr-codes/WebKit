@@ -1521,6 +1521,7 @@ public:
 
     void wheelEventHandlersChanged(bool);
     void recomputeShortCircuitHorizontalWheelEventsState();
+    bool pageContainsAnyHorizontalScrollbars() const;
 
 #if ENABLE(MAC_GESTURE_EVENTS)
     void gestureEvent(WebCore::FrameIdentifier, const WebGestureEvent&, CompletionHandler<void(std::optional<WebEventType>, bool, std::optional<WebCore::RemoteUserInputEventData>)>&&);
@@ -3015,7 +3016,7 @@ private:
 #endif
 
     WebCore::RectEdges<bool> m_cachedMainFramePinnedState { true, true, true, true };
-    bool m_canShortCircuitHorizontalWheelEvents { false };
+    bool m_canShortCircuitHorizontalWheelEvents { true };
     bool m_hasWheelEventHandlers { false };
 
     unsigned m_cachedPageCount { 0 };

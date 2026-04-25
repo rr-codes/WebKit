@@ -7094,17 +7094,13 @@ static bool hasEnabledHorizontalScrollbar(ScrollableArea* scrollableArea)
     return scrollbar && scrollbar->enabled();
 }
 
-static bool pageContainsAnyHorizontalScrollbars(LocalFrame* mainFrame)
+bool WebPage::pageContainsAnyHorizontalScrollbars() const
 {
-    if (!mainFrame)
+    RefPtr page = m_page;
+    if (!page)
         return false;
 
-    if (RefPtr frameView = mainFrame->view()) {
-        if (hasEnabledHorizontalScrollbar(frameView.get()))
-            return true;
-    }
-
-    for (RefPtr<Frame> frame = mainFrame; frame; frame = frame->tree().traverseNext()) {
+    for (RefPtr frame = page->mainFrame(); frame; frame = frame->tree().traverseNext()) {
         RefPtr localFrame = dynamicDowncast<LocalFrame>(*frame);
         if (!localFrame)
             continue;
@@ -7112,6 +7108,9 @@ static bool pageContainsAnyHorizontalScrollbars(LocalFrame* mainFrame)
         RefPtr frameView = localFrame->view();
         if (!frameView)
             continue;
+
+        if (hasEnabledHorizontalScrollbar(frameView.get()))
+            return true;
 
         auto scrollableAreas = frameView->scrollableAreas();
         if (!scrollableAreas)
@@ -7135,7 +7134,7 @@ void WebPage::recomputeShortCircuitHorizontalWheelEventsState()
 
     if (canShortCircuitHorizontalWheelEvents) {
         // Check if we have any horizontal scroll bars on the page.
-        if (pageContainsAnyHorizontalScrollbars(localMainFrame().get()))
+        if (pageContainsAnyHorizontalScrollbars())
             canShortCircuitHorizontalWheelEvents = false;
     }
 

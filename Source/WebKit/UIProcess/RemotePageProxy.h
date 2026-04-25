@@ -118,6 +118,7 @@ public:
     void setCurrentOrientation(WebCore::ScreenOrientationType);
 
     bool hasNetworkRequestsInProgress() const { return m_hasNetworkRequestsInProgress; }
+    bool canShortCircuitHorizontalWheelEvents() const { return m_canShortCircuitHorizontalWheelEvents; }
 
     void disconnect();
 
@@ -133,6 +134,7 @@ private:
     void isPlayingMediaDidChange(WebCore::MediaProducerMediaStateFlags);
 
     void setNetworkRequestsInProgress(bool);
+    void setCanShortCircuitHorizontalWheelEvents(bool);
 
     const WebCore::PageIdentifier m_webPageID;
     const Ref<WebProcessProxy> m_process;
@@ -157,6 +159,7 @@ private:
     WebCore::MediaProducerMediaStateFlags m_mediaState;
     RefPtr<RemotePageScreenOrientationManagerProxy> m_screenOrientationManager;
     bool m_hasNetworkRequestsInProgress { false };
+    bool m_canShortCircuitHorizontalWheelEvents { true };
 #if ASSERT_ENABLED
     bool m_disconnected { false };
 #endif

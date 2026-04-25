@@ -48,6 +48,7 @@
 #import <WebKit/WKNavigationDelegatePrivate.h>
 #import <WebKit/WKNavigationPrivate.h>
 #import <WebKit/WKNavigationPrivateForTesting.h>
+#import <WebKit/WKPage.h>
 #import <WebKit/WKPreferencesPrivate.h>
 #import <WebKit/WKProcessPoolPrivate.h>
 #import <WebKit/WKURLSchemeTaskPrivate.h>
@@ -84,6 +85,7 @@
 @interface WKWebView ()
 - (void)copy:(id)sender;
 - (void)paste:(id)sender;
+- (WKPageRef)_pageForTesting;
 @end
 
 #if HAVE(UIFINDINTERACTION)
@@ -8620,6 +8622,54 @@ TEST(SiteIsolation, MultiProcessBFCacheOpenerSkipsBFCache)
     // Verify the marker is gone (full reload, not BFCache restore).
     EXPECT_FALSE([[webView objectByEvaluatingJavaScript:@"window.__bfcacheMarker ? true : false"] boolValue]);
 }
+
+#if PLATFORM(MAC)
+TEST(SiteIsolation, CrossOriginIframeWithHorizontalOverflowWillHandleHorizontalScrollEvents)
+{
+    auto mainHTML = "<body style='margin:0'><iframe id='frame' src='https://webkit.org/iframe' style='width:300px;height:300px;border:none'></iframe></body>"_s;
+    auto iframeHTML = "<body style='margin:0;width:2000px;overflow-x:scroll'><script>onload=()=>{alert('loaded')}</script></body>"_s;
+
+    HTTPServer server({
+        { "/main"_s, { mainHTML } },
+        { "/iframe"_s, { iframeHTML } }
+    }, HTTPServer::Protocol::HttpsProxy);
+    auto [webView, navigationDelegate] = siteIsolatedViewAndDelegate(server, CGRectMake(0, 0, 800, 600));
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://example.com/main"]]];
+    EXPECT_WK_STREQ([webView _test_waitForAlert], "loaded");
+
+    // Trigger a layout in the iframe's process so that
+    // recomputeShortCircuitHorizontalWheelEventsState runs.
+    [webView evaluateJavaScript:@"document.body.offsetHeight" inFrame:[webView firstChildFrame] completionHandler:nil];
+
+    EXPECT_TRUE(TestWebKitAPI::Util::waitFor([&] {
+        return WKPageWillHandleHorizontalScrollEvents([webView _pageForTesting]);
+    }));
+}
+
+TEST(SiteIsolation, CrossOriginIframeWithoutHorizontalOverflowCanShortCircuitHorizontalScrollEvents)
+{
+    auto mainHTML = "<body style='margin:0'><iframe id='frame' src='https://webkit.org/iframe' style='width:300px;height:300px;border:none'></iframe></body>"_s;
+    auto iframeHTML = "<body style='margin:0'><script>onload=()=>{alert('loaded')}</script></body>"_s;
+
+    HTTPServer server({
+        { "/main"_s, { mainHTML } },
+        { "/iframe"_s, { iframeHTML } }
+    }, HTTPServer::Protocol::HttpsProxy);
+    auto [webView, navigationDelegate] = siteIsolatedViewAndDelegate(server, CGRectMake(0, 0, 800, 600));
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://example.com/main"]]];
+    EXPECT_WK_STREQ([webView _test_waitForAlert], "loaded");
+
+    // Trigger a layout in the iframe's process so that
+    // recomputeShortCircuitHorizontalWheelEventsState runs.
+    [webView evaluateJavaScript:@"document.body.offsetHeight" inFrame:[webView firstChildFrame] completionHandler:nil];
+
+    EXPECT_TRUE(TestWebKitAPI::Util::waitFor([&] {
+        return !WKPageWillHandleHorizontalScrollEvents([webView _pageForTesting]);
+    }));
+}
+#endif
 
 #if PLATFORM(IOS_FAMILY)
 TEST(SiteIsolation, NoRedundantFocusPolicyCallbackAfterBlurAndRefocusInCrossOriginIframe)

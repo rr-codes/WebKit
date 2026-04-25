@@ -14419,6 +14419,15 @@ Color WebPageProxy::platformUnderPageBackgroundColor() const
 
 #endif // !PLATFORM(COCOA)
 
+void WebPageProxy::setCanShortCircuitHorizontalWheelEvents(bool canShortCircuitHorizontalWheelEvents)
+{
+    if (m_canShortCircuitHorizontalWheelEvents == canShortCircuitHorizontalWheelEvents)
+        return;
+
+    m_canShortCircuitHorizontalWheelEventsForMainFrameProcess = canShortCircuitHorizontalWheelEvents;
+    updateCanShortCircuitHorizontalWheelEvents();
+}
+
 bool WebPageProxy::willHandleHorizontalScrollEvents() const
 {
     return !m_canShortCircuitHorizontalWheelEvents;
@@ -18118,6 +18127,15 @@ void WebPageProxy::networkRequestsInProgressDidChange()
     Ref pageLoadState = internals().pageLoadState;
     auto transaction = pageLoadState->transaction();
     pageLoadState->setNetworkRequestsInProgress(transaction, hasNetworkRequestsInProgress);
+}
+
+void WebPageProxy::updateCanShortCircuitHorizontalWheelEvents()
+{
+    bool canShortCircuit = m_canShortCircuitHorizontalWheelEventsForMainFrameProcess;
+    protect(browsingContextGroup())->forEachRemotePage(*this, [canShortCircuit = &canShortCircuit](auto& remotePageProxy) {
+        *canShortCircuit = *canShortCircuit && remotePageProxy.canShortCircuitHorizontalWheelEvents();
+    });
+    m_canShortCircuitHorizontalWheelEvents = canShortCircuit;
 }
 
 void WebPageProxy::takeActivitiesOnRemotePage(RemotePageProxy& remotePage)

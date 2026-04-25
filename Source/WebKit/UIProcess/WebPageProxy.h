@@ -2943,6 +2943,7 @@ public:
 #endif
 
     void networkRequestsInProgressDidChange();
+    void updateCanShortCircuitHorizontalWheelEvents();
 
     void takeNetworkActivity();
     void dropNetworkActivity();
@@ -3187,7 +3188,7 @@ private:
 #endif
 
     WebCore::Color platformUnderPageBackgroundColor() const;
-    void setCanShortCircuitHorizontalWheelEvents(bool canShortCircuitHorizontalWheelEvents) { m_canShortCircuitHorizontalWheelEvents = canShortCircuitHorizontalWheelEvents; }
+    void setCanShortCircuitHorizontalWheelEvents(bool);
 
     enum class ProcessLaunchReason {
         InitialProcess,
@@ -3968,6 +3969,7 @@ private:
     bool m_mainFrameHasVerticalScrollbar { false };
 
     // Whether horizontal wheel events can be handled directly for swiping purposes.
+    bool m_canShortCircuitHorizontalWheelEventsForMainFrameProcess { true };
     bool m_canShortCircuitHorizontalWheelEvents { true };
 
     bool m_shouldUseImplicitRubberBandControl { false };
