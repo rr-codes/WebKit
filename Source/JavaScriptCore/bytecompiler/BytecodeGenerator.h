@@ -1067,8 +1067,10 @@ namespace JSC {
         bool hasFinallyScopes() const { return m_currentFinallyContext; }
 
         void pushOptionalChainTarget();
+        void pushOptionalChainTarget(Label&);
         void popOptionalChainTarget();
         void popOptionalChainTarget(RegisterID* dst, bool isDelete);
+        void discardOptionalChainTarget();
         void emitOptionalCheck(RegisterID* src);
 
         void pushForInScope(RegisterID* local, RegisterID* propertyName, RegisterID* propertyOffset, RegisterID* enumerator, RegisterID* mode, std::optional<Variable> base);

@@ -5832,6 +5832,11 @@ void BytecodeGenerator::pushOptionalChainTarget()
     m_optionalChainTargetStack.append(newLabel());
 }
 
+void BytecodeGenerator::pushOptionalChainTarget(Label& existingTarget)
+{
+    m_optionalChainTargetStack.append(existingTarget);
+}
+
 void BytecodeGenerator::popOptionalChainTarget()
 {
     ASSERT(m_optionalChainTargetStack.size());
@@ -5847,6 +5852,12 @@ void BytecodeGenerator::popOptionalChainTarget(RegisterID* dst, bool isDelete)
     emitLoad(dst, isDelete ? jsBoolean(true) : jsUndefined());
 
     emitLabel(endLabel.get());
+}
+
+void BytecodeGenerator::discardOptionalChainTarget()
+{
+    ASSERT(m_optionalChainTargetStack.size());
+    m_optionalChainTargetStack.removeLast();
 }
 
 void BytecodeGenerator::emitOptionalCheck(RegisterID* src)

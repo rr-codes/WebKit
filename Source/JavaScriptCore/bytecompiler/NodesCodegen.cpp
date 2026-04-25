@@ -3847,6 +3847,25 @@ RegisterID* OptionalChainNode::emitBytecode(BytecodeGenerator& generator, Regist
     return finalDest.unsafeGet();
 }
 
+void OptionalChainNode::emitBytecodeInConditionContext(BytecodeGenerator& generator, Label& trueTarget, Label& falseTarget, FallThroughMode fallThroughMode)
+{
+    if (needsDebugHook()) [[unlikely]]
+        generator.emitDebugHook(this);
+
+    if (m_expr->isDeleteNode()) {
+        ExpressionNode::emitBytecodeInConditionContext(generator, trueTarget, falseTarget, fallThroughMode);
+        return;
+    }
+
+    // Short-circuiting produces undefined, which is falsy. Route the optional
+    // chain bail-out straight to falseTarget instead of materializing undefined.
+    if (m_isOutermost)
+        generator.pushOptionalChainTarget(falseTarget);
+    generator.emitNodeInConditionContext(m_expr, trueTarget, falseTarget, fallThroughMode);
+    if (m_isOutermost)
+        generator.discardOptionalChainTarget();
+}
+
 // ------------------------------ ConditionalNode ------------------------------
 
 RegisterID* ConditionalNode::emitBytecode(BytecodeGenerator& generator, RegisterID* dst)

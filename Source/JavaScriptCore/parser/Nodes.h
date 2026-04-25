@@ -1482,6 +1482,7 @@ namespace JSC {
 
     private:
         RegisterID* emitBytecode(BytecodeGenerator&, RegisterID* = nullptr) final;
+        void emitBytecodeInConditionContext(BytecodeGenerator&, Label& trueTarget, Label& falseTarget, FallThroughMode) final;
 
         bool isOptionalChain() const final { return true; }
 
