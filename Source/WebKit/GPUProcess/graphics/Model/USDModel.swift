@@ -313,7 +313,7 @@ private func makeParameters(
     guard let argumentTableDescriptor = function.argumentTableDescriptor else { return nil }
     let parameterMapping = function.parameterMapping
 
-    var optTextures: [_Proto_LowLevelTextureResource_v1?] = argumentTableDescriptor.textures.map({ _ in nil })
+    var optTextures: [_Proto_LowLevelTextureResource_v1?] = .init(repeating: nil, count: argumentTableDescriptor.textures.count)
     for parameter in parameterMapping?.textures ?? [] {
         if let textureHashAndResource = textureHashesAndResources.values.first(where: { $0.0 == parameter.name }) {
             optTextures[parameter.textureIndex] = textureHashAndResource.1
@@ -323,9 +323,13 @@ private func makeParameters(
             optTextures[parameter.textureIndex] = fallbackTexture
         }
     }
-    let textures = optTextures.map({ $0! })
+    let textures = optTextures.map {
+        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
+        // swift-format-ignore: NeverForceUnwrap
+        $0!
+    }
 
-    let buffers: [_Proto_LowLevelBufferSpan_v1] = try argumentTableDescriptor.buffers.map { bufferRequirements in
+    let buffers = try argumentTableDescriptor.buffers.map { bufferRequirements in
         let capacity = (bufferRequirements.size + 16 - 1) / 16 * 16
         let buffer = try renderContext.makeBufferResource(descriptor: .init(capacity: capacity))
         buffer.replace { span in
@@ -554,17 +558,13 @@ extension WKBridgeReceiver {
     }
 
     func commandBuffer() -> (any MTLCommandBuffer)? {
-        // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-        // swift-format-ignore: NeverForceUnwrap
-        commandQueue.makeCommandBuffer()!
+        commandQueue.makeCommandBuffer()
     }
 
     @objc(renderWithTexture:commandBuffer:)
     func render(with texture: any MTLTexture, commandBuffer: any MTLCommandBuffer) {
         for (identifier, meshes) in meshToMeshInstances {
             let originalTransforms = meshTransforms[identifier]
-            // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
-            // swift-format-ignore: NeverForceUnwrap
 
             for (index, meshInstance) in meshes.enumerated() {
                 // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
@@ -576,13 +576,18 @@ extension WKBridgeReceiver {
 
         // animate
         if !meshResourceToDeformationContext.isEmpty {
+            // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
+            // swift-format-ignore: NeverForceUnwrap
             let commandBuffer = self.commandQueue.makeCommandBuffer()!
 
             for (identifier, deformationContext) in meshResourceToDeformationContext where deformationContext.dirty {
                 let result = deformationContext.deformation.execute(
                     deformation: deformationContext.description,
                     commandBuffer: commandBuffer
-                ) { (commandBuffer: any MTLCommandBuffer) in }
+                ) { _ in }
+
+                // FIXME: https://bugs.webkit.org/show_bug.cgi?id=305857
+                // swift-format-ignore: NeverForceUnwrap
                 meshResourceToDeformationContext[identifier]!.dirty = false
 
                 if case .failure(let error) = result {
@@ -1436,9 +1441,9 @@ private func toWebMaterialGraph(_ material: _Proto_ShaderNodeGraph?) -> WKBridge
 
     // Serialize primvarMappings as parallel arrays (sorted for determinism).
     // _Proto_TextureCoordinate.name is internal so we map to the canonical UV name string.
-    let sortedPrimvarKeys = material.primvarMappings.keys.sorted()
-    let primvarPrimvarNames = sortedPrimvarKeys
-    let primvarTexcoordNames = sortedPrimvarKeys.map { texcoordName(for: material.primvarMappings[$0]!) }
+    let sortedPrimvarMappings = material.primvarMappings.sorted { $0.key < $1.key }
+    let primvarPrimvarNames = sortedPrimvarMappings.map(\.key)
+    let primvarTexcoordNames = sortedPrimvarMappings.map { texcoordName(for: $0.value) }
 
     return WKBridgeMaterialGraph(
         graphName: material.sgGraph.name,
