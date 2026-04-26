@@ -364,6 +364,14 @@ LayoutRect AccessibilityNodeObject::boundingBoxRect() const
             return contentsRect;
     }
 
+    // If the geometry manager has a cached rect for this object (e.g., from
+    // drawFocusIfNeeded for canvas fallback elements), use it directly. The
+    // cached rect is already in document-relative coordinates.
+    if (CheckedPtr cache = axObjectCache()) {
+        if (std::optional cachedRect = cache->cachedBoundsForID(objectID()))
+            return LayoutRect(*cachedRect);
+    }
+
     // Non-display:contents AccessibilityNodeObjects have no mechanism to return a size or position.
     // Instead, let's return a box at the position of an ancestor that does have a position, make it
     // the width of that ancestor, and about the height of a line of text, so it's clear this object is

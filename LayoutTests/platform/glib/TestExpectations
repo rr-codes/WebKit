@@ -977,6 +977,9 @@ accessibility/select-whitespace-collapsed-text.html [ Failure ]
 accessibility/insert-text-into-password-field.html [ Skip ]
 
 # Need to implement AccessibilityUIElement::{pageX, pageY}.
+accessibility/canvas-drawFocusIfNeeded-bounds.html [ Skip ]
+accessibility/canvas-drawFocusIfNeeded-bounds-with-object-fit.html [ Skip ]
+accessibility/canvas-drawFocusIfNeeded-bounds-with-transform.html [ Skip ]
 accessibility/native-label-geometry-with-aria-labelledby.html [ Skip ]
 
 # These test a Cocoa-only API.

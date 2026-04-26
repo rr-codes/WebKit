@@ -243,8 +243,15 @@ void AXIsolatedObject::setProperty(AXProperty property, AXPropertyValueVariant&&
 
     if (isDefaultValue(property, value))
         removePropertyInVector(property);
-    else
+    else {
         setPropertyInVector(property, WTF::move(value));
+
+        if (property == AXProperty::RelativeFrame) {
+            // If we're setting a RelativeFrame, clear the getsGeometryFromChildren flag
+            // since the element now has an explicit frame (e.g., from drawFocusIfNeeded).
+            m_getsGeometryFromChildren = false;
+        }
+    }
 }
 
 void AXIsolatedObject::detachRemoteParts(AccessibilityDetachmentType)

@@ -5354,6 +5354,11 @@ void AXObjectCache::performDeferredCacheUpdate(ForceLayout forceLayout)
     });
     m_deferredScrollbarUpdateChangeList.clear();
 
+    AXLOGDeferredCollection("CanvasFocusPathBoundsChanges"_s, m_deferredCanvasFocusPathBoundsChanges);
+    for (const auto& change : m_deferredCanvasFocusPathBoundsChanges)
+        handleCanvasFocusPathBoundsChange(change);
+    m_deferredCanvasFocusPathBoundsChanges.clear();
+
     for (const auto& notificationData : m_deferredNotifications)
         handleDeferredNotification(notificationData);
     m_deferredNotifications.clear();
@@ -5831,6 +5836,41 @@ void AXObjectCache::onPaint(const RenderText& renderText, size_t lineIndex)
     }
 }
 #endif // ENABLE(ACCESSIBILITY_ISOLATED_TREE)
+
+void AXObjectCache::deferCanvasFocusPathBoundsUpdate(Element& fallbackElement, HTMLCanvasElement& canvas, FloatRect bounds)
+{
+    m_deferredCanvasFocusPathBoundsChanges.append({ fallbackElement, canvas, bounds });
+    if (!m_performCacheUpdateTimer.isActive())
+        m_performCacheUpdateTimer.startOneShot(0_s);
+}
+
+std::optional<IntRect> AXObjectCache::cachedBoundsForID(AXID axID) const
+{
+    return m_geometryManager->cachedRectForID(axID);
+}
+
+void AXObjectCache::handleCanvasFocusPathBoundsChange(const CanvasFocusPathBoundsChange& change)
+{
+    RefPtr fallbackElement = change.fallbackElement.get();
+    RefPtr canvas = change.canvas.get();
+    if (!fallbackElement || !canvas)
+        return;
+
+    RefPtr axObject = getOrCreate(*fallbackElement);
+    if (!axObject)
+        return;
+
+    // change.bounds is in the canvas renderer's local coordinate space
+    // (positioned within the replacedContentRect). Map to document-absolute
+    // coordinates, which applies CSS transforms on the canvas and its ancestors.
+    auto documentRelativeBounds = FloatRect(change.bounds);
+    if (CheckedPtr renderer = canvas->renderer())
+        documentRelativeBounds = renderer->localToAbsoluteQuad(FloatQuad(documentRelativeBounds)).boundingBox();
+
+    std::ignore = m_geometryManager->cacheRectIfNeeded(axObject->objectID(), enclosingIntRect(documentRelativeBounds));
+
+    postPlatformNotification(*axObject, AXNotification::LayoutComplete);
+}
 
 void AXObjectCache::deferRecomputeIsIgnoredIfNeeded(Element* element)
 {
