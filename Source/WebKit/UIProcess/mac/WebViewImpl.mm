@@ -1475,6 +1475,10 @@ void WebViewImpl::handleProcessSwapOrExit()
 #if ENABLE(WRITING_TOOLS)
     [m_view.get() _clearWritingToolsPreservedNodes];
 #endif
+
+#if HAVE(APPKIT_GESTURES_SUPPORT)
+    [m_appKitGestureController reset];
+#endif
 }
 
 void WebViewImpl::processWillSwap()

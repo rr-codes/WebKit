@@ -916,6 +916,16 @@ ALLOW_NEW_API_WITHOUT_GUARDS_END
     _dragGestureHasSentMouseDown = false;
 }
 
+- (void)reset
+{
+    [self clearGestureDragState];
+    [self _handleClickCancelled];
+    _mouseTrackingHasSentMouseDown = false;
+    _isMomentumActive = false;
+    _latestClickID.reset();
+    _layerTreeTransactionIdAtLastInteractionStart.reset();
+}
+
 #pragma mark - NSGestureRecognizerDelegate
 
 static BOOL isBuiltInScrollViewPanGestureRecognizer(NSGestureRecognizer *recognizer)

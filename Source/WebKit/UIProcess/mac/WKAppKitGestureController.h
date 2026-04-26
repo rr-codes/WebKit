@@ -59,6 +59,7 @@ OBJC_CLASS NSPanGestureRecognizer;
 - (NSGestureRecognizer *)activeDragGestureRecognizer;
 - (void)setGestureDraggingSession:(NSDraggingSession *)session;
 - (void)clearGestureDragState;
+- (void)reset;
 
 #if ENABLE(TWO_PHASE_CLICKS)
 
