@@ -1058,14 +1058,14 @@ Element* FocusController::nextFocusableElementOrScopeOwner(const FocusNavigation
                 if (isFocusableElementOrScopeOwner(*element, focusEventData) && shadowAdjustedTabIndex(*element, focusEventData) >= 0)
                     return element.unsafeGet();
             }
+        } else {
+            // First try to find a node with the same tabindex as start that comes after start in the scope.
+            if (auto* winner = findElementWithExactTabIndex(scope, RefPtr { scope.nextInScope(start) }.get(), startTabIndex, focusEventData, FocusDirection::Forward))
+                return winner;
+
+            if (!startTabIndex)
+                return nullptr; // We've reached the last node in the document with a tabindex of 0. This is the end of the tabbing order.
         }
-
-        // First try to find a node with the same tabindex as start that comes after start in the scope.
-        if (auto* winner = findElementWithExactTabIndex(scope, RefPtr { scope.nextInScope(start) }.get(), startTabIndex, focusEventData, FocusDirection::Forward))
-            return winner;
-
-        if (!startTabIndex)
-            return nullptr; // We've reached the last node in the document with a tabindex of 0. This is the end of the tabbing order.
     }
 
     // Look for the first Element in the scope that:
@@ -1106,10 +1106,13 @@ Element* FocusController::previousFocusableElementOrScopeOwner(const FocusNaviga
             if (isFocusableElementOrScopeOwner(*element, focusEventData) && shadowAdjustedTabIndex(*element, focusEventData) >= 0)
                 return element.unsafeGet();
         }
+    } else {
+        if (auto* winner = findElementWithExactTabIndex(scope, startingNode.get(), startingTabIndex, focusEventData, FocusDirection::Backward))
+            return winner;
     }
 
-    if (auto* winner = findElementWithExactTabIndex(scope, startingNode.get(), startingTabIndex, focusEventData, FocusDirection::Backward))
-        return winner;
+    if (startingTabIndex < 0)
+        return nullptr;
 
     // There are no nodes before start with the same tabindex as start, so look for a node that:
     // 1) has the highest non-zero tabindex (that is less than start's tabindex), and
