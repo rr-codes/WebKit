@@ -165,6 +165,8 @@ String extractNonUnicodeBCP47Extensions(StringView locale);
 String bestAvailableLocale(const LocaleSet& availableLocales, const String& requestedLocale);
 template<typename Predicate> String bestAvailableLocale(const String& requestedLocale, Predicate);
 Vector<String> numberingSystemsForLocale(const String& locale);
+String defaultNumberingSystemForLocale(const String& dataLocale);
+String defaultCalendarForLocale(const String& dataLocale);
 
 Vector<char, 32> canonicalizeUnicodeExtensionsAfterICULocaleCanonicalization(Vector<char, 32>&&);
 

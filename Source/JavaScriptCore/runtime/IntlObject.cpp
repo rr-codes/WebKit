@@ -1034,30 +1034,38 @@ ResolvedLocale resolveLocale(JSGlobalObject* globalObject, const LocaleSet& avai
     supportedExtension.append("-u"_s);
     for (RelevantExtensionKey key : relevantExtensionKeys) {
         ASCIILiteral keyString = relevantExtensionKeyString(key);
+
+        size_t keyPos = extensionSubtags.isEmpty() ? notFound : extensionSubtags.find(keyString);
+        auto& optionsValue = options[static_cast<unsigned>(key)];
+
+        // Avoid querying locale data when neither a Unicode extension nor an option requests
+        // a specific value. The locale-specific default is left as a null String so that
+        // callers can omit the corresponding -u-<key>-<value> when constructing ICU locales,
+        // and resolve the actual default lazily (e.g. in resolvedOptions()).
+        if (keyPos == notFound && !optionsValue)
+            continue;
+
         Vector<String> keyLocaleData = localeData(foundLocale, key);
         ASSERT(!keyLocaleData.isEmpty());
 
         String value = keyLocaleData[0];
         String supportedExtensionAddition;
 
-        if (!extensionSubtags.isEmpty()) {
-            size_t keyPos = extensionSubtags.find(keyString);
-            if (keyPos != notFound) {
-                if (keyPos + 1 < extensionSubtags.size() && extensionSubtags[keyPos + 1].length() > 2) {
-                    StringView requestedValue = extensionSubtags[keyPos + 1];
-                    auto dataPos = keyLocaleData.find(requestedValue);
-                    if (dataPos != notFound) {
-                        value = keyLocaleData[dataPos];
-                        supportedExtensionAddition = makeString('-', keyString, '-', value);
-                    }
-                } else if (keyLocaleData.contains("true"_s)) {
-                    value = "true"_s;
-                    supportedExtensionAddition = makeString('-', keyString);
+        if (keyPos != notFound) {
+            if (keyPos + 1 < extensionSubtags.size() && extensionSubtags[keyPos + 1].length() > 2) {
+                StringView requestedValue = extensionSubtags[keyPos + 1];
+                auto dataPos = keyLocaleData.find(requestedValue);
+                if (dataPos != notFound) {
+                    value = keyLocaleData[dataPos];
+                    supportedExtensionAddition = makeString('-', keyString, '-', value);
                 }
+            } else if (keyLocaleData.contains("true"_s)) {
+                value = "true"_s;
+                supportedExtensionAddition = makeString('-', keyString);
             }
         }
 
-        if (auto optionsValue = options[static_cast<unsigned>(key)]) {
+        if (optionsValue) {
             // Undefined should not get added to the options, it won't displace the extension.
             // Null will remove the extension.
             if ((optionsValue->isNull() || keyLocaleData.contains(*optionsValue)) && *optionsValue != value) {
@@ -1167,6 +1175,29 @@ Vector<String> numberingSystemsForLocale(const String& locale)
     Vector<String> numberingSystems({ defaultSystemName });
     numberingSystems.appendVector(availableNumberingSystems.get());
     return numberingSystems;
+}
+
+String defaultNumberingSystemForLocale(const String& dataLocale)
+{
+    UErrorCode status = U_ZERO_ERROR;
+    auto defaultSystem = std::unique_ptr<UNumberingSystem, ICUDeleter<unumsys_close>>(unumsys_open(dataLocale.utf8().data(), &status));
+    ASSERT(U_SUCCESS(status));
+    return String::fromLatin1(unumsys_getName(defaultSystem.get()));
+}
+
+String defaultCalendarForLocale(const String& dataLocale)
+{
+    UErrorCode status = U_ZERO_ERROR;
+    auto calendars = std::unique_ptr<UEnumeration, ICUDeleter<uenum_close>>(ucal_getKeywordValuesForLocale("calendar", dataLocale.utf8().data(), false, &status));
+    ASSERT(U_SUCCESS(status));
+    int32_t length;
+    const char* name = uenum_next(calendars.get(), &length, &status);
+    ASSERT(U_SUCCESS(status));
+    ASSERT(name);
+    String calendar(unsafeMakeSpan(name, static_cast<size_t>(length)));
+    if (auto mapped = mapICUCalendarKeywordToBCP47(calendar))
+        return mapped.value();
+    return calendar;
 }
 
 // unicode_language_subtag = alpha{2,3} | alpha{5,8} ;
