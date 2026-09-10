@@ -18,7 +18,16 @@ set(TestWebKitAPI_DISABLED_WARNINGS
     -Wno-unused-parameter
 )
 
+set(TESTWEBKITAPI_RUNNER_SOURCES
+    Runner/TestsController.cpp
+)
+
 macro(WEBKIT_TEST _target)
+    # TestJSC runs under the GLib test harness with its own main() and does not
+    # link gtest, so it takes no part in the Runner/ driver.
+    if (NOT ${_target}_HAS_OWN_TEST_HARNESS)
+        list(APPEND ${_target}_SOURCES ${TESTWEBKITAPI_RUNNER_SOURCES})
+    endif ()
     WEBKIT_EXECUTABLE(${_target})
     if (${_target} STREQUAL "TestWTF")
         WEBKIT_ADD_PREFIX_HEADER(TestWTF Helpers/TestWebKitAPIPrefix.h PREFIX_NO_CODEGEN PREFIX_LANGUAGES CXX OBJCXX)
@@ -43,7 +52,6 @@ endmacro()
 # TestWTF definitions
 set(TestWTF_SOURCES
     Helpers/Counters.cpp
-    Runner/TestsController.cpp
     Helpers/Utilities.cpp
 
     Tests/WTF/ASCIILiteral.cpp
@@ -215,8 +223,6 @@ WEBKIT_EXECUTABLE_DECLARE(TestWTF)
 # TestJavaScriptCore definitions
 if (ENABLE_JAVASCRIPTCORE)
     set(TestJavaScriptCore_SOURCES
-        Runner/TestsController.cpp
-
         Tests/JavaScriptCore/DisallowVMEntry.cpp
         Tests/JavaScriptCore/InspectorConsoleMessage.cpp
         Tests/JavaScriptCore/MarkedVector.cpp
@@ -248,7 +254,6 @@ endif ()
 if (ENABLE_WEBCORE)
     set(TestWebCore_SOURCES
         Helpers/GraphicsTestUtilities.cpp
-        Runner/TestsController.cpp
         Helpers/Utilities.cpp
         Helpers/WebCoreTestUtilities.cpp
 
@@ -392,9 +397,7 @@ endif ()
 
 # TestWebKitLegacy definitions
 if (ENABLE_WEBKIT_LEGACY)
-    set(TestWebKitLegacy_SOURCES
-        Runner/TestsController.cpp
-    )
+    set(TestWebKitLegacy_SOURCES)
 
     set(TestWebKitLegacy_LIBRARIES
         WebKit::gtest
@@ -505,7 +508,6 @@ if (ENABLE_WEBKIT)
     )
 
     set(TestWebKit_LIBRARIES
-        TestWebKitAPIBase
         WebKit::gtest
     )
     set(TestWebKit_FRAMEWORKS
@@ -519,17 +521,25 @@ if (ENABLE_WEBKIT)
         TestWebKitAPIInjectedBundle
     )
 
-    add_library(TestWebKitAPIBase STATIC
-        Helpers/JavaScriptTest.cpp
-        Helpers/PlatformUtilities.cpp
-        Runner/TestsController.cpp
-    )
-    target_compile_definitions(TestWebKitAPIBase PRIVATE BUILDING_TestWebKit)
-    target_include_directories(TestWebKitAPIBase PRIVATE ${TestWebKit_PRIVATE_INCLUDE_DIRECTORIES})
-    target_link_libraries(TestWebKitAPIBase PRIVATE WebKit::WebKit WebKit::gtest)
+    if (TESTWEBKITAPI_MERGED_BINARY)
+        list(APPEND TestWebKit_SOURCES
+            Helpers/JavaScriptTest.cpp
+            Helpers/PlatformUtilities.cpp
+        )
+    else ()
+        list(PREPEND TestWebKit_LIBRARIES TestWebKitAPIBase)
 
-    if (COMPILER_IS_GCC_OR_CLANG)
-        WEBKIT_ADD_TARGET_CXX_FLAGS(TestWebKitAPIBase ${TestWebKitAPI_DISABLED_WARNINGS} -Wno-deprecated-declarations)
+        add_library(TestWebKitAPIBase STATIC
+            Helpers/JavaScriptTest.cpp
+            Helpers/PlatformUtilities.cpp
+        )
+        target_compile_definitions(TestWebKitAPIBase PRIVATE BUILDING_TestWebKit)
+        target_include_directories(TestWebKitAPIBase PRIVATE ${TestWebKit_PRIVATE_INCLUDE_DIRECTORIES})
+        target_link_libraries(TestWebKitAPIBase PRIVATE WebKit::WebKit WebKit::gtest)
+
+        if (COMPILER_IS_GCC_OR_CLANG)
+            WEBKIT_ADD_TARGET_CXX_FLAGS(TestWebKitAPIBase ${TestWebKitAPI_DISABLED_WARNINGS} -Wno-deprecated-declarations)
+        endif ()
     endif ()
 
     set(TestWebKitAPIInjectedBundle_SOURCES
@@ -603,8 +613,6 @@ if (ENABLE_WEBKIT)
         # TestIPC definitions
         set(TestIPC_SOURCES
             Helpers/Utilities.cpp
-
-            Runner/TestsController.cpp
 
             Tests/IPC/ArgumentCoderTests.cpp
             Tests/IPC/ConnectionTests.cpp
@@ -719,8 +727,6 @@ endif ()
 # TestWGSL definitions
 if (APPLE AND ENABLE_WEBGPU)
     set(TestWGSL_SOURCES
-        Runner/TestsController.cpp
-
         Tests/WGSL/ASTStringDumperTests.cpp
         Tests/WGSL/ConstLiteralTests.cpp
         Tests/WGSL/LexerTests.cpp
@@ -761,9 +767,6 @@ if (TESTWEBKITAPI_MERGED_BINARY)
     )
     list(REMOVE_DUPLICATES TestWebKit_SOURCES)
 
-    # Already in the TestWebKitAPIBase static library that TestWebKit links.
-    list(REMOVE_ITEM TestWebKit_SOURCES Runner/TestsController.cpp)
-
     list(APPEND TestWebKit_FRAMEWORKS
         ${TestWebCore_FRAMEWORKS}
         ${TestJavaScriptCore_FRAMEWORKS}
@@ -787,6 +790,9 @@ if (TESTWEBKITAPI_MERGED_BINARY)
 endif ()
 
 # TestWTF target
+if (TESTWEBKITAPI_MERGED_BINARY)
+    WEBKIT_TEST_LIBRARY(TestWTF TestWTFLibrary)
+endif ()
 WEBKIT_TEST(TestWTF)
 
 # TestJavaScriptCore target
@@ -808,6 +814,9 @@ endif ()
 if (ENABLE_WEBKIT)
     if (TestWebKit_UNIFIED_SOURCE_LIST_FILES)
         WEBKIT_COMPUTE_SOURCES(TestWebKit)
+    endif ()
+    if (TESTWEBKITAPI_MERGED_BINARY)
+        WEBKIT_TEST_LIBRARY(TestWebKit TestWebKitAPILibrary)
     endif ()
     WEBKIT_TEST(TestWebKit)
     if (APPLE OR PORT STREQUAL "GTK" OR PORT STREQUAL "WPE")

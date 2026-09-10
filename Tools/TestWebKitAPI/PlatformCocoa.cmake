@@ -58,15 +58,16 @@ foreach (_f IN LISTS _test_swift_cc_flags)
     list(APPEND _testwebkitapi_swift_options "-Xcc ${_f}")
 endforeach ()
 
+list(APPEND TESTWEBKITAPI_RUNNER_SOURCES
+    Runner/GoogleTestsController.swift
+    Runner/SwiftTestingABI.swift
+    Runner/SwiftTestsController.swift
+    Runner/TestRunner.swift
+    Runner/TestWebKitAPI.swift
+    Runner/TestWebKitAPISupport.mm
+)
+
 macro(WEBKIT_TEST_ENABLE_SWIFT _target)
-    target_sources(${_target} PRIVATE
-        ${TESTWEBKITAPI_DIR}/Runner/TestWebKitAPI.swift
-        ${TESTWEBKITAPI_DIR}/Runner/TestRunner.swift
-        ${TESTWEBKITAPI_DIR}/Runner/GoogleTestsController.swift
-        ${TESTWEBKITAPI_DIR}/Runner/SwiftTestsController.swift
-        ${TESTWEBKITAPI_DIR}/Runner/SwiftTestingABI.swift
-        ${TESTWEBKITAPI_DIR}/Runner/TestWebKitAPISupport.mm
-    )
     set_target_properties(${_target} PROPERTIES Swift_MODULE_NAME ${_target})
     webkit_target_add_swift_options(${_target}
         ${_testwebkitapi_swift_options}
@@ -250,7 +251,6 @@ list(APPEND TestWebKit_SOURCES
     Helpers/WebCoreTestUtilities.cpp
 
     Helpers/cocoa/HTTPServer.mm
-    Helpers/cocoa/PDFTestHelpers.swift
     Helpers/cocoa/MiniTURNServer.mm
     Helpers/cocoa/TestCocoaImageAndCocoaColor.mm
     Helpers/cocoa/TestElementFullscreenDelegate.mm
@@ -566,8 +566,38 @@ foreach (_dir IN LISTS _testapi_framework_headers)
     list(APPEND _testwebkitapi_swift_options "-Xcc -I${_dir}")
 endforeach ()
 
-# TestWebKitAPIBase needs framework headers for config.h includes.
-target_include_directories(TestWebKitAPIBase PRIVATE ${_testapi_framework_headers})
+# Compiles the tests into libTestWTF.a / libTestWebKitAPI.a and leaves the
+# executable with just the runner, which force-loads the archive.
+macro(WEBKIT_TEST_LIBRARY _target _library)
+    add_library(${_library} STATIC ${${_target}_SOURCES})
+    set(${_target}_SOURCES ${${_target}_EXECUTABLE_SOURCES})
+
+    target_include_directories(${_library} PRIVATE
+        ${_testapi_framework_headers}
+        ${${_target}_PRIVATE_INCLUDE_DIRECTORIES}
+    )
+    target_compile_definitions(${_library} PRIVATE BUILDING_${_target})
+    foreach (_test_framework IN LISTS ${_target}_FRAMEWORKS)
+        target_link_libraries(${_library} PRIVATE WebKit::${_test_framework})
+    endforeach ()
+
+    # config.h includes <gtest/gtest.h>.
+    target_link_libraries(${_library} PRIVATE ${${_target}_LIBRARIES} WebKit::gtest)
+    WEBKIT_ADD_TARGET_CXX_FLAGS(${_library} ${TestWebKitAPI_DISABLED_WARNINGS})
+
+    WEBKIT_ADD_PREFIX_HEADER(${_library} Helpers/TestWebKitAPIPrefix.h
+        PREFIX_NO_CODEGEN PREFIX_LANGUAGES CXX OBJCXX)
+
+    target_link_libraries(${_target} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_library}>")
+endmacro()
+
+# Sources the executable keeps when the tests are compiled into a library.
+# FIXME: Remove this list once Swift Testing is properly supported.
+list(APPEND TestWebKit_EXECUTABLE_SOURCES
+    Helpers/cocoa/CocoaTypes.swift
+    Helpers/cocoa/PDFTestHelpers.swift
+    Helpers/cocoa/TestCocoaImageUtilities.swift
+)
 
 # TestWebKitAPIInjectedBundle -- .bundle for NSBundle loading on Mac.
 target_sources(TestWebKitAPIInjectedBundle PRIVATE
