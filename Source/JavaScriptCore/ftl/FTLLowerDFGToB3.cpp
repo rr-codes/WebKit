@@ -12044,17 +12044,22 @@ IGNORE_CLANG_WARNINGS_END
         else
             stringLength = m_out.load32NonNegative(stringImpl, m_heaps.StringImpl_length);
 
-        LValue index = m_node->op() == StringAt ? m_out.select(m_out.lessThan(originalIndex, m_out.int32Zero), m_out.add(stringLength, originalIndex), originalIndex) : originalIndex;
+        bool boundsCheckLowered = m_node->op() == StringAt && m_node->arrayMode().isInBounds();
+        LValue index = m_node->op() == StringAt && !boundsCheckLowered ? m_out.select(m_out.lessThan(originalIndex, m_out.int32Zero), m_out.add(stringLength, originalIndex), originalIndex) : originalIndex;
 
         LBasicBlock fastPath = m_out.newBlock();
-        LBasicBlock slowPath = m_out.newBlock();
+        LBasicBlock slowPath = boundsCheckLowered ? nullptr : m_out.newBlock();
         LBasicBlock continuation = m_out.newBlock();
 
-        m_out.branch(
-            m_out.aboveOrEqual(index, stringLength),
-            rarely(slowPath), usually(fastPath));
+        if (boundsCheckLowered)
+            m_out.jump(fastPath);
+        else {
+            m_out.branch(
+                m_out.aboveOrEqual(index, stringLength),
+                rarely(slowPath), usually(fastPath));
+        }
 
-        LBasicBlock lastNext = m_out.appendTo(fastPath, slowPath);
+        LBasicBlock lastNext = m_out.appendTo(fastPath, slowPath ? slowPath : continuation);
 
         LBasicBlock is8Bit = m_out.newBlock();
         LBasicBlock is16Bit = m_out.newBlock();
@@ -12097,7 +12102,7 @@ IGNORE_CLANG_WARNINGS_END
             m_vmValue, char16BitValue)));
         m_out.jump(continuation);
 
-        m_out.appendTo(bitsContinuation, slowPath);
+        m_out.appendTo(bitsContinuation, slowPath ? slowPath : continuation);
 
         LValue character = m_out.phi(Int32, char8Bit, char16Bit);
 
@@ -12107,43 +12112,45 @@ IGNORE_CLANG_WARNINGS_END
             m_heaps.singleCharacterStrings, smallStrings, m_out.zeroExtPtr(character)))));
         m_out.jump(continuation);
 
-        m_out.appendTo(slowPath, continuation);
+        if (slowPath) {
+            m_out.appendTo(slowPath, continuation);
 
-        if (m_node->op() == StringCharAt) {
-            // String#charAt can accept out of range index and it always returns an empty string.
-            results.append(m_out.anchor(weakPointer(jsEmptyString(vm()))));
-        } else {
-            if (m_node->arrayMode().isInBounds()) {
-                speculate(OutOfBounds, noValue(), nullptr, m_out.booleanTrue);
-                results.append(m_out.anchor(m_out.intPtrZero));
+            if (m_node->op() == StringCharAt) {
+                // String#charAt can accept out of range index and it always returns an empty string.
+                results.append(m_out.anchor(weakPointer(jsEmptyString(vm()))));
             } else {
-                if (m_node->op() == StringAt) {
-                    // String#at can accept out of range index and it always returns undefined.
-                    results.append(m_out.anchor(m_out.constInt64(JSValue::encode(jsUndefined()))));
+                if (m_node->arrayMode().isInBounds()) {
+                    speculate(OutOfBounds, noValue(), nullptr, m_out.booleanTrue);
+                    results.append(m_out.anchor(m_out.intPtrZero));
                 } else {
-                    // FIXME: Revisit JSGlobalObject.
-                    // https://bugs.webkit.org/show_bug.cgi?id=203204
-                    JSGlobalObject* globalObject = m_graph.globalObjectFor(m_origin.semantic);
-                    if (m_graph.isWatchingStringPrototypeChainIsSaneWatchpoint(m_node)) {
-                        // FIXME: This could be captured using a Speculation mode that means
-                        // "out-of-bounds loads return a trivial value", something like
-                        // OutOfBoundsSaneChain.
-                        // https://bugs.webkit.org/show_bug.cgi?id=144668
-                        LBasicBlock negativeIndex = m_out.newBlock();
-
+                    if (m_node->op() == StringAt) {
+                        // String#at can accept out of range index and it always returns undefined.
                         results.append(m_out.anchor(m_out.constInt64(JSValue::encode(jsUndefined()))));
-                        m_out.branch(
-                            m_out.lessThan(index, m_out.int32Zero),
-                            rarely(negativeIndex), usually(continuation));
+                    } else {
+                        // FIXME: Revisit JSGlobalObject.
+                        // https://bugs.webkit.org/show_bug.cgi?id=203204
+                        JSGlobalObject* globalObject = m_graph.globalObjectFor(m_origin.semantic);
+                        if (m_graph.isWatchingStringPrototypeChainIsSaneWatchpoint(m_node)) {
+                            // FIXME: This could be captured using a Speculation mode that means
+                            // "out-of-bounds loads return a trivial value", something like
+                            // OutOfBoundsSaneChain.
+                            // https://bugs.webkit.org/show_bug.cgi?id=144668
+                            LBasicBlock negativeIndex = m_out.newBlock();
 
-                        m_out.appendTo(negativeIndex, continuation);
+                            results.append(m_out.anchor(m_out.constInt64(JSValue::encode(jsUndefined()))));
+                            m_out.branch(
+                                m_out.lessThan(index, m_out.int32Zero),
+                                rarely(negativeIndex), usually(continuation));
+
+                            m_out.appendTo(negativeIndex, continuation);
+                        }
+
+                        results.append(m_out.anchor(vmCall(Int64, operationGetByValStringInt, weakPointer(globalObject), base, index)));
                     }
-
-                    results.append(m_out.anchor(vmCall(Int64, operationGetByValStringInt, weakPointer(globalObject), base, index)));
                 }
             }
+            m_out.jump(continuation);
         }
-        m_out.jump(continuation);
 
         m_out.appendTo(continuation, lastNext);
         // We have to keep base alive since that keeps storage alive.
@@ -12223,7 +12230,8 @@ IGNORE_CLANG_WARNINGS_END
         else
             length = m_out.load32NonNegative(stringImpl, m_heaps.StringImpl_length);
 
-        speculate(Uncountable, noValue(), nullptr, m_out.aboveOrEqual(index, length));
+        if (!m_node->arrayMode().isInBounds())
+            speculate(Uncountable, noValue(), nullptr, m_out.aboveOrEqual(index, length));
 
         m_out.branch(
             m_out.testIsZero32(
