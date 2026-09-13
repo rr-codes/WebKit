@@ -1382,6 +1382,301 @@ std::span<JSBigInt::Digit> JSBigInt::multiplyKaratsuba(std::span<const Digit> x,
     return z;
 }
 
+// Toom-3 multiplication, ported from V8 [1], which follows Wikipedia's description [2].
+//
+// [1]: https://source.chromium.org/chromium/chromium/src/+/main:v8/src/bigint/mul-toom.cc
+// [2]: https://en.wikipedia.org/wiki/Toom%E2%80%93Cook_multiplication
+static constexpr size_t toom3Threshold = 508;
+
+// Z := X + Y, zero-padding Z. Z may alias either operand.
+static void addZeroPadded(std::span<JSBigInt::Digit> z, std::span<const JSBigInt::Digit> x, std::span<const JSBigInt::Digit> y)
+{
+    using Digit = JSBigInt::Digit;
+    if (x.size() < y.size())
+        std::swap(x, y);
+    RELEASE_ASSERT(x.size() >= y.size());
+    RELEASE_ASSERT(z.size() >= x.size());
+    Digit carry = 0;
+    size_t i = 0;
+    for (; i < y.size(); i++) {
+        Digit newCarry = 0;
+        z[i] = JSBigInt::digitAdd3(x[i], y[i], carry, newCarry);
+        carry = newCarry;
+    }
+    for (; i < x.size(); i++) {
+        Digit newCarry = 0;
+        z[i] = JSBigInt::digitAdd(x[i], carry, newCarry);
+        carry = newCarry;
+    }
+    for (; i < z.size(); i++) {
+        z[i] = carry;
+        carry = 0;
+    }
+}
+
+// Z := X - Y for normalized X >= Y, zero-padding Z. Z may alias either operand.
+static void subZeroPadded(std::span<JSBigInt::Digit> z, std::span<const JSBigInt::Digit> x, std::span<const JSBigInt::Digit> y)
+{
+    using Digit = JSBigInt::Digit;
+    RELEASE_ASSERT(x.size() >= y.size());
+    RELEASE_ASSERT(z.size() >= x.size());
+    Digit borrow = 0;
+    size_t i = 0;
+    for (; i < y.size(); i++) {
+        Digit newBorrow = 0;
+        z[i] = JSBigInt::digitSub2(x[i], y[i], borrow, newBorrow);
+        borrow = newBorrow;
+    }
+    for (; i < x.size(); i++) {
+        Digit newBorrow = 0;
+        z[i] = JSBigInt::digitSub(x[i], borrow, newBorrow);
+        borrow = newBorrow;
+    }
+    ASSERT(!borrow);
+    for (; i < z.size(); i++)
+        z[i] = 0;
+}
+
+static bool lessThanNormalized(std::span<const JSBigInt::Digit> x, std::span<const JSBigInt::Digit> y)
+{
+    if (x.size() != y.size())
+        return x.size() < y.size();
+    for (size_t i = x.size(); i-- > 0;) {
+        if (x[i] != y[i])
+            return x[i] < y[i];
+    }
+    return false;
+}
+
+// Z := X + Y on sign-magnitude values, returning the sign of Z. Z may alias either operand.
+static bool addSigned(std::span<JSBigInt::Digit> z, std::span<const JSBigInt::Digit> x, bool xNegative, std::span<const JSBigInt::Digit> y, bool yNegative)
+{
+    if (xNegative == yNegative) {
+        addZeroPadded(z, x, y);
+        return xNegative;
+    }
+    x = normalize(x);
+    y = normalize(y);
+    if (!lessThanNormalized(x, y)) {
+        subZeroPadded(z, x, y);
+        return xNegative;
+    }
+    subZeroPadded(z, y, x);
+    return !xNegative;
+}
+
+// Z := X - Y on sign-magnitude values, returning the sign of Z. Z may alias either operand.
+static bool subtractSigned(std::span<JSBigInt::Digit> z, std::span<const JSBigInt::Digit> x, bool xNegative, std::span<const JSBigInt::Digit> y, bool yNegative)
+{
+    return addSigned(z, x, xNegative, y, !yNegative);
+}
+
+static void timesTwo(std::span<JSBigInt::Digit> x)
+{
+    JSBigInt::Digit carry = 0;
+    for (auto& digit : x) {
+        JSBigInt::Digit d = digit;
+        digit = (d << 1) | carry;
+        carry = d >> (JSBigInt::digitBits - 1);
+    }
+}
+
+static void divideByTwo(std::span<JSBigInt::Digit> x)
+{
+    JSBigInt::Digit carry = 0;
+    for (auto& xi : x | std::views::reverse) {
+        JSBigInt::Digit d = xi;
+        xi = (d >> 1) | carry;
+        carry = d << (JSBigInt::digitBits - 1);
+    }
+}
+
+static void divideByThree(std::span<JSBigInt::Digit> x)
+{
+    using Digit = JSBigInt::Digit;
+    constexpr unsigned halfDigitBits = JSBigInt::halfDigitBits;
+    constexpr Digit halfDigitMask = JSBigInt::halfDigitMask;
+    Digit remainder = 0;
+    for (auto& xi : x | std::views::reverse) {
+        Digit d = xi;
+        Digit upper = (remainder << halfDigitBits) | (d >> halfDigitBits);
+        Digit upperResult = upper / 3;
+        remainder = upper - 3 * upperResult;
+        Digit lower = (remainder << halfDigitBits) | (d & halfDigitMask);
+        Digit lowerResult = lower / 3;
+        remainder = lower - 3 * lowerResult;
+        xi = (upperResult << halfDigitBits) | lowerResult;
+    }
+}
+
+static size_t toom3ScratchLength(size_t longerOperandLength)
+{
+    size_t i = (longerOperandLength + 2) / 3;
+    size_t pLength = i + 1;
+    size_t rLength = 2 * pLength;
+    return 4 * rLength;
+}
+
+void JSBigInt::toom3Main(std::span<Digit> z, std::span<const Digit> x, std::span<const Digit> y, std::span<Digit> scratch)
+{
+    ASSERT(z.size() >= x.size() + y.size());
+    ASSERT(scratch.size() >= toom3ScratchLength(std::max(x.size(), y.size())));
+    // Phase 1: Splitting.
+    size_t i = (std::max(x.size(), y.size()) + 2) / 3;
+    auto x0 = clampedSubspan(x, 0, i);
+    auto x1 = clampedSubspan(x, i, i);
+    auto x2 = clampedSubspan(x, 2 * i, i);
+    auto y0 = clampedSubspan(y, 0, i);
+    auto y1 = clampedSubspan(y, i, i);
+    auto y2 = clampedSubspan(y, 2 * i, i);
+
+    // Temporary storage.
+    size_t pLength = i + 1; // For all px, qx below.
+    size_t rLength = 2 * pLength; // For all r_x, Rx below.
+    // We will use the same variable names as the Wikipedia article, as much as C++ lets us: our
+    // "pm1" is their "p(-1)" etc. For consistency with other algorithms, we use X and Y where
+    // Wikipedia uses m and n.
+    // We will use and reuse the temporary storage as follows:
+    //
+    //   chunk                  | -------- time ----------->
+    //   [0 .. i]               |( po )( pm1 ) ( rm2  )
+    //   [i+1 .. rLength-1]     |( qo )( qm1 ) ( rm2  )
+    //   [rLength .. rLength+i] | (p1 ) ( pm2 ) (rinf)
+    //   [rLength+i+1 .. 2*rLength-1] | (q1 ) ( qm2 ) (rinf)
+    //   [2*rLength .. 3*rLength-1]   |      (   r1          )
+    //   [3*rLength .. 4*rLength-1]   |             (  rm1   )
+    //
+    // This requires interleaving phases 2 and 3 a bit: after computing r1 = p1 * q1, we can reuse
+    // p1's storage for pm2, and so on.
+    auto t = scratch.first(4 * rLength);
+    auto po = t.subspan(0, pLength);
+    auto qo = t.subspan(pLength, pLength);
+    auto p1 = t.subspan(rLength, pLength);
+    auto q1 = t.subspan(rLength + pLength, pLength);
+    auto r1 = t.subspan(2 * rLength, rLength);
+    auto rm1 = t.subspan(3 * rLength, rLength);
+
+    // We can also share the backing stores of Z, r0, R0.
+    auto r0 = z.first(rLength);
+
+    // Phase 2a: Evaluation, steps 0, 1, m1.
+    // po = X0 + X2
+    addZeroPadded(po, x0, x2);
+    // p0 = X0
+    // p1 = po + X1
+    addZeroPadded(p1, po, x1);
+    // pm1 = po - X1
+    auto pm1 = po;
+    bool pm1Sign = subtractSigned(pm1, po, /* poSign */ false, x1, /* x1Sign */ false);
+
+    // qo = Y0 + Y2
+    addZeroPadded(qo, y0, y2);
+    // q0 = Y0
+    // q1 = qo + Y1
+    addZeroPadded(q1, qo, y1);
+    // qm1 = qo - Y1
+    auto qm1 = qo;
+    bool qm1Sign = subtractSigned(qm1, qo, /* qoSign */ false, y1, /* y1Sign */ false);
+
+    // Phase 3a: Pointwise multiplication, steps 0, 1, m1.
+    multiplyZeroPadded(x0, y0, r0);
+    multiplyZeroPadded(p1, q1, r1);
+    multiplyZeroPadded(pm1, qm1, rm1);
+    bool rm1Sign = pm1Sign != qm1Sign;
+
+    // Phase 2b: Evaluation, steps m2 and inf.
+    // pm2 = (pm1 + X2) * 2 - X0
+    auto pm2 = p1;
+    bool pm2Sign = addSigned(pm2, pm1, pm1Sign, x2, /* x2Sign */ false);
+    timesTwo(pm2);
+    pm2Sign = subtractSigned(pm2, pm2, pm2Sign, x0, /* x0Sign */ false);
+    // pinf = X2
+
+    // qm2 = (qm1 + Y2) * 2 - Y0
+    auto qm2 = q1;
+    bool qm2Sign = addSigned(qm2, qm1, qm1Sign, y2, /* y2Sign */ false);
+    timesTwo(qm2);
+    qm2Sign = subtractSigned(qm2, qm2, qm2Sign, y0, /* y0Sign */ false);
+    // qinf = Y2
+
+    // Phase 3b: Pointwise multiplication, steps m2 and inf.
+    auto rm2 = t.first(rLength);
+    multiplyZeroPadded(pm2, qm2, rm2);
+    bool rm2Sign = pm2Sign != qm2Sign;
+
+    auto rinf = t.subspan(rLength, rLength);
+    multiplyZeroPadded(x2, y2, rinf);
+
+    // Phase 4: Interpolation.
+    auto R0 = r0;
+    auto R4 = rinf;
+    // R3 <- (rm2 - r1) / 3
+    auto R3 = rm2;
+    bool R3Sign = subtractSigned(R3, rm2, rm2Sign, r1, /* r1Sign */ false);
+    divideByThree(R3);
+    // R1 <- (r1 - rm1) / 2
+    auto R1 = r1;
+    bool R1Sign = subtractSigned(R1, r1, /* r1Sign */ false, rm1, rm1Sign);
+    divideByTwo(R1);
+    // R2 <- rm1 - r0
+    auto R2 = rm1;
+    bool R2Sign = subtractSigned(R2, rm1, rm1Sign, R0, /* R0Sign */ false);
+    // R3 <- (R2 - R3) / 2 + 2 * rinf
+    R3Sign = subtractSigned(R3, R2, R2Sign, R3, R3Sign);
+    divideByTwo(R3);
+    R3Sign = addSigned(R3, R3, R3Sign, rinf, /* rinfSign */ false);
+    R3Sign = addSigned(R3, R3, R3Sign, rinf, /* rinfSign */ false);
+    // R2 <- R2 + R1 - R4
+    R2Sign = addSigned(R2, R2, R2Sign, R1, R1Sign);
+    R2Sign = subtractSigned(R2, R2, R2Sign, R4, /* R4Sign */ false);
+    // R1 <- R1 - R3
+    R1Sign = subtractSigned(R1, R1, R1Sign, R3, R3Sign);
+
+    ASSERT(!R1Sign || normalize(R1).empty());
+    ASSERT(!R2Sign || normalize(R2).empty());
+    ASSERT(!R3Sign || normalize(R3).empty());
+
+    // Phase 5: Recomposition. R0 is already in place. Overflow can't happen.
+    zeroSpan(z.subspan(R0.size()));
+    inplaceAddAndPropagate(z.subspan(i), R1);
+    inplaceAddAndPropagate(z.subspan(2 * i), R2);
+    inplaceAddAndPropagate(z.subspan(3 * i), R3);
+    inplaceAddAndPropagate(z.subspan(4 * i), R4);
+}
+
+std::span<JSBigInt::Digit> JSBigInt::multiplyToom3(std::span<const Digit> x, std::span<const Digit> y, std::span<Digit> result)
+{
+    ASSERT(x.size() >= y.size());
+    ASSERT(y.size() >= toom3Threshold);
+    RELEASE_ASSERT(result.size() >= x.size() + y.size());
+    auto z = result.first(x.size() + y.size());
+    // toom3Main splits both operands into thirds of the larger one, so a moderately longer x costs
+    // the same five products as a balanced pair and beats chunking x into y-sized pieces. Beyond
+    // that ratio the padding wastes more than the chunking does.
+    if (x.size() * 3 <= y.size() * 5) {
+        Vector<Digit> scratch(toom3ScratchLength(x.size()));
+        toom3Main(z, x, y, scratch.mutableSpan());
+        return z;
+    }
+    size_t k = y.size();
+    Vector<Digit> scratch(toom3ScratchLength(k));
+    toom3Main(z, x.first(k), y, scratch.mutableSpan());
+    if (k < x.size()) {
+        Vector<Digit> chunkProduct(2 * k);
+        auto product = chunkProduct.mutableSpan();
+        for (size_t i = k; i < x.size(); i += k) {
+            auto xi = clampedSubspan(x, i, k);
+            if (xi.size() < k) {
+                // The last chunk is shorter, so let the size dispatch pick its algorithm.
+                multiplyZeroPadded(xi, y, product);
+            } else
+                toom3Main(product, xi, y, scratch.mutableSpan());
+            inplaceAddAndPropagate(z.subspan(i), product);
+        }
+    }
+    return z;
+}
+
 ALWAYS_INLINE std::span<JSBigInt::Digit> JSBigInt::multiplyDigitsInto(std::span<const Digit> x, std::span<const Digit> y, std::span<Digit> result)
 {
     ASSERT(!y.empty());
@@ -1416,6 +1711,8 @@ ALWAYS_INLINE std::span<JSBigInt::Digit> JSBigInt::multiplyDigitsInto(std::span<
     }
     if (y.size() == 1)
         return multiplySingle(x, y[0], result);
+    if (y.size() >= toom3Threshold)
+        return multiplyToom3(x, y, result);
     if (y.size() >= karatsubaThreshold)
         return multiplyKaratsuba(x, y, result);
     if (shouldUseComba(x.size(), y.size()))
