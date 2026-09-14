@@ -194,7 +194,7 @@ int BlobResourceHandle::readSync(std::span<uint8_t> buffer)
         result = buffer.size() - remaining;
 
     if (result > 0)
-        didReceiveData(buffer);
+        didReceiveData(buffer.first(result));
 
     if (!result)
         didFinish();
