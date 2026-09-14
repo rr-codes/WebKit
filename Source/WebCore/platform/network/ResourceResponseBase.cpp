@@ -418,7 +418,7 @@ void ResourceResponseBase::setHTTPVersion(String&& versionText)
 {
     lazyInit(AllFields);
     
-    m_httpVersion = versionText;
+    m_httpVersion = WTF::move(versionText);
     
     // FIXME: Should invalidate or update platform response if present.
 }
