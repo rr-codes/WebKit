@@ -26,7 +26,6 @@
 #include "config.h"
 #include "CompleteSubspace.h"
 
-#include "AlignedMemoryAllocator.h"
 #include "AllocatorInlines.h"
 #include "JSCellInlines.h"
 #include "LocalAllocatorInlines.h"
@@ -98,7 +97,6 @@ Allocator CompleteSubspace::allocatorForSlow(size_t size)
     }
     
     directory->setNextDirectoryInSubspace(m_firstDirectory);
-    m_alignedMemoryAllocator->registerDirectory(m_space.heap(), directory);
     WTF::storeStoreFence();
     m_firstDirectory = directory;
     return allocator;

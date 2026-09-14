@@ -488,12 +488,17 @@ Subspace* MarkedBlock::Handle::subspace() const
 
 void MarkedBlock::Handle::sweep(FreeList* freeList)
 {
-    SweepingScope sweepingScope(*heap());
     m_directory->assertIsMutatorOrMutatorIsStopped();
     ASSERT(m_directory->isInUse(this));
 
     SweepMode sweepMode = freeList ? SweepToFreeList : SweepOnly;
     bool needsDestruction = m_attributes.destruction != DoesNotNeedDestruction && m_directory->isDestructible(this);
+    // Nothing has been allocated into a block that is still swept, so no weak handle into it can have
+    // been created and died since; re-sweeping its weak set would find nothing.
+    if (sweepMode == SweepOnly && !needsDestruction && !m_directory->isUnswept(this))
+        return;
+
+    SweepingScope sweepingScope(*heap());
 
     m_weakSet.sweep();
 
