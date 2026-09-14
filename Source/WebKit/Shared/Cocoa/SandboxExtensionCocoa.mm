@@ -217,7 +217,7 @@ auto SandboxExtension::createReadOnlyHandlesForFiles(ASCIILiteral logLabel, cons
         if (!handle) {
             // This can legitimately fail if a directory containing the file is deleted after the file was chosen.
             // We also have reports of cases where this likely fails for some unknown reason, <rdar://problem/10156710>.
-            WTFLogAlways("%s: could not create a sandbox extension for '%s'\n", logLabel.characters(), path.utf8().legacyCStringPointer());
+            SAFE_WTFLOGALWAYS("%s: could not create a sandbox extension for '%s'\n", logLabel, path.utf8());
             ASSERT_NOT_REACHED();
         }
         return handle;
@@ -256,7 +256,7 @@ auto SandboxExtension::createHandleForTemporaryFile(StringView prefix, Type type
     handle.m_sandboxExtension = SandboxExtensionImpl::create(FileSystem::fileSystemRepresentation(pathString), type);
 
     if (!handle.m_sandboxExtension) {
-        WTFLogAlways("Could not create a sandbox extension for temporary file '%s'", pathString.utf8().legacyCStringPointer());
+        SAFE_WTFLOGALWAYS("Could not create a sandbox extension for temporary file '%s'", pathString.utf8());
         return std::nullopt;
     }
     return { { WTF::move(handle), WTF::move(pathString) } };
@@ -269,7 +269,7 @@ auto SandboxExtension::createHandleForGenericExtension(ASCIILiteral extensionCla
 
     handle.m_sandboxExtension = SandboxExtensionImpl::create(extensionClass, Type::Generic);
     if (!handle.m_sandboxExtension) {
-        WTFLogAlways("Could not create a '%s' sandbox extension", extensionClass.characters());
+        SAFE_WTFLOGALWAYS("Could not create a '%s' sandbox extension", extensionClass);
         return std::nullopt;
     }
     
@@ -291,7 +291,7 @@ auto SandboxExtension::createHandleForMachLookup(ASCIILiteral service, std::opti
     
     handle.m_sandboxExtension = SandboxExtensionImpl::create(service, Type::Mach, auditToken, flags);
     if (!handle.m_sandboxExtension) {
-        WTFLogAlways("Could not create a '%s' sandbox extension", service.characters());
+        SAFE_WTFLOGALWAYS("Could not create a '%s' sandbox extension", service);
         return std::nullopt;
     }
     

@@ -1260,7 +1260,7 @@ bool spansOverlap(std::span<T, TExtent> a, std::span<U, UExtent> b)
 // https://gist.github.com/sehe/3374327
 template<std::integral T> inline T safePrintfType(T arg) { return arg; }
 template<std::floating_point T> inline T safePrintfType(T arg) { return arg; }
-template<typename T> requires (std::is_pointer_v<T>) inline T safePrintfType(T arg)
+template<typename T> requires (std::is_pointer_v<T>) inline T NODELETE safePrintfType(T arg)
 {
     static_assert(!std::same_as<std::remove_cv_t<std::remove_pointer_t<T>>, char>, "char* is not bounds safe; please use a null terminated string type");
     return arg;
@@ -1306,14 +1306,14 @@ template<typename T> concept ObjectiveCObjectPointer = std::convertible_to<T, id
 template<typename T> concept ObjectiveCObjectPointer = false;
 #endif
 
-template<ObjectiveCObjectPointer T> inline T safeNSStringPrintfType(T argument) { return argument; }
+template<ObjectiveCObjectPointer T> inline T NODELETE safeNSStringPrintfType(T argument) { return argument; }
 template<typename T> requires (!ObjectiveCObjectPointer<std::decay_t<T>>)
-inline decltype(auto) safeNSStringPrintfType(T&& argument) { return safePrintfType(std::forward<T>(argument)); }
+inline decltype(auto) NODELETE safeNSStringPrintfType(T&& argument) { return safePrintfType(std::forward<T>(argument)); }
 
 #define SAFE_NSSTRING_PRINTF_TYPE(...) WTF_FOR_EACH(WTF::safeNSStringPrintfType, __VA_ARGS__)
 
 #define SAFE_WTFLOGALWAYS(format, ...) \
-    WTFLogAlways(format __VA_OPT__(, SAFE_NSSTRING_PRINTF_TYPE(__VA_ARGS__)))
+    SUPPRESS_UNCOUNTED_ARG WTFLogAlways(format __VA_OPT__(, SAFE_NSSTRING_PRINTF_TYPE(__VA_ARGS__)))
 
 template<typename T>
 concept NonConstByteType = CanBeConstByteType<T> && !std::is_const_v<T>;

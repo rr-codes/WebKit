@@ -415,7 +415,7 @@ void MediaSessionManagerCocoa::clearNowPlayingInfo()
 #endif
         });
     } @catch (NSException *exception) {
-        WTFLogAlways("MediaSessionManagerCocoa::clearNowPlayingInfo swallowed exception: %s", [[exception description] UTF8String]);
+        SAFE_WTFLOGALWAYS("MediaSessionManagerCocoa::clearNowPlayingInfo swallowed exception: %@", [exception description]);
     }
 
 #if USE(NOW_PLAYING_ACTIVITY_SUPPRESSION)
@@ -496,7 +496,7 @@ void MediaSessionManagerCocoa::setNowPlayingInfo(bool setAsNowPlayingApplication
         MRMediaRemoteSetNowPlayingVisibility(MRMediaRemoteGetLocalOrigin(), visibility);
     }
     } @catch (NSException *exception) {
-        WTFLogAlways("MediaSessionManagerCocoa::setNowPlayingInfo swallowed exception: %s", [[exception description] UTF8String]);
+        SAFE_WTFLOGALWAYS("MediaSessionManagerCocoa::setNowPlayingInfo swallowed exception: %@", [exception description]);
     }
 }
 

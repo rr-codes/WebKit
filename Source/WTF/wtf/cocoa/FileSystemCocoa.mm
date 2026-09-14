@@ -281,7 +281,7 @@ bool makeSafeToUseMemoryMapForPath(const String& path)
     NSError *error = nil;
     BOOL success = [[NSFileManager defaultManager] setAttributes:@{ NSFileProtectionKey: NSFileProtectionCompleteUnlessOpen } ofItemAtPath:path.createNSString().get() error:&error];
     if (error || !success) {
-        WTFLogAlways("makeSafeToUseMemoryMapForPath(%s) failed with error %@", path.utf8().legacyCStringPointer(), error);
+        SAFE_WTFLOGALWAYS("makeSafeToUseMemoryMapForPath(%s) failed with error %@", path.utf8(), error);
         return false;
     }
     return true;

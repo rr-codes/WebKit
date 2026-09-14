@@ -7000,7 +7000,7 @@ void showPaintOrderTree(const WebCore::RenderLayer* layer)
     if (layer)
         outputPaintOrderTreeRecursive(stream, *layer, ""_s);
     
-    WTFLogAlways("%s", stream.release().utf8().legacyCStringPointer());
+    SAFE_WTFLOGALWAYS("%s", stream.release().utf8());
 }
 
 void showPaintOrderTree(const WebCore::RenderObject* renderer)
@@ -7090,7 +7090,7 @@ void showLayerPositionTree(const WebCore::RenderLayer* root, const WebCore::Rend
     if (root)
         outputLayerPositionTreeRecursive(stream, *root, 0, mark);
 
-    WTFLogAlways("%s", stream.release().utf8().legacyCStringPointer());
+    SAFE_WTFLOGALWAYS("%s", stream.release().utf8());
 }
 
 #endif

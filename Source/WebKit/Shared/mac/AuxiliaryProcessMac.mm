@@ -540,7 +540,7 @@ ALLOW_DEPRECATED_DECLARATIONS_BEGIN
 ALLOW_DEPRECATED_DECLARATIONS_END
         SAFE_WTFLOGALWAYS("%s: Could not initialize sandbox profile [%s], error '%s'\n", FileSystem::currentExecutableName(), temp, CStringView::unsafeFromUTF8(errorBuf));
         for (size_t i = 0, count = parameters.count(); i != count; ++i) {
-            WTFLogAlways("%s=%s\n", parameters.name(i).characters(), parameters.value(i));
+            SAFE_WTFLOGALWAYS("%s=%s\n", parameters.name(i), CStringView::unsafeFromUTF8(parameters.value(i)));
         }
         return false;
     }

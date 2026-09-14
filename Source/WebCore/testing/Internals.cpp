@@ -961,7 +961,7 @@ String Internals::description(JSC::JSValue value)
 
 void Internals::log(const String& value)
 {
-    WTFLogAlways("%s", value.utf8().legacyCStringPointer());
+    SAFE_WTFLOGALWAYS("%s", value.utf8());
 }
 
 bool Internals::isPreloaded(const String& url)

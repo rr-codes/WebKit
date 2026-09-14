@@ -1335,7 +1335,7 @@ GstElement* /* (transfer floating) */ makeGStreamerElement(CStringView factoryNa
         String factoryNameString(factoryName.span());
         if (!cache.contains(factoryNameString)) {
             cache.append(WTF::move(factoryNameString));
-            WTFLogAlways("GStreamer element %s not found. Please install it", factoryName.utf8());
+            SAFE_WTFLOGALWAYS("GStreamer element %s not found. Please install it", factoryName);
             ASSERT_NOT_REACHED_WITH_MESSAGE("GStreamer element %s not found. Please install it", factoryName.utf8());
         }
     }

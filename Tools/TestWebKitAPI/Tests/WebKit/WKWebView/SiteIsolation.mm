@@ -612,21 +612,20 @@ static void checkProcessesTopDocumentURL(NSSet<_WKFrameTreeNode *> *trees, NSStr
     }
 }
 
-static Vector<char> indentation(size_t count)
+static ASCIICString indentation(size_t count)
 {
-    Vector<char> result;
-    for (size_t i = 0; i < count; i++)
-        result.append(' ');
-    result.append(0);
+    std::span<char> characters;
+    auto result = ASCIICString::newUninitialized(count, characters);
+    std::ranges::fill(characters, ' ');
     return result;
 }
 
 static void printTree(_WKFrameTreeNode *n, size_t indent = 0)
 {
     if (n.info._isLocalFrame)
-        WTFLogAlways("%s%@://%@ (pid %d)", indentation(indent).span().data(), n.info.securityOrigin.protocol, n.info.securityOrigin.host, n.info._processIdentifier);
+        SAFE_WTFLOGALWAYS("%s%@://%@ (pid %d)", indentation(indent), n.info.securityOrigin.protocol, n.info.securityOrigin.host, n.info._processIdentifier);
     else
-        WTFLogAlways("%s(remote) (pid %d)", indentation(indent).span().data(), n.info._processIdentifier);
+        SAFE_WTFLOGALWAYS("%s(remote) (pid %d)", indentation(indent), n.info._processIdentifier);
     for (_WKFrameTreeNode *c in n.childFrames)
         printTree(c, indent + 1);
 }
@@ -634,9 +633,9 @@ static void printTree(_WKFrameTreeNode *n, size_t indent = 0)
 static void printTree(const ExpectedFrameTree& n, size_t indent = 0)
 {
     if (auto* s = std::get_if<String>(&n.remoteOrOrigin))
-        WTFLogAlways("%s%s", indentation(indent).span().data(), s->utf8().legacyCStringPointer());
+        SAFE_WTFLOGALWAYS("%s%s", indentation(indent), s->utf8());
     else
-        WTFLogAlways("%s(remote)", indentation(indent).span().data());
+        SAFE_WTFLOGALWAYS("%s(remote)", indentation(indent));
     for (const auto& c : n.children)
         printTree(c, indent + 1);
 }
