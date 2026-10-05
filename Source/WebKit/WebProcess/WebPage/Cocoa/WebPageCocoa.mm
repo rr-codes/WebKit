@@ -3739,6 +3739,11 @@ void WebPage::completeSyntheticClick(std::optional<WebCore::FrameIdentifier> fra
     if (m_isClosed)
         return;
 
+#if HAVE(APPKIT_GESTURES_SUPPORT)
+    if (RefPtr frame = nodeRespondingToClick.document().frame())
+        send(Messages::WebPageProxy::DidHandleSyntheticMousePress(!frame->eventHandler().mouseDownMayStartSelect()));
+#endif
+
     if (auto selectionChangedHandler = std::exchange(m_selectionChangedHandler, { }))
         selectionChangedHandler();
 #if PLATFORM(IOS_FAMILY)

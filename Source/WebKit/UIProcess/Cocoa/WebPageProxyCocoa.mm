@@ -2655,6 +2655,20 @@ void WebPageProxy::didCompleteSyntheticClick()
         pageClient->didCompleteSyntheticClick();
 }
 
+#if HAVE(APPKIT_GESTURES_SUPPORT)
+void WebPageProxy::didHandleSyntheticMousePress(bool preventedSelection)
+{
+    m_lastSelectionPreventingSyntheticMousePressTime = preventedSelection ? std::optional { MonotonicTime::now() } : std::nullopt;
+}
+
+bool WebPageProxy::recentSyntheticMousePressPreventedSelection() const
+{
+    // Long enough to cover the first press of a double click.
+    static constexpr auto maximumAge = 1.5_s;
+    return m_lastSelectionPreventingSyntheticMousePressTime && MonotonicTime::now() - *m_lastSelectionPreventingSyntheticMousePressTime < maximumAge;
+}
+#endif
+
 void WebPageProxy::disableDoubleTapGesturesDuringTapIfNecessary(WebKit::TapIdentifier requestID)
 {
     if (RefPtr pageClient = this->pageClient())

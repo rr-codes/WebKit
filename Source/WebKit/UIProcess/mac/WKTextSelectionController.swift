@@ -42,6 +42,9 @@ extension WKTextSelectionController {
     @nonobjc
     private var lastRangeSelectionExtentPoint: NSPoint? = nil
 
+    @nonobjc
+    private var rangeSelectionWasPreventedByPage = false
+
     init(view: WKWebView) {
         self.view = view
         super.init()
@@ -341,6 +344,16 @@ extension WKTextSelectionController {
         lastRangeSelectionExtentPoint = nil
         page.cancelAutoscroll()
 
+        // AppKit begins word and paragraph selections for gesture double clicks on its own. A page keeps a mouse double
+        // click from selecting by preventing the default action of its mouse press, so honor the page's latest press,
+        // which is usually the first click's. Leave the second click alone too, so the page still gets it.
+        let pageMayPreventSelection = granularity != .character && !shouldExtendExistingSelection
+        rangeSelectionWasPreventedByPage = pageMayPreventSelection && page.recentSyntheticMousePressPreventedSelection()
+        if rangeSelectionWasPreventedByPage {
+            Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] Not selecting because the page prevented its latest mouse press")
+            return
+        }
+
         impl.beginSuppressingSingleClickGestureForTextSelection()
 
         Task.immediate {
@@ -378,6 +391,10 @@ extension WKTextSelectionController {
             return
         }
 
+        guard !rangeSelectionWasPreventedByPage else {
+            return
+        }
+
         lastRangeSelectionExtentPoint = point
 
         Task.immediate {
@@ -397,6 +414,7 @@ extension WKTextSelectionController {
 
         page.cancelAutoscroll()
         lastRangeSelectionExtentPoint = nil
+        rangeSelectionWasPreventedByPage = false
 
         guard currentRangeSelectionGranularity != nil else {
             assertionFailure("endRangeSelection was called with a nil currentRangeSelectionGranularity")

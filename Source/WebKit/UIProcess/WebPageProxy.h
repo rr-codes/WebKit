@@ -2098,6 +2098,10 @@ public:
     void didNotHandleTapAsClick(const WebCore::IntPoint&);
     void didHandleTapAsHover();
     void didCompleteSyntheticClick();
+#if HAVE(APPKIT_GESTURES_SUPPORT)
+    void didHandleSyntheticMousePress(bool preventedSelection);
+    bool recentSyntheticMousePressPreventedSelection() const;
+#endif
     void disableDoubleTapGesturesDuringTapIfNecessary(TapIdentifier);
     void handleSmartMagnificationInformationForPotentialTap(TapIdentifier, const WebCore::FloatRect& renderRect, bool fitEntireRect, double viewportMinimumScale, double viewportMaximumScale, bool nodeIsRootLevel, bool nodeIsPluginElement);
     void isPotentialTapInProgress(CompletionHandler<void(bool)>&&);
@@ -4283,6 +4287,10 @@ private:
     bool m_forceAlwaysUserScalable { false };
     double m_viewportConfigurationLayoutSizeScaleFactorFromClient { 1 };
     double m_viewportConfigurationMinimumEffectiveDeviceWidth { 0 };
+#endif
+
+#if HAVE(APPKIT_GESTURES_SUPPORT)
+    std::optional<MonotonicTime> m_lastSelectionPreventingSyntheticMousePressTime;
 #endif
 
 #if PLATFORM(IOS_FAMILY)
