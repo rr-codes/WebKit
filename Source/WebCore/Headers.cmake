@@ -1615,8 +1615,14 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     html/forms/FileIconLoader.h
 
     html/parser/HTMLDocumentParserFastPath.h
+    html/parser/HTMLMetaCharsetParser.h
     html/parser/HTMLParserIdioms.h
+    html/parser/HTMLParserOptions.h
     html/parser/HTMLParserScriptingFlagPolicy.h
+    html/parser/HTMLSrcsetParser.h
+    html/parser/HTMLToken.h
+    html/parser/HTMLTokenizer.h
+    html/parser/InputStreamPreprocessor.h
 
     html/shadow/TextControlInnerElements.h
     html/shadow/TextPlaceholderElement.h
