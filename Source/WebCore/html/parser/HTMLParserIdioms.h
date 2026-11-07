@@ -28,13 +28,21 @@
 #include <unicode/uchar.h>
 #include <wtf/text/StringView.h>
 
+#if !defined(USE_SWIFT_HTML_MICROSYNTAXES)
+#define USE_SWIFT_HTML_MICROSYNTAXES 0
+#endif
+
 namespace WebCore {
 
 class Decimal;
+#if !USE_SWIFT_HTML_MICROSYNTAXES
 class QualifiedName;
+#endif
 
+#if !USE_SWIFT_HTML_MICROSYNTAXES
 template<typename CharacterType> bool isComma(CharacterType);
 template<typename CharacterType> bool isHTMLSpaceOrComma(CharacterType);
+#endif
 bool isHTMLLineBreak(char16_t);
 bool isHTMLSpaceButNotLineBreak(char16_t);
 
@@ -61,11 +69,13 @@ WEBCORE_EXPORT std::expected<int, HTMLIntegerParsingError> LEGACY_NODELETE parse
 // http://www.whatwg.org/specs/web-apps/current-work/#rules-for-parsing-non-negative-integers
 WEBCORE_EXPORT std::expected<unsigned, HTMLIntegerParsingError> parseHTMLNonNegativeInteger(StringView);
 
+#if !USE_SWIFT_HTML_MICROSYNTAXES
 // https://html.spec.whatwg.org/#valid-non-negative-integer
 std::optional<int> parseValidHTMLNonNegativeInteger(StringView);
 
 // https://html.spec.whatwg.org/#valid-floating-point-number
 std::optional<double> parseValidHTMLFloatingPointNumber(StringView);
+#endif
 
 // https://html.spec.whatwg.org/#rules-for-parsing-floating-point-number-values
 WEBCORE_EXPORT double parseHTMLFloatingPointNumberValue(StringView, double fallbackValue = std::numeric_limits<double>::quiet_NaN());
@@ -79,7 +89,9 @@ WEBCORE_EXPORT bool parseMetaHTTPEquivRefresh(StringView, double& delay, String&
 // https://html.spec.whatwg.org/multipage/infrastructure.html#cors-settings-attribute
 WEBCORE_EXPORT String parseCORSSettingsAttribute(const AtomString&);
 
+#if !USE_SWIFT_HTML_MICROSYNTAXES
 bool threadSafeMatch(const QualifiedName&, const QualifiedName&);
+#endif
 
 WEBCORE_EXPORT AtomString parseHTMLHashNameReference(StringView);
 
@@ -114,6 +126,7 @@ ALWAYS_INLINE bool containsHTMLLineBreak(StringView view)
     return charactersContain<char16_t, '\r', '\n'>(view.span16());
 }
 
+#if !USE_SWIFT_HTML_MICROSYNTAXES
 template<typename CharacterType> inline bool isComma(CharacterType character)
 {
     return character == ',';
@@ -123,6 +136,7 @@ template<typename CharacterType> inline bool isHTMLSpaceOrComma(CharacterType ch
 {
     return isComma(character) || isASCIIWhitespace(character);
 }
+#endif
 
 inline bool isHTMLSpaceButNotLineBreak(char16_t character)
 {

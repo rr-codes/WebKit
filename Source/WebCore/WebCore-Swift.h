@@ -40,5 +40,8 @@
 
 // If Swift function parameters or return types depend on C++ types, the
 // relevant headers must be included here.
+#if USE_SWIFT_HTML_MICROSYNTAXES
+#include "HTMLMicrosyntaxesSwiftTypes.h"
+#endif
 
 #include "WebCoreSwift-Generated.h"

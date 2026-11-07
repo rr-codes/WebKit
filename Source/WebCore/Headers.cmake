@@ -1614,6 +1614,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
 
     html/parser/HTMLDocumentParserFastPath.h
     html/parser/HTMLMetaCharsetParser.h
+    html/parser/HTMLMicrosyntaxesSwiftTypes.h
     html/parser/HTMLParserIdioms.h
     html/parser/HTMLParserOptions.h
     html/parser/HTMLParserScriptingFlagPolicy.h
