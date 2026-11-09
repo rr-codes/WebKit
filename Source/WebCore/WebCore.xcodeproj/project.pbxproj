@@ -67,6 +67,7 @@
 		7062FCE22554E977B1F0B135 /* HTMLImageDensityCorrectedSizing.h in Headers */ = {isa = PBXBuildFile; fileRef = 73AFE9029ADA26681AC9083A /* HTMLImageDensityCorrectedSizing.h */; };
 		9178B94013138BFA254F89DD /* WorkerInternals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6327BA18D22FB8A4195DCD14 /* WorkerInternals.cpp */; };
 		9DAE6B91E7F40B76A6883FF1 /* JSRequestedGPU.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3CFE80DDA749005FD4E3712C /* JSRequestedGPU.cpp */; };
+		D6B086FD06D0431295A082C1 /* ServerTimingParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A52D85CB21B098300061C1EB /* ServerTimingParser.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		D93A5C8E2B10F46A7C05E8D3 /* ReplacedElementIntrinsicSizing.h in Headers */ = {isa = PBXBuildFile; fileRef = E4B7A2C10F63D5948A1E2B70 /* ReplacedElementIntrinsicSizing.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E6C3442408974A03886A869E /* ImmersiveElement.h in Headers */ = {isa = PBXBuildFile; fileRef = C5C1BDC22A5707719EFC9564 /* ImmersiveElement.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		F3D7B2EBBB8E3FDE13BA0023 /* ReplacedElementSizing.h in Headers */ = {isa = PBXBuildFile; fileRef = E48A470E5FA9F189AC831CF5 /* ReplacedElementSizing.h */; settings = {ATTRIBUTES = (Private, ); }; };
@@ -49045,6 +49046,7 @@
 				A75E497810752ACB00C9B896 /* SerializedScriptValueInternals.h in Headers */,
 				516F7F6D1C31E39A00F111DC /* ServerOpenDBRequest.h in Headers */,
 				08385B3635124BCBAD8F6795 /* ServerTiming.h in Headers */,
+				D6B086FD06D0431295A082C1 /* ServerTimingParser.h in Headers */,
 				2D93AEE319DF5641002A86C3 /* ServicesOverlayController.h in Headers */,
 				51F1755D1F3EBC8300C74950 /* ServiceWorker.h in Headers */,
 				A581ED131FB288CF00CED4EC /* ServiceWorkerAgent.h in Headers */,
