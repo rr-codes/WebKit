@@ -40,5 +40,13 @@
 
 // If Swift function parameters or return types depend on C++ types, the
 // relevant headers must be included here.
+#include "HTMLMicrosyntaxesSwiftTypes.h"
+
+#include "CacheValidation.h"
+#include "ContentSecurityPolicySwift.h"
+#include "HTTPHeaderParsersTypes.h"
+#include "LinkHeader.h"
+#include "ParsedContentRange.h"
+#include "ServerTiming.h"
 
 #include "WebCoreSwift-Generated.h"

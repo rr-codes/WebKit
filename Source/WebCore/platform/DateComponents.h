@@ -35,6 +35,8 @@
 #include <unicode/utypes.h>
 #include <wtf/Forward.h>
 
+#include <wtf/SwiftBridging.h>
+
 namespace WebCore {
 
 enum class SecondFormat : uint8_t {
@@ -51,6 +53,8 @@ enum class DateComponentsType : uint8_t {
     Time,
     Week,
 };
+
+class SWIFT_PRIVATE_FILEID("WebCore/DateComponents.swift") DateComponents;
 
 // A DateComponents instance represents one of the following date and time combinations:
 // * Month type: year-month
@@ -85,43 +89,43 @@ public:
 
     // Returns an ISO 8601 representation for this instance.
     // The format argument is valid for DateTimeLocal and Time types.
-    String toString(SecondFormat = SecondFormat::None) const;
+    WEBCORE_EXPORT String toString(SecondFormat = SecondFormat::None) const;
 
     // Sets year and month.
-    static std::optional<DateComponents> fromParsingMonth(StringView);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromParsingMonth(StringView);
     // Sets year, month and monthDay.
-    static std::optional<DateComponents> fromParsingDate(StringView);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromParsingDate(StringView);
     // Sets year and week.
-    static std::optional<DateComponents> fromParsingWeek(StringView);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromParsingWeek(StringView);
     // Sets hour, minute, second and millisecond.
-    static std::optional<DateComponents> fromParsingTime(StringView);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromParsingTime(StringView);
     // Sets year, month, monthDay, hour, minute, second and millisecond.
-    static std::optional<DateComponents> fromParsingDateTimeLocal(StringView);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromParsingDateTimeLocal(StringView);
 
 
     // For Date type. Updates m_year, m_month and m_monthDay.
-    static std::optional<DateComponents> fromMillisecondsSinceEpochForDate(double ms);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromMillisecondsSinceEpochForDate(double ms);
     // For DateTimeLocal type. Updates m_year, m_month, m_monthDay, m_hour, m_minute, m_second and m_millisecond.
-    static std::optional<DateComponents> fromMillisecondsSinceEpochForDateTimeLocal(double ms);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromMillisecondsSinceEpochForDateTimeLocal(double ms);
     // For Month type. Updates m_year and m_month.
-    static std::optional<DateComponents> fromMillisecondsSinceEpochForMonth(double ms);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromMillisecondsSinceEpochForMonth(double ms);
     // For Week type. Updates m_year and m_week.
-    static std::optional<DateComponents> fromMillisecondsSinceEpochForWeek(double ms);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromMillisecondsSinceEpochForWeek(double ms);
 
     // For Time type. Updates m_hour, m_minute, m_second and m_millisecond.
-    static std::optional<DateComponents> fromMillisecondsSinceMidnight(double ms);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromMillisecondsSinceMidnight(double ms);
 
     // Another initializer for Month type. Updates m_year and m_month.
-    static std::optional<DateComponents> fromMonthsSinceEpoch(double months);
+    WEBCORE_EXPORT static std::optional<DateComponents> fromMonthsSinceEpoch(double months);
 
     // Returns the number of milliseconds from 1970-01-01 00:00:00 UTC.
     // For a DateComponents initialized with NODELETE parseDateTimeLocal(),
     // millisecondsSinceEpoch() returns a value for UTC timezone.
-    double millisecondsSinceEpoch() const;
+    WEBCORE_EXPORT double millisecondsSinceEpoch() const;
 
     // Returns the number of months from 1970-01.
     // Do not call this for types other than Month.
-    NODELETE double monthsSinceEpoch() const;
+    NODELETE WEBCORE_EXPORT double monthsSinceEpoch() const;
 
     static inline double invalidMilliseconds() { return std::numeric_limits<double>::quiet_NaN(); }
 
@@ -147,51 +151,6 @@ public:
     static constexpr inline int maximumYear() { return 275760; }
 
 private:
-    template<typename CharacterType> NODELETE bool parseYear(StringParsingBuffer<CharacterType>&);
-    template<typename CharacterType> bool parseTimeZone(StringParsingBuffer<CharacterType>&);
-    template<typename CharacterType> NODELETE bool parseMonth(StringParsingBuffer<CharacterType>&);
-    template<typename CharacterType> NODELETE bool parseDate(StringParsingBuffer<CharacterType>&);
-    template<typename CharacterType> NODELETE bool parseWeek(StringParsingBuffer<CharacterType>&);
-    template<typename CharacterType> NODELETE bool parseTime(StringParsingBuffer<CharacterType>&);
-    template<typename CharacterType> NODELETE bool parseDateTimeLocal(StringParsingBuffer<CharacterType>&);
-
-    // The following setMillisecondsSinceEpochFor*() functions take
-    // the number of milliseconds since 1970-01-01 00:00:00.000 UTC as
-    // the argument, and update all fields for the corresponding
-    // DateComponents type. The functions return true if it succeeds, and
-    // false if they fail.
-    bool setMillisecondsSinceEpochForDate(double);
-    bool setMillisecondsSinceEpochForDateTimeLocal(double);
-    bool setMillisecondsSinceEpochForMonth(double);
-    bool setMillisecondsSinceEpochForWeek(double);
-    bool setMillisecondsSinceMidnight(double);
-    bool setMonthsSinceEpoch(double);
-    bool setMillisecondsSinceEpochForDateInternal(double);
-    void setMillisecondsSinceMidnightInternal(double);
-
-    // Returns the maximum week number in this DateComponents's year.
-    // The result is either of 52 and 53.
-    NODELETE int maxWeekNumberInYear() const;
-
-    NODELETE bool addDay(int);
-    NODELETE bool addMinute(int);
-
-    // Helper for millisecondsSinceEpoch().
-    NODELETE double millisecondsSinceEpochForTime() const;
-
-    // Helper for toString().
-    String toStringForTime(SecondFormat) const;
-
-    // m_weekDay values
-    enum {
-        Sunday = 0,
-        Monday,
-        Tuesday,
-        Wednesday,
-        Thursday,
-        Friday,
-        Saturday,
-    };
 
     int m_millisecond; // 0 - 999
     int m_second;

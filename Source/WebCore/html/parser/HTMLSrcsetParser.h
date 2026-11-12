@@ -62,10 +62,6 @@ public:
     unsigned resourceWidth() const { ASSERT(hasWidth()); return m_resourceWidth; }
     unsigned resourceHeight() const { ASSERT(hasHeight()); return m_resourceHeight; }
 
-    void setResourceWidth(int width) { ASSERT(width >= 0); m_resourceWidth = (unsigned)width; }
-    void setResourceHeight(int height) { ASSERT(height >= 0); m_resourceHeight = (unsigned)height; }
-    void setDensity(float densityToSet) { ASSERT(densityToSet >= 0); m_density = densityToSet; }
-
 private:
     float m_density;
     int m_resourceWidth;
@@ -109,9 +105,9 @@ struct ImageCandidate {
     OriginAttribute originAttribute;
 };
 
-ImageCandidate bestFitSourceForImageAttributes(float deviceScaleFactor, const String& srcAttribute, StringView srcsetAttribute, std::optional<float> sourceSize, NOESCAPE const Function<bool(const ImageCandidate&)>& shouldIgnoreCandidateCallback = { });
+WEBCORE_EXPORT ImageCandidate bestFitSourceForImageAttributes(float deviceScaleFactor, const String& srcAttribute, StringView srcsetAttribute, std::optional<float> sourceSize, NOESCAPE const Function<bool(const ImageCandidate&)>& shouldIgnoreCandidateCallback = { });
 
-Vector<ImageCandidate> parseImageCandidatesFromSrcsetAttribute(StringView attribute);
+WEBCORE_EXPORT Vector<ImageCandidate> parseImageCandidatesFromSrcsetAttribute(StringView attribute);
 void getURLsFromSrcsetAttribute(const Element&, StringView attribute, OrderedHashSet<URL>&);
 String replaceURLsInSrcsetAttribute(const Element&, StringView attribute, const CSS::SerializationContext&);
 

@@ -1615,8 +1615,15 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     html/forms/FileIconLoader.h
 
     html/parser/HTMLDocumentParserFastPath.h
+    html/parser/HTMLMetaCharsetParser.h
+    html/parser/HTMLMicrosyntaxesSwiftTypes.h
     html/parser/HTMLParserIdioms.h
+    html/parser/HTMLParserOptions.h
     html/parser/HTMLParserScriptingFlagPolicy.h
+    html/parser/HTMLSrcsetParser.h
+    html/parser/HTMLToken.h
+    html/parser/HTMLTokenizer.h
+    html/parser/InputStreamPreprocessor.h
 
     html/shadow/TextControlInnerElements.h
     html/shadow/TextPlaceholderElement.h
@@ -1835,6 +1842,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     loader/ResourceTiming.h
     loader/ResourceTimingInformation.h
     loader/ServerTiming.h
+    loader/ServerTimingParser.h
     loader/ShouldTreatAsContinuingLoad.h
     loader/SpeculationRules.h
     loader/SubframeLoader.h
@@ -2084,6 +2092,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     page/csp/ContentSecurityPolicyClient.h
     page/csp/ContentSecurityPolicyHash.h
     page/csp/ContentSecurityPolicyResponseHeaders.h
+    page/csp/ContentSecurityPolicySwift.h
 
     page/scrolling/AsyncScrollingCoordinator.h
     page/scrolling/ScrollSnapOffsetsInfo.h
@@ -2897,6 +2906,7 @@ set(WebCore_PRIVATE_FRAMEWORK_HEADERS
     platform/network/FormData.h
     platform/network/HTTPCookieAcceptPolicy.h
     platform/network/HTTPHeaderMap.h
+    platform/network/HTTPHeaderParsersTypes.h
     platform/network/HTTPHeaderValues.h
     platform/network/HTTPParsers.h
     platform/network/HTTPSByDefaultMode.h

@@ -31,6 +31,10 @@
 #include <wtf/text/IntegerToStringConversion.h>
 #include <wtf/text/StringImpl.h>
 
+#if defined(__swift__) && __has_include(<ptrcheck.h>)
+#include <ptrcheck.h>
+#endif
+
 #ifdef __OBJC__
 #include <objc/objc.h>
 #include <wtf/RetainPtr.h>
@@ -117,10 +121,21 @@ public:
 
     unsigned length() const { return m_impl ? m_impl->length() : 0; }
     std::span<const Latin1Character> span8() const LIFETIME_BOUND { return m_impl ? m_impl->span8() : std::span<const Latin1Character>(); }
-    std::span<const char16_t> span16() const LIFETIME_BOUND { return m_impl ? m_impl->span16() : std::span<const char16_t>(); }
+    // Assumes a 16-bit string, which only a debug assertion checks, so Swift uses checkedSpan16() instead.
+    SWIFT_UNSAFE std::span<const char16_t> span16() const LIFETIME_BOUND { return m_impl ? m_impl->span16() : std::span<const char16_t>(); }
+#if defined(__swift__)
+    // Crashes on a non-empty 8-bit string.
+    std::span<const char16_t> checkedSpan16() const LIFETIME_BOUND
+    {
+        if (isEmpty())
+            return { };
+        RELEASE_ASSERT(!is8Bit());
+        return span16();
+    }
+#endif
 
     // Return span8() or span16() depending on CharacterType.
-    template<IsStringStorageCharacter CharacterType> std::span<const CharacterType> span() const LIFETIME_BOUND;
+    template<IsStringStorageCharacter CharacterType> SWIFT_UNSAFE std::span<const CharacterType> span() const LIFETIME_BOUND;
 
     bool is8Bit() const { return !m_impl || m_impl->is8Bit(); }
 
@@ -597,6 +612,23 @@ inline String operator""_str(const char16_t* characters, size_t length)
 }
 
 } // inline StringLiterals
+
+// WTF_SWIFT_COUNTED_BY(count) tells Swift that a pointer parameter points to count elements, which with NOESCAPE gives
+// Swift an overload that takes a Span in place of the pointer and the count. It is empty for C++.
+#if defined(__swift__) && __has_include(<ptrcheck.h>)
+#define WTF_SWIFT_COUNTED_BY(count) __counted_by(count)
+#else
+#define WTF_SWIFT_COUNTED_BY(count)
+#endif
+
+// Makes a String of length characters: the empty string when length is 0, even for a null pointer.
+// Swift calls these with a Span, which may have no address when it is empty.
+WTF_EXPORT_PRIVATE String makeStringFromLatin1Characters(const uint8_t* characters NOESCAPE WTF_SWIFT_COUNTED_BY(length), size_t length);
+WTF_EXPORT_PRIVATE String makeStringFromUTF16Characters(const char16_t* characters NOESCAPE WTF_SWIFT_COUNTED_BY(length), size_t length);
+WTF_EXPORT_PRIVATE void assignStringFromLatin1Characters(String& destination, const uint8_t* characters NOESCAPE WTF_SWIFT_COUNTED_BY(length), size_t length);
+WTF_EXPORT_PRIVATE void assignStringFromUTF16Characters(String& destination, const char16_t* characters NOESCAPE WTF_SWIFT_COUNTED_BY(length), size_t length);
+
+#undef WTF_SWIFT_COUNTED_BY
 
 } // namespace WTF
 

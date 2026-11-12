@@ -3296,6 +3296,29 @@ list(APPEND WebCore_SOURCES ${WebCore_DERIVED_SOURCES_DIR}/NodeName.cpp)
 GENERATE_DOM_NAME_ENUM(Namespace)
 list(APPEND WebCore_SOURCES ${WebCore_DERIVED_SOURCES_DIR}/Namespace.cpp)
 
+if (SWIFT_REQUIRED AND APPLE)
+    # These include WebCoreSwift-Generated.h, so they are built in WebCore_SwiftInterop.
+    list(APPEND WebCore_UNIFIED_SOURCE_EXCLUDES "(^|/)(HTTPHeaderField|LinkHeader|ServerTimingParser|ReferrerPolicy|CacheValidation|HTTPParsers|ParsedContentRange|ParsedContentType|RFC8941)\\.cpp( |$)")
+endif ()
+
+if (SWIFT_REQUIRED AND APPLE)
+    # Includes WebCoreSwift-Generated.h, so it is built in WebCore_SwiftInterop.
+    list(APPEND WebCore_UNIFIED_SOURCE_EXCLUDES "(^|/)ContentSecurityPolicy\\.cpp( |$)")
+endif ()
+
+# These include WebCore-Swift.h, so they build in WebCore_SwiftInterop.
+set(WebCore_HTML_MICROSYNTAXES_SWIFT_INTEROP_SOURCES
+    html/parser/HTMLMetaCharsetParser.cpp
+    html/parser/HTMLParserIdioms.cpp
+    html/parser/HTMLSrcsetParser.cpp
+
+    platform/DateComponents.cpp
+)
+foreach (_f IN LISTS WebCore_HTML_MICROSYNTAXES_SWIFT_INTEROP_SOURCES)
+    cmake_path(GET _f FILENAME _fn)
+    list(APPEND WebCore_UNIFIED_SOURCE_EXCLUDES "(^|/)${_fn}( |$)")
+endforeach ()
+
 WEBKIT_COMPUTE_SOURCES(WebCore)
 
 WEBKIT_DEFINE_SUBTARGET_WITH_PREFIX(WebCore WebCoreJSBindings
@@ -3370,13 +3393,60 @@ endif ()
 if (SWIFT_REQUIRED AND APPLE)
     # FIXME: Remove SwiftStub.swift once WebCore has real Swift sources.
     target_sources(WebCore PRIVATE ${WEBCORE_DIR}/SwiftStub.swift)
+    target_sources(WebCore PRIVATE
+        ${WEBCORE_DIR}/loader/HTTPHeaderField.swift
+        ${WEBCORE_DIR}/loader/LinkHeader.swift
+        ${WEBCORE_DIR}/loader/ServerTimingParser.swift
+        ${WEBCORE_DIR}/platform/ReferrerPolicy.swift
+        ${WEBCORE_DIR}/platform/network/CacheValidation.swift
+        ${WEBCORE_DIR}/platform/network/HTTPParsers.swift
+        ${WEBCORE_DIR}/platform/network/ParsedContentRange.swift
+        ${WEBCORE_DIR}/platform/network/ParsedContentType.swift
+        ${WEBCORE_DIR}/platform/network/RFC8941.swift
+    )
+    target_sources(WebCore PRIVATE
+        ${WEBCORE_DIR}/html/parser/HTMLMetaCharsetParser.swift
+        ${WEBCORE_DIR}/html/parser/HTMLMicrosyntaxCodeUnit.swift
+        ${WEBCORE_DIR}/html/parser/HTMLParserIdioms.swift
+        ${WEBCORE_DIR}/html/parser/HTMLSrcsetParser.swift
+        ${WEBCORE_DIR}/platform/DateComponents.swift
+    )
 
     webkit_target_add_swift_options(WebCore
         "-library-level spi"
     )
 
     # C++ sources that include WebCoreSwift-Generated.h.
-    set(WebCore_SWIFT_INTEROP_SOURCES SwiftStubInterop.cpp)
+    set(WebCore_SWIFT_INTEROP_SOURCES
+        SwiftStubInterop.cpp
+
+        loader/HTTPHeaderField.cpp
+        loader/LinkHeader.cpp
+        loader/ServerTimingParser.cpp
+
+        platform/ReferrerPolicy.cpp
+
+        platform/network/CacheValidation.cpp
+        platform/network/HTTPParsers.cpp
+        platform/network/ParsedContentRange.cpp
+        platform/network/ParsedContentType.cpp
+        platform/network/RFC8941.cpp
+
+        ${WebCore_HTML_MICROSYNTAXES_SWIFT_INTEROP_SOURCES}
+    )
+
+    target_sources(WebCore PRIVATE
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicyDirective.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicyDirectiveList.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicyDirectiveListVector.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicyDirectiveNames.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicyMediaListDirective.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicySource.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicySourceList.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicySourceStore.swift
+        ${WEBCORE_DIR}/page/csp/ContentSecurityPolicyTrustedTypesDirective.swift
+    )
+    list(APPEND WebCore_SWIFT_INTEROP_SOURCES page/csp/ContentSecurityPolicy.cpp)
 
     WEBKIT_SETUP_SWIFT_AND_GENERATE_SWIFT_CPP_INTEROP_HEADER(WebCore WebCore
         "${WebCore_PRIVATE_HEADERS_DIR}"
