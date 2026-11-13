@@ -3414,6 +3414,7 @@ if (SWIFT_REQUIRED AND APPLE)
 
     webkit_target_add_swift_options(WebCore
         "-library-level spi"
+        "-enable-experimental-feature CxxImplementation"
     )
 
     # C++ sources that include WebCoreSwift-Generated.h.
