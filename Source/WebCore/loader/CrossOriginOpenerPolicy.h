@@ -69,7 +69,7 @@ struct CrossOriginOpenerPolicy {
 
     friend bool operator==(const CrossOriginOpenerPolicy&, const CrossOriginOpenerPolicy&) = default;
 
-    void addPolicyHeadersTo(ResourceResponse&) const;
+    WEBCORE_EXPORT void addPolicyHeadersTo(ResourceResponse&) const;
 };
 
 inline const String& CrossOriginOpenerPolicy::reportingEndpointForDisposition(COOPDisposition disposition) const
@@ -94,7 +94,7 @@ struct CrossOriginOpenerPolicyEnforcementResult {
     bool needsBrowsingContextGroupSwitchDueToReportOnly { false };
 };
 
-bool isRecognizedCrossOriginOpenerPolicyToken(StringView);
+WEBCORE_EXPORT bool isRecognizedCrossOriginOpenerPolicyToken(StringView);
 
 WEBCORE_EXPORT CrossOriginOpenerPolicy obtainCrossOriginOpenerPolicy(const ResourceResponse&);
 WEBCORE_EXPORT std::optional<CrossOriginOpenerPolicyEnforcementResult> doCrossOriginOpenerHandlingOfResponse(ReportingClient&, const ResourceResponse&, const std::optional<NavigationRequester>&, ContentSecurityPolicy* responseCSP, SandboxFlags effectiveSandboxFlags, const String& referrer, bool isDisplayingInitialEmptyDocument, const CrossOriginOpenerPolicyEnforcementResult& currentCoopEnforcementResult);

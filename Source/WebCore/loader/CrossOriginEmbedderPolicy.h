@@ -70,13 +70,13 @@ struct CrossOriginEmbedderPolicy {
 
     friend bool operator==(const CrossOriginEmbedderPolicy&, const CrossOriginEmbedderPolicy&) = default;
 
-    void addPolicyHeadersTo(ResourceResponse&) const;
+    WEBCORE_EXPORT void addPolicyHeadersTo(ResourceResponse&) const;
 };
 
 enum class COEPDisposition : bool { Reporting , Enforce };
 
-bool isRecognizedCrossOriginEmbedderPolicyToken(StringView);
-bool isUnsupportedCrossOriginEmbedderPolicyToken(StringView);
+WEBCORE_EXPORT bool isRecognizedCrossOriginEmbedderPolicyToken(StringView);
+WEBCORE_EXPORT bool isUnsupportedCrossOriginEmbedderPolicyToken(StringView);
 
 WEBCORE_EXPORT CrossOriginEmbedderPolicy obtainCrossOriginEmbedderPolicy(const ResourceResponse&, IsSecureContext, const ScriptExecutionContext*);
 WEBCORE_EXPORT void sendCOEPInheritenceViolation(ReportingClient&, const URL& embedderURL, const String& endpoint, COEPDisposition, const String& type, const URL& blockedURL);
