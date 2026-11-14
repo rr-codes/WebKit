@@ -33,137 +33,16 @@
 #include "SharedBuffer.h"
 #include "SubresourceLoader.h"
 #include "ViolationReportType.h"
+#include "WebCore-Swift.h"
 #include <wtf/text/Base64.h>
 #include <wtf/text/MakeString.h>
-#include <wtf/text/ParsingUtilities.h>
-#include <wtf/text/StringParsingBuffer.h>
 
 namespace WebCore {
-
-namespace {
-
-template<typename CharacterType>
-NODELETE static bool isVCHAR(CharacterType c)
-{
-    return c >= 0x21 && c <= 0x7e;
-}
-
-template<typename CharacterType>
-struct IntegrityMetadataParser {
-public:
-    IntegrityMetadataParser(std::optional<Vector<EncodedResourceCryptographicDigest>>& digests)
-        : m_digests(digests)
-    {
-    }
-
-    bool operator()(StringParsingBuffer<CharacterType>& buffer)
-    {
-        // Initialize hashes to be something other std::nullopt, to indicate
-        // that at least one token was seen, and thus setting the empty flag
-        // from section 3.3.3 Parse metadata, to false.
-        if (!m_digests)
-            m_digests = Vector<EncodedResourceCryptographicDigest> { };
-
-        auto digest = parseEncodedCryptographicDigest(buffer);
-        if (!digest)
-            return false;
-
-        // The spec allows for options following the digest, but so far, no
-        // specific options have been specified. Thus, we just parse and ignore
-        // them. Their syntax is a '?' follow by any number of VCHARs.
-        if (skipExactly(buffer, '?'))
-            skipWhile<isVCHAR>(buffer);
-
-        // After the base64 value and options, the current character pointed to by position
-        // should either be the end or a space.
-        if (!buffer.atEnd() && !isASCIIWhitespace(*buffer))
-            return false;
-
-        m_digests->append(WTF::move(*digest));
-        return true;
-    }
-
-private:
-    std::optional<Vector<EncodedResourceCryptographicDigest>>& m_digests;
-};
-
-}
-
-template <typename CharacterType, typename Functor>
-static inline void splitOnSpaces(StringParsingBuffer<CharacterType> buffer, NOESCAPE Functor&& functor)
-{
-    skipWhile<isASCIIWhitespace>(buffer);
-
-    while (buffer.hasCharactersRemaining()) {
-        if (!functor(buffer))
-            skipWhile<isNotASCIIWhitespace>(buffer);
-        skipWhile<isASCIIWhitespace>(buffer);
-    }
-}
-
-std::optional<Vector<EncodedResourceCryptographicDigest>> parseIntegrityMetadata(const String& integrityMetadata)
-{
-    if (integrityMetadata.isEmpty())
-        return std::nullopt;
-
-    std::optional<Vector<EncodedResourceCryptographicDigest>> result;
-    
-    readCharactersForParsing(integrityMetadata, [&result]<typename CharacterType> (StringParsingBuffer<CharacterType> buffer) {
-        splitOnSpaces(buffer, IntegrityMetadataParser<CharacterType> { result });
-    });
-
-    return result;
-}
 
 NODELETE static bool isResponseEligible(const CachedResource& resource)
 {
     // FIXME: The spec says this should check XXX.
     return resource.isCORSSameOrigin();
-}
-
-NODELETE static std::optional<EncodedResourceCryptographicDigest::Algorithm> prioritizedHashFunction(EncodedResourceCryptographicDigest::Algorithm a, EncodedResourceCryptographicDigest::Algorithm b)
-{
-    if (a == b)
-        return std::nullopt;
-    return (a > b) ? a : b;
-}
-
-static Vector<EncodedResourceCryptographicDigest> strongestMetadataFromSet(Vector<EncodedResourceCryptographicDigest>&& set)
-{
-    // 1. Let result be the empty set and strongest be the empty string.
-    Vector<EncodedResourceCryptographicDigest> result;
-    auto strongest = EncodedResourceCryptographicDigest::Algorithm::SHA256;
-
-    // 2. For each item in set:
-    for (auto& item : set) {
-        // 1. If result is the empty set, add item to result and set strongest to item, skip to the next item.
-        if (result.isEmpty()) {
-            strongest = item.algorithm;
-            result.append(WTF::move(item));
-            continue;
-        }
-        
-        // 2. Let currentAlgorithm be the alg component of strongest.
-        auto currentAlgorithm = strongest;
-
-        // 3. Let newAlgorithm be the alg component of item.
-        auto newAlgorithm = item.algorithm;
-        
-        // 4. If the result of getPrioritizedHashFunction(currentAlgorithm, newAlgorithm) is
-        //    the empty string, add item to result. If the result is newAlgorithm, set strongest
-        //    to item, set result to the empty set, and add item to result.
-        auto priority = prioritizedHashFunction(currentAlgorithm, newAlgorithm);
-        if (!priority)
-            result.append(WTF::move(item));
-        else if (priority.value() == newAlgorithm) {
-            strongest = item.algorithm;
-
-            result.clear();
-            result.append(WTF::move(item));
-        }
-    }
-
-    return result;
 }
 
 static Ref<FormData> createReportFormData(const String& type, const URL& url, const String& userAgent, NOESCAPE const Function<void(JSON::Object&)>& populateBody)
@@ -258,10 +137,10 @@ void reportHashesIfNeeded(const CachedResource& resource)
 bool matchIntegrityMetadataSlow(const CachedResource& resource, const String& integrityMetadataList)
 {
     // 1. Let parsedMetadata be the result of parsing metadataList.
-    auto parsedMetadata = parseIntegrityMetadata(integrityMetadataList);
-    
+    auto algorithm = subresourceIntegrityStrongestAlgorithm(integrityMetadataList);
+
     // 2. If parsedMetadata is no metadata, return true.
-    if (!parsedMetadata)
+    if (algorithm == SubresourceIntegrityStrongestAlgorithm::None)
         return true;
 
     // 3. If response is not eligible for integrity validation, return false.
@@ -269,29 +148,12 @@ bool matchIntegrityMetadataSlow(const CachedResource& resource, const String& in
         return false;
 
     // 4. If parsedMetadata is the empty set, return true.
-    if (parsedMetadata->isEmpty())
+    if (algorithm == SubresourceIntegrityStrongestAlgorithm::EmptySet)
         return true;
 
     // 5. Let metadata be the result of getting the strongest metadata from parsedMetadata.
-    auto metadata = strongestMetadataFromSet(WTF::move(*parsedMetadata));
-    
-    // 6. For each item in metadata:
-    for (auto& item : metadata) {
-        // 1. Let algorithm be the alg component of item.
-        auto algorithm = item.algorithm;
-        
-        // 2. Let expectedValue be the val component of item.
-        auto expectedValue = decodeEncodedResourceCryptographicDigest(item);
-
-        // 3. Let actualValue be the result of applying algorithm to response.
-        auto actualValue = resource.cryptographicDigest(algorithm);
-
-        // 4. If actualValue is a case-sensitive match for expectedValue, return true.
-        if (expectedValue && actualValue.value == expectedValue->value)
-            return true;
-    }
-    
-    return false;
+    // 6. For each item in metadata, return true if applying its algorithm to response matches its value.
+    return subresourceIntegrityMatches(integrityMetadataList, resource.cryptographicDigest(static_cast<ResourceCryptographicDigest::Algorithm>(algorithm)));
 }
 
 String integrityMismatchDescription(const CachedResource& resource, const String& integrityMetadata)

@@ -47,6 +47,7 @@
 #include "HTTPHeaderParsersTypes.h"
 #include "LinkHeader.h"
 #include "ParsedContentRange.h"
+#include "SecurityPoliciesSwiftTypes.h"
 #include "ServerTiming.h"
 
 #include "WebCoreSwift-Generated.h"

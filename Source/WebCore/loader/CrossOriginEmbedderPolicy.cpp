@@ -33,58 +33,37 @@
 #include "JSFetchRequestDestination.h"
 #include "LocalFrame.h"
 #include "PingLoader.h"
-#include "RFC8941.h"
 #include "Report.h"
 #include "ReportingClient.h"
 #include "ResourceResponse.h"
 #include "ScriptExecutionContext.h"
 #include "Settings.h"
 #include "ViolationReportType.h"
+#include "WebCore-Swift.h"
 #include <wtf/persistence/PersistentCoders.h>
-#include <wtf/text/MakeString.h>
 
 namespace WebCore {
 
-static constexpr auto coepUnsafeNoneToken { "unsafe-none"_s };
-static constexpr auto coepRequireCORPToken { "require-corp"_s };
-static constexpr auto coepCredentiallessToken { "credentialless"_s };
-
 bool isRecognizedCrossOriginEmbedderPolicyToken(StringView token)
 {
-    return token == coepRequireCORPToken || token == coepUnsafeNoneToken;
+    return token.is8Bit() ? isRecognizedCrossOriginEmbedderPolicyToken8(token.span8()) : isRecognizedCrossOriginEmbedderPolicyToken16(token.span16());
 }
 
 bool isUnsupportedCrossOriginEmbedderPolicyToken(StringView token)
 {
-    // FIXME: Support credentialless, then treat it as recognized.
-    return token == coepCredentiallessToken;
+    return token.is8Bit() ? isUnsupportedCrossOriginEmbedderPolicyToken8(token.span8()) : isUnsupportedCrossOriginEmbedderPolicyToken16(token.span16());
 }
 
 // https://html.spec.whatwg.org/multipage/origin.html#obtain-an-embedder-policy
 CrossOriginEmbedderPolicy obtainCrossOriginEmbedderPolicy(const ResourceResponse& response, IsSecureContext isSecureContext, const ScriptExecutionContext* context)
 {
-    auto parseCOEPHeader = [&response](HTTPHeaderName headerName, auto& value, auto& reportingEndpoint) {
-        auto coepParsingResult = RFC8941::parseItemStructuredFieldValue(response.httpHeaderField(headerName));
-        if (!coepParsingResult)
-            return;
-        auto* policyString = std::get_if<RFC8941::Token>(&coepParsingResult->first);
-        if (!policyString || policyString->string() != coepRequireCORPToken)
-            return;
-
-        value = CrossOriginEmbedderPolicyValue::RequireCORP;
-        if (auto* reportToString = coepParsingResult->second.getIf<String>("report-to"_s))
-            reportingEndpoint = *reportToString;
-    };
-
     CrossOriginEmbedderPolicy policy;
     if (context && !context->settingsValues().crossOriginEmbedderPolicyEnabled)
         return policy;
     if (isSecureContext == IsSecureContext::No)
         return policy;
 
-    parseCOEPHeader(HTTPHeaderName::CrossOriginEmbedderPolicy, policy.value, policy.reportingEndpoint);
-    parseCOEPHeader(HTTPHeaderName::CrossOriginEmbedderPolicyReportOnly, policy.reportOnlyValue, policy.reportOnlyReportingEndpoint);
-    return policy;
+    return crossOriginEmbedderPolicyFromHeaders(response.httpHeaderField(HTTPHeaderName::CrossOriginEmbedderPolicy), response.httpHeaderField(HTTPHeaderName::CrossOriginEmbedderPolicyReportOnly));
 }
 
 CrossOriginEmbedderPolicy CrossOriginEmbedderPolicy::isolatedCopy() const &
@@ -109,20 +88,7 @@ CrossOriginEmbedderPolicy CrossOriginEmbedderPolicy::isolatedCopy() &&
 
 void CrossOriginEmbedderPolicy::addPolicyHeadersTo(ResourceResponse& response) const
 {
-    if (value != CrossOriginEmbedderPolicyValue::UnsafeNone) {
-        ASSERT(value == CrossOriginEmbedderPolicyValue::RequireCORP);
-        if (reportingEndpoint.isEmpty())
-            response.setHTTPHeaderField(HTTPHeaderName::CrossOriginEmbedderPolicy, "require-corp"_s);
-        else
-            response.setHTTPHeaderField(HTTPHeaderName::CrossOriginEmbedderPolicy, makeString("require-corp; report-to=\""_s, reportingEndpoint, '\"'));
-    }
-    if (reportOnlyValue != CrossOriginEmbedderPolicyValue::UnsafeNone) {
-        ASSERT(reportOnlyValue == CrossOriginEmbedderPolicyValue::RequireCORP);
-        if (reportOnlyReportingEndpoint.isEmpty())
-            response.setHTTPHeaderField(HTTPHeaderName::CrossOriginEmbedderPolicyReportOnly, "require-corp"_s);
-        else
-            response.setHTTPHeaderField(HTTPHeaderName::CrossOriginEmbedderPolicyReportOnly, makeString("require-corp; report-to=\""_s, reportOnlyReportingEndpoint, '\"'));
-    }
+    securityPoliciesSetPolicyHeaders(response, HTTPHeaderName::CrossOriginEmbedderPolicy, HTTPHeaderName::CrossOriginEmbedderPolicyReportOnly, crossOriginEmbedderPolicyHeaderValues(value, reportingEndpoint, reportOnlyValue, reportOnlyReportingEndpoint));
 }
 
 // https://html.spec.whatwg.org/multipage/origin.html#queue-a-cross-origin-embedder-policy-inheritance-violation
