@@ -934,6 +934,7 @@
 				WebCore/RenderStyleChange.cpp,
 				WebCore/SampleMap.cpp,
 				WebCore/SecurityOrigin.cpp,
+				WebCore/SecurityPoliciesBench.cpp,
 				WebCore/SerializedScriptValue.cpp,
 				WebCore/ServiceWorkerRoutines.cpp,
 				WebCore/ShareableBitmap.cpp,
