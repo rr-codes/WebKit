@@ -103,7 +103,7 @@ func isRecognizedCrossOriginEmbedderPolicyToken16(_ token: WebCore.HTTPHeaderUTF
 func isUnsupportedCrossOriginEmbedderPolicyToken8(_ token: WebCore.HTTPHeaderLatin1Span) -> Bool {
     let characters = unsafe Span<UInt8>(_unsafeCxxSpan: WTF.bytesOfLatin1Characters(token))
     // FIXME: Support credentialless, then treat it as recognized.
-    return rfc8941CharactersEqual(characters, "credentialless")
+    return crossOriginAccessControlEquals(characters, "credentialless")
 }
 
 /// isUnsupportedCrossOriginEmbedderPolicyToken8() for 16-bit characters, which hold for the call in the same way, and
@@ -113,7 +113,7 @@ func isUnsupportedCrossOriginEmbedderPolicyToken8(_ token: WebCore.HTTPHeaderLat
 @_expose(Cxx)
 func isUnsupportedCrossOriginEmbedderPolicyToken16(_ token: WebCore.HTTPHeaderUTF16Span) -> Bool {
     let characters = unsafe Span<UInt16>(_unsafeCxxSpan: token)
-    return rfc8941CharactersEqual(characters, "credentialless")
+    return crossOriginAccessControlEquals(characters, "credentialless")
 }
 
 /// The values CrossOriginEmbedderPolicy::addPolicyHeadersTo() sets for the Cross-Origin-Embedder-Policy and
@@ -190,7 +190,7 @@ private func crossOriginEmbedderPolicyRequireCORPItem<CodeUnit: HTTPHeaderString
 private func crossOriginEmbedderPolicyTokenIsRecognized<CodeUnit: FixedWidthInteger & UnsignedInteger>(
     _ token: Span<CodeUnit>
 ) -> Bool {
-    rfc8941CharactersEqual(token, "require-corp") || rfc8941CharactersEqual(token, "unsafe-none")
+    crossOriginAccessControlEquals(token, "require-corp") || crossOriginAccessControlEquals(token, "unsafe-none")
 }
 
 // The endpoint is written between the quotes as it is, without escaping.
