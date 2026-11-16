@@ -477,6 +477,12 @@ module WebKit_Internal [system] {
         export *
     }
 
+    module WKClickHighlightController {
+        requires cplusplus20, objc, macos
+        header "../../UIProcess/Cocoa/WKClickHighlightController.h"
+        export *
+    }
+
     module WebEventPhase {
         requires cplusplus20, objc, macos
         header "../../Shared/WebEventPhase.h"
