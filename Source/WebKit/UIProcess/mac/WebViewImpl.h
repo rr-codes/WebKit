@@ -1248,7 +1248,7 @@ private:
 #if ENABLE(AX_CUSTOM_COLOR_MODE)
     const RetainPtr<WKAXCustomColorModePreferencesController> m_axCustomColorModeControlsController;
 #endif
-} SWIFT_SHARED_REFERENCE(incrementCheckedPtrCountOnWebViewImpl, decrementCheckedPtrCountOnWebViewImpl) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT;
+} SWIFT_SHARED_REFERENCE(incrementCheckedPtrCountOnWebViewImpl, decrementCheckedPtrCountOnWebViewImpl) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT NS_SWIFT_UI_ACTOR;
 
 } // namespace WebKit
 
