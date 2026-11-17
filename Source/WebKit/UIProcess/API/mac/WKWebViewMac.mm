@@ -1325,7 +1325,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
 - (void)_didNotHandleTapAsClick:(const WebCore::IntPoint&)point
 {
     if (RetainPtr gestureController = _impl->appKitGestureController())
-        [gestureController didNotHandleTapAsClick:point];
+        [gestureController didNotHandleTapAsClickAtX:point.x() y:point.y()];
 }
 
 - (void)_didHandleTapAsHover
@@ -1362,7 +1362,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
 - (void)_disableDoubleTapGesturesDuringTapIfNecessary:(WebKit::TapIdentifier)requestID
 {
     if (RetainPtr gestureController = _impl->appKitGestureController())
-        [gestureController disableDoubleTapGesturesDuringTapIfNecessary:requestID];
+        [gestureController disableDoubleTapGesturesDuringTapIfNecessaryForRequest:requestID.toUInt64()];
 }
 
 - (void)_handleSmartMagnificationInformationForPotentialTap:(WebKit::TapIdentifier)requestID renderRect:(const WebCore::FloatRect&)renderRect fitEntireRect:(BOOL)fitEntireRect viewportMinimumScale:(double)viewportMinimumScale viewportMaximumScale:(double)viewportMaximumScale nodeIsRootLevel:(BOOL)nodeIsRootLevel nodeIsPluginElement:(BOOL)nodeIsPluginElement

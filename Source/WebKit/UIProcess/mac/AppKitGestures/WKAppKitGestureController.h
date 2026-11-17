@@ -30,6 +30,8 @@
 #if HAVE(APPKIT_GESTURES_SUPPORT)
 
 #import "WKDeferringGestureRecognizer.h"
+#import "WKPointerTrackingGestureRecognizer.h"
+#import "WKPressGestureRecognizer.h"
 #import <AppKit/NSGestureRecognizer.h>
 #import <wtf/Forward.h>
 #import <wtf/ObjectIdentifier.h>
@@ -51,50 +53,47 @@ struct InteractionInformationAtPosition;
 }
 
 OBJC_CLASS NSPanGestureRecognizer;
+OBJC_CLASS WKAppKitGestureControllerCxxSupport;
 OBJC_CLASS WKClickHighlightController;
 OBJC_CLASS WKWebView;
 
 NS_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 NS_SWIFT_UI_ACTOR
-@interface WKAppKitGestureController : NSObject <NSGestureRecognizerDelegate>
+@interface WKAppKitGestureController : NSObject <NSGestureRecognizerDelegate, WKPointerTrackingGestureRecognizerDelegate, WKPressGestureRecognizerDelegate>
 
+- (instancetype)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)initWithView:(WKWebView *)view;
 - (void)setUp;
 - (void)preferencesDidChange;
 - (void)beginSuppressingSingleClickGestureForTextSelection;
 - (void)endSuppressingSingleClickGestureForTextSelection;
-- (NSGestureRecognizer *)activeDragGestureRecognizer;
+- (nullable NSGestureRecognizer *)activeDragGestureRecognizer;
 - (void)didReceiveDragStart;
-- (void)setGestureDraggingSession:(NSDraggingSession *)session;
+- (void)setGestureDraggingSession:(nullable NSDraggingSession *)session;
 - (void)clearGestureDragState;
 - (void)setTextSelectionDragGesture:(NSGestureRecognizer *)gesture completionHandler:(void (^)(NSDraggingSession *))completionHandler;
-- (void)positionInformationDidChange:(const WebKit::InteractionInformationAtPosition&)info;
 - (void)didCommitLoadForMainFrame;
 - (void)transformGestureWasNotHandledByContent;
 - (void)interruptMomentumForScrollWheelEvent;
 - (void)cancelClickHighlight;
 - (void)reset;
+- (WKAppKitGestureControllerCxxSupport *)_cxxSupport;
+- (void)generatedMomentumDidEnd;
 
 @property (nonatomic, readonly) BOOL everMagnifiedDuringCurrentGesture;
 
 #if ENABLE(TWO_PHASE_CLICKS)
-
 @property (nonatomic, readonly, getter=isPotentialTapInProgress) BOOL potentialTapInProgress;
-
-#if !__has_feature(modules)
-@property (nonatomic, readonly) WKClickHighlightController *clickHighlightController;
-- (void)didGetTapHighlightForRequest:(WebKit::TapIdentifier)requestID color:(const WebCore::Color&)color quads:(const Vector<WebCore::FloatQuad>&)highlightedQuads cornerRadii:(WebCore::CornerRadii&&)cornerRadii nodeHasBuiltInClickHandling:(BOOL)nodeHasBuiltInClickHandling;
-- (void)disableDoubleTapGesturesDuringTapIfNecessary:(WebKit::TapIdentifier)requestID;
+@property (nonatomic, readonly, strong, nullable) id untypedClickHighlightController;
 - (void)commitPotentialTapFailed;
 - (void)didCompleteSyntheticClick;
 - (void)didHandleTapAsHover;
-- (void)didNotHandleTapAsClick:(const WebCore::IntPoint&)point;
-#endif // !__has_feature(modules)
+- (void)disableDoubleTapGesturesDuringTapIfNecessaryForRequest:(uint64_t)requestID;
+- (void)didNotHandleTapAsClickAtX:(int)x y:(int)y;
+#endif
 
-#endif // ENABLE(TWO_PHASE_CLICKS)
-
-// Exposed for Swift
 @property (nonatomic, readonly, nullable) WKWebView *webView;
 @property (nonatomic, strong, nullable) NSPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic, strong, nullable, setter=setDOMDoubleClickGestureRecognizer:) NSClickGestureRecognizer *domDoubleClickGestureRecognizer;
@@ -106,22 +105,21 @@ NS_SWIFT_UI_ACTOR
 
 @end
 
-@interface WKAppKitGestureController (Swift)
-
-- (void)setUpPanGestureRecognizer;
-- (void)setUpDOMDoubleClickGestureRecognizer;
-- (void)resetDOMDoubleClickGestureRecognizer;
-- (BOOL)takeCompletedDOMDoubleClick;
-- (WKDeferringGestureRecognizer *)makeImageAnalysisDeferringGestureRecognizerWithName:(NSString *)name;
-
-- (NSPoint)panVelocityInView:(nullable NSView *)view;
-
-+ (NSString *)loggingDescriptionForGestureRecognizer:(nullable NSGestureRecognizer *)gestureRecognizer;
-
+@interface WKAppKitGestureController (Internal)
+- (id)_makeClickHighlightController;
 @end
 
-@interface WKAppKitGestureController (WKDeferringGestureRecognizerDelegate) <WKDeferringGestureRecognizerDelegate>
+#if !__has_feature(modules)
+@interface WKAppKitGestureController (WebViewImpl)
+@property (nonatomic, readonly) WKClickHighlightController *clickHighlightController;
+#if ENABLE(TWO_PHASE_CLICKS)
+- (void)didGetTapHighlightForRequest:(WebKit::TapIdentifier)requestID color:(const WebCore::Color&)color quads:(const Vector<WebCore::FloatQuad>&)highlightedQuads cornerRadii:(WebCore::CornerRadii&&)cornerRadii nodeHasBuiltInClickHandling:(BOOL)nodeHasBuiltInClickHandling;
+#endif
+@end
 
+#endif
+
+@interface WKAppKitGestureController (WKDeferringGestureRecognizerDelegate) <WKDeferringGestureRecognizerDelegate>
 @end
 
 NS_HEADER_AUDIT_END(nullability, sendability)

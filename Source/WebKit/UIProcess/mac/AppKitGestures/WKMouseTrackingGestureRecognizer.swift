@@ -71,4 +71,12 @@ extension WKMouseTrackingGestureRecognizer {
     }
 }
 
+// Created through the AppKit metatype, as WKPressGestureRecognizer.makePress(target:action:) explains.
+extension WKMouseTrackingGestureRecognizer {
+    static func makeMouseTracking(target: Any?, action: Selector?) -> WKMouseTrackingGestureRecognizer {
+        let appKitType: NSPressGestureRecognizer.Type = WKMouseTrackingGestureRecognizer.self
+        return appKitType.init(target: target, action: action) as! WKMouseTrackingGestureRecognizer
+    }
+}
+
 #endif // HAVE_APPKIT_GESTURES_SUPPORT

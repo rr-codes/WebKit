@@ -183,6 +183,7 @@ class PageClient;
 class PageClientImpl;
 class DrawingAreaProxy;
 class MediaSessionCoordinatorProxyPrivate;
+class NativeWebWheelEvent;
 #if ENABLE(MAC_GESTURE_EVENTS)
 class NativeWebGestureEvent;
 #endif
@@ -616,6 +617,11 @@ public:
     void invalidateCachedPositionInformation();
     void positionInformationDidChange(const InteractionInformationAtPosition&);
     void installClickHighlightView(NSView *);
+    bool moveMagnificationOriginIfMagnifying(WebCore::FloatPoint originInViewCoordinates);
+    bool ensuredGestureControllerHasActiveMagnificationGesture();
+    void handleMagnificationGestureForGestureController(double scale, WebEventPhase, WebCore::FloatPoint originInViewCoordinates, WebEventInputSource);
+    void handleSmartMagnificationGestureForGestureController(WebCore::FloatPoint originInViewCoordinates);
+    bool handleScrollWheelEventForGestureController(const NativeWebWheelEvent&);
 #endif
     NODELETE void setAllowsBackForwardNavigationGestures(bool);
     bool allowsBackForwardNavigationGestures() const { return m_allowsBackForwardNavigationGestures; }

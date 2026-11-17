@@ -103,4 +103,12 @@ extension WKPointerTrackingGestureRecognizer {
     }
 }
 
+// Created through the AppKit metatype, as WKPressGestureRecognizer.makePress(target:action:) explains.
+extension WKPointerTrackingGestureRecognizer {
+    static func makePointerTracking(target: Any?, action: Selector?) -> WKPointerTrackingGestureRecognizer {
+        let appKitType: NSPressGestureRecognizer.Type = WKPointerTrackingGestureRecognizer.self
+        return appKitType.init(target: target, action: action) as! WKPointerTrackingGestureRecognizer
+    }
+}
+
 #endif // HAVE_APPKIT_GESTURES_SUPPORT

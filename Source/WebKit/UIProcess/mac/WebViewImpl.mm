@@ -69,6 +69,7 @@
 #import "ViewGestureController.h"
 #import "WKAlternatePDFHUDView.h"
 #import "WKAppKitGestureController.h"
+#import "WKAppKitGestureControllerCxxSupport.h"
 #import "WKDefaultPDFHUDView.h"
 #import "WKEditCommand.h"
 #import "WKErrorInternal.h"
@@ -8413,7 +8414,7 @@ void WebViewImpl::invalidateCachedPositionInformation()
 
 void WebViewImpl::positionInformationDidChange(const InteractionInformationAtPosition& info)
 {
-    [m_appKitGestureController positionInformationDidChange:info];
+    [protect([m_appKitGestureController _cxxSupport]) positionInformationDidChange:info];
 }
 
 void WebViewImpl::installClickHighlightView(NSView *highlightView)
@@ -8429,6 +8430,35 @@ void WebViewImpl::beginSuppressingSingleClickGestureForTextSelection()
 void WebViewImpl::endSuppressingSingleClickGestureForTextSelection()
 {
     [m_appKitGestureController endSuppressingSingleClickGestureForTextSelection];
+}
+
+bool WebViewImpl::moveMagnificationOriginIfMagnifying(WebCore::FloatPoint originInViewCoordinates)
+{
+    if (RefPtr gestureController = this->gestureController(); gestureController && gestureController->hasActiveMagnificationGesture()) {
+        gestureController->moveMagnificationOrigin(originInViewCoordinates);
+        return true;
+    }
+    return false;
+}
+
+bool WebViewImpl::ensuredGestureControllerHasActiveMagnificationGesture()
+{
+    return protect(ensureGestureController())->hasActiveMagnificationGesture();
+}
+
+void WebViewImpl::handleMagnificationGestureForGestureController(double scale, WebEventPhase phase, WebCore::FloatPoint originInViewCoordinates, WebEventInputSource inputSource)
+{
+    protect(ensureGestureController())->handleMagnificationGesture(scale, phase, originInViewCoordinates, inputSource);
+}
+
+void WebViewImpl::handleSmartMagnificationGestureForGestureController(WebCore::FloatPoint originInViewCoordinates)
+{
+    protect(ensureGestureController())->handleSmartMagnificationGesture(originInViewCoordinates);
+}
+
+bool WebViewImpl::handleScrollWheelEventForGestureController(const NativeWebWheelEvent& event)
+{
+    return protect(ensureGestureController())->handleScrollWheelEvent(event);
 }
 #endif // HAVE(APPKIT_GESTURES_SUPPORT)
 
