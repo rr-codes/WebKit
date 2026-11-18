@@ -55,10 +55,18 @@ extension WKAppKitGestureController {
         let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: radius)
         let shouldDrag = requestIsValid && isDraggable && !information.isHoverActivatedByClick
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
+        if let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
-                level: .default,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Drag-press shouldBegin \u{2192} \(appKitGestureLogInteger(shouldDrag)) (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) link=\(appKitGestureLogInteger(information.isLink)) image=\(appKitGestureLogInteger(information.isImage)) attachment=\(appKitGestureLogInteger(information.isAttachment)) dhtml=\(appKitGestureLogInteger(information.isDHTMLDraggable)) color=\(appKitGestureLogInteger(information.isColorInput)) prefersDrag=\(appKitGestureLogInteger(information.prefersDraggingOverTextSelection)) hoverActivatedByClick=\(appKitGestureLogInteger(information.isHoverActivatedByClick)) radius=\(radius))"
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Drag-press shouldBegin \u{2192} \(appKitGestureLogInteger(shouldDrag)) \
+                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) \
+                link=\(appKitGestureLogInteger(information.isLink)) image=\(appKitGestureLogInteger(information.isImage)) \
+                attachment=\(appKitGestureLogInteger(information.isAttachment)) \
+                dhtml=\(appKitGestureLogInteger(information.isDHTMLDraggable)) color=\(appKitGestureLogInteger(information.isColorInput)) \
+                prefersDrag=\(appKitGestureLogInteger(information.prefersDraggingOverTextSelection)) \
+                hoverActivatedByClick=\(appKitGestureLogInteger(information.isHoverActivatedByClick)) radius=\(radius))
+                """
             )
         }
 
@@ -88,10 +96,16 @@ extension WKAppKitGestureController {
         let yieldToContent =
             (requestIsValid && (prefersInteraction || information.isHoverActivatedByClick)) || usesHoverActivatedByClickBounds
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
+        if let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
-                level: .default,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Pan shouldBegin \u{2192} \(appKitGestureLogInteger(!yieldToContent)) (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) valid=\(appKitGestureLogInteger(requestIsValid)) prefersInteraction=\(appKitGestureLogInteger(prefersInteraction)) hoverActivatedByClick=\(appKitGestureLogInteger(information.isHoverActivatedByClick)) fallback=\(appKitGestureLogInteger(usesHoverActivatedByClickBounds)))"
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Pan shouldBegin \u{2192} \(appKitGestureLogInteger(!yieldToContent)) \
+                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) \
+                valid=\(appKitGestureLogInteger(requestIsValid)) prefersInteraction=\(appKitGestureLogInteger(prefersInteraction)) \
+                hoverActivatedByClick=\(appKitGestureLogInteger(information.isHoverActivatedByClick)) \
+                fallback=\(appKitGestureLogInteger(usesHoverActivatedByClickBounds)))
+                """
             )
         }
 
@@ -147,10 +161,19 @@ extension WKAppKitGestureController {
         // that a long press selects a word instead of synthesizing a context menu.
         let shouldBegin = requestIsValid && isSecondaryClickable && !isOverSelectableText
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
+        if let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
-                level: .default,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Secondary click shouldBegin \u{2192} \(appKitGestureLogInteger(shouldBegin)) (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) requestIsValid=\(appKitGestureLogInteger(requestIsValid)) secondaryClickable=\(appKitGestureLogInteger(isSecondaryClickable)) overSelectableText=\(appKitGestureLogInteger(isOverSelectableText)) selectability=\(information.selectability.rawValue) prefersManipulation=\(appKitGestureLogInteger(prefersDirectManipulation(information))) image=\(appKitGestureLogInteger(information.isImage)) video=\(appKitGestureLogInteger(information.isOverVideo)) longClickQuirk=\(appKitGestureLogInteger(information.shouldTreatLongClickAsSecondaryClickQuirk)) radius=\(radius))"
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Secondary click shouldBegin \u{2192} \(appKitGestureLogInteger(shouldBegin)) \
+                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) \
+                requestIsValid=\(appKitGestureLogInteger(requestIsValid)) \
+                secondaryClickable=\(appKitGestureLogInteger(isSecondaryClickable)) \
+                overSelectableText=\(appKitGestureLogInteger(isOverSelectableText)) selectability=\(information.selectability.rawValue) \
+                prefersManipulation=\(appKitGestureLogInteger(prefersDirectManipulation(information))) \
+                image=\(appKitGestureLogInteger(information.isImage)) video=\(appKitGestureLogInteger(information.isOverVideo)) \
+                longClickQuirk=\(appKitGestureLogInteger(information.shouldTreatLongClickAsSecondaryClickQuirk)) radius=\(radius))
+                """
             )
         }
 

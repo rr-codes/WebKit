@@ -164,8 +164,10 @@ extension WKAppKitGestureController {
                     WebKit.NativeWebWheelEvent.create(WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta)).get()).get()
                 )
             if lastPanWheelEventWasHandledByViewGestureController {
-                if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                    Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): View gesture controller handled gesture")
+                if let page = webView._protectedPage().get() {
+                    Logger.viewGestures.debug(
+                        "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): View gesture controller handled gesture"
+                    )
                 }
                 return
             }
@@ -265,10 +267,12 @@ extension WKAppKitGestureController {
         )
         isMomentumActive = true
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
+        if let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
-                level: .default,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Started momentum scrolling with velocity \(appKitGestureLogFixedTwoDecimals(Double(velocityMagnitude)), privacy: .public) pts/s"
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Started momentum scrolling with velocity \(velocityMagnitude, format: .fixed(precision: 2)) pts/s
+                """
             )
         }
     }
@@ -297,7 +301,7 @@ extension WKAppKitGestureController {
 
         if let page = webView._protectedPage().get() {
             page.interruptSyntheticMomentumScrolling()
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Interrupted momentum scrolling")
+            Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Interrupted momentum scrolling")
         }
     }
 

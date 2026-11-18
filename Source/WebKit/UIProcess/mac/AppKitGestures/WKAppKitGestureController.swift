@@ -551,8 +551,13 @@ extension WKAppKitGestureController {
 
         let gestureEnabled = gesture !== imageAnalysisGestureRecognizer || cxxSupport.isLiveTextAvailableAndEnabled()
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private) setEnabled:\(appKitGestureLogInteger(gestureEnabled))")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private) setEnabled:\(appKitGestureLogInteger(gestureEnabled))
+                """
+            )
         }
         gesture?.isEnabled = gestureEnabled
     }
@@ -562,8 +567,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Begin suppressing single-click gesture for text selection")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Begin suppressing single-click gesture for text selection
+                """
+            )
         }
 
         isSuppressingSingleClickGestureForTextSelection = true
@@ -577,8 +587,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): End suppressing single-click gesture for text selection")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                End suppressing single-click gesture for text selection
+                """
+            )
         }
 
         isSuppressingSingleClickGestureForTextSelection = false
@@ -739,10 +754,12 @@ extension WKAppKitGestureController {
         if caughtDeceleratingScroll {
             let isDifferentTouch = touchThatCaughtDeceleratingScroll.map { !$0.isEqual(to: NSNumber(value: touch._uid)) } ?? true
             if isDifferentTouch && isOnlyTouchDown(touch) {
-                if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let view, let page = view._protectedPage().get() {
+                if let view, let page = view._protectedPage().get() {
                     Logger.viewGestures.log(
-                        level: .default,
-                        "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Resetting stale caught decelerating scroll state from a previous interaction"
+                        """
+                        [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                        Resetting stale caught decelerating scroll state from a previous interaction
+                        """
                     )
                 }
                 resetCaughtDeceleratingScroll()
@@ -911,8 +928,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         precondition(panGestureRecognizer === gesture)
@@ -922,8 +944,8 @@ extension WKAppKitGestureController {
         }
 
         if impl.ignoresAllEvents() {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Ignored gesture")
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Ignored gesture")
             }
             return
         }
@@ -958,8 +980,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         precondition(singleClickGestureRecognizer === gesture)
@@ -1015,8 +1042,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         precondition(doubleClickGestureRecognizer === gesture)
@@ -1036,8 +1068,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         precondition(domDoubleClickGestureRecognizer === gesture)
@@ -1079,8 +1116,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         precondition(secondaryClickGestureRecognizer === gesture)
@@ -1265,8 +1307,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         let stateAtEntry = gesture.state
@@ -1282,17 +1329,24 @@ extension WKAppKitGestureController {
         }
 
         if dragGestureHasSentMouseDown {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Exiting early because _dragGestureHasSentMouseDown is true")
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Exiting early because _dragGestureHasSentMouseDown is true
+                    """
+                )
             }
             return
         }
 
         if isSuppressingSingleClickGestureForTextSelection {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(
-                    level: .debug,
-                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Exiting early because _isSuppressingSingleClickGestureForTextSelection is true"
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Exiting early because _isSuppressingSingleClickGestureForTextSelection is true
+                    """
                 )
             }
             return
@@ -1433,8 +1487,13 @@ extension WKAppKitGestureController {
             }
 
             if mouseTrackingWillBeHandedOff() {
-                if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                    Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Handing off mouse tracking to another gesture")
+                if let page = webView._protectedPage().get() {
+                    Logger.viewGestures.debug(
+                        """
+                        [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                        Handing off mouse tracking to another gesture
+                        """
+                    )
                 }
                 mouseTrackingStartLocationInWindow = WebCore.FloatPoint(mouseTrackingGesture.mouseLocationInWindow)
                 break
@@ -1486,8 +1545,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let webView = view, let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: pointerdown canceled=\(appKitGestureLogInteger(wasCanceled))")
+        if let webView = view, let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                deferral resolved: pointerdown canceled=\(appKitGestureLogInteger(wasCanceled))
+                """
+            )
         }
 
         pointerDownDeferringGestureRecognizer?.endDeferralShouldPreventGestures(wasCanceled)
@@ -1518,8 +1582,10 @@ extension WKAppKitGestureController {
         }
         isTrackingPointer = false
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let webView = view, let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Canceling the tracked pointer")
+        if let webView = view, let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Canceling the tracked pointer"
+            )
         }
 
         dispatchTrackedPointerEvent(.Cancelled, atLocationInWindow: trackedPointerLastLocationInWindow, modifierFlags: [])
@@ -1536,10 +1602,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                level: .debug,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gestureRecognizer), privacy: .private) touch state \(Int32(truncatingIfNeeded: state.rawValue)) at \(NSStringFromPoint(locationInWindow), privacy: .private)"
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gestureRecognizer), privacy: .private) touch state \
+                \(Int32(truncatingIfNeeded: state.rawValue)) at \(NSStringFromPoint(locationInWindow), privacy: .private)
+                """
             )
         }
 
@@ -1618,8 +1687,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         precondition(pointerTrackingGestureRecognizer === gesture)
@@ -1650,8 +1724,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         var request = positionInformationRequest(atLocation: gesture.location(in: webView))
@@ -1685,8 +1764,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let webView = view, let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Image analysis preflight failed; releasing image-analysis deferrals")
+        if let webView = view, let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Image analysis preflight failed; releasing image-analysis deferrals
+                """
+            )
         }
 
         resolveImageAnalysisDeferrals(with: .notApplicable)
@@ -1700,8 +1784,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \(Self.loggingDescription(for: gesture), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private)
+                """
+            )
         }
 
         if dragPressGestureRecognizer !== gesture {
@@ -1713,8 +1802,8 @@ extension WKAppKitGestureController {
         }
 
         if impl.ignoresAllEvents() {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Ignored gesture")
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Ignored gesture")
             }
             return
         }
@@ -1829,8 +1918,8 @@ extension WKAppKitGestureController {
 
         handleTapCancelled()
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .error), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .error, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Commit potential tap failed")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.error("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Commit potential tap failed")
         }
     }
 
@@ -1839,8 +1928,8 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Synthetic click completed")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Synthetic click completed")
         }
 
         let hasHoverActivatedByClick = webView._protectedPage().get()?.hoverActivatedByClickBounds().has_value() ?? false
@@ -1856,8 +1945,8 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Tap was handled as hover")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Tap was handled as hover")
         }
 
         mayHaveHoverActivatedByClick = true
@@ -1878,8 +1967,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Tap at (\(Int32(point.x)), \(Int32(point.y))) was not handled as click")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Tap at (\(Int32(point.x)), \(Int32(point.y))) was not handled as click
+                """
+            )
         }
 
         // FIXME: Consider smart magnification here if a double tap is pending and the point hasn't moved significantly.
@@ -2002,10 +2096,15 @@ extension WKAppKitGestureController {
 
     func setTextSelectionDragGesture(_ gesture: NSGestureRecognizer, completionHandler: @escaping (NSDraggingSession) -> Void) {
         if let textSelectionDragGesture {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .error), let view, let page = view._protectedPage().get() {
-                Logger.viewGestures.log(
-                    level: .error,
-                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Replacing prior text-selection drag gesture \(Self.loggingDescription(for: textSelectionDragGesture), privacy: .private) (completion handler set: \(appKitGestureLogInteger(self.textSelectionDragCompletionHandler != nil))); prior drag never reached setGestureDraggingSession:"
+            if let view, let page = view._protectedPage().get() {
+                Logger.viewGestures.error(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Replacing prior text-selection drag gesture \
+                    \(Self.loggingDescription(for: textSelectionDragGesture), privacy: .private) (completion handler set: \
+                    \(appKitGestureLogInteger(self.textSelectionDragCompletionHandler != nil))); prior drag never reached \
+                    setGestureDraggingSession:
+                    """
                 )
             }
             assertionFailure()
@@ -2027,8 +2126,8 @@ extension WKAppKitGestureController {
 
         cancelPointerTrackingIfNeeded()
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let view, let page = view._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Drag session began")
+        if let view, let page = view._protectedPage().get() {
+            Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Drag session began")
         }
 
         if let handler = textSelectionDragCompletionHandler {
@@ -2141,10 +2240,13 @@ extension WKAppKitGestureController {
             return false
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                level: .debug,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private), Other gesture: \(Self.loggingDescription(for: otherGestureRecognizer), privacy: .private)"
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private), Other gesture: \
+                \(Self.loggingDescription(for: otherGestureRecognizer), privacy: .private)
+                """
             )
         }
 
@@ -2236,10 +2338,13 @@ extension WKAppKitGestureController {
             return false
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                level: .debug,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private), Other gesture: \(Self.loggingDescription(for: otherGestureRecognizer), privacy: .private)"
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private), Other gesture: \
+                \(Self.loggingDescription(for: otherGestureRecognizer), privacy: .private)
+                """
             )
         }
 
@@ -2264,10 +2369,13 @@ extension WKAppKitGestureController {
             return false
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                level: .debug,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private), Other gesture: \(Self.loggingDescription(for: otherGestureRecognizer), privacy: .private)"
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private), Other gesture: \
+                \(Self.loggingDescription(for: otherGestureRecognizer), privacy: .private)
+                """
             )
         }
 
@@ -2277,8 +2385,13 @@ extension WKAppKitGestureController {
 
         if isMouseTrackingGestureRecognizer(gestureRecognizer) && otherGestureRecognizer === panGestureRecognizer {
             let panCanScroll = panGestureRecognizerCanScroll()
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Mouse tracking requires pan to fail: \(appKitGestureLogInteger(panCanScroll))")
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Mouse tracking requires pan to fail: \(appKitGestureLogInteger(panCanScroll))
+                    """
+                )
             }
             return panCanScroll
         }
@@ -2299,8 +2412,13 @@ extension WKAppKitGestureController {
             )
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .debug, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private)")
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private)
+                """
+            )
         }
 
         let locationInViewCoordinates =
@@ -2334,10 +2452,12 @@ extension WKAppKitGestureController {
         // `Scrollbar::mouseDown` -> thumb drag) should handle it. The AppKit text-selection/context-menu gestures
         // are handled separately in the deferral delegate.
         if isPointInScrollbar(locationInViewCoordinates) && !isMouseTrackingGestureRecognizer(gestureRecognizer) {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(
-                    level: .debug,
-                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Denying gesture over scrollbar: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private)"
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Denying gesture over scrollbar: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private)
+                    """
                 )
             }
             return false
@@ -2378,10 +2498,12 @@ extension WKAppKitGestureController {
 
         if let mouseTrackingGesture = gestureRecognizer as? WKMouseTrackingGestureRecognizer {
             if !mouseTrackingGestureRecognizerCanTrack(mouseTrackingGesture) {
-                if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                    Logger.viewGestures.log(
-                        level: .debug,
-                        "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Denying mouse tracking gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private)"
+                if let page = webView._protectedPage().get() {
+                    Logger.viewGestures.debug(
+                        """
+                        [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                        Denying mouse tracking gesture: \(Self.loggingDescription(for: gestureRecognizer), privacy: .private)
+                        """
                     )
                 }
                 return false
@@ -2419,10 +2541,13 @@ extension WKAppKitGestureController {
             return false
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                level: .debug,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Preventing gesture: \(Self.loggingDescription(for: preventingGestureRecognizer), privacy: .private), Prevented gesture: \(Self.loggingDescription(for: preventedGestureRecognizer), privacy: .private)"
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                Preventing gesture: \(Self.loggingDescription(for: preventingGestureRecognizer), privacy: .private), Prevented gesture: \
+                \(Self.loggingDescription(for: preventedGestureRecognizer), privacy: .private)
+                """
             )
         }
 
@@ -2576,10 +2701,12 @@ extension WKAppKitGestureController {
         // so it must never begin a text selection or any other deferred gesture, no matter how long it's held
         // before moving.
         if caughtDeceleratingScroll {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(
-                    level: .debug,
-                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: event caught a decelerating scroll; preventing deferred gestures"
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    deferral resolved: event caught a decelerating scroll; preventing deferred gestures
+                    """
                 )
             }
             deferringGestureRecognizer.endDeferralShouldPreventGestures(true)
@@ -2591,10 +2718,12 @@ extension WKAppKitGestureController {
         let isInScrollbar = isPointInScrollbar(locationInView)
 
         if !isInScrollbar && (webView._impl()?.isTextSelectedAtPoint(locationInView) ?? false) {
-            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                Logger.viewGestures.log(
-                    level: .debug,
-                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral: not deferring; text already selected at \(NSStringFromPoint(locationInView), privacy: .private)"
+            if let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    deferral: not deferring; text already selected at \(NSStringFromPoint(locationInView), privacy: .private)
+                    """
                 )
             }
             return false
@@ -2606,10 +2735,12 @@ extension WKAppKitGestureController {
             return pointerTrackingShouldBegin(atLocation: locationInView, modifierFlags: event.modifierFlags)
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                level: .debug,
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral: deferring; awaiting position info at \(NSStringFromPoint(locationInView), privacy: .private)"
+        if let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                deferral: deferring; awaiting position info at \(NSStringFromPoint(locationInView), privacy: .private)
+                """
             )
         }
 
@@ -2634,10 +2765,13 @@ extension WKAppKitGestureController {
 
             let deferralState = deferringGestureRecognizer.state
             if deferralState != .possible {
-                if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                    Logger.viewGestures.log(
-                        level: .debug,
-                        "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral: position info arrived after deferring gesture exited Possible (state=\(deferralState.rawValue)); skipping resolution"
+                if let page = webView._protectedPage().get() {
+                    Logger.viewGestures.debug(
+                        """
+                        [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                        deferral: position info arrived after deferring gesture exited Possible (state=\(deferralState.rawValue)); \
+                        skipping resolution
+                        """
                     )
                 }
                 return
@@ -2649,10 +2783,12 @@ extension WKAppKitGestureController {
                 // Over a scrollbar: drive the scrollbar, not text selection -- prevent the deferred gestures
                 // so the mouse-tracking -> `Scrollbar::mouseDown` path wins.
                 if isInScrollbar {
-                    if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.log(
-                            level: .debug,
-                            "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: over scrollbar; preventing text-selection gestures"
+                    if let page = webView._protectedPage().get() {
+                        Logger.viewGestures.debug(
+                            """
+                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                            deferral resolved: over scrollbar; preventing text-selection gestures
+                            """
                         )
                     }
                     return true
@@ -2671,20 +2807,25 @@ extension WKAppKitGestureController {
 
                         if let reusableOutcome {
                             let prevent = self.outcome(reusableOutcome, preventsGesturesDeferredBy: deferringGestureRecognizer)
-                            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                                Logger.viewGestures.log(
-                                    level: .debug,
-                                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: reusing completed image analysis outcome (prevent=\(appKitGestureLogInteger(prevent)))"
+                            if let page = webView._protectedPage().get() {
+                                Logger.viewGestures.debug(
+                                    """
+                                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                                    deferral resolved: reusing completed image analysis outcome \
+                                    (prevent=\(appKitGestureLogInteger(prevent)))
+                                    """
                                 )
                             }
                             return prevent
                         }
 
                         if self.imageAnalysisDeferralState == .gestureFailed {
-                            if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                                Logger.viewGestures.log(
-                                    level: .debug,
-                                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: image analysis preflight failed; not preventing"
+                            if let page = webView._protectedPage().get() {
+                                Logger.viewGestures.debug(
+                                    """
+                                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                                    deferral resolved: image analysis preflight failed; not preventing
+                                    """
                                 )
                             }
                             return false
@@ -2700,10 +2841,16 @@ extension WKAppKitGestureController {
                 if deferringGestureRecognizer === self.dragDeferringGestureRecognizer {
                     let isDraggable = representsDraggableElement(info)
 
-                    if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.log(
-                            level: .debug,
-                            "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: isDraggable=\(appKitGestureLogInteger(isDraggable)) (link=\(appKitGestureLogInteger(info.isLink)) image=\(appKitGestureLogInteger(info.isImage)) attachment=\(appKitGestureLogInteger(info.isAttachment)) dhtml=\(appKitGestureLogInteger(info.isDHTMLDraggable)) color=\(appKitGestureLogInteger(info.isColorInput)) prefersDrag=\(appKitGestureLogInteger(info.prefersDraggingOverTextSelection)))"
+                    if let page = webView._protectedPage().get() {
+                        Logger.viewGestures.debug(
+                            """
+                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                            deferral resolved: isDraggable=\(appKitGestureLogInteger(isDraggable)) \
+                            (link=\(appKitGestureLogInteger(info.isLink)) image=\(appKitGestureLogInteger(info.isImage)) \
+                            attachment=\(appKitGestureLogInteger(info.isAttachment)) \
+                            dhtml=\(appKitGestureLogInteger(info.isDHTMLDraggable)) color=\(appKitGestureLogInteger(info.isColorInput)) \
+                            prefersDrag=\(appKitGestureLogInteger(info.prefersDraggingOverTextSelection)))
+                            """
                         )
                     }
 
@@ -2714,10 +2861,15 @@ extension WKAppKitGestureController {
                     let isSelectable = representsSelectableContent(info)
                     let prefersManipulation = prefersDirectManipulation(info)
 
-                    if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.log(
-                            level: .debug,
-                            "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Resolved deferral: isSelectable=\(appKitGestureLogInteger(isSelectable)) prefersDirectManipulation=\(appKitGestureLogInteger(prefersManipulation)) (selectability=\(info.selectability.rawValue) overEditableContent=\(appKitGestureLogInteger(info.isOverEditableContent)))"
+                    if let page = webView._protectedPage().get() {
+                        Logger.viewGestures.debug(
+                            """
+                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                            Resolved deferral: isSelectable=\(appKitGestureLogInteger(isSelectable)) \
+                            prefersDirectManipulation=\(appKitGestureLogInteger(prefersManipulation)) \
+                            (selectability=\(info.selectability.rawValue) \
+                            overEditableContent=\(appKitGestureLogInteger(info.isOverEditableContent)))
+                            """
                         )
                     }
 
@@ -2727,10 +2879,12 @@ extension WKAppKitGestureController {
                 if deferringGestureRecognizer === self.enclosingScrollViewPanDeferringGestureRecognizer {
                     let prefersManipulation = prefersDirectManipulation(info)
 
-                    if appKitGestureControllerViewGesturesLog.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.log(
-                            level: .debug,
-                            "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral resolved: enclosing scroll view pan yields to content=\(appKitGestureLogInteger(prefersManipulation))"
+                    if let page = webView._protectedPage().get() {
+                        Logger.viewGestures.debug(
+                            """
+                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                            deferral resolved: enclosing scroll view pan yields to content=\(appKitGestureLogInteger(prefersManipulation))
+                            """
                         )
                     }
 
@@ -2754,8 +2908,13 @@ extension WKAppKitGestureController {
             return
         }
 
-        if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let webView = view, let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(level: .default, "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): deferral: touch ended before position info arrived; unblocking text selection")
+        if let webView = view, let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                deferral: touch ended before position info arrived; unblocking text selection
+                """
+            )
         }
 
         if deferringGestureRecognizer !== pointerDownDeferringGestureRecognizer {

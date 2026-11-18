@@ -27,7 +27,6 @@
 import AppKit
 import Foundation
 import WebKit_Internal
-import os
 private import AppKit_Private.NSClickGestureRecognizer_Private
 private import AppKit_Private.NSPanGestureRecognizer_Private
 private import AppKit_Private.NSPressGestureRecognizer_Private
@@ -211,75 +210,9 @@ func saturatingInt32(_ value: Double) -> Int32 {
     value.isNaN ? 0 : Int32(min(max(value, Double(Int32.min)), Double(Int32.max)))
 }
 
-// The os_log channel `Logger.viewGestures` writes to (WebKit's ViewGestures channel). A log site asks it whether its
-// level is enabled before reading the page or building its message. Keep in step with Logger.viewGestures.
-let appKitGestureControllerViewGesturesLog = OSLog(subsystem: "com.apple.WebKit", category: "ViewGestures")
-
 // A flag in a log line, written 1 or 0.
 func appKitGestureLogInteger(_ flag: Bool) -> Int {
     flag ? 1 : 0
-}
-
-// `value` with two decimals, as "%.2f" writes it: rounded half to even on the exact binary value. Velocities are
-// finite and small; the branches above 2^53 keep the output equal to printf's.
-func appKitGestureLogFixedTwoDecimals(_ value: Double) -> String {
-    let sign = value.sign == .minus ? "-" : ""
-    if value.isNaN {
-        return "nan"
-    }
-    let magnitude = value.magnitude
-    if magnitude.isInfinite {
-        return "\(sign)inf"
-    }
-    guard magnitude < 0x1p53 else {
-        // Integral: the significand times a power of two, in base 10^9 limbs, least significant first.
-        let exponent = Int(magnitude.exponent) - Double.significandBitCount
-        let significand = UInt64(Double(sign: .plus, exponent: Double.significandBitCount, significand: magnitude.significand))
-        var limbs: [UInt64] = [significand % 1_000_000_000, significand / 1_000_000_000]
-        for _ in 0..<exponent {
-            var carry: UInt64 = 0
-            for index in limbs.indices {
-                let doubled = limbs[index] * 2 + carry
-                limbs[index] = doubled % 1_000_000_000
-                carry = doubled / 1_000_000_000
-            }
-            if carry > 0 {
-                limbs.append(carry)
-            }
-        }
-        while limbs.count > 1 && limbs[limbs.count - 1] == 0 {
-            limbs.removeLast()
-        }
-        var digits = "\(limbs[limbs.count - 1])"
-        for limb in limbs.dropLast().reversed() {
-            let text = "\(limb)"
-            digits += String(repeating: "0", count: 9 - text.count) + text
-        }
-        return "\(sign)\(digits).00"
-    }
-    let integralPart = magnitude.rounded(.towardZero)
-    let fraction = magnitude - integralPart
-    var whole = UInt64(integralPart)
-    var hundredths: UInt64 = 0
-    if fraction > 0 {
-        // fraction = scaled / 2^shift exactly; under 2^-61 it rounds to 0 hundredths.
-        let shift = fraction.significandWidth - Int(fraction.exponent)
-        if shift < 61 {
-            let scaled = UInt64(Double(sign: .plus, exponent: shift, significand: fraction))
-            let product = scaled * 100
-            hundredths = product >> UInt64(shift)
-            let remainder = product & ((1 << UInt64(shift)) - 1)
-            let half: UInt64 = 1 << UInt64(shift - 1)
-            if remainder > half || (remainder == half && hundredths & 1 == 1) {
-                hundredths += 1
-            }
-            if hundredths == 100 {
-                whole += 1
-                hundredths = 0
-            }
-        }
-    }
-    return "\(sign)\(whole).\(hundredths < 10 ? "0" : "")\(hundredths)"
 }
 
 #endif // HAVE_APPKIT_GESTURES_SUPPORT
