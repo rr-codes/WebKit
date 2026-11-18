@@ -43,7 +43,6 @@ import struct Swift.String
 @objc
 @implementation
 extension WKAppKitGestureController {
-    // Every stored property below starts at zero, nil or false.
     @nonobjc
     final weak var view: WKWebView?
 
@@ -99,6 +98,11 @@ extension WKAppKitGestureController {
     @nonobjc
     final var touchThatCaughtDeceleratingScroll: NSNumber?
 
+    // FIXME: Avoid bloat in WKAppKitGestureController by introducing a separate
+    // gesture delegate that exclusively manages the mouse tracking recognizers.
+    //
+    // See mouseTrackingGestureRecognized(_:) where this state is used to transition
+    // between tracking gestures when an active gesture's tracking conditions change.
     @nonobjc
     final weak var activeMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
     @nonobjc
@@ -113,7 +117,6 @@ extension WKAppKitGestureController {
     final var mouseTrackingIsSuppressedForTransformGesture = false
     @nonobjc
     final var contentDeclinedTransformGesture = false
-    // Seconds of ProcessInfo.systemUptime, the same mach absolute clock MonotonicTime reads.
     @nonobjc
     final var lastTransformGestureDriveTime: Double = 0
 
@@ -169,14 +172,14 @@ extension WKAppKitGestureController {
     @nonobjc
     final var rotationGestureRecognizer: NSRotationGestureRecognizer?
 
-    // Magnification and rotation gesture recognizers report their values cumulatively over a gesture.
+    // FIXME: <webkit.org/b/321828> Avoid further bloating this class and instead manage state through a separate/independent entity.
+    // Magnification and rotation GRs report their values cumulatively over a gesture.
     // These variables track the last reported value so that we can forward deltas.
     @nonobjc
     final var lastCumulativeMagnification: Double = 0
     @nonobjc
     final var lastCumulativeRotation: Double = 0
 
-    // Header properties.
     @objc
     var webView: WKWebView? { view }
     @objc
@@ -689,17 +692,17 @@ extension WKAppKitGestureController {
             return true
         }
 
-        // If the web content permits panning, the pan gesture recognizer will win.
+        // If the web content permits panning, the pan GR will win.
         // This multi-touch tracking recognizer covers the remaining case, where
         // the content has opted out of panning. Web apps typically depend on
         // touch/pointer/mousemove events for a notion of "translation" in this
         // case, such as on maps.apple.com. As such, we complement the logic here
-        // with the predicate in -panGestureRecognizerCanScroll.
+        // with the predicate in panGestureRecognizerCanScroll().
         return !touchActionsAllowPanning(at: gesture.location(in: webView))
     }
 
     // FIXME: rdar://185815023 (-[NSRotationGestureRecognizer locationInView:] should reflect live centroid of the gesture)
-    // The rotation gesture recognizer's -locationInView: does not reflect its live centroid over
+    // The rotation GR's -locationInView: does not reflect its live centroid over
     // the course of a twist, so we compute it directly and use it to feed our
     // gesture machinery. Otherwise, the rotation and magnification locations stomp
     // over each other in ViewGestureController.
@@ -746,7 +749,7 @@ extension WKAppKitGestureController {
 
     @nonobjc
     final func interruptMomentumIfNeeded(forTouch touch: NSTouch) {
-        // Other callers of _resetCaughtDeceleratingScroll can miss the end of a gesture
+        // Other callers of resetCaughtDeceleratingScroll() can miss the end of a gesture
         // (e.g. a pan over content that disallows scrolling, which then neither scrolls, clicks, nor tracks the mouse).
         // We can't let that leak into the next interaction, or it would keep refusing gestures.
         // We only consider this a new interaction if 1) this is the only touch down,
@@ -797,11 +800,11 @@ extension WKAppKitGestureController {
 
     @objc(gestureRecognizer:shouldAttemptToRecognizeWithEvent:)
     func gestureRecognizer(_ gesture: NSGestureRecognizer, shouldAttemptToRecognizeWith event: NSEvent) -> Bool {
-        // Every gesture recognizer we maintain is exclusively direct touch-only, so we can unconditionally return NO here.
-        // This delegate implementation is only necessary for the magnification and rotation gesture recognizers since they
+        // Every GR we maintain is exclusively direct touch-only, so we can unconditionally return false here.
+        // This delegate implementation is only necessary for the magnification and rotation GRs since they
         // can not be configured as a (buttonMask + allowedTouchTypes) pair like the other gestures.
 
-        // FIXME: <rdar://166268811> Migrate towards API (once available) that configures magnification/rotation gesture recognizers as touch-only.
+        // FIXME: <rdar://166268811> Migrate towards API (once available) that configures magnification/rotation GRs as touch-only.
         false
     }
 
@@ -837,7 +840,7 @@ extension WKAppKitGestureController {
         gesture.buttonMask = 0
         gesture.numberOfTouchesRequired = 1
         // Intentionally set to `1` and not `2`, see WKDOMDoubleClickGestureRecognizer.swift.
-        // FIXME: rdar://184563102 (An NSClickGestureRecognizer with numberOfClicksRequired=2 results in other gesture recognizers being neglected for some gestures)
+        // FIXME: rdar://184563102 (An NSClickGestureRecognizer with numberOfClicksRequired=2 results in other GRs being neglected for some gestures)
         gesture.numberOfClicksRequired = 1
     }
 
@@ -1010,7 +1013,7 @@ extension WKAppKitGestureController {
 
         if let page = webView._protectedPage().get(), !page.preferences().useAlternatePDFHUD() {
             // Clicks aren't delivered to NSButton's built-in click gesture
-            // recognizer when a parent view's gesture recognizer recognizes first, so we
+            // recognizer when a parent view's GR recognizes first, so we
             // forward the click manually.
             if gesture.state == .began {
                 let location = WebCore.FloatPoint(gesture.location(in: webView))
@@ -1708,6 +1711,26 @@ extension WKAppKitGestureController {
 
     // MARK: Image Analysis
 
+    // Gesture-driven Live Text is arbitrated by three recognizers, plus ImageAnalysisGestureDeferralToken:
+    //
+    //   1. imageAnalysisGestureRecognizer (the "preflight") -- a settled 0.1s press that kicks off Vision
+    //      image analysis. It's a passive observer of the interaction it measures: it recognizes
+    //      simultaneously with everything, prevents nothing, and is always allowed to begin.
+    //   2. imageAnalysisTextSelectionDeferringGestureRecognizer -- holds the text-selection gestures over an image until
+    //      analysis resolves.
+    //   3. imageAnalysisDragAndContextMenuDeferringGestureRecognizer -- holds the drag-press and secondary-click
+    //      (context menu) recognizers over an image until analysis resolves.
+    //
+    // The two deferrals resolve to *opposite* booleans (see resolveImageAnalysisDeferrals(with:)):
+    // on "text found" we must ALLOW text selection while PREVENTING drag / context menu (Live Text wins),
+    // and the reverse on "no text". A single WKDeferringGestureRecognizer can't express that -- its
+    // endDeferralShouldPreventGestures(_:) applies one boolean (state = .ended / .failed) to everything it
+    // defers -- so the two opposite outcomes require two separate deferrals.
+    //
+    // iOS needs no fallback deferral because its drag / context menu are UIKit interactions gated by a
+    // ProceedWithTextSelectionInImage callback. macOS drag-press / secondary-click are NSGestureRecognizers
+    // on independent timers, so they must be *deferred* to keep them from firing before analysis resolves.
+
     @objc
     private func imageAnalysisGestureRecognized(_ gesture: NSGestureRecognizer) {
         guard let webView = view else {
@@ -1818,7 +1841,6 @@ extension WKAppKitGestureController {
             handleTapCancelled()
             dragGestureHasSentMouseDown = false
             dragGestureDidReceiveDragStart = false
-            // Wraps around, as an unsigned 64-bit counter does.
             dragIdentifier &+= 1
 
             let mouseDown = NSEvent.mouseEvent(
@@ -1902,7 +1924,6 @@ extension WKAppKitGestureController {
 
     // MARK: Two-Phase Click Response Handlers
 
-    // The header's getter is `isPotentialTapInProgress` (getter=); the property-level name only matches the header's property.
     @objc(potentialTapInProgress)
     var isPotentialTapInProgress: Bool {
         @objc(isPotentialTapInProgress)
@@ -2311,7 +2332,7 @@ extension WKAppKitGestureController {
             return true
         }
 
-        // Allow the single click gesture recognizer to be simultaneously recognized with any of those from the text
+        // Allow the single click GR to be simultaneously recognized with any of those from the text
         // selection manager.
         if let singleClickGestureRecognizer, let textSelectionGestures = Self.textSelectionGestures(of: webView) {
             if gestureRecognizer === singleClickGestureRecognizer
@@ -2352,7 +2373,7 @@ extension WKAppKitGestureController {
             return deferringGestureRecognizer.shouldDefer(otherGestureRecognizer)
         }
 
-        // Fail any gestures from the text selection manager if the secondary click gesture recognizer handles them.
+        // Fail any gestures from the text selection manager if the secondary click GR handles them.
         if Self.isTextSelectionGesture(otherGestureRecognizer, of: webView) && gestureRecognizer === secondaryClickGestureRecognizer {
             return true
         }
@@ -2531,7 +2552,6 @@ extension WKAppKitGestureController {
             || isBuiltInScrollViewMagnificationGestureRecognizer(gesture)
     }
 
-    // NSGestureRecognizerDelegatePrivate; WKAppKitGestureController.mm declares the conformance.
     @objc(_gestureRecognizer:canPreventGestureRecognizer:)
     private func gestureRecognizer(
         _ preventingGestureRecognizer: NSGestureRecognizer,
@@ -2594,7 +2614,7 @@ extension WKAppKitGestureController {
             return true
         }
 
-        // Don't let other click gestures prevent the secondary click gesture recognizer; it must be allowed to fire its
+        // Don't let other click gestures prevent the secondary click GR; it must be allowed to fire its
         // press timer (0.72s) without being short-circuited by gestures that recognize earlier
         // (e.g. single click and mouse-tracking, which both transition to Began at mouse-down).
         if preventedGestureRecognizer === secondaryClickGestureRecognizer {

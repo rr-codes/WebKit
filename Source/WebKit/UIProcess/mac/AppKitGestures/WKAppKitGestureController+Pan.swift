@@ -78,15 +78,12 @@ extension WKAppKitGestureController {
         let globalPosition = WebCore.globalPoint(gesture.location(in: nil), impl.window())
         var gestureDelta = panTranslation(gesture, in: webView)
 
-        // Reads and clears the flag so every phase consumes it before the magnification check.
         let suppressedDelta = suppressNextPanScrollDelta
         suppressNextPanScrollDelta = false
         if suppressedDelta {
             gestureDelta = WebCore.FloatSize()
         }
 
-        // One read for both uses: a web view's page is fixed for its life, and moving the magnification origin
-        // cannot replace it.
         let page = webView._protectedPage().get()
         if let page, page.delegatesScalingToUIProcess() {
             if impl.moveMagnificationOriginIfMagnifying(locationInView) {
@@ -97,7 +94,6 @@ extension WKAppKitGestureController {
         guard let pinnedState = page?.pinnedStateIncludingAncestorsAtPoint(locationInView) else {
             return
         }
-        // A nil pan gesture recognizer can pan along neither axis.
         let prefersUnlockedScroll = panGestureRecognizer.map { self.prefersUnlockedScroll($0) } ?? false
         let canScrollHorizontally =
             (panGestureRecognizer?._canPanHorizontally ?? false)
@@ -114,11 +110,9 @@ extension WKAppKitGestureController {
             )
         )
 
-        // Read by makeWheelEventInit when it is called.
         var phase = toWebEventPhase(gesture.state)
 
         func makeWheelEventInit(_ delta: WebCore.FloatSize) -> WebKit.WebWheelEventInit {
-            // The reciprocal is rounded to Float before it scales the delta.
             let wheelTicks = delta.scaled(Float(1.0 / Double(Float(WebCore.Scrollbar.pixelsPerLineStep()))))
             let unacceleratedScrollingDelta = delta
 
@@ -126,7 +120,6 @@ extension WKAppKitGestureController {
             event.type = WebKit.WebEventType.Wheel
             event.timestamp = WebKit.appKitGestureMonotonicTimeFromRawSeconds(rawTimestamp)
 
-            // rawPlatformDelta and momentumFastScrollMultiplier keep their defaults.
             var wheel = WebKit.WebWheelEventData()
             wheel.position = position
             wheel.globalPosition = WebCore.IntPoint(globalPosition)
@@ -157,7 +150,6 @@ extension WKAppKitGestureController {
         func dispatchWheelEvent(_ delta: WebCore.FloatSize) {
             interruptMomentumForScrollWheelEvent()
 
-            // The view gesture controller is created only when forwarding.
             lastPanWheelEventWasHandledByViewGestureController =
                 forwardToGestureController
                 && impl.handleScrollWheelEventOnViewGestureController(
@@ -229,7 +221,6 @@ extension WKAppKitGestureController {
         let minimumVelocityForSwipe: Float = 20
         let minimumVelocityForMomentum: Float = 250
 
-        // Returns width when the two compare equal or either is NaN.
         func maximumComponentMagnitude(_ vector: WebCore.FloatSize) -> Float {
             let width = abs(vector.width())
             let height = abs(vector.height())
@@ -256,8 +247,6 @@ extension WKAppKitGestureController {
             return
         }
 
-        // Builds the momentum event, stops the refresh controller's tracking, starts the momentum
-        // generator and sends the event to the page.
         cxxSupport.startMomentum(
             atPosition: gesture.location(in: webView),
             globalPosition: WebCore.globalPoint(gesture.location(in: nil), webView._impl()?.window()),
@@ -279,7 +268,6 @@ extension WKAppKitGestureController {
 
     @nonobjc
     final func interruptMomentumIfNeeded() {
-        // Cleared even when the view is gone.
         let wasMomentumActive = isMomentumActive
         isMomentumActive = false
         if !wasMomentumActive {

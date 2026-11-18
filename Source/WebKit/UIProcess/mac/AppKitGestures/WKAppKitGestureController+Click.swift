@@ -41,7 +41,6 @@ extension WKAppKitGestureController {
 
     @nonobjc
     final func updateLayerTreeTransactionIdAtLastInteractionStart() {
-        // Without a remote layer tree drawing area there is no transaction, and the last one is kept.
         if let transactionID = cxxSupport.lastCommittedMainFrameLayerTreeTransactionID().value {
             layerTreeTransactionIdAtLastInteractionStart = transactionID
         }

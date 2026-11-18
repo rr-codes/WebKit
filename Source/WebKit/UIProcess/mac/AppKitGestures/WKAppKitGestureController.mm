@@ -96,8 +96,6 @@ class AppKitGestureMomentumEventGenerator;
 
 namespace WebKit {
 
-// Reference counted so that each entry into it is protected for the duration of the call: the controller's callbacks
-// can reset the momentum (dropping the support object's reference) while the dispatcher is on the stack.
 class AppKitGestureMomentumEventGenerator final : public RefCounted<AppKitGestureMomentumEventGenerator>, public MomentumEventDispatcher::Client {
     WTF_MAKE_TZONE_ALLOCATED_INLINE(AppKitGestureMomentumEventGenerator);
     WTF_OVERRIDE_DELETE_FOR_CHECKED_PTR(AppKitGestureMomentumEventGenerator);
@@ -272,7 +270,6 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 @interface WKAppKitGestureController (WKClickHighlightControllerDelegate) <WKClickHighlightControllerDelegate>
 @end
 
-// The Swift implementation defines `_gestureRecognizer:canPreventGestureRecognizer:`; this category declares the conformance.
 @interface WKAppKitGestureController (NSGestureRecognizerDelegatePrivate) <NSGestureRecognizerDelegatePrivate>
 @end
 
@@ -303,8 +300,6 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     RetainPtr webView = [_controller.get() webView];
     if (!webView)
         return;
-    // Made once per web view (WKWebView sets the controller up once, at initialization). Never replaced: a
-    // completion handler run by the manager could otherwise destroy it while it iterates its handlers.
     if (_positionInformationManager)
         return;
     _positionInformationManager = makeUnique<WebKit::PositionInformationManager>(*[webView _protectedPage]);

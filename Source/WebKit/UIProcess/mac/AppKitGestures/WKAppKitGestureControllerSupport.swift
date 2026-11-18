@@ -33,6 +33,9 @@ private import AppKit_Private.NSPressGestureRecognizer_Private
 private import AppKit_Private.NSTouch_Private
 private import WebCore_Private
 
+// The outcome of the image-analysis preflight, used to resolve the two image-analysis deferring
+// gestures. Over an image we defer both text selection and the drag / context-menu fallback until
+// analysis finishes, then resolve them oppositely.
 enum ImageAnalysisDeferralOutcome: UInt8 {
     case notApplicable = 0 // Not an image (or the press was abandoned): influence neither deferral.
     case noText = 1 // Image without selectable text: prevent text selection; allow drag / context menu.
@@ -113,11 +116,9 @@ func isBuiltInScrollViewPanGestureRecognizer(_ recognizer: NSGestureRecognizer?)
 
 private let scrollViewPanGestureClass: AnyClass? = NSClassFromString("NSScrollViewPanGestureRecognizer")
 
-// Bit sets with only the operations the controller uses.
 struct TouchActionSet {
     let rawValue: UInt8
 
-    // True when the set shares a bit with any of `members` (OptionSet's `!isDisjoint(with: [members])`).
     func intersectsAny(of members: TouchActionSet...) -> Bool {
         members.contains { rawValue & $0.rawValue != 0 }
     }
@@ -205,12 +206,10 @@ func representsSecondaryClickableElement(_ info: WebKit.InteractionInformationAt
     return info.isOverVideo && info.selectability != WebKit.InteractionInformationAtPosition.Selectability.UnselectableDueToFocusableElement
 }
 
-// Converts like a C++ int cast on arm64: out-of-range values saturate and NaN becomes 0.
 func saturatingInt32(_ value: Double) -> Int32 {
     value.isNaN ? 0 : Int32(min(max(value, Double(Int32.min)), Double(Int32.max)))
 }
 
-// A flag in a log line, written 1 or 0.
 func appKitGestureLogInteger(_ flag: Bool) -> Int {
     flag ? 1 : 0
 }
