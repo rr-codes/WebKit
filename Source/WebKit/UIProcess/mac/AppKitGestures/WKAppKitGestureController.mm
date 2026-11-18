@@ -240,7 +240,7 @@ private:
 
 - (void)displayLinkFired:(CADisplayLink *)displayLink
 {
-    if (RefPtr generator = _generator.get())
+    if (RefPtr generator = _generator)
         generator->displayDidRefresh();
 }
 

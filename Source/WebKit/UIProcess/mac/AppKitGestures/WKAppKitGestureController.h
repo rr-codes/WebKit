@@ -88,7 +88,7 @@ NS_SWIFT_UI_ACTOR
 - (void)didHandleTapAsHover;
 - (void)disableDoubleTapGesturesDuringTapIfNecessaryForRequest:(uint64_t)requestID;
 - (void)didNotHandleTapAsClickAtPoint:(NSPoint)point;
-#endif
+#endif // ENABLE(TWO_PHASE_CLICKS)
 
 @property (nonatomic, readonly, nullable) WKWebView *webView;
 
@@ -111,7 +111,7 @@ NS_SWIFT_UI_ACTOR
 #endif
 @end
 
-#endif
+#endif // !__has_feature(modules)
 
 @interface WKAppKitGestureController (WKDeferringGestureRecognizerDelegate) <WKDeferringGestureRecognizerDelegate>
 @end
