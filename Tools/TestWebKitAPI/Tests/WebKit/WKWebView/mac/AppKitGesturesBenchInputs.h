@@ -190,7 +190,10 @@ struct Fnv {
 
 class Lcg {
 public:
-    explicit Lcg(uint64_t seed) : m_state(seed * 6364136223846793005ull + 1442695040888963407ull) { }
+    explicit Lcg(uint64_t seed)
+        : m_state(seed * 6364136223846793005ull + 1442695040888963407ull)
+    {
+    }
     uint32_t next()
     {
         m_state = m_state * 6364136223846793005ull + 1442695040888963407ull;
@@ -226,8 +229,12 @@ static void drive(NSGestureRecognizer *recognizer)
     Class driven = NSClassFromString(name);
     if (!driven) {
         driven = objc_allocateClassPair(original, name.UTF8String, 0);
-        auto add = [&](SEL sel, id block, const char* types) { class_addMethod(driven, sel, imp_implementationWithBlock(block), types); };
-        add(@selector(state), ^NSGestureRecognizerState(id self) { return scriptFor(self).state; }, "q@:");
+        auto add = [&](SEL sel, id block, const char* types) {
+            class_addMethod(driven, sel, imp_implementationWithBlock(block), types);
+        };
+        add(@selector(state), ^NSGestureRecognizerState(id self) {
+            return scriptFor(self).state;
+        }, "q@:");
         add(@selector(setState:), ^(id self, NSGestureRecognizerState s) {
             if (controllerWrites)
                 controllerWrites->push_back("state=" + std::to_string(static_cast<long>(s)));
@@ -237,21 +244,41 @@ static void drive(NSGestureRecognizer *recognizer)
             NSPoint p = scriptFor(self).locationInWindow;
             return v ? [v convertPoint:p fromView:nil] : p;
         }, "{CGPoint=dd}@:@");
-        add(@selector(translationInView:), ^NSPoint(id self, NSView *) { return scriptFor(self).translation; }, "{CGPoint=dd}@:@");
+        add(@selector(translationInView:), ^NSPoint(id self, NSView *) {
+            return scriptFor(self).translation;
+        }, "{CGPoint=dd}@:@");
         add(@selector(setTranslation:inView:), ^(id self, NSPoint t, NSView *) {
             if (controllerWrites)
                 controllerWrites->push_back("translation=" + std::to_string(std::llround(t.x * 1000)) + "," + std::to_string(std::llround(t.y * 1000)));
             scriptFor(self).translation = t;
         }, "v@:{CGPoint=dd}@");
-        add(@selector(velocityInView:), ^NSPoint(id self, NSView *) { return scriptFor(self).velocity; }, "{CGPoint=dd}@:@");
-        add(@selector(modifierFlags), ^NSEventModifierFlags(id self) { return scriptFor(self).modifiers; }, "Q@:");
-        add(@selector(timestamp), ^NSTimeInterval(id self) { return scriptFor(self).timestamp; }, "d@:");
-        add(@selector(magnification), ^CGFloat(id self) { return scriptFor(self).magnification; }, "d@:");
-        add(@selector(rotation), ^CGFloat(id self) { return scriptFor(self).rotation * M_PI / 180; }, "d@:");
-        add(@selector(rotationInDegrees), ^CGFloat(id self) { return scriptFor(self).rotation; }, "d@:");
-        add(@selector(numberOfTouches), ^NSUInteger(id self) { return scriptFor(self).touchCount; }, "Q@:");
-        add(NSSelectorFromString(@"mouseLocationInWindow"), ^NSPoint(id self) { return scriptFor(self).locationInWindow; }, "{CGPoint=dd}@:");
-        add(NSSelectorFromString(@"startLocationInWindow"), ^NSPoint(id self) { return scriptFor(self).startInWindow; }, "{CGPoint=dd}@:");
+        add(@selector(velocityInView:), ^NSPoint(id self, NSView *) {
+            return scriptFor(self).velocity;
+        }, "{CGPoint=dd}@:@");
+        add(@selector(modifierFlags), ^NSEventModifierFlags(id self) {
+            return scriptFor(self).modifiers;
+        }, "Q@:");
+        add(@selector(timestamp), ^NSTimeInterval(id self) {
+            return scriptFor(self).timestamp;
+        }, "d@:");
+        add(@selector(magnification), ^CGFloat(id self) {
+            return scriptFor(self).magnification;
+        }, "d@:");
+        add(@selector(rotation), ^CGFloat(id self) {
+            return scriptFor(self).rotation * M_PI / 180;
+        }, "d@:");
+        add(@selector(rotationInDegrees), ^CGFloat(id self) {
+            return scriptFor(self).rotation;
+        }, "d@:");
+        add(@selector(numberOfTouches), ^NSUInteger(id self) {
+            return scriptFor(self).touchCount;
+        }, "Q@:");
+        add(NSSelectorFromString(@"mouseLocationInWindow"), ^NSPoint(id self) {
+            return scriptFor(self).locationInWindow;
+        }, "{CGPoint=dd}@:");
+        add(NSSelectorFromString(@"startLocationInWindow"), ^NSPoint(id self) {
+            return scriptFor(self).startInWindow;
+        }, "{CGPoint=dd}@:");
         add(NSSelectorFromString(@"movementInWindowSinceStart"), ^NSSize(id self) {
             AGBScript *s = scriptFor(self);
             return NSMakeSize(s.locationInWindow.x - s.startInWindow.x, s.locationInWindow.y - s.startInWindow.y);
@@ -308,21 +335,25 @@ public:
         uiDelegate = adoptNS([[AGBUIDelegate alloc] init]);
         [webView setUIDelegate:uiDelegate.get()]; // no modal UI: see AGBUIDelegate
         [webView loadHTMLString:pageMarkup baseURL:nil];
-        bool loaded = Util::waitFor([&] { return [[webView objectByEvaluatingJavaScript:@"document.readyState == 'complete'"] boolValue]; });
+        bool loaded = Util::waitFor([&] {
+            return [[webView objectByEvaluatingJavaScript:@"document.readyState == 'complete'"] boolValue];
+        });
         if (!loaded)
             return false;
         __block bool done = false;
-        [webView _doAfterNextPresentationUpdate:^{ done = true; }];
+        [webView _doAfterNextPresentationUpdate:^{
+            done = true;
+        }];
         if (!Util::runFor(&done, stepTimeout))
             return false;
 
-        for (NSGestureRecognizer *g in [webView gestureRecognizers]) {
+        for (NSGestureRecognizer *g in webView.get().gestureRecognizers) {
             if (g.action == @selector(panGestureRecognized:))
                 controller = g.delegate;
         }
         if (!controller)
             return false;
-        for (NSGestureRecognizer *g in [webView gestureRecognizers]) {
+        for (NSGestureRecognizer *g in webView.get().gestureRecognizers) {
             if (g.delegate == controller.get()) {
                 drive(g);
                 recognizers.push_back(g);
@@ -496,8 +527,8 @@ static void panGesture(Rig& rig, Pass& pass, Lcg& random, bool fling)
 {
     auto pan = rig.byAction(@selector(panGestureRecognized:));
     NSPoint at = pointInView(random);
-    NSUInteger touches = random.range(0, 4) == 0 ? 2 : 1;
-    NSEventModifierFlags flags = random.range(0, 7) == 0 ? NSEventModifierFlagShift : 0;
+    NSUInteger touches = !random.range(0, 4) ? 2 : 1;
+    NSEventModifierFlags flags = !random.range(0, 7) ? NSEventModifierFlagShift : 0;
     shouldReceiveTouch(rig, pass, pan, at);
     shouldBegin(rig, pass, pan, { .at = at, .touches = touches });
     // Axis shape: 0 vertical, 1 horizontal, 2 diagonal.
@@ -505,13 +536,13 @@ static void panGesture(Rig& rig, Pass& pass, Lcg& random, bool fling)
     NSPoint total = at;
     unsigned moves = random.range(3, 12);
     for (unsigned i = 0; i < moves && !pass.failure; ++i) {
-        double dx = axis == 0 ? random.range(-2, 2) : random.range(-14, 14);
+        double dx = !axis ? random.range(-2, 2) : random.range(-14, 14);
         double dy = axis == 1 ? random.range(-2, 2) : random.range(-14, 14);
         total = NSMakePoint(total.x + dx, total.y + dy);
         step(rig, pass, pan, { .state = i ? Changed : Began, .at = total, .start = at, .translation = NSMakePoint(dx, dy), .modifiers = flags, .touches = touches });
     }
     double speed = fling ? random.range(1200, 2400) : random.range(0, 19);
-    NSPoint velocity = NSMakePoint(axis == 0 ? 0 : speed * (random.range(0, 1) ? 1 : -1), axis == 1 ? 0 : speed * (random.range(0, 1) ? 1 : -1));
+    NSPoint velocity = NSMakePoint(!axis ? 0 : speed * (random.range(0, 1) ? 1 : -1), axis == 1 ? 0 : speed * (random.range(0, 1) ? 1 : -1));
     step(rig, pass, pan, { .state = Ended, .at = total, .start = at, .velocity = velocity, .modifiers = flags, .touches = touches });
     if (fling) {
         // The momentum's generator becomes active when the web process has answered the momentum's first event, so the
@@ -520,7 +551,10 @@ static void panGesture(Rig& rig, Pass& pass, Lcg& random, bool fling)
         // follows the display link, can reach the controller at a timing-dependent point.
         batchEnd(rig, pass);
         shouldReceiveTouch(rig, pass, pan, pointInView(random));
-        entry(rig, pass, [](id c) { if ([c respondsToSelector:@selector(interruptMomentumForScrollWheelEvent)]) [c interruptMomentumForScrollWheelEvent]; });
+        entry(rig, pass, [](id c) {
+            if ([c respondsToSelector:@selector(interruptMomentumForScrollWheelEvent)])
+                [c interruptMomentumForScrollWheelEvent];
+        });
     }
     batchEnd(rig, pass);
 }
@@ -550,7 +584,7 @@ static void pointerGesture(Rig& rig, Pass& pass, Lcg& random)
     id c = rig.controller.get();
     auto g = rig.byName(@"WKPointerTrackingGesture");
     NSPoint at = pointInView(random);
-    NSEventModifierFlags flags = random.range(0, 3) == 0 ? NSEventModifierFlagOption : 0;
+    NSEventModifierFlags flags = !random.range(0, 3) ? NSEventModifierFlagOption : 0;
     shouldBegin(rig, pass, g, { .at = at, .modifiers = flags });
     auto update = [&](NSGestureRecognizerState state, NSPoint p) {
         if (!g || ![c respondsToSelector:@selector(pointerTrackingGestureRecognizer:didUpdateTouchWithState:locationInWindow:modifierFlags:)]) {
@@ -577,8 +611,8 @@ static void transformGesture(Rig& rig, Pass& pass, Lcg& random)
     auto rotate = rig.byName(@"WKRotationGesture");
     auto tracking = rig.byAction(@selector(mouseTrackingGestureRecognized:));
     NSPoint at = pointInView(random);
-    [rig.webView setAllowsMagnification:random.range(0, 3) != 0];
-    bool rotation = rotate && random.range(0, 2) == 0;
+    [rig.webView setAllowsMagnification:!!random.range(0, 3)];
+    bool rotation = rotate && !random.range(0, 2);
     auto gesture = rotation ? rotate : magnify;
     double scale = 0;
     double angle = 0;
@@ -596,8 +630,12 @@ static void transformGesture(Rig& rig, Pass& pass, Lcg& random)
         step(rig, pass, tracking, { .state = Changed, .at = NSMakePoint(at.x + 3, at.y + 3), .start = at });
         step(rig, pass, tracking, { .state = Ended, .at = NSMakePoint(at.x + 3, at.y + 3), .start = at });
     }
-    if (random.range(0, 3) == 0)
-        entry(rig, pass, [](id c) { if ([c respondsToSelector:@selector(transformGestureWasNotHandledByContent)]) [c transformGestureWasNotHandledByContent]; });
+    if (!random.range(0, 3)) {
+        entry(rig, pass, [](id c) {
+            if ([c respondsToSelector:@selector(transformGestureWasNotHandledByContent)])
+                [c transformGestureWasNotHandledByContent];
+        });
+    }
     batchEnd(rig, pass);
 }
 
@@ -658,9 +696,13 @@ static void sessionStep(Rig& rig, Pass& pass, Lcg& random)
     case 8: transformGesture(rig, pass, random); break;
     case 9: {
         // Text-selection suppression around a click.
-        entry(rig, pass, [](id c) { [c beginSuppressingSingleClickGestureForTextSelection]; });
+        entry(rig, pass, [](id c) {
+            [c beginSuppressingSingleClickGestureForTextSelection];
+        });
         clickGesture(rig, pass, random, 0);
-        entry(rig, pass, [](id c) { [c endSuppressingSingleClickGestureForTextSelection]; });
+        entry(rig, pass, [](id c) {
+            [c endSuppressingSingleClickGestureForTextSelection];
+        });
         break;
     }
     case 10: {
@@ -669,24 +711,34 @@ static void sessionStep(Rig& rig, Pass& pass, Lcg& random)
         NSPoint at = pointInView(random);
         shouldBegin(rig, pass, drag, { .at = at });
         step(rig, pass, drag, { .state = Began, .at = at });
-        entry(rig, pass, [](id c) { [c didReceiveDragStart]; });
+        entry(rig, pass, [](id c) {
+            [c didReceiveDragStart];
+        });
         step(rig, pass, drag, { .state = Ended, .at = at });
-        entry(rig, pass, [](id c) { [c clearGestureDragState]; });
+        entry(rig, pass, [](id c) {
+            [c clearGestureDragState];
+        });
         batchEnd(rig, pass);
         break;
     }
     default: {
-        entry(rig, pass, [](id c) { [c preferencesDidChange]; });
-        entry(rig, pass, [](id c) { [c cancelClickHighlight]; });
-        if (random.range(0, 3) == 0) {
-            entry(rig, pass, [](id c) { [c reset]; });
+        entry(rig, pass, [](id c) {
+            [c preferencesDidChange];
+        });
+        entry(rig, pass, [](id c) {
+            [c cancelClickHighlight];
+        });
+        if (!random.range(0, 3)) {
+            entry(rig, pass, [](id c) {
+                [c reset];
+            });
             batchEnd(rig, pass);
         }
         break;
     }
     }
     for (unsigned d = 0; auto* deferring = rig.deferring(d); ++d) {
-        if ([(id)rig.controller.get() respondsToSelector:@selector(deferringGestureRecognizer:didTransitionToState:)] && random.range(0, 5) == 0)
+        if ([(id)rig.controller.get() respondsToSelector:@selector(deferringGestureRecognizer:didTransitionToState:)] && !random.range(0, 5))
             TIMED(pass, [(id)rig.controller.get() deferringGestureRecognizer:deferring didTransitionToState:NSGestureRecognizerStateFailed]);
     }
 }

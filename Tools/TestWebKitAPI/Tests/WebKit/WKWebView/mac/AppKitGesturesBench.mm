@@ -31,6 +31,9 @@
 #import "Helpers/Test.h"
 #import <cstdio>
 #import <cstdlib>
+#import <wtf/StdLibExtras.h>
+#import <wtf/text/CString.h>
+#import <wtf/text/WTFString.h>
 
 // The AppKit gesture controller's speed, one shape per TEST, through its production entry points (a real WKWebView's
 // recognizers, scripted: AppKitGesturesBenchInputs.h). Without WEBKIT_RUN_BENCHMARKS each test runs one pass and
@@ -124,7 +127,7 @@ static void touchSessionShape(Rig& rig, Pass& pass)
         sessionStep(rig, pass, random);
 }
 
-static void runShape(ShapeFunction shape, const char* name, uint64_t recorded, unsigned timedPasses)
+static void runShape(ShapeFunction shape, ASCIILiteral name, uint64_t recorded, unsigned timedPasses)
 {
     Rig rig;
     std::vector<std::string> writes;
@@ -144,9 +147,9 @@ static void runShape(ShapeFunction shape, const char* name, uint64_t recorded, u
     }
     bool benchmarking = getenv("WEBKIT_RUN_BENCHMARKS");
     if (!benchmarking) {
-        printf("%s: checksum=%016llx ui-requests=%s\n", name, static_cast<unsigned long long>(first.checksum.value), [[rig.uiDelegate.get().requests componentsJoinedByString:@","] UTF8String]);
+        SAFE_PRINTF("%s: checksum=%016llx ui-requests=%s\n", name, static_cast<unsigned long long>(first.checksum.value), String([rig.uiDelegate.get().requests componentsJoinedByString:@","]).utf8());
         controllerWrites = nullptr;
-        EXPECT_EQ(first.checksum.value, recorded) << name << " recorded value is " << std::hex << first.checksum.value;
+        EXPECT_EQ(first.checksum.value, recorded) << name.characters() << " recorded value is " << std::hex << first.checksum.value;
         return;
     }
 
@@ -168,47 +171,48 @@ static void runShape(ShapeFunction shape, const char* name, uint64_t recorded, u
     }
     controllerWrites = nullptr;
     double milliseconds = controllerTime.milliseconds();
-    printf("%s: %.1f ms %.2f MB/s checksum=%016llx\n", name, milliseconds, steps / milliseconds, static_cast<unsigned long long>(first.checksum.value));
-    EXPECT_EQ(first.checksum.value, recorded) << name << " recorded value is " << std::hex << first.checksum.value;
+    SAFE_PRINTF("%s: %.1f ms %.2f MB/s checksum=%016llx\n", name, milliseconds, steps / milliseconds, static_cast<unsigned long long>(first.checksum.value));
+    EXPECT_EQ(first.checksum.value, recorded) << name.characters() << " recorded value is " << std::hex << first.checksum.value;
 }
 
 } // namespace AppKitGesturesBench
 
 TEST(AppKitGesturesBench, PanScroll)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::panScrollShape, "PanScroll", AppKitGesturesBench::recordedPanScroll, AppKitGesturesBench::timedPassesPanScroll);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::panScrollShape, "PanScroll"_s, AppKitGesturesBench::recordedPanScroll, AppKitGesturesBench::timedPassesPanScroll);
 }
 
 TEST(AppKitGesturesBench, MomentumFling)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::momentumFlingShape, "MomentumFling", AppKitGesturesBench::recordedMomentumFling, AppKitGesturesBench::timedPassesMomentumFling);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::momentumFlingShape, "MomentumFling"_s, AppKitGesturesBench::recordedMomentumFling, AppKitGesturesBench::timedPassesMomentumFling);
 }
 
 TEST(AppKitGesturesBench, ClickSequence)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::clickSequenceShape, "ClickSequence", AppKitGesturesBench::recordedClickSequence, AppKitGesturesBench::timedPassesClickSequence);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::clickSequenceShape, "ClickSequence"_s, AppKitGesturesBench::recordedClickSequence, AppKitGesturesBench::timedPassesClickSequence);
 }
 
 TEST(AppKitGesturesBench, PointerTracking)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::pointerTrackingShape, "PointerTracking", AppKitGesturesBench::recordedPointerTracking, AppKitGesturesBench::timedPassesPointerTracking);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::pointerTrackingShape, "PointerTracking"_s, AppKitGesturesBench::recordedPointerTracking, AppKitGesturesBench::timedPassesPointerTracking);
 }
 
 TEST(AppKitGesturesBench, TransformGesture)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::transformGestureShape, "TransformGesture", AppKitGesturesBench::recordedTransformGesture, AppKitGesturesBench::timedPassesTransformGesture);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::transformGestureShape, "TransformGesture"_s, AppKitGesturesBench::recordedTransformGesture, AppKitGesturesBench::timedPassesTransformGesture);
 }
 
 TEST(AppKitGesturesBench, GestureArbitration)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::gestureArbitrationShape, "GestureArbitration", AppKitGesturesBench::recordedGestureArbitration, AppKitGesturesBench::timedPassesGestureArbitration);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::gestureArbitrationShape, "GestureArbitration"_s, AppKitGesturesBench::recordedGestureArbitration, AppKitGesturesBench::timedPassesGestureArbitration);
 }
 
 TEST(AppKitGesturesBench, TouchSession)
 {
-    AppKitGesturesBench::runShape(AppKitGesturesBench::touchSessionShape, "TouchSession", AppKitGesturesBench::recordedTouchSession, AppKitGesturesBench::timedPassesTouchSession);
+    AppKitGesturesBench::runShape(AppKitGesturesBench::touchSessionShape, "TouchSession"_s, AppKitGesturesBench::recordedTouchSession, AppKitGesturesBench::timedPassesTouchSession);
 }
 
+// A process that only starts and exits: the cost a timed run of a shape subtracts.
 TEST(AppKitGesturesBench, StartUp)
 {
 }
