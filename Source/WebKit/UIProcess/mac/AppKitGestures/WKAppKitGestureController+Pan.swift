@@ -28,117 +28,93 @@ import AppKit
 import Foundation
 import WebKit_Internal
 import os
-private import CxxStdlib
-private import AppKit_Private.NSClickGestureRecognizer_Private
 private import AppKit_Private.NSPanGestureRecognizer_Private
-private import AppKit_Private.NSPressGestureRecognizer_Private
-private import AppKit_Private.NSTouch_Private
 private import WebCore_Private
-import struct Swift.String
 
 extension WKAppKitGestureController {
     // MARK: Wheel Event Handling
 
-    @nonobjc
-    final func prefersUnlockedScroll(_ gesture: NSPanGestureRecognizer) -> Bool {
+    private func prefersUnlockedScroll(_ gesture: NSPanGestureRecognizer) -> Bool {
         gesture.touches.count > 1
     }
 
-    @nonobjc
-    final func prefersForwardingToGestureController(_ gesture: NSPanGestureRecognizer) -> Bool {
+    private func prefersForwardingToGestureController(_ gesture: NSPanGestureRecognizer) -> Bool {
         gesture.touches.count == 1
     }
 
-    @nonobjc
-    final func supportsMomentumScroll(_ gesture: NSPanGestureRecognizer) -> Bool {
+    private func supportsMomentumScroll(_ gesture: NSPanGestureRecognizer) -> Bool {
         gesture.touches.count == 1
     }
 
-    @nonobjc
-    final func panVelocity(in view: NSView?) -> NSPoint {
+    private func panVelocity(in view: NSView?) -> NSPoint {
         guard let panGestureRecognizer = panGestureRecognizer as? WKPanGestureRecognizer else {
             return .zero
         }
         return panGestureRecognizer.wk_velocity(in: view)
     }
 
-    @nonobjc
-    final func sendWheelEvent(forGesture gesture: NSPanGestureRecognizer) {
-        guard let webView = view else {
+    func sendWheelEvent(for gesture: NSPanGestureRecognizer) {
+        guard let webView = view, let impl = webView._impl() else {
             return
         }
 
-        guard let impl = webView._impl() else {
-            return
-        }
-
-        let rawTimestamp = gesture.timestamp
+        let timestamp = WebKit.appKitGestureMonotonicTimeFromRawSeconds(gesture.timestamp)
         let locationInView = WebCore.FloatPoint(gesture.location(in: webView))
         let position = WebCore.IntPoint(locationInView)
         let globalPosition = WebCore.globalPoint(gesture.location(in: nil), impl.window())
-        var gestureDelta = panTranslation(gesture, in: webView)
+        var gestureDelta = gesture.takeTranslation(in: webView)
 
-        let suppressedDelta = suppressNextPanScrollDelta
-        suppressNextPanScrollDelta = false
-        if suppressedDelta {
+        if suppressNextPanScrollDelta {
+            suppressNextPanScrollDelta = false
             gestureDelta = WebCore.FloatSize()
         }
 
-        let page = webView._protectedPage().get()
-        if let page, page.delegatesScalingToUIProcess() {
-            if impl.moveMagnificationOriginIfMagnifying(locationInView) {
-                gestureDelta = WebCore.FloatSize()
-            }
-        }
-
-        guard let pinnedState = page?.pinnedStateIncludingAncestorsAtPoint(locationInView) else {
+        guard let page = webView._protectedPage().get() else {
             return
         }
-        let prefersUnlockedScroll = panGestureRecognizer.map { self.prefersUnlockedScroll($0) } ?? false
-        let canScrollHorizontally =
-            (panGestureRecognizer?._canPanHorizontally ?? false)
-            && !(pinnedState[WebCore.BoxSide.Left] && pinnedState[WebCore.BoxSide.Right])
-        let canScrollVertically =
-            (panGestureRecognizer?._canPanVertically ?? false) && !(pinnedState[WebCore.BoxSide.Top] && pinnedState[WebCore.BoxSide.Bottom])
+
+        if page.delegatesScalingToUIProcess(), impl.moveMagnificationOriginIfMagnifying(locationInView) {
+            gestureDelta = WebCore.FloatSize()
+        }
+
+        let pinnedState = page.pinnedStateIncludingAncestorsAtPoint(locationInView)
+        let canScrollHorizontally = gesture._canPanHorizontally && !(pinnedState[.Left] && pinnedState[.Right])
+        let canScrollVertically = gesture._canPanVertically && !(pinnedState[.Top] && pinnedState[.Bottom])
         gestureDelta = WebCore.FloatSize(
             directionalScrollLockTracker.update(
-                delta: CGSize(width: CGFloat(gestureDelta.width()), height: CGFloat(gestureDelta.height())),
+                delta: CGSize(gestureDelta),
                 canScrollHorizontally: canScrollHorizontally,
                 canScrollVertically: canScrollVertically,
-                prefersUnlocked: prefersUnlockedScroll,
-                time: rawTimestamp
+                prefersUnlocked: prefersUnlockedScroll(gesture),
+                time: gesture.timestamp
             )
         )
 
-        var phase = toWebEventPhase(gesture.state)
-
-        func makeWheelEventInit(_ delta: WebCore.FloatSize) -> WebKit.WebWheelEventInit {
-            let wheelTicks = delta.scaled(Float(1.0 / Double(Float(WebCore.Scrollbar.pixelsPerLineStep()))))
-            let unacceleratedScrollingDelta = delta
-
+        func makeWheelEventInit(_ delta: WebCore.FloatSize, phase: WebKit.WebEventPhase) -> WebKit.WebWheelEventInit {
             var event = WebKit.WebEventData()
-            event.type = WebKit.WebEventType.Wheel
-            event.timestamp = WebKit.appKitGestureMonotonicTimeFromRawSeconds(rawTimestamp)
+            event.type = .Wheel
+            event.timestamp = timestamp
 
             var wheel = WebKit.WebWheelEventData()
             wheel.position = position
             wheel.globalPosition = WebCore.IntPoint(globalPosition)
             wheel.delta = delta
-            wheel.wheelTicks = wheelTicks
-            wheel.granularity = WebKit.WebWheelEventGranularity.ScrollByPixelWheelEvent
+            wheel.wheelTicks = delta.scaled(1 / Float(WebCore.Scrollbar.pixelsPerLineStep()))
+            wheel.granularity = .ScrollByPixelWheelEvent
             wheel.directionInvertedFromDevice = false
             wheel.phase = phase
-            wheel.momentumPhase = WebKit.WebEventPhase.None
+            wheel.momentumPhase = .None
             wheel.hasPreciseScrollingDeltas = true
             wheel.scrollCount = 1
-            wheel.unacceleratedScrollingDelta = unacceleratedScrollingDelta
-            wheel.ioHIDEventTimestamp = WebKit.appKitGestureMonotonicTimeFromRawSeconds(rawTimestamp)
-            wheel.momentumEndType = WebKit.WebWheelEventMomentumEndType.Unknown
-            wheel.inputSource = WebKit.WebEventInputSource.Touch
+            wheel.unacceleratedScrollingDelta = delta
+            wheel.ioHIDEventTimestamp = timestamp
+            wheel.momentumEndType = .Unknown
+            wheel.inputSource = .Touch
             return WebKit.WebWheelEventInit(event: event, wheel: wheel)
         }
 
-        if phase == WebKit.WebEventPhase.Began {
+        let phase = WebKit.WebEventPhase(gesture.state)
+        if phase == .Began {
             hasEverMagnifiedDuringCurrentGesture = false
         }
         if !WebKit.appKitGestureMagnificationIsOne(impl.magnification()) {
@@ -147,56 +123,49 @@ extension WKAppKitGestureController {
 
         let forwardToGestureController = impl.allowsBackForwardNavigationGestures() && prefersForwardingToGestureController(gesture)
 
-        func dispatchWheelEvent(_ delta: WebCore.FloatSize) {
+        func dispatchWheelEvent(_ delta: WebCore.FloatSize, phase: WebKit.WebEventPhase) {
             interruptMomentumForScrollWheelEvent()
 
             lastPanWheelEventWasHandledByViewGestureController =
                 forwardToGestureController
                 && impl.handleScrollWheelEventOnViewGestureController(
-                    WebKit.NativeWebWheelEvent.create(WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta)).get()).get()
+                    WebKit.NativeWebWheelEvent.create(WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta, phase: phase)).get())
+                        .get()
                 )
             if lastPanWheelEventWasHandledByViewGestureController {
-                if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                    Logger.viewGestures.debug(
-                        "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): View gesture controller handled gesture"
-                    )
-                }
+                Logger.viewGestures.debug(
+                    "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): View gesture controller handled gesture"
+                )
                 return
             }
 
-            webView._protectedPage().get()?
-                .handleNativeWheelEvent(
-                    consuming: WebKit.NativeWebWheelEvent.create(WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta)).get())
+            page.handleNativeWheelEvent(
+                consuming: WebKit.NativeWebWheelEvent.create(
+                    WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta, phase: phase)).get()
                 )
+            )
         }
 
-        if phase == WebKit.WebEventPhase.Began {
-            phase = WebKit.WebEventPhase.MayBegin
-            dispatchWheelEvent(WebCore.FloatSize())
-            phase = WebKit.WebEventPhase.Began
+        if phase == .Began {
+            dispatchWheelEvent(WebCore.FloatSize(), phase: .MayBegin)
         }
 
-        dispatchWheelEvent(gestureDelta)
+        dispatchWheelEvent(gestureDelta, phase: phase)
     }
 
     // MARK: Momentum Handling
 
-    @nonobjc
-    final func startMomentumIfNeeded(forGesture gesture: NSPanGestureRecognizer) {
+    func startMomentumIfNeeded(for gesture: NSPanGestureRecognizer) {
         guard let webView = view else {
             return
         }
 
-        if gesture.state != .ended {
-            return
-        }
-
-        if !supportsMomentumScroll(gesture) {
+        guard gesture.state == .ended, supportsMomentumScroll(gesture) else {
             return
         }
 
         // Momentum started now would scroll out of sight and then show up all at once.
-        if isTransformGestureActiveOrEnding() {
+        if isTransformGestureActiveOrEnding {
             fastScrollTracker.reset()
             return
         }
@@ -213,7 +182,7 @@ extension WKAppKitGestureController {
         // diagonal drift; also keeps fastScrollTracker's velocity heuristics off-axis-clean.
         let velocity = WebCore.FloatSize(
             directionalScrollLockTracker.filterVelocity(
-                CGSize(width: CGFloat(unfilteredVelocity.width()), height: CGFloat(unfilteredVelocity.height())),
+                CGSize(unfilteredVelocity),
                 prefersUnlocked: prefersUnlockedScroll(gesture)
             )
         )
@@ -222,23 +191,16 @@ extension WKAppKitGestureController {
         let minimumVelocityForMomentum: Float = 250
 
         func maximumComponentMagnitude(_ vector: WebCore.FloatSize) -> Float {
-            let width = abs(vector.width())
-            let height = abs(vector.height())
-            return width < height ? height : width
+            max(abs(vector.width()), abs(vector.height()))
         }
 
         // Advance the swipe chain for every gesture that was fast enough to be a swipe, judged on the
         // unfiltered velocity: the user swiped even if the lock just zeroed the axis they swiped along, and
         // the tracker has to see it to consume its caughtMomentum and advance its endTime. Slower gestures
         // leave the tracker alone.
-        var fastScrollMultiplier: Double = 1
-        if maximumComponentMagnitude(unfilteredVelocity) >= minimumVelocityForSwipe {
-            fastScrollMultiplier = fastScrollTracker.update(
-                location: gesture.location(in: nil),
-                velocity: CGSize(width: CGFloat(velocity.width()), height: CGFloat(velocity.height())),
-                time: gesture.timestamp
-            )
-        }
+        let fastScrollMultiplier =
+            maximumComponentMagnitude(unfilteredVelocity) >= minimumVelocityForSwipe
+            ? fastScrollTracker.update(location: gesture.location(in: nil), velocity: CGSize(velocity), time: gesture.timestamp) : 1
 
         // Suppressing the gesture itself is judged on the filtered velocity, which can only be smaller, so
         // anything reaching this point has already been through the tracker above.
@@ -251,7 +213,7 @@ extension WKAppKitGestureController {
             atPosition: gesture.location(in: webView),
             globalPosition: WebCore.globalPoint(gesture.location(in: nil), webView._impl()?.window()),
             timestamp: gesture.timestamp,
-            velocity: NSSize(width: CGFloat(velocity.width()), height: CGFloat(velocity.height())),
+            velocity: CGSize(velocity),
             fastScrollMultiplier: fastScrollMultiplier
         )
         isMomentumActive = true
@@ -266,13 +228,11 @@ extension WKAppKitGestureController {
         }
     }
 
-    @nonobjc
-    final func interruptMomentumIfNeeded() {
-        let wasMomentumActive = isMomentumActive
-        isMomentumActive = false
-        if !wasMomentumActive {
+    func interruptMomentumIfNeeded() {
+        guard isMomentumActive else {
             return
         }
+        isMomentumActive = false
 
         guard let webView = view else {
             return
@@ -283,7 +243,7 @@ extension WKAppKitGestureController {
         caughtDeceleratingScroll = true
         suppressNextPanScrollDelta = true
 
-        cxxSupport.invalidate()
+        cxxSupport.invalidatePositionInformation()
 
         cxxSupport.interruptMomentum()
 
@@ -293,8 +253,7 @@ extension WKAppKitGestureController {
         }
     }
 
-    @nonobjc
-    final func resetCaughtDeceleratingScroll() {
+    func resetCaughtDeceleratingScroll() {
         caughtDeceleratingScroll = false
         suppressNextPanScrollDelta = false
     }

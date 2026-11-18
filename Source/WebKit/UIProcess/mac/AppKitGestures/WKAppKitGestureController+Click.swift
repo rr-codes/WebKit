@@ -28,29 +28,21 @@ import AppKit
 import Foundation
 import WebKit_Internal
 import os
-private import CxxStdlib
-private import AppKit_Private.NSClickGestureRecognizer_Private
-private import AppKit_Private.NSPanGestureRecognizer_Private
-private import AppKit_Private.NSPressGestureRecognizer_Private
-private import AppKit_Private.NSTouch_Private
 private import WebCore_Private
-import struct Swift.String
 
 extension WKAppKitGestureController {
     // MARK: Click Handling
 
-    @nonobjc
-    final func updateLayerTreeTransactionIdAtLastInteractionStart() {
+    func updateLayerTreeTransactionIdAtLastInteractionStart() {
         if let transactionID = cxxSupport.lastCommittedMainFrameLayerTreeTransactionID().value {
             layerTreeTransactionIdAtLastInteractionStart = transactionID
         }
     }
 
-    @nonobjc
-    final func handleTapCancelled() {
+    func handleTapCancelled() {
         clickHighlight?.cancel()
 
-        if !potentialTapIsInProgress {
+        guard potentialTapIsInProgress else {
             return
         }
 
@@ -61,8 +53,7 @@ extension WKAppKitGestureController {
         }
     }
 
-    @nonobjc
-    final func handleTapBegan(_ gesture: NSGestureRecognizer) {
+    func handleTapBegan(_ gesture: NSGestureRecognizer) {
         guard let webView = view else {
             return
         }
@@ -79,7 +70,7 @@ extension WKAppKitGestureController {
             return
         }
 
-        if isSuppressingSingleClickGestureForTextSelection {
+        guard !isSuppressingSingleClickGestureForTextSelection else {
             return
         }
 
@@ -93,16 +84,15 @@ extension WKAppKitGestureController {
 
         clickHighlight?.beginRequest(tapID, expectsFastCommit: true)
 
-        webView._protectedPage().get()?.potentialTapAtPosition(.init(), position, false, tapID, WebKit.WebEventInputSource.Touch)
+        webView._protectedPage().get()?.potentialTapAtPosition(.init(), position, false, tapID, .Touch)
     }
 
-    @nonobjc
-    final func handleTapEnded(_ gesture: NSGestureRecognizer) {
+    func handleTapEnded(_ gesture: NSGestureRecognizer) {
         guard let webView = view else {
             return
         }
 
-        if !potentialTapIsInProgress {
+        guard potentialTapIsInProgress else {
             return
         }
 
@@ -115,7 +105,7 @@ extension WKAppKitGestureController {
 
         // If this tap completes a double tap, the web process delivers it as a double click when there is a listener
         // for one, instead of the DOM double-click gesture also sending it.
-        let completesDoubleClick = takeCompletedDOMDoubleClick() ? WebKit.CompletesDoubleClick.Yes : WebKit.CompletesDoubleClick.No
+        let completesDoubleClick: WebKit.CompletesDoubleClick = takeCompletedDOMDoubleClick() ? .Yes : .No
 
         clickHighlight?.showPendingHighlightForCommittedClick()
 
@@ -132,14 +122,12 @@ extension WKAppKitGestureController {
         clickHighlight?.fadeUnlessAwaitingHighlight()
     }
 
-    @nonobjc
-    final func endPotentialTapAndEnableDoubleTapGesturesIfNecessary() {
+    private func endPotentialTapAndEnableDoubleTapGesturesIfNecessary() {
         potentialTapIsInProgress = false
         setDoubleTapGesturesEnabled(true)
     }
 
-    @nonobjc
-    final func setDoubleTapGesturesEnabled(_ enabled: Bool) {
+    func setDoubleTapGesturesEnabled(_ enabled: Bool) {
         doubleClickGestureRecognizer?.isEnabled = enabled
     }
 }

@@ -28,39 +28,40 @@ import AppKit
 import Foundation
 import WebKit_Internal
 import os
-private import CxxStdlib
-private import AppKit_Private.NSClickGestureRecognizer_Private
-private import AppKit_Private.NSPanGestureRecognizer_Private
-private import AppKit_Private.NSPressGestureRecognizer_Private
-private import AppKit_Private.NSTouch_Private
 private import WebCore_Private
-import struct Swift.String
+
+private let sharedPositionInformationToleranceRadius: Int32 = 15
+private let panPositionInformationToleranceRadius = sharedPositionInformationToleranceRadius
+private let mouseDownPositionInformationToleranceRadius = sharedPositionInformationToleranceRadius
+
+private func saturatingInt32(_ value: Double) -> Int32 {
+    value.isNaN ? 0 : Int32(min(max(value, Double(Int32.min)), Double(Int32.max)))
+}
 
 extension WKAppKitGestureController {
     // MARK: Position Information
 
-    @nonobjc
-    final func dragPressShouldBegin(atLocation locationInViewCoordinates: NSPoint) -> Bool {
+    func dragPressShouldBegin(at locationInView: NSPoint) -> Bool {
         guard let webView = view else {
             return false
         }
 
         let radius = saturatingInt32((dragPressGestureRecognizer?.allowableMovement ?? 0).rounded(.up))
 
-        let information = cxxSupport.currentInformation()
+        let information = cxxSupport.positionInformation()
 
         // FIXME: Migrate to requestDragStart: IPC for an authoritative decision.
         // The heuristic below approximates DragController::draggableElement() by consulting the same element-type and style signals.
-        let isDraggable = representsDraggableElement(information)
-        let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: radius)
+        let isDraggable = information.representsDraggableElement
+        let requestIsValid = isPositionInformationValid(at: locationInView, radius: radius)
         let shouldDrag = requestIsValid && isDraggable && !information.isHoverActivatedByClick
 
         if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                Drag-press shouldBegin \u{2192} \(appKitGestureLogInteger(shouldDrag)) \
-                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) \
+                Drag-press shouldBegin → \(appKitGestureLogInteger(shouldDrag)) \
+                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidPositionInformation())) \
                 link=\(appKitGestureLogInteger(information.isLink)) image=\(appKitGestureLogInteger(information.isImage)) \
                 attachment=\(appKitGestureLogInteger(information.isAttachment)) \
                 dhtml=\(appKitGestureLogInteger(information.isDHTMLDraggable)) color=\(appKitGestureLogInteger(information.isColorInput)) \
@@ -71,28 +72,27 @@ extension WKAppKitGestureController {
         }
 
         if !requestIsValid {
-            cxxSupport.invalidate()
+            cxxSupport.invalidatePositionInformation()
         }
 
         return shouldDrag
     }
 
-    @nonobjc
-    final func panShouldBegin(atLocation locationInViewCoordinates: NSPoint) -> Bool {
+    func panShouldBegin(at locationInView: NSPoint) -> Bool {
         guard let webView = view else {
             return false
         }
 
-        let requestIsValid = positionInformationRequestIsValid(
-            atLocation: locationInViewCoordinates,
-            withRadius: panPositionInformationToleranceRadius
+        let requestIsValid = isPositionInformationValid(
+            at: locationInView,
+            radius: panPositionInformationToleranceRadius
         )
 
-        let information = cxxSupport.currentInformation()
+        let information = cxxSupport.positionInformation()
 
         // FIXME: (rdar://181964604) Because of this logic, vertically scrolling over these elements likely will not work.
-        let prefersInteraction = prefersDirectManipulation(information)
-        let usesHoverActivatedByClickBounds = !requestIsValid && isInsideHoverActivatedByClickBounds(atLocation: locationInViewCoordinates)
+        let prefersInteraction = information.prefersDirectManipulation
+        let usesHoverActivatedByClickBounds = !requestIsValid && isInsideHoverActivatedByClickBounds(at: locationInView)
         let yieldToContent =
             (requestIsValid && (prefersInteraction || information.isHoverActivatedByClick)) || usesHoverActivatedByClickBounds
 
@@ -100,8 +100,8 @@ extension WKAppKitGestureController {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                Pan shouldBegin \u{2192} \(appKitGestureLogInteger(!yieldToContent)) \
-                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) \
+                Pan shouldBegin → \(appKitGestureLogInteger(!yieldToContent)) \
+                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidPositionInformation())) \
                 valid=\(appKitGestureLogInteger(requestIsValid)) prefersInteraction=\(appKitGestureLogInteger(prefersInteraction)) \
                 hoverActivatedByClick=\(appKitGestureLogInteger(information.isHoverActivatedByClick)) \
                 fallback=\(appKitGestureLogInteger(usesHoverActivatedByClickBounds)))
@@ -112,48 +112,36 @@ extension WKAppKitGestureController {
         return !yieldToContent
     }
 
-    @nonobjc
-    final func isInsideHoverActivatedByClickBounds(atLocation locationInViewCoordinates: NSPoint) -> Bool {
-        guard let webView = view, let page = webView._protectedPage().get() else {
+    private func isInsideHoverActivatedByClickBounds(at locationInView: NSPoint) -> Bool {
+        guard let page = view?._protectedPage().get(), let bounds = page.hoverActivatedByClickBounds().value else {
             return false
         }
-
-        guard let bounds = page.hoverActivatedByClickBounds().value else {
-            return false
-        }
-        return bounds.contains(WebCore.IntPoint(locationInViewCoordinates))
+        return bounds.contains(WebCore.IntPoint(locationInView))
     }
 
-    @nonobjc
-    final func isHoverActivatedByClick(atLocation locationInView: NSPoint) -> Bool {
-        if !positionInformationRequestIsValid(atLocation: locationInView, withRadius: panPositionInformationToleranceRadius) {
-            return isInsideHoverActivatedByClickBounds(atLocation: locationInView)
+    func isHoverActivatedByClick(at locationInView: NSPoint) -> Bool {
+        if !isPositionInformationValid(at: locationInView, radius: panPositionInformationToleranceRadius) {
+            return isInsideHoverActivatedByClickBounds(at: locationInView)
         }
 
-        return cxxSupport.currentInformationIsHoverActivatedByClick()
+        return cxxSupport.positionInformationIsHoverActivatedByClick()
     }
 
-    @nonobjc
-    final func isPointInScrollbar(_ locationInView: NSPoint) -> Bool {
-        guard let webView = view, let impl = webView._impl() else {
-            return false
-        }
-
-        return impl.isPointInScrollbar(locationInView)
+    func isPointInScrollbar(_ locationInView: NSPoint) -> Bool {
+        view?._impl()?.isPointInScrollbar(locationInView) ?? false
     }
 
-    @nonobjc
-    final func secondaryClickShouldBegin(atLocation locationInViewCoordinates: NSPoint) -> Bool {
+    func secondaryClickShouldBegin(at locationInView: NSPoint) -> Bool {
         guard let webView = view else {
             return false
         }
 
         let radius = saturatingInt32((secondaryClickGestureRecognizer?.allowableMovement ?? 0).rounded(.up))
 
-        let information = cxxSupport.currentInformation()
+        let information = cxxSupport.positionInformation()
 
-        let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: radius)
-        let isSecondaryClickable = representsSecondaryClickableElement(information)
+        let requestIsValid = isPositionInformationValid(at: locationInView, radius: radius)
+        let isSecondaryClickable = information.representsSecondaryClickableElement
         let isOverSelectableText = information.isOverSelectableText
 
         // The secondary click owns points that are not over selectable text (e.g. the page background
@@ -165,12 +153,12 @@ extension WKAppKitGestureController {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                Secondary click shouldBegin \u{2192} \(appKitGestureLogInteger(shouldBegin)) \
-                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidCurrentInformation())) \
+                Secondary click shouldBegin → \(appKitGestureLogInteger(shouldBegin)) \
+                (hasInfo=\(appKitGestureLogInteger(self.cxxSupport.hasValidPositionInformation())) \
                 requestIsValid=\(appKitGestureLogInteger(requestIsValid)) \
                 secondaryClickable=\(appKitGestureLogInteger(isSecondaryClickable)) \
                 overSelectableText=\(appKitGestureLogInteger(isOverSelectableText)) selectability=\(information.selectability.rawValue) \
-                prefersManipulation=\(appKitGestureLogInteger(prefersDirectManipulation(information))) \
+                prefersManipulation=\(appKitGestureLogInteger(information.prefersDirectManipulation)) \
                 image=\(appKitGestureLogInteger(information.isImage)) video=\(appKitGestureLogInteger(information.isOverVideo)) \
                 longClickQuirk=\(appKitGestureLogInteger(information.shouldTreatLongClickAsSecondaryClickQuirk)) radius=\(radius))
                 """
@@ -178,41 +166,34 @@ extension WKAppKitGestureController {
         }
 
         if !requestIsValid {
-            cxxSupport.invalidate()
+            cxxSupport.invalidatePositionInformation()
         }
 
         return shouldBegin
     }
 
-    @nonobjc
-    final func positionInformationRequest(atLocation locationInViewCoordinates: NSPoint) -> WebKit.InteractionInformationRequest {
-        var request = WebKit.InteractionInformationRequest(WebCore.IntPoint(locationInViewCoordinates))
-        request.inputSource = WebKit.WebEventInputSource.Touch
+    func positionInformationRequest(at locationInView: NSPoint) -> WebKit.InteractionInformationRequest {
+        var request = WebKit.InteractionInformationRequest(WebCore.IntPoint(locationInView))
+        request.inputSource = .Touch
         return request
     }
 
-    @nonobjc
-    final func positionInformationRequestIsValid(atLocation locationInViewCoordinates: NSPoint, withRadius radius: Int32) -> Bool {
-        let request = positionInformationRequest(atLocation: locationInViewCoordinates)
-        return cxxSupport.currentIsApproximatelyValid(request, radius: radius)
+    private func isPositionInformationValid(at locationInView: NSPoint, radius: Int32) -> Bool {
+        let request = positionInformationRequest(at: locationInView)
+        return cxxSupport.positionInformationIsApproximatelyValid(request, radius: radius)
     }
 
-    @nonobjc
-    final func adjustedMouseDownLocation(inWindow locationInWindow: NSPoint) -> NSPoint {
-        guard let webView = view else {
-            return locationInWindow
-        }
-
-        guard let adjustedLocationInView = cxxSupport.currentNearbySliderInteractionLocation().value else {
+    func adjustedMouseDownLocation(inWindow locationInWindow: NSPoint) -> NSPoint {
+        guard let webView = view, let adjustedLocationInView = cxxSupport.nearbySliderInteractionLocation().value else {
             return locationInWindow
         }
 
         let locationInView = webView.convert(locationInWindow, from: nil)
-        if !positionInformationRequestIsValid(atLocation: locationInView, withRadius: mouseDownPositionInformationToleranceRadius) {
+        if !isPositionInformationValid(at: locationInView, radius: mouseDownPositionInformationToleranceRadius) {
             return locationInWindow
         }
 
-        let adjustedLocationInViewCoordinates = NSPoint(x: CGFloat(adjustedLocationInView.x()), y: CGFloat(adjustedLocationInView.y()))
+        let adjustedLocationInViewCoordinates = CGPoint(adjustedLocationInView)
 
         let maximumInteractionAdjustmentDistance: CGFloat = 48
         if abs(adjustedLocationInViewCoordinates.x - locationInView.x) > maximumInteractionAdjustmentDistance

@@ -27,17 +27,11 @@
 import AppKit
 import Foundation
 import WebKit_Internal
-private import CxxStdlib
-private import AppKit_Private.NSClickGestureRecognizer_Private
-private import AppKit_Private.NSPanGestureRecognizer_Private
-private import AppKit_Private.NSPressGestureRecognizer_Private
-private import AppKit_Private.NSTouch_Private
 private import WebCore_Private
 import struct Swift.String
 
 extension WKAppKitGestureController {
-    @nonobjc
-    final func makeImageAnalysisDeferringGestureRecognizer(withName name: String) -> WKDeferringGestureRecognizer {
+    func makeImageAnalysisDeferringGestureRecognizer(withName name: String) -> WKDeferringGestureRecognizer {
         let deferringGestureRecognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
         configure(forImageAnalysisDeferral: deferringGestureRecognizer)
         deferringGestureRecognizer.name = name
@@ -46,34 +40,30 @@ extension WKAppKitGestureController {
         return deferringGestureRecognizer
     }
 
-    @nonobjc
-    final func resolveImageAnalysisDeferrals(with outcome: ImageAnalysisDeferralOutcome) {
+    func resolveImageAnalysisDeferrals(with outcome: ImageAnalysisDeferralOutcome) {
         if imageAnalysisDeferralState == .deferring {
             imageAnalysisDeferralState = .undecided
         }
 
-        let preventTextSelection = self.outcome(outcome, preventsGesturesDeferredBy: imageAnalysisTextSelectionDeferringGestureRecognizer)
-        let preventDragAndContextMenu = self.outcome(
-            outcome,
-            preventsGesturesDeferredBy: imageAnalysisDragAndContextMenuDeferringGestureRecognizer
+        let preventTextSelection = shouldPreventGestures(deferredBy: imageAnalysisTextSelectionDeferringGestureRecognizer, for: outcome)
+        let preventDragAndContextMenu = shouldPreventGestures(
+            deferredBy: imageAnalysisDragAndContextMenuDeferringGestureRecognizer,
+            for: outcome
         )
 
         // Only resolve a deferral that's still deferring. A deferral may already be resolved by the time the
         // analysis token drops -- e.g. it failed on lift (immediatelyFailsAfterTouchEnd) before slow
         // analysis finished -- and re-setting an already-terminal gesture state would be a no-op at best.
-        if (imageAnalysisTextSelectionDeferringGestureRecognizer?.state ?? .possible) == .possible {
-            imageAnalysisTextSelectionDeferringGestureRecognizer?.endDeferralShouldPreventGestures(preventTextSelection)
-        }
-
-        if (imageAnalysisDragAndContextMenuDeferringGestureRecognizer?.state ?? .possible) == .possible {
-            imageAnalysisDragAndContextMenuDeferringGestureRecognizer?.endDeferralShouldPreventGestures(preventDragAndContextMenu)
-        }
+        endDeferralIfStillDeferring(imageAnalysisTextSelectionDeferringGestureRecognizer, preventingGestures: preventTextSelection)
+        endDeferralIfStillDeferring(
+            imageAnalysisDragAndContextMenuDeferringGestureRecognizer,
+            preventingGestures: preventDragAndContextMenu
+        )
     }
 
-    @nonobjc
-    final func outcome(
-        _ outcome: ImageAnalysisDeferralOutcome,
-        preventsGesturesDeferredBy deferringGestureRecognizer: NSGestureRecognizer?
+    func shouldPreventGestures(
+        deferredBy deferringGestureRecognizer: NSGestureRecognizer?,
+        for outcome: ImageAnalysisDeferralOutcome
     ) -> Bool {
         // Text found -> Live Text wins: allow the deferred text selection, prevent the drag / context-menu
         // fallback. No text -> the reverse.
@@ -85,8 +75,15 @@ extension WKAppKitGestureController {
             return outcome == .foundText
         }
 
-        assertionFailure()
+        assertionFailure("Unexpected image analysis deferring gesture recognizer")
         return false
+    }
+
+    private func endDeferralIfStillDeferring(_ recognizer: WKDeferringGestureRecognizer?, preventingGestures: Bool) {
+        guard let recognizer, recognizer.state == .possible else {
+            return
+        }
+        recognizer.endDeferralShouldPreventGestures(preventingGestures)
     }
 }
 

@@ -25,7 +25,6 @@
 #if HAVE_APPKIT_GESTURES_SUPPORT
 
 import AppKit
-import Foundation
 import WebKit_Internal
 import os
 private import CxxStdlib
@@ -40,40 +39,73 @@ import struct Swift.String
 #error("WKAppKitGestureController assumes MAC_GESTURE_EVENTS, IMAGE_ANALYSIS and TWO_PHASE_CLICKS")
 #endif
 
+private func isSamePair(_ a: NSGestureRecognizer, _ b: NSGestureRecognizer, as x: NSGestureRecognizer?, _ y: NSGestureRecognizer?) -> Bool {
+    (a === x && b === y) || (b === x && a === y)
+}
+
+private let scrollViewPanGestureClass: AnyClass? = NSClassFromString("NSScrollViewPanGestureRecognizer")
+
+@MainActor
+private func isBuiltInScrollViewPanGestureRecognizer(_ recognizer: NSGestureRecognizer?) -> Bool {
+    guard let scrollViewPanGestureClass else {
+        return false
+    }
+    return recognizer?.isKind(of: scrollViewPanGestureClass) ?? false
+}
+
+@MainActor
+private func isBuiltInScrollViewMagnificationGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
+    gesture is NSMagnificationGestureRecognizer && gesture._isScrollGestureRecognizer
+}
+
+@MainActor
+private func isCatchingDeceleratingScroll(_ scrollViewPanGesture: NSGestureRecognizer?) -> Bool {
+    guard let scrollView = scrollViewPanGesture?.view as? NSScrollView else {
+        return false
+    }
+
+    // FIXME: The flag was recently renamed in rdar://185652893, so keep this selector check for a bit.
+    guard scrollView.responds(to: #selector(NSScrollView._touchCaughtDeceleration)) else {
+        return false
+    }
+
+    return scrollView._touchCaughtDeceleration()
+}
+
 @objc
 @implementation
 extension WKAppKitGestureController {
     @nonobjc
-    final weak var view: WKWebView?
+    private(set) final weak var view: WKWebView?
 
     @nonobjc
-    final var panGestureRecognizer: NSPanGestureRecognizer?
+    private(set) final var panGestureRecognizer: NSPanGestureRecognizer?
     @nonobjc
-    final var primaryMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
+    private final var primaryMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
     @nonobjc
-    final var secondaryMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
+    private final var secondaryMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
 
     @nonobjc
-    final var singleClickGestureRecognizer: NSPressGestureRecognizer?
+    private final var singleClickGestureRecognizer: NSPressGestureRecognizer?
     @nonobjc
-    final var doubleClickGestureRecognizer: NSClickGestureRecognizer?
+    private(set) final var doubleClickGestureRecognizer: NSClickGestureRecognizer?
     @nonobjc
-    final var domDoubleClickGestureRecognizer: NSClickGestureRecognizer?
+    private final var domDoubleClickGestureRecognizer: NSClickGestureRecognizer?
 
     // Auxiliary gesture recognizers to support context menus.
     @nonobjc
-    final var secondaryClickGestureRecognizer: NSPressGestureRecognizer?
+    private(set) final var secondaryClickGestureRecognizer: NSPressGestureRecognizer?
     @nonobjc
-    final var secondaryClickDeferringGestureRecognizer: WKDeferringGestureRecognizer?
+    private final var secondaryClickDeferringGestureRecognizer: WKDeferringGestureRecognizer?
 
     // Auxiliary gesture recognizers to support drag-and-drop.
     @nonobjc
-    final var textSelectionDragGesture: NSGestureRecognizer?
+    private final var textSelectionDragGesture: NSGestureRecognizer?
     @nonobjc
-    final var dragDeferringGestureRecognizer: WKDeferringGestureRecognizer?
+    private final var dragDeferringGestureRecognizer: WKDeferringGestureRecognizer?
 
     @nonobjc
-    final var enclosingScrollViewPanDeferringGestureRecognizer: WKDeferringGestureRecognizer?
+    private final var enclosingScrollViewPanDeferringGestureRecognizer: WKDeferringGestureRecognizer?
 
     @nonobjc
     final var isMomentumActive = false
@@ -85,7 +117,7 @@ extension WKAppKitGestureController {
     final var suppressNextPanScrollDelta = false
 
     @nonobjc
-    final var isSuppressingSingleClickGestureForTextSelection = false
+    private(set) final var isSuppressingSingleClickGestureForTextSelection = false
 
     @nonobjc
     final var layerTreeTransactionIdAtLastInteractionStart: WebKit.TransactionID?
@@ -96,7 +128,7 @@ extension WKAppKitGestureController {
     @nonobjc
     final let cxxSupport = WKAppKitGestureControllerCxxSupport()
     @nonobjc
-    final var touchThatCaughtDeceleratingScroll: NSNumber?
+    private final var uidOfTouchThatCaughtDeceleratingScroll: Int?
 
     // FIXME: Avoid bloat in WKAppKitGestureController by introducing a separate
     // gesture delegate that exclusively manages the mouse tracking recognizers.
@@ -104,61 +136,61 @@ extension WKAppKitGestureController {
     // See mouseTrackingGestureRecognized(_:) where this state is used to transition
     // between tracking gestures when an active gesture's tracking conditions change.
     @nonobjc
-    final weak var activeMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
+    private final weak var activeMouseTrackingGestureRecognizer: WKMouseTrackingGestureRecognizer?
     @nonobjc
-    final var mouseTrackingHasSentMouseDown = false
+    private final var mouseTrackingHasSentMouseDown = false
     @nonobjc
-    final var mouseTrackingSendsMouseMoves = false
+    private final var mouseTrackingSendsMouseMoves = false
     @nonobjc
-    final var mayHaveHoverActivatedByClick = false
+    private final var mayHaveHoverActivatedByClick = false
     @nonobjc
-    final var mouseTrackingStartLocationInWindow = WebCore.FloatPoint()
+    private final var mouseTrackingStartLocationInWindow = WebCore.FloatPoint()
     @nonobjc
-    final var mouseTrackingIsSuppressedForTransformGesture = false
+    private final var mouseTrackingIsSuppressedForTransformGesture = false
     @nonobjc
-    final var contentDeclinedTransformGesture = false
+    private final var contentDeclinedTransformGesture = false
     @nonobjc
-    final var lastTransformGestureDriveTime: Double = 0
+    private final var lastTransformGestureDriveTime: SuspendingClock.Instant?
 
     @nonobjc
-    final var dragPressGestureRecognizer: WKPressGestureRecognizer?
+    private(set) final var dragPressGestureRecognizer: WKPressGestureRecognizer?
 
     @nonobjc
-    final var pointerTrackingGestureRecognizer: WKPointerTrackingGestureRecognizer?
+    private final var pointerTrackingGestureRecognizer: WKPointerTrackingGestureRecognizer?
     @nonobjc
-    final var pointerDownDeferringGestureRecognizer: WKDeferringGestureRecognizer?
+    private final var pointerDownDeferringGestureRecognizer: WKDeferringGestureRecognizer?
     @nonobjc
-    final var isTrackingPointer = false
+    private final var isTrackingPointer = false
     @nonobjc
-    final var trackedPointerHasMoved = false
+    private final var trackedPointerHasMoved = false
     @nonobjc
-    final var trackedPointerStartLocationInWindow = NSPoint.zero
+    private final var trackedPointerStartLocationInWindow = NSPoint.zero
     @nonobjc
-    final var trackedPointerLastLocationInWindow = NSPoint.zero
+    private final var trackedPointerLastLocationInWindow = NSPoint.zero
 
     @nonobjc
-    final var gestureDraggingSession: NSDraggingSession?
+    private final var gestureDraggingSession: NSDraggingSession?
     @nonobjc
-    final var textSelectionDragCompletionHandler: ((NSDraggingSession) -> Void)?
+    private final var textSelectionDragCompletionHandler: ((NSDraggingSession) -> Void)?
     @nonobjc
-    final var dragGestureHasSentMouseDown = false
+    private final var dragGestureHasSentMouseDown = false
     @nonobjc
-    final var dragGestureDidReceiveDragStart = false
+    private final var dragGestureDidReceiveDragStart = false
     @nonobjc
-    final var dragIdentifier: UInt64 = 0
+    private final var dragIdentifier: UInt64 = 0
 
     @nonobjc
     final var potentialTapIsInProgress = false
 
     @nonobjc
-    final var imageAnalysisGestureRecognizer: WKPressGestureRecognizer?
+    private final var imageAnalysisGestureRecognizer: WKPressGestureRecognizer?
     @nonobjc
-    final var imageAnalysisTextSelectionDeferringGestureRecognizer: WKDeferringGestureRecognizer?
+    private(set) final var imageAnalysisTextSelectionDeferringGestureRecognizer: WKDeferringGestureRecognizer?
     @nonobjc
-    final var imageAnalysisDragAndContextMenuDeferringGestureRecognizer: WKDeferringGestureRecognizer?
+    private(set) final var imageAnalysisDragAndContextMenuDeferringGestureRecognizer: WKDeferringGestureRecognizer?
 
     @nonobjc
-    final var lastCompletedImageAnalysis: CompletedImageAnalysis?
+    private final var lastCompletedImageAnalysis: CompletedImageAnalysis?
     @nonobjc
     final var imageAnalysisDeferralState = ImageAnalysisDeferralState.undecided
 
@@ -168,17 +200,17 @@ extension WKAppKitGestureController {
     final var directionalScrollLockTracker = WKDirectionalScrollLockTracker()
 
     @nonobjc
-    final var magnificationGestureRecognizer: NSMagnificationGestureRecognizer?
+    private final var magnificationGestureRecognizer: NSMagnificationGestureRecognizer?
     @nonobjc
-    final var rotationGestureRecognizer: NSRotationGestureRecognizer?
+    private final var rotationGestureRecognizer: NSRotationGestureRecognizer?
 
     // FIXME: <webkit.org/b/321828> Avoid further bloating this class and instead manage state through a separate/independent entity.
     // Magnification and rotation GRs report their values cumulatively over a gesture.
     // These variables track the last reported value so that we can forward deltas.
     @nonobjc
-    final var lastCumulativeMagnification: Double = 0
+    private final var lastCumulativeMagnification: Double = 0
     @nonobjc
-    final var lastCumulativeRotation: Double = 0
+    private final var lastCumulativeRotation: Double = 0
 
     @objc
     var webView: WKWebView? { view }
@@ -194,39 +226,12 @@ extension WKAppKitGestureController {
         clickHighlight = makeClickHighlightController()
     }
 
-    @nonobjc
-    final func mouseTrackingGestureRecognizer(at index: Int) -> WKMouseTrackingGestureRecognizer? {
-        switch index {
-        case 0: primaryMouseTrackingGestureRecognizer
-        case 1: secondaryMouseTrackingGestureRecognizer
-        default: fatalError()
-        }
-    }
-
-    @nonobjc
-    final class func loggingDescription(for gestureRecognizer: NSGestureRecognizer?) -> String {
-        guard let gestureRecognizer else {
-            return "nil"
-        }
-
-        var parts: [String] = []
-        parts.append("\(type(of: gestureRecognizer)): \(UInt(bitPattern: ObjectIdentifier(gestureRecognizer)))")
-
-        if let name = gestureRecognizer.name {
-            parts.append("name = \(name)")
-        }
-
-        parts.append("state = \(gestureRecognizer.state.name)")
-
-        return "<\(parts.joined(separator: "; "))>"
-    }
-
     func setUp() {
         guard view != nil else {
             return
         }
 
-        cxxSupport.setUpWithPage()
+        cxxSupport.setUpPositionInformation()
 
         setUpGestureRecognizers()
         addGesturesToWebView()
@@ -234,335 +239,11 @@ extension WKAppKitGestureController {
         ensureGesturesAreNotArchived()
     }
 
-    @nonobjc
-    final func setUpGestureRecognizers() {
-        setUpPanGestureRecognizer()
-        setUpPointerTrackingGestureRecognizer()
-        setUpPointerDownDeferringGestureRecognizer()
-        setUpMouseTrackingGestureRecognizers()
-        setUpSingleClickGestureRecognizer()
-        setUpDoubleClickGestureRecognizer()
-        setUpDOMDoubleClickGestureRecognizer()
-
-        setUpSecondaryClickGestureRecognizer()
-        setUpSecondaryClickDeferringGestureRecognizer()
-
-        setUpDragPressGestureRecognizer()
-        setUpDragDeferringGestureRecognizer()
-
-        setUpEnclosingScrollViewPanDeferringGestureRecognizer()
-
-        setUpImageAnalysisGestureRecognizer()
-        setUpImageAnalysisDeferringGestureRecognizers()
-
-        setUpMagnificationGestureRecognizer()
-        setUpRotationGestureRecognizer()
-    }
-
-    @nonobjc
-    final func setUpPanGestureRecognizer() {
-        guard let webView else {
-            return
-        }
-
-        let panGestureRecognizer = WKPanGestureRecognizer(webView: webView, target: self, action: #selector(panGestureRecognized))
-        configure(forScrolling: panGestureRecognizer)
-
-        panGestureRecognizer.delegate = self
-        panGestureRecognizer.name = "WKPanGesture"
-
-        self.panGestureRecognizer = panGestureRecognizer
-    }
-
-    @nonobjc
-    final func setUpMouseTrackingGestureRecognizers() {
-        primaryMouseTrackingGestureRecognizer = makeMouseTrackingGestureRecognizer(at: 0)
-        secondaryMouseTrackingGestureRecognizer = makeMouseTrackingGestureRecognizer(at: 1)
-    }
-
-    @nonobjc
-    final func makeMouseTrackingGestureRecognizer(at index: Int) -> WKMouseTrackingGestureRecognizer {
-        let recognizer = WKMouseTrackingGestureRecognizer.make(target: self, action: #selector(mouseTrackingGestureRecognized))
-        configure(forMouseTracking: recognizer, at: index)
-        recognizer.delegate = self
-        recognizer.name = nameForMouseTrackingGesture(recognizer)
-        return recognizer
-    }
-
-    @nonobjc
-    final func setUpPointerTrackingGestureRecognizer() {
-        let recognizer = WKPointerTrackingGestureRecognizer.make(
-            target: self,
-            action: #selector(pointerTrackingGestureRecognized)
-        )
-        pointerTrackingGestureRecognizer = recognizer
-        configure(forPointerTracking: recognizer)
-        recognizer.refusesToBeFailureRequirement = true
-        recognizer.pointerTrackingDelegate = self
-        recognizer.delegate = self
-        recognizer.name = "WKPointerTrackingGesture"
-    }
-
-    @nonobjc
-    final func setUpPointerDownDeferringGestureRecognizer() {
-        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
-        pointerDownDeferringGestureRecognizer = recognizer
-        configure(forPointerDownDeferral: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKPointerDownDeferringGesture"
-    }
-
-    @nonobjc
-    final func setUpSingleClickGestureRecognizer() {
-        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(singleClickGestureRecognized))
-        singleClickGestureRecognizer = recognizer
-        configure(forSingleClick: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKSingleClickGesture"
-    }
-
-    @nonobjc
-    final func setUpDoubleClickGestureRecognizer() {
-        let recognizer = NSClickGestureRecognizer(target: self, action: #selector(doubleClickGestureRecognized))
-        doubleClickGestureRecognizer = recognizer
-        configure(forDoubleClick: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKDoubleClickGesture"
-    }
-
-    @nonobjc
-    final func setUpDOMDoubleClickGestureRecognizer() {
-        let recognizer = WKDOMDoubleClickGestureRecognizer(target: self, action: #selector(domDoubleClickGestureRecognized))
-        configure(forDOMDoubleClick: recognizer)
-
-        recognizer.delegate = self
-        recognizer.name = "WKDOMDoubleClickGesture"
-
-        domDoubleClickGestureRecognizer = recognizer
-    }
-
-    // `domDoubleClickGestureRecognizer` is always created as a `WKDOMDoubleClickGestureRecognizer`.
-    @nonobjc
-    private final var typedDOMDoubleClickGestureRecognizer: WKDOMDoubleClickGestureRecognizer? {
-        guard let recognizer = domDoubleClickGestureRecognizer else {
-            return nil
-        }
-
-        guard let recognizer = recognizer as? WKDOMDoubleClickGestureRecognizer else {
-            assertionFailure("DOM double click gesture recognizer was unexpectedly of type \(type(of: recognizer)).")
-            return nil
-        }
-
-        return recognizer
-    }
-
-    @nonobjc
-    final func resetDOMDoubleClickGestureRecognizer() {
-        typedDOMDoubleClickGestureRecognizer?.resetClick()
-    }
-
-    @nonobjc
-    final func takeCompletedDOMDoubleClick() -> Bool {
-        typedDOMDoubleClickGestureRecognizer?.takeCompletedDoubleClick() ?? false
-    }
-
-    @nonobjc
-    final func setUpSecondaryClickGestureRecognizer() {
-        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(secondaryClickGestureRecognized))
-        secondaryClickGestureRecognizer = recognizer
-        configure(forSecondaryClick: recognizer)
-        recognizer.cancelPastAllowableMovement = true
-        recognizer.delegate = self
-        recognizer.name = "WKSecondaryClickGesture"
-    }
-
-    @nonobjc
-    final func setUpSecondaryClickDeferringGestureRecognizer() {
-        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
-        secondaryClickDeferringGestureRecognizer = recognizer
-        configure(forSecondaryClickDeferral: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKSecondaryClickDeferringGesture"
-    }
-
-    @nonobjc
-    final func setUpDragPressGestureRecognizer() {
-        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(dragPressGestureRecognized))
-        dragPressGestureRecognizer = recognizer
-        configure(forDragPress: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKDragPressGesture"
-    }
-
-    @nonobjc
-    final func setUpDragDeferringGestureRecognizer() {
-        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
-        dragDeferringGestureRecognizer = recognizer
-        configure(forDragDeferral: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKDragDeferringGesture"
-    }
-
-    @nonobjc
-    final func setUpEnclosingScrollViewPanDeferringGestureRecognizer() {
-        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
-        enclosingScrollViewPanDeferringGestureRecognizer = recognizer
-        recognizer.allowedTouchTypes = .direct
-        recognizer.delegate = self
-        recognizer.name = "WKEnclosingScrollViewPanDeferringGesture"
-    }
-
-    @nonobjc
-    final func setUpImageAnalysisGestureRecognizer() {
-        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(imageAnalysisGestureRecognized))
-        imageAnalysisGestureRecognizer = recognizer
-        configure(forImageAnalysis: recognizer)
-        recognizer.refusesToBeFailureRequirement = true
-        recognizer.delegate = self
-        recognizer.pressDelegate = self
-        recognizer.name = "WKImageAnalysisGesture"
-    }
-
-    @nonobjc
-    final func setUpImageAnalysisDeferringGestureRecognizers() {
-        // One deferral holds text selection over an image until analysis resolves; the other holds the
-        // drag-press / secondary-click recognizers. See the Image Analysis design note for why both exist
-        // and why they resolve to opposite outcomes.
-        imageAnalysisTextSelectionDeferringGestureRecognizer = makeImageAnalysisDeferringGestureRecognizer(
-            withName: "WKImageAnalysisTextSelectionDeferringGesture"
-        )
-        imageAnalysisDragAndContextMenuDeferringGestureRecognizer = makeImageAnalysisDeferringGestureRecognizer(
-            withName: "WKImageAnalysisDragAndContextMenuDeferringGesture"
-        )
-    }
-
-    @nonobjc
-    final func setUpMagnificationGestureRecognizer() {
-        let recognizer = NSMagnificationGestureRecognizer(target: self, action: #selector(magnificationGestureRecognized))
-        magnificationGestureRecognizer = recognizer
-        configure(forMagnification: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKMagnificationGesture"
-    }
-
-    @nonobjc
-    final func setUpRotationGestureRecognizer() {
-        let recognizer = NSRotationGestureRecognizer(target: self, action: #selector(rotationGestureRecognized))
-        rotationGestureRecognizer = recognizer
-        configure(forRotation: recognizer)
-        recognizer.delegate = self
-        recognizer.name = "WKRotationGesture"
-    }
-
-    @nonobjc
-    final func addGesturesToWebView() {
-        guard let webView = view else {
-            return
-        }
-
-        func add(_ recognizer: NSGestureRecognizer?) {
-            if let recognizer {
-                webView.addGestureRecognizer(recognizer)
-            }
-        }
-
-        add(panGestureRecognizer)
-        add(pointerTrackingGestureRecognizer)
-        add(pointerDownDeferringGestureRecognizer)
-        add(primaryMouseTrackingGestureRecognizer)
-        add(secondaryMouseTrackingGestureRecognizer)
-        add(singleClickGestureRecognizer)
-        add(doubleClickGestureRecognizer)
-        add(domDoubleClickGestureRecognizer)
-
-        add(secondaryClickGestureRecognizer)
-        add(secondaryClickDeferringGestureRecognizer)
-
-        add(dragPressGestureRecognizer)
-        add(dragDeferringGestureRecognizer)
-
-        add(enclosingScrollViewPanDeferringGestureRecognizer)
-
-        add(imageAnalysisGestureRecognizer)
-        add(imageAnalysisTextSelectionDeferringGestureRecognizer)
-        add(imageAnalysisDragAndContextMenuDeferringGestureRecognizer)
-
-        add(magnificationGestureRecognizer)
-        add(rotationGestureRecognizer)
-    }
-
-    @nonobjc
-    final func enableGesturesIfNeeded() {
-        enableGestureIfNeeded(panGestureRecognizer)
-        enableGestureIfNeeded(pointerTrackingGestureRecognizer)
-        enableGestureIfNeeded(primaryMouseTrackingGestureRecognizer)
-        enableGestureIfNeeded(secondaryMouseTrackingGestureRecognizer)
-        enableGestureIfNeeded(singleClickGestureRecognizer)
-        enableGestureIfNeeded(doubleClickGestureRecognizer)
-        enableGestureIfNeeded(domDoubleClickGestureRecognizer)
-        enableGestureIfNeeded(secondaryClickGestureRecognizer)
-        enableGestureIfNeeded(dragPressGestureRecognizer)
-        enableGestureIfNeeded(imageAnalysisGestureRecognizer)
-        enableGestureIfNeeded(magnificationGestureRecognizer)
-        enableGestureIfNeeded(rotationGestureRecognizer)
-
-        // The deferring gesture recognizers are intentionally not enabled.
-    }
-
     func preferencesDidChange() {
         enableGesturesIfNeeded()
         if let panGestureRecognizer {
             configure(forScrolling: panGestureRecognizer)
         }
-    }
-
-    @nonobjc
-    final func ensureGesturesAreNotArchived() {
-        // The set of gestures managed by WKAppKitGestureController are configured
-        // and installed freshly for every web view initialization, and as such we
-        // want to avoid duplicate sets when views are decoded.
-
-        panGestureRecognizer?.shouldBeArchived = false
-        pointerTrackingGestureRecognizer?.shouldBeArchived = false
-        pointerDownDeferringGestureRecognizer?.shouldBeArchived = false
-        primaryMouseTrackingGestureRecognizer?.shouldBeArchived = false
-        secondaryMouseTrackingGestureRecognizer?.shouldBeArchived = false
-        singleClickGestureRecognizer?.shouldBeArchived = false
-        doubleClickGestureRecognizer?.shouldBeArchived = false
-        domDoubleClickGestureRecognizer?.shouldBeArchived = false
-
-        secondaryClickGestureRecognizer?.shouldBeArchived = false
-        secondaryClickDeferringGestureRecognizer?.shouldBeArchived = false
-
-        dragPressGestureRecognizer?.shouldBeArchived = false
-        dragDeferringGestureRecognizer?.shouldBeArchived = false
-        enclosingScrollViewPanDeferringGestureRecognizer?.shouldBeArchived = false
-
-        imageAnalysisGestureRecognizer?.shouldBeArchived = false
-        imageAnalysisTextSelectionDeferringGestureRecognizer?.shouldBeArchived = false
-        imageAnalysisDragAndContextMenuDeferringGestureRecognizer?.shouldBeArchived = false
-
-        magnificationGestureRecognizer?.shouldBeArchived = false
-        rotationGestureRecognizer?.shouldBeArchived = false
-    }
-
-    @nonobjc
-    final func enableGestureIfNeeded(_ gesture: NSGestureRecognizer?) {
-        guard let webView = view else {
-            return
-        }
-
-        let gestureEnabled = gesture !== imageAnalysisGestureRecognizer || cxxSupport.isLiveTextAvailableAndEnabled()
-
-        if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
-            Logger.viewGestures.log(
-                """
-                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                \(Self.loggingDescription(for: gesture), privacy: .private) setEnabled:\(appKitGestureLogInteger(gestureEnabled))
-                """
-            )
-        }
-        gesture?.isEnabled = gestureEnabled
     }
 
     func beginSuppressingSingleClickGestureForTextSelection() {
@@ -603,7 +284,7 @@ extension WKAppKitGestureController {
     }
 
     func didCommitLoadForMainFrame() {
-        cxxSupport.invalidate()
+        cxxSupport.invalidatePositionInformation()
         resetDOMDoubleClickGestureRecognizer()
         layerTreeTransactionIdAtLastInteractionStart = nil
         lastCompletedImageAnalysis = nil
@@ -612,169 +293,6 @@ extension WKAppKitGestureController {
 
     func interruptMomentumForScrollWheelEvent() {
         cxxSupport.interruptMomentum()
-    }
-
-    @nonobjc
-    final func touchActions(at point: NSPoint) -> TouchActionSet {
-        guard view != nil else {
-            return .auto
-        }
-
-        return TouchActionSet(rawValue: cxxSupport.touchActions(at: point))
-    }
-
-    @nonobjc
-    final func touchActionsAllowedPanningAxes(at point: NSPoint) -> PanAxis {
-        let touchActions = touchActions(at: point)
-        let canPanHorizontally = touchActions.intersectsAny(of: .auto, .manipulation, .panX)
-        let canPanVertically = touchActions.intersectsAny(of: .auto, .manipulation, .panY)
-
-        var allowedAxes = PanAxis(rawValue: 0)
-        if canPanHorizontally {
-            allowedAxes.insert(.horizontal)
-        }
-        if canPanVertically {
-            allowedAxes.insert(.vertical)
-        }
-
-        return allowedAxes
-    }
-
-    @nonobjc
-    final func touchActionsAllowPanning(at point: NSPoint) -> Bool {
-        !touchActionsAllowedPanningAxes(at: point).isEmpty
-    }
-
-    @nonobjc
-    final func panGestureRecognizerCanScroll() -> Bool {
-        guard let webView = view else {
-            return false
-        }
-
-        return touchActionsAllowPanning(at: panGestureRecognizer?.location(in: webView) ?? .zero)
-    }
-
-    @nonobjc
-    final func magnificationGestureRecognizerCanZoom() -> Bool {
-        guard let webView = view else {
-            return false
-        }
-
-        let touchActions = touchActions(at: magnificationGestureRecognizer?.location(in: webView) ?? .zero)
-        return touchActions.intersectsAny(of: .auto, .manipulation, .pinchZoom)
-    }
-
-    @nonobjc
-    final func refreshControllerEligibility(_ gesture: NSPanGestureRecognizer) -> WebKit.RefreshControllerEligibility {
-        gesture.touches.count == 1 ? .Eligible : .Ineligible
-    }
-
-    @nonobjc
-    final func nameForMouseTrackingGesture(_ gesture: NSPressGestureRecognizer) -> String {
-        if gesture.numberOfTouchesRequired == 1 {
-            return "WKMouseTrackingGestureSingle"
-        }
-        if gesture.numberOfTouchesRequired > 1 {
-            return "WKMouseTrackingGestureMultiple"
-        }
-
-        assertionFailure()
-        return "WKMouseTrackingGestureUnknown"
-    }
-
-    @nonobjc
-    final func mouseTrackingGestureRecognizerCanTrack(_ gesture: NSPressGestureRecognizer) -> Bool {
-        guard let webView = view else {
-            return false
-        }
-
-        if gesture.numberOfTouchesRequired <= 1 {
-            return true
-        }
-
-        // If the web content permits panning, the pan GR will win.
-        // This multi-touch tracking recognizer covers the remaining case, where
-        // the content has opted out of panning. Web apps typically depend on
-        // touch/pointer/mousemove events for a notion of "translation" in this
-        // case, such as on maps.apple.com. As such, we complement the logic here
-        // with the predicate in panGestureRecognizerCanScroll().
-        return !touchActionsAllowPanning(at: gesture.location(in: webView))
-    }
-
-    // FIXME: rdar://185815023 (-[NSRotationGestureRecognizer locationInView:] should reflect live centroid of the gesture)
-    // The rotation GR's -locationInView: does not reflect its live centroid over
-    // the course of a twist, so we compute it directly and use it to feed our
-    // gesture machinery. Otherwise, the rotation and magnification locations stomp
-    // over each other in ViewGestureController.
-    @nonobjc
-    final func gestureCentroidInWindow(for gesture: NSGestureRecognizer) -> WebCore.FloatPoint {
-        let touches: [NSTouch]
-        if let magnificationGesture = gesture as? NSMagnificationGestureRecognizer {
-            touches = magnificationGesture.touches
-        } else if let rotationGesture = gesture as? NSRotationGestureRecognizer {
-            touches = rotationGesture.touches
-        } else {
-            touches = []
-        }
-
-        let count = touches.count
-
-        if count == 0 {
-            return WebCore.FloatPoint(gesture.location(in: nil))
-        }
-
-        var centroidX: Float = 0
-        var centroidY: Float = 0
-        for touch in touches {
-            let locationInWindow = touch.location(in: nil)
-            centroidX = Float(Double(centroidX) + locationInWindow.x)
-            centroidY = Float(Double(centroidY) + locationInWindow.y)
-        }
-        return WebCore.FloatPoint(centroidX, centroidY).scaled(Float(1.0 / Double(count)))
-    }
-
-    @nonobjc
-    final func isOnlyTouchDown(_ touch: NSTouch) -> Bool {
-        guard let webView = view else {
-            return false
-        }
-
-        guard let event = NSApp.currentEvent, event.type == .directTouch else {
-            return false
-        }
-
-        let touches = event.touches(matching: .touching, in: webView)
-        return touches.count == 1 && touches.first?._uid == touch._uid
-    }
-
-    @nonobjc
-    final func interruptMomentumIfNeeded(forTouch touch: NSTouch) {
-        // Other callers of resetCaughtDeceleratingScroll() can miss the end of a gesture
-        // (e.g. a pan over content that disallows scrolling, which then neither scrolls, clicks, nor tracks the mouse).
-        // We can't let that leak into the next interaction, or it would keep refusing gestures.
-        // We only consider this a new interaction if 1) this is the only touch down,
-        // and 2) isn't the touch that caught the scroll.
-        if caughtDeceleratingScroll {
-            let isDifferentTouch = touchThatCaughtDeceleratingScroll.map { !$0.isEqual(to: NSNumber(value: touch._uid)) } ?? true
-            if isDifferentTouch && isOnlyTouchDown(touch) {
-                if Logger.viewGestures.isEnabled(type: .default), let view, let page = view._protectedPage().get() {
-                    Logger.viewGestures.log(
-                        """
-                        [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                        Resetting stale caught decelerating scroll state from a previous interaction
-                        """
-                    )
-                }
-                resetCaughtDeceleratingScroll()
-            }
-        }
-
-        let wasMomentumActive = isMomentumActive
-        interruptMomentumIfNeeded()
-
-        if wasMomentumActive && caughtDeceleratingScroll {
-            touchThatCaughtDeceleratingScroll = NSNumber(value: touch._uid)
-        }
     }
 
     @objc(gestureRecognizer:shouldReceiveTouch:)
@@ -787,7 +305,7 @@ extension WKAppKitGestureController {
             return false
         }
 
-        interruptMomentumIfNeeded(forTouch: touch)
+        interruptMomentumIfNeeded(for: touch)
 
         if gestureRecognizer === panGestureRecognizer {
             let allowedAxes = touchActionsAllowedPanningAxes(at: touch.location(in: webView))
@@ -806,121 +324,6 @@ extension WKAppKitGestureController {
 
         // FIXME: <rdar://166268811> Migrate towards API (once available) that configures magnification/rotation GRs as touch-only.
         false
-    }
-
-    @nonobjc
-    final func configure(forScrolling gesture: NSPanGestureRecognizer) {
-        // FIXME: Strictly, this should be `2` when allowsMagnification == YES and the min/max zoom
-        // scales are different, c.f. -[UIScrollView _updatePanGestureConfiguration] for prior art.
-        gesture.maximumNumberOfTouches = 2
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-    }
-
-    @nonobjc
-    final func configure(forSingleClick gesture: NSPressGestureRecognizer) {
-        gesture.minimumPressDuration = 0
-        gesture.cancelPastAllowableMovement = true
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        gesture.numberOfTouchesRequired = 1
-    }
-
-    @nonobjc
-    final func configure(forDoubleClick gesture: NSClickGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        gesture.numberOfTouchesRequired = 2
-        gesture.numberOfClicksRequired = 2
-    }
-
-    @nonobjc
-    final func configure(forDOMDoubleClick gesture: NSClickGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        gesture.numberOfTouchesRequired = 1
-        // Intentionally set to `1` and not `2`, see WKDOMDoubleClickGestureRecognizer.swift.
-        // FIXME: rdar://184563102 (An NSClickGestureRecognizer with numberOfClicksRequired=2 results in other GRs being neglected for some gestures)
-        gesture.numberOfClicksRequired = 1
-    }
-
-    @nonobjc
-    final func configure(forSecondaryClick gesture: NSPressGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-    }
-
-    @nonobjc
-    final func configure(forMouseTracking gesture: NSPressGestureRecognizer, at index: Int) {
-        gesture.minimumPressDuration = 0
-        gesture.cancelPastAllowableMovement = false
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        gesture.numberOfTouchesRequired = index + 1
-    }
-
-    @nonobjc
-    final func configure(forPointerTracking gesture: NSPressGestureRecognizer) {
-        gesture.minimumPressDuration = 0
-        gesture.allowableMovement = CGFloat.greatestFiniteMagnitude
-        gesture.cancelPastAllowableMovement = false
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        // FIXME: Tracking more than one touch needs a pointer per touch.
-        gesture.numberOfTouchesRequired = 1
-    }
-
-    @nonobjc
-    final func configure(forPointerDownDeferral gesture: WKDeferringGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-    }
-
-    @nonobjc
-    final func configure(forDragPress gesture: NSPressGestureRecognizer) {
-        // Matching _UIDragInteractionDefaultLiftDelay.
-        gesture.minimumPressDuration = 0.325
-        gesture.cancelPastAllowableMovement = false
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        gesture.numberOfTouchesRequired = 1
-    }
-
-    @nonobjc
-    final func configure(forDragDeferral gesture: WKDeferringGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-    }
-
-    @nonobjc
-    final func configure(forSecondaryClickDeferral gesture: WKDeferringGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-    }
-
-    @nonobjc
-    final func configure(forImageAnalysis gesture: NSPressGestureRecognizer) {
-        // Mirrors the iOS WKImageAnalysisGestureRecognizer: a short, stationary long-press that starts
-        // preflighting Live Text as soon as a press settles on an image. Movement cancels it, so a
-        // scroll or drag over an image does not trigger analysis.
-        gesture.minimumPressDuration = 0.1
-        gesture.allowableMovement = 0
-        gesture.cancelPastAllowableMovement = true
-        gesture.allowedTouchTypes = .direct
-        gesture.buttonMask = 0
-        gesture.numberOfTouchesRequired = 1
-    }
-
-    @nonobjc
-    final func configure(forImageAnalysisDeferral gesture: WKDeferringGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-    }
-
-    @nonobjc
-    final func configure(forMagnification gesture: NSMagnificationGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
-    }
-
-    @nonobjc
-    final func configure(forRotation gesture: NSRotationGestureRecognizer) {
-        gesture.allowedTouchTypes = .direct
     }
 
     // MARK: Gesture Recognition
@@ -964,8 +367,8 @@ extension WKAppKitGestureController {
         impl.updateRefreshControllerForPanGesture(gesture.state, refreshControllerEligibility(panGestureRecognizer))
         #endif
 
-        sendWheelEvent(forGesture: panGestureRecognizer)
-        startMomentumIfNeeded(forGesture: panGestureRecognizer)
+        sendWheelEvent(for: panGestureRecognizer)
+        startMomentumIfNeeded(for: panGestureRecognizer)
 
         switch gesture.state {
         case .ended, .cancelled, .failed:
@@ -1011,20 +414,15 @@ extension WKAppKitGestureController {
             return
         }
 
-        if let page = webView._protectedPage().get(), !page.preferences().useAlternatePDFHUD() {
-            // Clicks aren't delivered to NSButton's built-in click gesture
-            // recognizer when a parent view's GR recognizes first, so we
-            // forward the click manually.
-            if gesture.state == .began {
-                let location = WebCore.FloatPoint(gesture.location(in: webView))
-                if let impl = webView._impl(), let hitView = impl.hitTestPDFHUD(location).get(), impl.isViewVisible(hitView) {
-                    if let hudButton = hitView as? NSButton {
-                        hudButton.performClick(nil)
-                    }
-                    gesture.state = .cancelled
-                    return
-                }
-            }
+        // Clicks aren't delivered to NSButton's built-in click gesture
+        // recognizer when a parent view's GR recognizes first, so we
+        // forward the click manually.
+        if let page = webView._protectedPage().get(), !page.preferences().useAlternatePDFHUD(), gesture.state == .began,
+            let hitView = impl.hitTestPDFHUD(WebCore.FloatPoint(gesture.location(in: webView))).get(), impl.isViewVisible(hitView)
+        {
+            (hitView as? NSButton)?.performClick(nil)
+            gesture.state = .cancelled
+            return
         }
 
         switch gesture.state {
@@ -1083,7 +481,7 @@ extension WKAppKitGestureController {
         precondition(domDoubleClickGestureRecognizer === gesture)
 
         // The single-click gesture may have already committed this click as a double click.
-        if !takeCompletedDOMDoubleClick() {
+        guard takeCompletedDOMDoubleClick() else {
             return
         }
 
@@ -1108,8 +506,8 @@ extension WKAppKitGestureController {
                 WebCore.roundedIntPoint(location),
                 modifiers,
                 layerTreeTransactionIdAtLastInteractionStart,
-                WebKit.WebEventInputSource.Touch,
-                WebKit.WebMouseEventSyntheticClickType.OneFingerTap
+                .Touch,
+                .OneFingerTap
             )
     }
 
@@ -1130,7 +528,7 @@ extension WKAppKitGestureController {
 
         precondition(secondaryClickGestureRecognizer === gesture)
 
-        if gesture.state != .began {
+        guard gesture.state == .began else {
             return
         }
 
@@ -1144,164 +542,32 @@ extension WKAppKitGestureController {
         }
         let windowNumber = impl.windowNumber()
 
-        let mouseDown = NSEvent.mouseEvent(
-            with: .rightMouseDown,
-            location: location,
+        let mouseDown = syntheticMouseEvent(
+            .rightMouseDown,
+            at: location,
             modifierFlags: modifierFlags,
-            timestamp: GetCurrentEventTime(),
             windowNumber: windowNumber,
-            context: nil,
-            eventNumber: 0,
-            clickCount: 1,
-            pressure: 1.0
+            pressure: 1
         )
-        impl.mouseDown(mouseDown, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.Yes)
+        impl.mouseDown(mouseDown, .Touch, .Yes)
 
-        let mouseUp = NSEvent.mouseEvent(
-            with: .rightMouseUp,
-            location: location,
+        let mouseUp = syntheticMouseEvent(
+            .rightMouseUp,
+            at: location,
             modifierFlags: modifierFlags,
-            timestamp: GetCurrentEventTime(),
             windowNumber: windowNumber,
-            context: nil,
-            eventNumber: 0,
-            clickCount: 1,
-            pressure: 0.0
+            pressure: 0
         )
-        impl.mouseUp(mouseUp, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.Yes)
-    }
-
-    @nonobjc
-    final func movementExceedsClickAllowableMovement(_ movementInWindow: NSSize) -> Bool {
-        let allowableMovement = singleClickGestureRecognizer?.allowableMovement ?? 0
-        return abs(movementInWindow.width) > allowableMovement || abs(movementInWindow.height) > allowableMovement
-    }
-
-    @nonobjc
-    final func isMouseTrackingGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
-        gesture is WKMouseTrackingGestureRecognizer
-    }
-
-    @nonobjc
-    final func mouseTrackingWillBeHandedOff() -> Bool {
-        if !mouseTrackingHasSentMouseDown {
-            return false
-        }
-
-        for index in 0..<2 {
-            let state = mouseTrackingGestureRecognizer(at: index)?.state ?? .possible
-            if state == .began || state == .changed {
-                return true
-            }
-        }
-
-        return false
-    }
-
-    @nonobjc
-    final func isRecognizingTransformGesture() -> Bool {
-        func isRecognizing(_ gesture: NSGestureRecognizer?) -> Bool {
-            let state = gesture?.state ?? .possible
-            return state == .began || state == .changed
-        }
-
-        let isMagnifying = isRecognizing(magnificationGestureRecognizer)
-        let isRotating = isRecognizing(rotationGestureRecognizer)
-
-        return isMagnifying || isRotating
-    }
-
-    @nonobjc
-    final func isTransformGestureActiveOrEnding() -> Bool {
-        func isActiveOrEnding(_ gesture: NSGestureRecognizer?) -> Bool {
-            switch gesture?.state ?? .possible {
-            case .began, .changed, .ended:
-                true
-            default:
-                false
-            }
-        }
-
-        return isActiveOrEnding(magnificationGestureRecognizer) || isActiveOrEnding(rotationGestureRecognizer)
-    }
-
-    @nonobjc
-    final func shouldSuppressMouseTrackingForTransformGesture() -> Bool {
-        let transformGestureDriveTimeout = 0.05 // 50 ms
-
-        if !contentDeclinedTransformGesture || !isRecognizingTransformGesture() {
-            return false
-        }
-
-        return ProcessInfo.processInfo.systemUptime - lastTransformGestureDriveTime < transformGestureDriveTimeout
+        impl.mouseUp(mouseUp, .Touch, .Yes)
     }
 
     func transformGestureWasNotHandledByContent() {
-        if !isRecognizingTransformGesture() {
+        guard isRecognizingTransformGesture else {
             return
         }
 
         contentDeclinedTransformGesture = true
         transformGestureDidDrive()
-    }
-
-    @nonobjc
-    final func transformGestureDidEnd() {
-        if isRecognizingTransformGesture() {
-            return
-        }
-
-        contentDeclinedTransformGesture = false
-        resetCaughtDeceleratingScroll()
-    }
-
-    @nonobjc
-    final func transformGestureDidDrive() {
-        lastTransformGestureDriveTime = ProcessInfo.processInfo.systemUptime
-
-        if !contentDeclinedTransformGesture || !mouseTrackingHasSentMouseDown {
-            return
-        }
-
-        guard let webView = view else {
-            return
-        }
-
-        guard let impl = webView._impl(), !impl.ignoresAllEvents() else {
-            return
-        }
-
-        let activeMouseTrackingGesture = activeMouseTrackingGestureRecognizer
-
-        var modifierFlags: NSEvent.ModifierFlags = []
-        var locationInWindow = NSPoint(
-            x: CGFloat(mouseTrackingStartLocationInWindow.x()),
-            y: CGFloat(mouseTrackingStartLocationInWindow.y())
-        )
-
-        if let activeMouseTrackingGesture {
-            modifierFlags = activeMouseTrackingGesture.modifierFlags
-            locationInWindow = activeMouseTrackingGesture.mouseLocationInWindow
-        }
-
-        var mouseUp = NSEvent.mouseEvent(
-            with: .leftMouseUp,
-            location: locationInWindow,
-            modifierFlags: modifierFlags,
-            timestamp: GetCurrentEventTime(),
-            windowNumber: impl.windowNumber(),
-            context: nil,
-            eventNumber: 0,
-            clickCount: 1,
-            pressure: 0.0
-        )
-        if let activeMouseTrackingGesture, let event = mouseUp {
-            mouseUp = activeMouseTrackingGesture.eventReportingMovement(event, atWindowLocation: locationInWindow)
-        }
-        impl.mouseUp(mouseUp, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.No)
-
-        mouseTrackingHasSentMouseDown = false
-        mouseTrackingIsSuppressedForTransformGesture = true
     }
 
     @objc
@@ -1356,14 +622,10 @@ extension WKAppKitGestureController {
         }
 
         guard let mouseTrackingGesture = gesture as? WKMouseTrackingGestureRecognizer else {
-            preconditionFailure()
+            preconditionFailure("Mouse tracking action from another recognizer")
         }
 
-        guard let impl = webView._impl() else {
-            return
-        }
-
-        if impl.ignoresAllEvents() {
+        guard let impl = webView._impl(), !impl.ignoresAllEvents() else {
             return
         }
 
@@ -1387,7 +649,7 @@ extension WKAppKitGestureController {
             }
 
         case .changed:
-            if activeMouseTrackingGestureRecognizer !== mouseTrackingGesture {
+            guard activeMouseTrackingGestureRecognizer === mouseTrackingGesture else {
                 break
             }
 
@@ -1405,7 +667,7 @@ extension WKAppKitGestureController {
                 // cancels and this becomes a drag — does mouse tracking take over event delivery. Sending a
                 // mouse down here for a stationary click would deliver a second mouse down to the content,
                 // which should be avoided.
-                if !movementExceedsClickAllowableMovement(mouseTrackingGesture.movementInWindowSinceStart) {
+                guard movementExceedsClickAllowableMovement(mouseTrackingGesture.movementInWindowSinceStart) else {
                     break
                 }
 
@@ -1420,72 +682,59 @@ extension WKAppKitGestureController {
                     mouseTrackingGesture.beginReportingMovement(fromWindowLocation: mouseDownLocation)
                 }
 
-                if isHoverActivatedByClick(atLocation: webView.convert(mouseDownLocation, from: nil)) {
+                if isHoverActivatedByClick(at: webView.convert(mouseDownLocation, from: nil)) {
                     mouseTrackingSendsMouseMoves = true
                 } else {
-                    let mouseDown = NSEvent.mouseEvent(
-                        with: .leftMouseDown,
-                        location: adjustedMouseDownLocation(inWindow: mouseDownLocation),
+                    let mouseDown = syntheticMouseEvent(
+                        .leftMouseDown,
+                        at: adjustedMouseDownLocation(inWindow: mouseDownLocation),
                         modifierFlags: modifierFlags,
                         timestamp: timestamp,
                         windowNumber: windowNumber,
-                        context: nil,
-                        eventNumber: 0,
-                        clickCount: 1,
-                        pressure: 1.0
+                        pressure: 1
                     )
-                    impl.mouseDown(mouseDown, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.No)
+                    impl.mouseDown(mouseDown, .Touch, .No)
                     mouseTrackingHasSentMouseDown = true
                 }
             }
 
             if mouseTrackingSendsMouseMoves {
                 let locationInWindow = mouseTrackingGesture.mouseLocationInWindow
-                var mouseMoved = NSEvent.mouseEvent(
-                    with: .mouseMoved,
-                    location: locationInWindow,
+                let mouseMoved = syntheticMouseEvent(
+                    .mouseMoved,
+                    at: locationInWindow,
                     modifierFlags: modifierFlags,
                     timestamp: timestamp,
                     windowNumber: windowNumber,
-                    context: nil,
-                    eventNumber: 0,
                     clickCount: 0,
-                    pressure: 0.0
+                    pressure: 0,
+                    reportingMovementFor: mouseTrackingGesture
                 )
-                if let event = mouseMoved {
-                    mouseMoved = mouseTrackingGesture.eventReportingMovement(event, atWindowLocation: locationInWindow)
-                }
-                impl.mouseMoved(mouseMoved, WebKit.WebEventInputSource.Touch)
+                impl.mouseMoved(mouseMoved, .Touch)
                 break
             }
 
             let locationInWindow = mouseTrackingGesture.mouseLocationInWindow
-            var mouseDragged = NSEvent.mouseEvent(
-                with: .leftMouseDragged,
-                location: locationInWindow,
+            let mouseDragged = syntheticMouseEvent(
+                .leftMouseDragged,
+                at: locationInWindow,
                 modifierFlags: modifierFlags,
                 timestamp: timestamp,
                 windowNumber: windowNumber,
-                context: nil,
-                eventNumber: 0,
-                clickCount: 1,
-                pressure: 1.0
+                pressure: 1,
+                reportingMovementFor: mouseTrackingGesture
             )
-            if let event = mouseDragged {
-                mouseDragged = mouseTrackingGesture.eventReportingMovement(event, atWindowLocation: locationInWindow)
-            }
-            impl.mouseDragged(mouseDragged, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.No)
+            impl.mouseDragged(mouseDragged, .Touch, .No)
 
         case .ended, .cancelled, .failed:
-            if activeMouseTrackingGestureRecognizer !== mouseTrackingGesture {
+            guard activeMouseTrackingGestureRecognizer === mouseTrackingGesture else {
                 break
             }
 
             activeMouseTrackingGestureRecognizer = nil
 
-            let wasSendingMouseMoves = mouseTrackingSendsMouseMoves
-            mouseTrackingSendsMouseMoves = false
-            if wasSendingMouseMoves {
+            if mouseTrackingSendsMouseMoves {
+                mouseTrackingSendsMouseMoves = false
                 break
             }
 
@@ -1502,25 +751,19 @@ extension WKAppKitGestureController {
                 break
             }
 
-            let hadSentMouseDown = mouseTrackingHasSentMouseDown
-            mouseTrackingHasSentMouseDown = false
-            if hadSentMouseDown {
+            if mouseTrackingHasSentMouseDown {
+                mouseTrackingHasSentMouseDown = false
                 let locationInWindow = mouseTrackingGesture.mouseLocationInWindow
-                var mouseUp = NSEvent.mouseEvent(
-                    with: .leftMouseUp,
-                    location: locationInWindow,
+                let mouseUp = syntheticMouseEvent(
+                    .leftMouseUp,
+                    at: locationInWindow,
                     modifierFlags: modifierFlags,
                     timestamp: timestamp,
                     windowNumber: windowNumber,
-                    context: nil,
-                    eventNumber: 0,
-                    clickCount: 1,
-                    pressure: 0.0
+                    pressure: 0,
+                    reportingMovementFor: mouseTrackingGesture
                 )
-                if let event = mouseUp {
-                    mouseUp = mouseTrackingGesture.eventReportingMovement(event, atWindowLocation: locationInWindow)
-                }
-                impl.mouseUp(mouseUp, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.No)
+                impl.mouseUp(mouseUp, .Touch, .No)
             }
 
         default:
@@ -1529,70 +772,6 @@ extension WKAppKitGestureController {
     }
 
     // MARK: Pointer Tracking
-
-    @nonobjc
-    final func dispatchTrackedPointerEvent(
-        _ phase: WebKit.WebEventPhase,
-        atLocationInWindow locationInWindow: NSPoint,
-        modifierFlags: NSEvent.ModifierFlags
-    ) {
-        cxxSupport.dispatchTrackedPointerEvent(phase, atLocationInWindow: locationInWindow, modifierFlags: modifierFlags) {
-            [weak self] wasCanceled in
-            self?.didDispatchPointerDown(wasCanceled)
-        }
-    }
-
-    @nonobjc
-    final func didDispatchPointerDown(_ wasCanceled: Bool) {
-        if (pointerDownDeferringGestureRecognizer?.state ?? .possible) != .possible {
-            return
-        }
-
-        if Logger.viewGestures.isEnabled(type: .debug), let webView = view, let page = webView._protectedPage().get() {
-            Logger.viewGestures.debug(
-                """
-                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                deferral resolved: pointerdown canceled=\(appKitGestureLogInteger(wasCanceled))
-                """
-            )
-        }
-
-        pointerDownDeferringGestureRecognizer?.endDeferralShouldPreventGestures(wasCanceled)
-    }
-
-    @nonobjc
-    final func pointerTrackingShouldBegin(atLocation locationInView: NSPoint, modifierFlags: NSEvent.ModifierFlags) -> Bool {
-        guard let webView = view, pointerTrackingGestureRecognizer?.isEnabled ?? false else {
-            return false
-        }
-
-        if !(webView._impl()?.window()?.isKeyWindow ?? false) && !modifierFlags.contains(.command) {
-            return false
-        }
-
-        // A pan here is delivered as mouse moves with no button held, so the page must not see a pressed pointer.
-        if isHoverActivatedByClick(atLocation: locationInView) {
-            return false
-        }
-
-        return !isPointInScrollbar(locationInView)
-    }
-
-    @nonobjc
-    final func cancelPointerTrackingIfNeeded() {
-        if !isTrackingPointer {
-            return
-        }
-        isTrackingPointer = false
-
-        if Logger.viewGestures.isEnabled(type: .debug), let webView = view, let page = webView._protectedPage().get() {
-            Logger.viewGestures.debug(
-                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Canceling the tracked pointer"
-            )
-        }
-
-        dispatchTrackedPointerEvent(.Cancelled, atLocationInWindow: trackedPointerLastLocationInWindow, modifierFlags: [])
-    }
 
     @objc(pointerTrackingGestureRecognizer:didUpdateTouchWithState:locationInWindow:modifierFlags:)
     func pointerTrackingGestureRecognizer(
@@ -1623,9 +802,10 @@ extension WKAppKitGestureController {
                 break
             }
 
-            if !pointerTrackingShouldBegin(atLocation: webView.convert(locationInWindow, from: nil), modifierFlags: modifierFlags) {
+            let locationInView = webView.convert(locationInWindow, from: nil)
+            if !pointerTrackingShouldBegin(at: locationInView, modifierFlags: modifierFlags) {
                 // The page must not treat the click that follows as the release of the last tracked touch.
-                if isHoverActivatedByClick(atLocation: webView.convert(locationInWindow, from: nil)) {
+                if isHoverActivatedByClick(at: locationInView) {
                     dispatchTrackedPointerEvent(
                         .Cancelled,
                         atLocationInWindow: locationInWindow,
@@ -1642,7 +822,7 @@ extension WKAppKitGestureController {
             dispatchTrackedPointerEvent(.Began, atLocationInWindow: locationInWindow, modifierFlags: modifierFlags)
 
         case .changed:
-            if !isTrackingPointer {
+            guard isTrackingPointer else {
                 break
             }
 
@@ -1655,7 +835,7 @@ extension WKAppKitGestureController {
                     width: locationInWindow.x - trackedPointerStartLocationInWindow.x,
                     height: locationInWindow.y - trackedPointerStartLocationInWindow.y
                 )
-                if !movementExceedsClickAllowableMovement(movementInWindow) {
+                guard movementExceedsClickAllowableMovement(movementInWindow) else {
                     break
                 }
                 trackedPointerHasMoved = true
@@ -1664,11 +844,10 @@ extension WKAppKitGestureController {
             dispatchTrackedPointerEvent(.Changed, atLocationInWindow: locationInWindow, modifierFlags: modifierFlags)
 
         case .ended:
-            let wasTrackingPointer = isTrackingPointer
-            isTrackingPointer = false
-            if !wasTrackingPointer {
+            guard isTrackingPointer else {
                 break
             }
+            isTrackingPointer = false
 
             dispatchTrackedPointerEvent(
                 .Ended,
@@ -1739,7 +918,7 @@ extension WKAppKitGestureController {
 
         precondition(imageAnalysisGestureRecognizer === gesture)
 
-        if gesture.state != .began {
+        guard gesture.state == .began else {
             return
         }
 
@@ -1756,7 +935,7 @@ extension WKAppKitGestureController {
             )
         }
 
-        var request = positionInformationRequest(atLocation: gesture.location(in: webView))
+        var request = positionInformationRequest(at: gesture.location(in: webView))
         request.includeImageData = true
 
         // The token keeps the image-analysis deferral open until the async analysis chain finishes (or is
@@ -1777,7 +956,7 @@ extension WKAppKitGestureController {
     // MARK: WKPressGestureRecognizerDelegate
 
     func pressGestureRecognizerDidFail(_ gestureRecognizer: WKPressGestureRecognizer) {
-        if gestureRecognizer !== imageAnalysisGestureRecognizer {
+        guard gestureRecognizer === imageAnalysisGestureRecognizer else {
             return
         }
 
@@ -1816,7 +995,7 @@ extension WKAppKitGestureController {
             )
         }
 
-        if dragPressGestureRecognizer !== gesture {
+        guard let dragPressGestureRecognizer, dragPressGestureRecognizer === gesture else {
             return
         }
 
@@ -1843,66 +1022,53 @@ extension WKAppKitGestureController {
             dragGestureDidReceiveDragStart = false
             dragIdentifier &+= 1
 
-            let mouseDown = NSEvent.mouseEvent(
-                with: .leftMouseDown,
-                location: locationInWindow,
+            let mouseDown = syntheticMouseEvent(
+                .leftMouseDown,
+                at: locationInWindow,
                 modifierFlags: modifierFlags,
                 timestamp: timestamp,
                 windowNumber: windowNumber,
-                context: nil,
-                eventNumber: 0,
-                clickCount: 1,
-                pressure: 1.0
+                pressure: 1
             )
-            impl.mouseDown(mouseDown, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.Yes)
+            impl.mouseDown(mouseDown, .Touch, .Yes)
             dragGestureHasSentMouseDown = true
 
-            dragPressGestureRecognizer?.beginReportingMovement(fromWindowLocation: locationInWindow)
+            dragPressGestureRecognizer.beginReportingMovement(fromWindowLocation: locationInWindow)
 
         case .changed:
-            if !dragGestureHasSentMouseDown {
+            guard dragGestureHasSentMouseDown else {
                 break
             }
             // Drive WebCore's drag-initiation hysteresis. Once the session exists, AppKit tracks the
             // gesture itself and WebCore is driven by the platform drag callbacks, so we stop feeding it.
             if gestureDraggingSession == nil {
-                var mouseDragged = NSEvent.mouseEvent(
-                    with: .leftMouseDragged,
-                    location: locationInWindow,
+                let mouseDragged = syntheticMouseEvent(
+                    .leftMouseDragged,
+                    at: locationInWindow,
                     modifierFlags: modifierFlags,
                     timestamp: timestamp,
                     windowNumber: windowNumber,
-                    context: nil,
-                    eventNumber: 0,
-                    clickCount: 1,
-                    pressure: 1.0
+                    pressure: 1,
+                    reportingMovementFor: dragPressGestureRecognizer
                 )
-                if let event = mouseDragged {
-                    mouseDragged = dragPressGestureRecognizer?.eventReportingMovement(event, atWindowLocation: locationInWindow)
-                }
-                impl.mouseDragged(mouseDragged, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.Yes)
+                impl.mouseDragged(mouseDragged, .Touch, .Yes)
             }
 
         case .ended, .cancelled, .failed:
-            if !dragGestureHasSentMouseDown {
+            guard dragGestureHasSentMouseDown else {
                 break
             }
 
-            var mouseUp = NSEvent.mouseEvent(
-                with: .leftMouseUp,
-                location: locationInWindow,
+            let mouseUp = syntheticMouseEvent(
+                .leftMouseUp,
+                at: locationInWindow,
                 modifierFlags: modifierFlags,
                 timestamp: timestamp,
                 windowNumber: windowNumber,
-                context: nil,
-                eventNumber: 0,
-                clickCount: 1,
-                pressure: 0.0
+                pressure: 0,
+                reportingMovementFor: dragPressGestureRecognizer
             )
-            if let event = mouseUp {
-                mouseUp = dragPressGestureRecognizer?.eventReportingMovement(event, atWindowLocation: locationInWindow)
-            }
-            impl.mouseUp(mouseUp, WebKit.WebEventInputSource.Touch, WebCore.PlatformMouseEvent.CanInitiateDrag.Yes)
+            impl.mouseUp(mouseUp, .Touch, .Yes)
 
             // Normally, drag state is cleared in draggingSessionEnded: (normal completion) or in startDrag() when
             // beginDraggingSessionWithItems:gesture: returns nil (gesture ended before session started).
@@ -1957,7 +1123,7 @@ extension WKAppKitGestureController {
         let hadHoverActivatedByClick = mayHaveHoverActivatedByClick
         mayHaveHoverActivatedByClick = hasHoverActivatedByClick
         if hadHoverActivatedByClick || hasHoverActivatedByClick {
-            cxxSupport.invalidate()
+            cxxSupport.invalidatePositionInformation()
         }
     }
 
@@ -1971,11 +1137,11 @@ extension WKAppKitGestureController {
         }
 
         mayHaveHoverActivatedByClick = true
-        cxxSupport.invalidate()
+        cxxSupport.invalidatePositionInformation()
     }
 
     func disableDoubleTapGesturesDuringTapIfNecessary(forRequest requestID: UInt64) {
-        if latestTapID != requestID {
+        guard latestTapID == requestID else {
             return
         }
 
@@ -2002,36 +1168,16 @@ extension WKAppKitGestureController {
 
     // MARK: Magnification and Rotation
 
-    @nonobjc
-    final func currentMagnification(_ magnification: Double, atPhase phase: WebKit.WebEventPhase) -> Double {
-        if phase == WebKit.WebEventPhase.Began {
-            lastCumulativeMagnification = 0
-        }
-        let currentMagnification = (1 + magnification) / (1 + lastCumulativeMagnification) - 1
-        lastCumulativeMagnification = magnification
-        return currentMagnification
-    }
-
-    @nonobjc
-    final func currentRotation(_ rotation: Double, atPhase phase: WebKit.WebEventPhase) -> Double {
-        if phase == WebKit.WebEventPhase.Began {
-            lastCumulativeRotation = 0
-        }
-        let currentRotation = rotation - lastCumulativeRotation
-        lastCumulativeRotation = rotation
-        return currentRotation
-    }
-
     @objc
     private func magnificationGestureRecognized(_ gesture: NSMagnificationGestureRecognizer) {
         guard let webView = view else {
             return
         }
 
-        let phase = toWebEventPhase(gesture.state)
+        let phase = WebKit.WebEventPhase(gesture.state)
         let magnification = currentMagnification(gesture.magnification, atPhase: phase)
 
-        if phase == WebKit.WebEventPhase.Began || phase == WebKit.WebEventPhase.Changed {
+        if phase == .Began || phase == .Changed {
             transformGestureDidDrive()
         } else {
             transformGestureDidEnd()
@@ -2044,33 +1190,33 @@ extension WKAppKitGestureController {
             gestureScale: Float(magnification),
             gestureRotation: 0,
             timestamp: WebKit.appKitGestureMonotonicTimeFromRawSeconds(GetCurrentEventTime()),
-            allowsNativeZoom: magnificationGestureRecognizerCanZoom(),
-            inputSource: WebKit.WebEventInputSource.Touch
+            allowsNativeZoom: magnificationGestureRecognizerCanZoom,
+            inputSource: .Touch
         )
-        let webEvent = WebKit.NativeWebGestureEvent.create(initValue, webView)
+        let webEvent = WebKit.NativeWebGestureEvent.create(initValue, webView).get()
 
         guard let viewImpl = webView._impl() else {
             return
         }
 
         if !viewImpl.allowsMagnification() {
-            if let event = webEvent.get() {
-                webView._protectedPage().get()?.handleGestureEvent(consuming: .init(event))
+            if let webEvent {
+                webView._protectedPage().get()?.handleGestureEvent(consuming: .init(webEvent))
             }
             return
         }
 
-        if phase == WebKit.WebEventPhase.Began {
+        if phase == .Began {
             viewImpl.dismissContentRelativeChildWindowsWithAnimation(false)
         }
 
-        let origin = webEvent.get().map { WebCore.FloatPoint($0.position()) } ?? WebCore.FloatPoint()
-        if viewImpl.handleMagnificationGestureIfMagnifying(magnification, phase, origin, WebKit.WebEventInputSource.Touch) {
+        let origin = webEvent.map { WebCore.FloatPoint($0.position()) } ?? WebCore.FloatPoint()
+        if viewImpl.handleMagnificationGestureIfMagnifying(magnification, phase, origin, .Touch) {
             return
         }
 
-        if let event = webEvent.get() {
-            webView._protectedPage().get()?.handleGestureEvent(consuming: .init(event))
+        if let webEvent {
+            webView._protectedPage().get()?.handleGestureEvent(consuming: .init(webEvent))
         }
     }
 
@@ -2080,9 +1226,9 @@ extension WKAppKitGestureController {
             return
         }
 
-        let phase = toWebEventPhase(gesture.state)
+        let phase = WebKit.WebEventPhase(gesture.state)
 
-        if phase == WebKit.WebEventPhase.Began || phase == WebKit.WebEventPhase.Changed {
+        if phase == .Began || phase == .Changed {
             transformGestureDidDrive()
         } else {
             transformGestureDidEnd()
@@ -2096,7 +1242,7 @@ extension WKAppKitGestureController {
             gestureRotation: Float(currentRotation(gesture.rotationInDegrees, atPhase: phase)),
             timestamp: WebKit.appKitGestureMonotonicTimeFromRawSeconds(GetCurrentEventTime()),
             allowsNativeZoom: true,
-            inputSource: WebKit.WebEventInputSource.Touch
+            inputSource: .Touch
         )
         if let event = WebKit.NativeWebGestureEvent.create(initValue, webView).get() {
             webView._protectedPage().get()?.handleGestureEvent(consuming: .init(event))
@@ -2128,7 +1274,7 @@ extension WKAppKitGestureController {
                     """
                 )
             }
-            assertionFailure()
+            assertionFailure("A text selection drag gesture is already set")
         }
 
         textSelectionDragGesture = gesture
@@ -2151,8 +1297,7 @@ extension WKAppKitGestureController {
             Logger.viewGestures.log("[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Drag session began")
         }
 
-        if let handler = textSelectionDragCompletionHandler {
-            textSelectionDragCompletionHandler = nil
+        if let handler = textSelectionDragCompletionHandler.take() {
             handler(session)
         }
     }
@@ -2177,7 +1322,7 @@ extension WKAppKitGestureController {
         mouseTrackingHasSentMouseDown = false
         mouseTrackingIsSuppressedForTransformGesture = false
         contentDeclinedTransformGesture = false
-        lastTransformGestureDriveTime = 0
+        lastTransformGestureDriveTime = nil
         cxxSupport.resetMomentum()
         mouseTrackingSendsMouseMoves = false
         mayHaveHoverActivatedByClick = false
@@ -2190,67 +1335,10 @@ extension WKAppKitGestureController {
         latestTapID = nil
         layerTreeTransactionIdAtLastInteractionStart = nil
         lastCompletedImageAnalysis = nil
-        cxxSupport.reset()
+        cxxSupport.resetPositionInformation()
     }
 
     // MARK: NSGestureRecognizerDelegate
-
-    @nonobjc
-    final func shouldRecognizeSimultaneouslyWithMouseTrackingGesture(_ gesture: NSGestureRecognizer) -> Bool {
-        guard let webView = view else {
-            return false
-        }
-
-        if isMouseTrackingGestureRecognizer(gesture) || isOurManipulationGestureRecognizer(gesture) {
-            return true
-        }
-
-        if gesture === doubleClickGestureRecognizer || gesture === singleClickGestureRecognizer || gesture === dragPressGestureRecognizer {
-            return true
-        }
-
-        if gesture.name == "NSThemeFrame.panTouchGestureRecognizer" {
-            return true
-        }
-
-        if Self.isTextSelectionGesture(gesture, of: webView) {
-            return true
-        }
-
-        // An enclosing scroll view pan can report that it "began" even while being deferred,
-        // so let mouse tracking recognize simultaneously until we have a deferral decision.
-        if isEnclosingScrollViewPanHeldByDeferral(gesture) {
-            return true
-        }
-
-        return false
-    }
-
-    // The text selection manager's gestures, read as the NSArray AppKit returns: the tests below are identity
-    // tests, so no element is bridged or class-checked.
-    @nonobjc
-    static func textSelectionGestures(of webView: WKWebView) -> NSArray? {
-        webView.textSelectionManager?.gesturesForFailureRequirements as NSArray?
-    }
-
-    @nonobjc
-    static func isTextSelectionGesture(_ gesture: NSGestureRecognizer, of webView: WKWebView) -> Bool {
-        guard let gestures = textSelectionGestures(of: webView) else {
-            return false
-        }
-        return gestures.indexOfObjectIdentical(to: gesture) != NSNotFound
-    }
-
-    @nonobjc
-    final func isEnclosingScrollViewPanHeldByDeferral(_ gesture: NSGestureRecognizer) -> Bool {
-        guard let enclosingScrollViewPanDeferringGestureRecognizer else {
-            return false
-        }
-
-        let deferralState = enclosingScrollViewPanDeferringGestureRecognizer.state
-        return (deferralState == .possible || deferralState == .ended)
-            && deferringGestureRecognizer(enclosingScrollViewPanDeferringGestureRecognizer, shouldDeferOtherGestureRecognizer: gesture)
-    }
 
     @objc(gestureRecognizer:shouldRecognizeSimultaneouslyWithGestureRecognizer:)
     func gestureRecognizer(
@@ -2271,25 +1359,23 @@ extension WKAppKitGestureController {
             )
         }
 
-        if isSamePair(gestureRecognizer, otherGestureRecognizer, singleClickGestureRecognizer, panGestureRecognizer) {
+        if isSamePair(gestureRecognizer, otherGestureRecognizer, as: singleClickGestureRecognizer, panGestureRecognizer) {
             return true
         }
 
-        if isSamePair(gestureRecognizer, otherGestureRecognizer, magnificationGestureRecognizer, panGestureRecognizer) {
+        if isSamePair(gestureRecognizer, otherGestureRecognizer, as: magnificationGestureRecognizer, panGestureRecognizer) {
             return true
         }
 
-        if isSamePair(gestureRecognizer, otherGestureRecognizer, rotationGestureRecognizer, panGestureRecognizer) {
+        if isSamePair(gestureRecognizer, otherGestureRecognizer, as: rotationGestureRecognizer, panGestureRecognizer) {
             return true
         }
 
-        if isSamePair(gestureRecognizer, otherGestureRecognizer, magnificationGestureRecognizer, rotationGestureRecognizer) {
+        if isSamePair(gestureRecognizer, otherGestureRecognizer, as: magnificationGestureRecognizer, rotationGestureRecognizer) {
             return true
         }
 
-        if gestureRecognizer.isKind(of: WKDeferringGestureRecognizer.self)
-            || otherGestureRecognizer.isKind(of: WKDeferringGestureRecognizer.self)
-        {
+        if gestureRecognizer is WKDeferringGestureRecognizer || otherGestureRecognizer is WKDeferringGestureRecognizer {
             return true
         }
 
@@ -2320,13 +1406,13 @@ extension WKAppKitGestureController {
             return true
         }
 
-        if isSamePair(gestureRecognizer, otherGestureRecognizer, dragPressGestureRecognizer, singleClickGestureRecognizer) {
+        if isSamePair(gestureRecognizer, otherGestureRecognizer, as: dragPressGestureRecognizer, singleClickGestureRecognizer) {
             return true
         }
 
         if gestureRecognizer === singleClickGestureRecognizer
             && isBuiltInScrollViewPanGestureRecognizer(otherGestureRecognizer)
-            && (otherGestureRecognizer.view?.isKind(of: NSScrollView.self) ?? false)
+            && otherGestureRecognizer.view is NSScrollView
             && !isCatchingDeceleratingScroll(otherGestureRecognizer)
         {
             return true
@@ -2334,17 +1420,12 @@ extension WKAppKitGestureController {
 
         // Allow the single click GR to be simultaneously recognized with any of those from the text
         // selection manager.
-        if let singleClickGestureRecognizer, let textSelectionGestures = Self.textSelectionGestures(of: webView) {
-            if gestureRecognizer === singleClickGestureRecognizer
-                && textSelectionGestures.indexOfObjectIdentical(to: otherGestureRecognizer) != NSNotFound
-            {
-                return true
-            }
-            if otherGestureRecognizer === singleClickGestureRecognizer
-                && textSelectionGestures.indexOfObjectIdentical(to: gestureRecognizer) != NSNotFound
-            {
-                return true
-            }
+        if gestureRecognizer === singleClickGestureRecognizer {
+            return Self.isTextSelectionGesture(otherGestureRecognizer, of: webView)
+        }
+
+        if otherGestureRecognizer === singleClickGestureRecognizer {
+            return Self.isTextSelectionGesture(gestureRecognizer, of: webView)
         }
 
         return false
@@ -2374,11 +1455,7 @@ extension WKAppKitGestureController {
         }
 
         // Fail any gestures from the text selection manager if the secondary click GR handles them.
-        if Self.isTextSelectionGesture(otherGestureRecognizer, of: webView) && gestureRecognizer === secondaryClickGestureRecognizer {
-            return true
-        }
-
-        return false
+        return gestureRecognizer === secondaryClickGestureRecognizer && Self.isTextSelectionGesture(otherGestureRecognizer, of: webView)
     }
 
     @objc(gestureRecognizer:shouldRequireFailureOfGestureRecognizer:)
@@ -2405,7 +1482,7 @@ extension WKAppKitGestureController {
         }
 
         if isMouseTrackingGestureRecognizer(gestureRecognizer) && otherGestureRecognizer === panGestureRecognizer {
-            let panCanScroll = panGestureRecognizerCanScroll()
+            let panCanScroll = panGestureRecognizerCanScroll
             if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
                 Logger.viewGestures.debug(
                     """
@@ -2428,7 +1505,7 @@ extension WKAppKitGestureController {
 
         if gestureRecognizer === pointerTrackingGestureRecognizer {
             return pointerTrackingShouldBegin(
-                atLocation: gestureRecognizer.location(in: webView),
+                at: gestureRecognizer.location(in: webView),
                 modifierFlags: gestureRecognizer.modifierFlags
             )
         }
@@ -2443,13 +1520,13 @@ extension WKAppKitGestureController {
         }
 
         let locationInViewCoordinates =
-            if gestureRecognizer === panGestureRecognizer, let panGestureRecognizer {
-                startLocationInView(panGestureRecognizer, webView)
+            if let panGestureRecognizer, gestureRecognizer === panGestureRecognizer {
+                panGestureRecognizer.startLocation(in: webView)
             } else {
                 gestureRecognizer.location(in: webView)
             }
 
-        if gestureRecognizer.isKind(of: WKDeferringGestureRecognizer.self) {
+        if gestureRecognizer is WKDeferringGestureRecognizer {
             return true
         }
 
@@ -2499,15 +1576,15 @@ extension WKAppKitGestureController {
         }
 
         if gestureRecognizer === secondaryClickGestureRecognizer {
-            return secondaryClickShouldBegin(atLocation: locationInViewCoordinates)
+            return secondaryClickShouldBegin(at: locationInViewCoordinates)
         }
 
         if gestureRecognizer === dragPressGestureRecognizer {
-            return dragPressShouldBegin(atLocation: locationInViewCoordinates)
+            return dragPressShouldBegin(at: locationInViewCoordinates)
         }
 
         if gestureRecognizer === panGestureRecognizer {
-            return panShouldBegin(atLocation: locationInViewCoordinates)
+            return panShouldBegin(at: locationInViewCoordinates)
         }
 
         if gestureRecognizer === singleClickGestureRecognizer {
@@ -2536,20 +1613,6 @@ extension WKAppKitGestureController {
         }
 
         return true
-    }
-
-    @nonobjc
-    final func isOurManipulationGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
-        var isOurManipulationGestureRecognizer = gesture === panGestureRecognizer || gesture === magnificationGestureRecognizer
-        isOurManipulationGestureRecognizer = isOurManipulationGestureRecognizer || gesture === rotationGestureRecognizer
-        return isOurManipulationGestureRecognizer
-    }
-
-    @nonobjc
-    final func isSomeManipulationGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
-        isOurManipulationGestureRecognizer(gesture)
-            || isBuiltInScrollViewPanGestureRecognizer(gesture)
-            || isBuiltInScrollViewMagnificationGestureRecognizer(gesture)
     }
 
     @objc(_gestureRecognizer:canPreventGestureRecognizer:)
@@ -2631,6 +1694,934 @@ extension WKAppKitGestureController {
     }
 }
 
+extension WKAppKitGestureController {
+    private static func loggingDescription(for gestureRecognizer: NSGestureRecognizer?) -> String {
+        guard let gestureRecognizer else {
+            return "nil"
+        }
+
+        var parts: [String] = []
+        parts.append("\(type(of: gestureRecognizer)): \(UInt(bitPattern: ObjectIdentifier(gestureRecognizer)))")
+
+        if let name = gestureRecognizer.name {
+            parts.append("name = \(name)")
+        }
+
+        parts.append("state = \(gestureRecognizer.state.name)")
+
+        return "<\(parts.joined(separator: "; "))>"
+    }
+
+    private func setUpGestureRecognizers() {
+        setUpPanGestureRecognizer()
+        setUpPointerTrackingGestureRecognizer()
+        setUpPointerDownDeferringGestureRecognizer()
+        setUpMouseTrackingGestureRecognizers()
+        setUpSingleClickGestureRecognizer()
+        setUpDoubleClickGestureRecognizer()
+        setUpDOMDoubleClickGestureRecognizer()
+
+        setUpSecondaryClickGestureRecognizer()
+        setUpSecondaryClickDeferringGestureRecognizer()
+
+        setUpDragPressGestureRecognizer()
+        setUpDragDeferringGestureRecognizer()
+
+        setUpEnclosingScrollViewPanDeferringGestureRecognizer()
+
+        setUpImageAnalysisGestureRecognizer()
+        setUpImageAnalysisDeferringGestureRecognizers()
+
+        setUpMagnificationGestureRecognizer()
+        setUpRotationGestureRecognizer()
+    }
+
+    private func setUpPanGestureRecognizer() {
+        guard let webView = view else {
+            return
+        }
+
+        let panGestureRecognizer = WKPanGestureRecognizer(webView: webView, target: self, action: #selector(panGestureRecognized))
+        configure(forScrolling: panGestureRecognizer)
+
+        panGestureRecognizer.delegate = self
+        panGestureRecognizer.name = "WKPanGesture"
+
+        self.panGestureRecognizer = panGestureRecognizer
+    }
+
+    private func setUpMouseTrackingGestureRecognizers() {
+        primaryMouseTrackingGestureRecognizer = makeMouseTrackingGestureRecognizer(at: 0)
+        secondaryMouseTrackingGestureRecognizer = makeMouseTrackingGestureRecognizer(at: 1)
+    }
+
+    private func makeMouseTrackingGestureRecognizer(at index: Int) -> WKMouseTrackingGestureRecognizer {
+        let recognizer = WKMouseTrackingGestureRecognizer.make(target: self, action: #selector(mouseTrackingGestureRecognized))
+        configure(forMouseTracking: recognizer, at: index)
+        recognizer.delegate = self
+        recognizer.name = nameForMouseTrackingGesture(recognizer)
+        return recognizer
+    }
+
+    private func setUpPointerTrackingGestureRecognizer() {
+        let recognizer = WKPointerTrackingGestureRecognizer.make(
+            target: self,
+            action: #selector(pointerTrackingGestureRecognized)
+        )
+        pointerTrackingGestureRecognizer = recognizer
+        configure(forPointerTracking: recognizer)
+        recognizer.refusesToBeFailureRequirement = true
+        recognizer.pointerTrackingDelegate = self
+        recognizer.delegate = self
+        recognizer.name = "WKPointerTrackingGesture"
+    }
+
+    private func setUpPointerDownDeferringGestureRecognizer() {
+        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
+        pointerDownDeferringGestureRecognizer = recognizer
+        configure(forPointerDownDeferral: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKPointerDownDeferringGesture"
+    }
+
+    private func setUpSingleClickGestureRecognizer() {
+        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(singleClickGestureRecognized))
+        singleClickGestureRecognizer = recognizer
+        configure(forSingleClick: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKSingleClickGesture"
+    }
+
+    private func setUpDoubleClickGestureRecognizer() {
+        let recognizer = NSClickGestureRecognizer(target: self, action: #selector(doubleClickGestureRecognized))
+        doubleClickGestureRecognizer = recognizer
+        configure(forDoubleClick: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKDoubleClickGesture"
+    }
+
+    private func setUpDOMDoubleClickGestureRecognizer() {
+        let recognizer = WKDOMDoubleClickGestureRecognizer(target: self, action: #selector(domDoubleClickGestureRecognized))
+        configure(forDOMDoubleClick: recognizer)
+
+        recognizer.delegate = self
+        recognizer.name = "WKDOMDoubleClickGesture"
+
+        domDoubleClickGestureRecognizer = recognizer
+    }
+
+    // `domDoubleClickGestureRecognizer` is always created as a `WKDOMDoubleClickGestureRecognizer`.
+    private var typedDOMDoubleClickGestureRecognizer: WKDOMDoubleClickGestureRecognizer? {
+        guard let recognizer = domDoubleClickGestureRecognizer else {
+            return nil
+        }
+
+        guard let recognizer = recognizer as? WKDOMDoubleClickGestureRecognizer else {
+            assertionFailure("DOM double click gesture recognizer was unexpectedly of type \(type(of: recognizer)).")
+            return nil
+        }
+
+        return recognizer
+    }
+
+    private func resetDOMDoubleClickGestureRecognizer() {
+        typedDOMDoubleClickGestureRecognizer?.resetClick()
+    }
+
+    func takeCompletedDOMDoubleClick() -> Bool {
+        typedDOMDoubleClickGestureRecognizer?.takeCompletedDoubleClick() ?? false
+    }
+
+    private func setUpSecondaryClickGestureRecognizer() {
+        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(secondaryClickGestureRecognized))
+        secondaryClickGestureRecognizer = recognizer
+        configure(forSecondaryClick: recognizer)
+        recognizer.cancelPastAllowableMovement = true
+        recognizer.delegate = self
+        recognizer.name = "WKSecondaryClickGesture"
+    }
+
+    private func setUpSecondaryClickDeferringGestureRecognizer() {
+        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
+        secondaryClickDeferringGestureRecognizer = recognizer
+        configure(forSecondaryClickDeferral: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKSecondaryClickDeferringGesture"
+    }
+
+    private func setUpDragPressGestureRecognizer() {
+        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(dragPressGestureRecognized))
+        dragPressGestureRecognizer = recognizer
+        configure(forDragPress: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKDragPressGesture"
+    }
+
+    private func setUpDragDeferringGestureRecognizer() {
+        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
+        dragDeferringGestureRecognizer = recognizer
+        configure(forDragDeferral: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKDragDeferringGesture"
+    }
+
+    private func setUpEnclosingScrollViewPanDeferringGestureRecognizer() {
+        let recognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
+        enclosingScrollViewPanDeferringGestureRecognizer = recognizer
+        recognizer.allowedTouchTypes = .direct
+        recognizer.delegate = self
+        recognizer.name = "WKEnclosingScrollViewPanDeferringGesture"
+    }
+
+    private func setUpImageAnalysisGestureRecognizer() {
+        let recognizer = WKPressGestureRecognizer.make(target: self, action: #selector(imageAnalysisGestureRecognized))
+        imageAnalysisGestureRecognizer = recognizer
+        configure(forImageAnalysis: recognizer)
+        recognizer.refusesToBeFailureRequirement = true
+        recognizer.delegate = self
+        recognizer.pressDelegate = self
+        recognizer.name = "WKImageAnalysisGesture"
+    }
+
+    private func setUpImageAnalysisDeferringGestureRecognizers() {
+        // One deferral holds text selection over an image until analysis resolves; the other holds the
+        // drag-press / secondary-click recognizers. See the Image Analysis design note for why both exist
+        // and why they resolve to opposite outcomes.
+        imageAnalysisTextSelectionDeferringGestureRecognizer = makeImageAnalysisDeferringGestureRecognizer(
+            withName: "WKImageAnalysisTextSelectionDeferringGesture"
+        )
+        imageAnalysisDragAndContextMenuDeferringGestureRecognizer = makeImageAnalysisDeferringGestureRecognizer(
+            withName: "WKImageAnalysisDragAndContextMenuDeferringGesture"
+        )
+    }
+
+    private func setUpMagnificationGestureRecognizer() {
+        let recognizer = NSMagnificationGestureRecognizer(target: self, action: #selector(magnificationGestureRecognized))
+        magnificationGestureRecognizer = recognizer
+        configure(forMagnification: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKMagnificationGesture"
+    }
+
+    private func setUpRotationGestureRecognizer() {
+        let recognizer = NSRotationGestureRecognizer(target: self, action: #selector(rotationGestureRecognized))
+        rotationGestureRecognizer = recognizer
+        configure(forRotation: recognizer)
+        recognizer.delegate = self
+        recognizer.name = "WKRotationGesture"
+    }
+
+    private var installedGestureRecognizers: [NSGestureRecognizer] {
+        let recognizers: [NSGestureRecognizer?] = [
+            panGestureRecognizer,
+            pointerTrackingGestureRecognizer,
+            pointerDownDeferringGestureRecognizer,
+            primaryMouseTrackingGestureRecognizer,
+            secondaryMouseTrackingGestureRecognizer,
+            singleClickGestureRecognizer,
+            doubleClickGestureRecognizer,
+            domDoubleClickGestureRecognizer,
+            secondaryClickGestureRecognizer,
+            secondaryClickDeferringGestureRecognizer,
+            dragPressGestureRecognizer,
+            dragDeferringGestureRecognizer,
+            enclosingScrollViewPanDeferringGestureRecognizer,
+            imageAnalysisGestureRecognizer,
+            imageAnalysisTextSelectionDeferringGestureRecognizer,
+            imageAnalysisDragAndContextMenuDeferringGestureRecognizer,
+            magnificationGestureRecognizer,
+            rotationGestureRecognizer,
+        ]
+        return recognizers.compactMap { $0 }
+    }
+
+    private func addGesturesToWebView() {
+        guard let webView = view else {
+            return
+        }
+
+        for recognizer in installedGestureRecognizers {
+            webView.addGestureRecognizer(recognizer)
+        }
+    }
+
+    private func enableGesturesIfNeeded() {
+        enableGestureIfNeeded(panGestureRecognizer)
+        enableGestureIfNeeded(pointerTrackingGestureRecognizer)
+        enableGestureIfNeeded(primaryMouseTrackingGestureRecognizer)
+        enableGestureIfNeeded(secondaryMouseTrackingGestureRecognizer)
+        enableGestureIfNeeded(singleClickGestureRecognizer)
+        enableGestureIfNeeded(doubleClickGestureRecognizer)
+        enableGestureIfNeeded(domDoubleClickGestureRecognizer)
+        enableGestureIfNeeded(secondaryClickGestureRecognizer)
+        enableGestureIfNeeded(dragPressGestureRecognizer)
+        enableGestureIfNeeded(imageAnalysisGestureRecognizer)
+        enableGestureIfNeeded(magnificationGestureRecognizer)
+        enableGestureIfNeeded(rotationGestureRecognizer)
+
+        // The deferring gesture recognizers are intentionally not enabled.
+    }
+
+    private func ensureGesturesAreNotArchived() {
+        // The set of gestures managed by WKAppKitGestureController are configured
+        // and installed freshly for every web view initialization, and as such we
+        // want to avoid duplicate sets when views are decoded.
+
+        for recognizer in installedGestureRecognizers {
+            recognizer.shouldBeArchived = false
+        }
+    }
+
+    private func enableGestureIfNeeded(_ gesture: NSGestureRecognizer?) {
+        guard let webView = view else {
+            return
+        }
+
+        let gestureEnabled =
+            gesture !== imageAnalysisGestureRecognizer || WKAppKitGestureControllerCxxSupport.isLiveTextAvailableAndEnabled()
+
+        if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
+            Logger.viewGestures.log(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                \(Self.loggingDescription(for: gesture), privacy: .private) setEnabled:\(appKitGestureLogInteger(gestureEnabled))
+                """
+            )
+        }
+        gesture?.isEnabled = gestureEnabled
+    }
+
+    private func syntheticMouseEvent(
+        _ type: NSEvent.EventType,
+        at location: NSPoint,
+        modifierFlags: NSEvent.ModifierFlags,
+        timestamp: TimeInterval = GetCurrentEventTime(),
+        windowNumber: Int,
+        clickCount: Int = 1,
+        pressure: Float,
+        reportingMovementFor recognizer: WKPressGestureRecognizer? = nil
+    ) -> NSEvent? {
+        let event = NSEvent.mouseEvent(
+            with: type,
+            location: location,
+            modifierFlags: modifierFlags,
+            timestamp: timestamp,
+            windowNumber: windowNumber,
+            context: nil,
+            eventNumber: 0,
+            clickCount: clickCount,
+            pressure: pressure
+        )
+        guard let event, let recognizer else {
+            return event
+        }
+        return recognizer.eventReportingMovement(event, atWindowLocation: location)
+    }
+
+    private func touchActions(at point: NSPoint) -> TouchActions {
+        TouchActions(rawValue: cxxSupport.touchActions(at: point))
+    }
+
+    private func touchActionsAllowedPanningAxes(at point: NSPoint) -> PanAxes {
+        let touchActions = touchActions(at: point)
+        let canPanHorizontally = !touchActions.isDisjoint(with: [.auto, .manipulation, .panX])
+        let canPanVertically = !touchActions.isDisjoint(with: [.auto, .manipulation, .panY])
+
+        var allowedAxes: PanAxes = []
+        if canPanHorizontally {
+            allowedAxes.insert(.horizontal)
+        }
+        if canPanVertically {
+            allowedAxes.insert(.vertical)
+        }
+
+        return allowedAxes
+    }
+
+    private func touchActionsAllowPanning(at point: NSPoint) -> Bool {
+        !touchActionsAllowedPanningAxes(at: point).isEmpty
+    }
+
+    private var panGestureRecognizerCanScroll: Bool {
+        guard let webView = view else {
+            return false
+        }
+
+        return touchActionsAllowPanning(at: panGestureRecognizer?.location(in: webView) ?? .zero)
+    }
+
+    private var magnificationGestureRecognizerCanZoom: Bool {
+        guard let webView = view else {
+            return false
+        }
+
+        let touchActions = touchActions(at: magnificationGestureRecognizer?.location(in: webView) ?? .zero)
+        return !touchActions.isDisjoint(with: [.auto, .manipulation, .pinchZoom])
+    }
+
+    private func refreshControllerEligibility(_ gesture: NSPanGestureRecognizer) -> WebKit.RefreshControllerEligibility {
+        gesture.touches.count == 1 ? .Eligible : .Ineligible
+    }
+
+    private func nameForMouseTrackingGesture(_ gesture: NSPressGestureRecognizer) -> String {
+        if gesture.numberOfTouchesRequired == 1 {
+            return "WKMouseTrackingGestureSingle"
+        }
+        if gesture.numberOfTouchesRequired > 1 {
+            return "WKMouseTrackingGestureMultiple"
+        }
+
+        assertionFailure("A mouse tracking gesture recognizer requires at least one touch")
+        return "WKMouseTrackingGestureUnknown"
+    }
+
+    private func mouseTrackingGestureRecognizerCanTrack(_ gesture: NSPressGestureRecognizer) -> Bool {
+        guard let webView = view else {
+            return false
+        }
+
+        if gesture.numberOfTouchesRequired <= 1 {
+            return true
+        }
+
+        // If the web content permits panning, the pan GR will win.
+        // This multi-touch tracking recognizer covers the remaining case, where
+        // the content has opted out of panning. Web apps typically depend on
+        // touch/pointer/mousemove events for a notion of "translation" in this
+        // case, such as on maps.apple.com. As such, we complement the logic here
+        // with the predicate in panGestureRecognizerCanScroll.
+        return !touchActionsAllowPanning(at: gesture.location(in: webView))
+    }
+
+    // FIXME: rdar://185815023 (-[NSRotationGestureRecognizer locationInView:] should reflect live centroid of the gesture)
+    // The rotation GR's -locationInView: does not reflect its live centroid over
+    // the course of a twist, so we compute it directly and use it to feed our
+    // gesture machinery. Otherwise, the rotation and magnification locations stomp
+    // over each other in ViewGestureController.
+    private func gestureCentroidInWindow(for gesture: NSGestureRecognizer) -> WebCore.FloatPoint {
+        let touches: [NSTouch]
+        if let magnificationGesture = gesture as? NSMagnificationGestureRecognizer {
+            touches = magnificationGesture.touches
+        } else if let rotationGesture = gesture as? NSRotationGestureRecognizer {
+            touches = rotationGesture.touches
+        } else {
+            touches = []
+        }
+
+        let count = touches.count
+
+        if count == 0 {
+            return WebCore.FloatPoint(gesture.location(in: nil))
+        }
+
+        var centroidX: Float = 0
+        var centroidY: Float = 0
+        for touch in touches {
+            let locationInWindow = touch.location(in: nil)
+            centroidX = Float(Double(centroidX) + locationInWindow.x)
+            centroidY = Float(Double(centroidY) + locationInWindow.y)
+        }
+        return WebCore.FloatPoint(centroidX, centroidY).scaled(Float(1.0 / Double(count)))
+    }
+
+    private func isOnlyTouchDown(_ touch: NSTouch) -> Bool {
+        guard let webView = view else {
+            return false
+        }
+
+        guard let event = NSApp.currentEvent, event.type == .directTouch else {
+            return false
+        }
+
+        let touches = event.touches(matching: .touching, in: webView)
+        return touches.count == 1 && touches.first?._uid == touch._uid
+    }
+
+    private func interruptMomentumIfNeeded(for touch: NSTouch) {
+        // Other callers of resetCaughtDeceleratingScroll() can miss the end of a gesture
+        // (e.g. a pan over content that disallows scrolling, which then neither scrolls, clicks, nor tracks the mouse).
+        // We can't let that leak into the next interaction, or it would keep refusing gestures.
+        // We only consider this a new interaction if 1) this is the only touch down,
+        // and 2) isn't the touch that caught the scroll.
+        if caughtDeceleratingScroll, uidOfTouchThatCaughtDeceleratingScroll != touch._uid, isOnlyTouchDown(touch) {
+            if Logger.viewGestures.isEnabled(type: .default), let view, let page = view._protectedPage().get() {
+                Logger.viewGestures.log(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Resetting stale caught decelerating scroll state from a previous interaction
+                    """
+                )
+            }
+            resetCaughtDeceleratingScroll()
+        }
+
+        let wasMomentumActive = isMomentumActive
+        interruptMomentumIfNeeded()
+
+        if wasMomentumActive && caughtDeceleratingScroll {
+            uidOfTouchThatCaughtDeceleratingScroll = touch._uid
+        }
+    }
+
+    private func configure(forScrolling gesture: NSPanGestureRecognizer) {
+        // FIXME: Strictly, this should be `2` when allowsMagnification == YES and the min/max zoom
+        // scales are different, c.f. -[UIScrollView _updatePanGestureConfiguration] for prior art.
+        gesture.maximumNumberOfTouches = 2
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+    }
+
+    private func configure(forSingleClick gesture: NSPressGestureRecognizer) {
+        gesture.minimumPressDuration = 0
+        gesture.cancelPastAllowableMovement = true
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        gesture.numberOfTouchesRequired = 1
+    }
+
+    private func configure(forDoubleClick gesture: NSClickGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        gesture.numberOfTouchesRequired = 2
+        gesture.numberOfClicksRequired = 2
+    }
+
+    private func configure(forDOMDoubleClick gesture: NSClickGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        gesture.numberOfTouchesRequired = 1
+        // Intentionally set to `1` and not `2`, see WKDOMDoubleClickGestureRecognizer.swift.
+        // FIXME: rdar://184563102 (An NSClickGestureRecognizer with numberOfClicksRequired=2 results in other GRs being neglected for some gestures)
+        gesture.numberOfClicksRequired = 1
+    }
+
+    private func configure(forSecondaryClick gesture: NSPressGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+    }
+
+    private func configure(forMouseTracking gesture: NSPressGestureRecognizer, at index: Int) {
+        gesture.minimumPressDuration = 0
+        gesture.cancelPastAllowableMovement = false
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        gesture.numberOfTouchesRequired = index + 1
+    }
+
+    private func configure(forPointerTracking gesture: NSPressGestureRecognizer) {
+        gesture.minimumPressDuration = 0
+        gesture.allowableMovement = CGFloat.greatestFiniteMagnitude
+        gesture.cancelPastAllowableMovement = false
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        // FIXME: Tracking more than one touch needs a pointer per touch.
+        gesture.numberOfTouchesRequired = 1
+    }
+
+    private func configure(forPointerDownDeferral gesture: WKDeferringGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+    }
+
+    private func configure(forDragPress gesture: NSPressGestureRecognizer) {
+        // Matching _UIDragInteractionDefaultLiftDelay.
+        let dragPressMinimumDuration: TimeInterval = 0.325
+        gesture.minimumPressDuration = dragPressMinimumDuration
+        gesture.cancelPastAllowableMovement = false
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        gesture.numberOfTouchesRequired = 1
+    }
+
+    private func configure(forDragDeferral gesture: WKDeferringGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+    }
+
+    private func configure(forSecondaryClickDeferral gesture: WKDeferringGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+    }
+
+    private func configure(forImageAnalysis gesture: NSPressGestureRecognizer) {
+        // Mirrors the iOS WKImageAnalysisGestureRecognizer: a short, stationary long-press that starts
+        // preflighting Live Text as soon as a press settles on an image. Movement cancels it, so a
+        // scroll or drag over an image does not trigger analysis.
+        gesture.minimumPressDuration = 0.1
+        gesture.allowableMovement = 0
+        gesture.cancelPastAllowableMovement = true
+        gesture.allowedTouchTypes = .direct
+        gesture.buttonMask = 0
+        gesture.numberOfTouchesRequired = 1
+    }
+
+    func configure(forImageAnalysisDeferral gesture: WKDeferringGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+    }
+
+    private func configure(forMagnification gesture: NSMagnificationGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+    }
+
+    private func configure(forRotation gesture: NSRotationGestureRecognizer) {
+        gesture.allowedTouchTypes = .direct
+    }
+
+    // MARK: Gesture Recognition
+
+    private func movementExceedsClickAllowableMovement(_ movementInWindow: NSSize) -> Bool {
+        let allowableMovement = singleClickGestureRecognizer?.allowableMovement ?? 0
+        return abs(movementInWindow.width) > allowableMovement || abs(movementInWindow.height) > allowableMovement
+    }
+
+    private func isMouseTrackingGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
+        gesture is WKMouseTrackingGestureRecognizer
+    }
+
+    private func mouseTrackingWillBeHandedOff() -> Bool {
+        guard mouseTrackingHasSentMouseDown else {
+            return false
+        }
+
+        return [primaryMouseTrackingGestureRecognizer, secondaryMouseTrackingGestureRecognizer]
+            .contains {
+                $0?.state == .began || $0?.state == .changed
+            }
+    }
+
+    private var isRecognizingTransformGesture: Bool {
+        func isRecognizing(_ gesture: NSGestureRecognizer?) -> Bool {
+            switch gesture?.state {
+            case .began, .changed:
+                true
+            default:
+                false
+            }
+        }
+
+        return isRecognizing(magnificationGestureRecognizer) || isRecognizing(rotationGestureRecognizer)
+    }
+
+    var isTransformGestureActiveOrEnding: Bool {
+        func isActiveOrEnding(_ gesture: NSGestureRecognizer?) -> Bool {
+            switch gesture?.state {
+            case .began, .changed, .ended:
+                true
+            default:
+                false
+            }
+        }
+
+        return isActiveOrEnding(magnificationGestureRecognizer) || isActiveOrEnding(rotationGestureRecognizer)
+    }
+
+    private func shouldSuppressMouseTrackingForTransformGesture() -> Bool {
+        let transformGestureDriveTimeout: Duration = .milliseconds(50)
+
+        guard contentDeclinedTransformGesture, isRecognizingTransformGesture, let lastTransformGestureDriveTime else {
+            return false
+        }
+
+        return lastTransformGestureDriveTime.duration(to: .now) < transformGestureDriveTimeout
+    }
+
+    private func transformGestureDidEnd() {
+        guard !isRecognizingTransformGesture else {
+            return
+        }
+
+        contentDeclinedTransformGesture = false
+        resetCaughtDeceleratingScroll()
+    }
+
+    private func transformGestureDidDrive() {
+        lastTransformGestureDriveTime = .now
+
+        guard contentDeclinedTransformGesture, mouseTrackingHasSentMouseDown, let impl = view?._impl(), !impl.ignoresAllEvents() else {
+            return
+        }
+
+        let activeMouseTrackingGesture = activeMouseTrackingGestureRecognizer
+        let modifierFlags = activeMouseTrackingGesture?.modifierFlags ?? []
+        let locationInWindow =
+            activeMouseTrackingGesture?.mouseLocationInWindow
+            ?? NSPoint(x: CGFloat(mouseTrackingStartLocationInWindow.x()), y: CGFloat(mouseTrackingStartLocationInWindow.y()))
+
+        let mouseUp = syntheticMouseEvent(
+            .leftMouseUp,
+            at: locationInWindow,
+            modifierFlags: modifierFlags,
+            windowNumber: impl.windowNumber(),
+            pressure: 0,
+            reportingMovementFor: activeMouseTrackingGesture
+        )
+        impl.mouseUp(mouseUp, .Touch, .No)
+
+        mouseTrackingHasSentMouseDown = false
+        mouseTrackingIsSuppressedForTransformGesture = true
+    }
+
+    // MARK: Pointer Tracking
+
+    private func dispatchTrackedPointerEvent(
+        _ phase: WebKit.WebEventPhase,
+        atLocationInWindow locationInWindow: NSPoint,
+        modifierFlags: NSEvent.ModifierFlags
+    ) {
+        cxxSupport.dispatchTrackedPointerEvent(phase, atLocationInWindow: locationInWindow, modifierFlags: modifierFlags) {
+            [weak self] wasCanceled in
+            self?.didDispatchPointerDown(wasCanceled: wasCanceled)
+        }
+    }
+
+    private func didDispatchPointerDown(wasCanceled: Bool) {
+        guard let pointerDownDeferringGestureRecognizer, pointerDownDeferringGestureRecognizer.state == .possible else {
+            return
+        }
+
+        if Logger.viewGestures.isEnabled(type: .debug), let webView = view, let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                """
+                [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                deferral resolved: pointerdown canceled=\(appKitGestureLogInteger(wasCanceled))
+                """
+            )
+        }
+
+        pointerDownDeferringGestureRecognizer.endDeferralShouldPreventGestures(wasCanceled)
+    }
+
+    private func pointerTrackingShouldBegin(at locationInView: NSPoint, modifierFlags: NSEvent.ModifierFlags) -> Bool {
+        guard let webView = view, pointerTrackingGestureRecognizer?.isEnabled ?? false else {
+            return false
+        }
+
+        if !(webView._impl()?.window()?.isKeyWindow ?? false) && !modifierFlags.contains(.command) {
+            return false
+        }
+
+        // A pan here is delivered as mouse moves with no button held, so the page must not see a pressed pointer.
+        if isHoverActivatedByClick(at: locationInView) {
+            return false
+        }
+
+        return !isPointInScrollbar(locationInView)
+    }
+
+    private func cancelPointerTrackingIfNeeded() {
+        guard isTrackingPointer else {
+            return
+        }
+        isTrackingPointer = false
+
+        if Logger.viewGestures.isEnabled(type: .debug), let webView = view, let page = webView._protectedPage().get() {
+            Logger.viewGestures.debug(
+                "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Canceling the tracked pointer"
+            )
+        }
+
+        dispatchTrackedPointerEvent(.Cancelled, atLocationInWindow: trackedPointerLastLocationInWindow, modifierFlags: [])
+    }
+
+    // MARK: Magnification and Rotation
+
+    private func currentMagnification(_ magnification: Double, atPhase phase: WebKit.WebEventPhase) -> Double {
+        if phase == .Began {
+            lastCumulativeMagnification = 0
+        }
+        let currentMagnification = (1 + magnification) / (1 + lastCumulativeMagnification) - 1
+        lastCumulativeMagnification = magnification
+        return currentMagnification
+    }
+
+    private func currentRotation(_ rotation: Double, atPhase phase: WebKit.WebEventPhase) -> Double {
+        if phase == .Began {
+            lastCumulativeRotation = 0
+        }
+        let currentRotation = rotation - lastCumulativeRotation
+        lastCumulativeRotation = rotation
+        return currentRotation
+    }
+
+    // MARK: NSGestureRecognizerDelegate
+
+    // The text selection manager's gestures, read as the NSArray AppKit returns: the tests below are identity
+    // tests, so no element is bridged or class-checked.
+    private static func textSelectionGestures(of webView: WKWebView) -> NSArray? {
+        webView.textSelectionManager?.gesturesForFailureRequirements as NSArray?
+    }
+
+    private static func isTextSelectionGesture(_ gesture: NSGestureRecognizer, of webView: WKWebView) -> Bool {
+        guard let gestures = textSelectionGestures(of: webView) else {
+            return false
+        }
+        return gestures.indexOfObjectIdentical(to: gesture) != NSNotFound
+    }
+
+    private func shouldRecognizeSimultaneouslyWithMouseTrackingGesture(_ gesture: NSGestureRecognizer) -> Bool {
+        guard let webView = view else {
+            return false
+        }
+
+        if isMouseTrackingGestureRecognizer(gesture) || isOurManipulationGestureRecognizer(gesture) {
+            return true
+        }
+
+        if gesture === doubleClickGestureRecognizer || gesture === singleClickGestureRecognizer || gesture === dragPressGestureRecognizer {
+            return true
+        }
+
+        if gesture.name == "NSThemeFrame.panTouchGestureRecognizer" {
+            return true
+        }
+
+        if Self.isTextSelectionGesture(gesture, of: webView) {
+            return true
+        }
+
+        // An enclosing scroll view pan can report that it "began" even while being deferred,
+        // so let mouse tracking recognize simultaneously until we have a deferral decision.
+        return isEnclosingScrollViewPanHeldByDeferral(gesture)
+    }
+
+    private func isEnclosingScrollViewPanHeldByDeferral(_ gesture: NSGestureRecognizer) -> Bool {
+        guard let enclosingScrollViewPanDeferringGestureRecognizer else {
+            return false
+        }
+
+        let deferralState = enclosingScrollViewPanDeferringGestureRecognizer.state
+        return (deferralState == .possible || deferralState == .ended)
+            && deferringGestureRecognizer(enclosingScrollViewPanDeferringGestureRecognizer, shouldDeferOtherGestureRecognizer: gesture)
+    }
+
+    private func shouldPreventGestures(
+        deferredBy deferringGestureRecognizer: WKDeferringGestureRecognizer,
+        info: WebKit.InteractionInformationAtPosition,
+        isInScrollbar: Bool,
+        webView: WKWebView
+    ) -> Bool? {
+        let overLiveTextImage = WKAppKitGestureControllerCxxSupport.isLiveTextAvailableAndEnabled() && info.isImage
+
+        // Over a scrollbar: drive the scrollbar, not text selection -- prevent the deferred gestures
+        // so the mouse-tracking -> `Scrollbar::mouseDown` path wins.
+        if isInScrollbar {
+            if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    deferral resolved: over scrollbar; preventing text-selection gestures
+                    """
+                )
+            }
+            return true
+        }
+
+        if deferringGestureRecognizer === imageAnalysisTextSelectionDeferringGestureRecognizer
+            || deferringGestureRecognizer === imageAnalysisDragAndContextMenuDeferringGestureRecognizer
+        {
+            // Image-analysis deferrals (see the Image Analysis design note): over an image with Live
+            // Text available, keep deferring (nil) until the preflight's analysis token resolves both
+            // deferrals (see resolveImageAnalysisDeferrals(with:)); otherwise this deferral has no
+            // opinion, so release. We only have basic hit-test info here (this request does not fetch
+            // image data), so key off info.isImage; the preflight does the full analyzability check.
+            if overLiveTextImage {
+                if let reusableOutcome = lastCompletedImageAnalysis?.outcome(for: info.hostImageOrVideoElementContext.value) {
+                    let prevent = shouldPreventGestures(deferredBy: deferringGestureRecognizer, for: reusableOutcome)
+                    if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
+                        Logger.viewGestures.debug(
+                            """
+                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                            deferral resolved: reusing completed image analysis outcome \
+                            (prevent=\(appKitGestureLogInteger(prevent)))
+                            """
+                        )
+                    }
+                    return prevent
+                }
+
+                if imageAnalysisDeferralState == .gestureFailed {
+                    if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
+                        Logger.viewGestures.debug(
+                            """
+                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                            deferral resolved: image analysis preflight failed; not preventing
+                            """
+                        )
+                    }
+                    return false
+                }
+
+                imageAnalysisDeferralState = .deferring
+                return nil
+            }
+
+            return false
+        }
+
+        if deferringGestureRecognizer === dragDeferringGestureRecognizer {
+            let isDraggable = info.representsDraggableElement
+
+            if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    deferral resolved: isDraggable=\(appKitGestureLogInteger(isDraggable)) \
+                    (link=\(appKitGestureLogInteger(info.isLink)) image=\(appKitGestureLogInteger(info.isImage)) \
+                    attachment=\(appKitGestureLogInteger(info.isAttachment)) \
+                    dhtml=\(appKitGestureLogInteger(info.isDHTMLDraggable)) color=\(appKitGestureLogInteger(info.isColorInput)) \
+                    prefersDrag=\(appKitGestureLogInteger(info.prefersDraggingOverTextSelection)))
+                    """
+                )
+            }
+
+            return isDraggable && !overLiveTextImage
+        }
+
+        if deferringGestureRecognizer === secondaryClickDeferringGestureRecognizer {
+            let isSelectable = info.representsSelectableContent
+            let prefersManipulation = info.prefersDirectManipulation
+
+            if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    Resolved deferral: isSelectable=\(appKitGestureLogInteger(isSelectable)) \
+                    prefersDirectManipulation=\(appKitGestureLogInteger(prefersManipulation)) \
+                    (selectability=\(info.selectability.rawValue) \
+                    overEditableContent=\(appKitGestureLogInteger(info.isOverEditableContent)))
+                    """
+                )
+            }
+
+            return (!isSelectable || prefersManipulation) && !overLiveTextImage
+        }
+
+        if deferringGestureRecognizer === enclosingScrollViewPanDeferringGestureRecognizer {
+            let prefersManipulation = info.prefersDirectManipulation
+
+            if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
+                Logger.viewGestures.debug(
+                    """
+                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
+                    deferral resolved: enclosing scroll view pan yields to content=\(appKitGestureLogInteger(prefersManipulation))
+                    """
+                )
+            }
+
+            return prefersManipulation
+        }
+
+        preconditionFailure("Unexpected deferring gesture recognizer")
+    }
+
+    private func isOurManipulationGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
+        gesture === panGestureRecognizer || gesture === magnificationGestureRecognizer || gesture === rotationGestureRecognizer
+    }
+
+    private func isSomeManipulationGestureRecognizer(_ gesture: NSGestureRecognizer) -> Bool {
+        isOurManipulationGestureRecognizer(gesture)
+            || isBuiltInScrollViewPanGestureRecognizer(gesture)
+            || isBuiltInScrollViewMagnificationGestureRecognizer(gesture)
+    }
+}
+
 @objc(CxxSupport)
 @implementation
 extension WKAppKitGestureController {
@@ -2685,11 +2676,7 @@ extension WKAppKitGestureController {
             return webView.isDescendant(of: scrollView)
         }
 
-        if Self.isTextSelectionGesture(gestureRecognizer, of: webView) {
-            return true
-        }
-
-        return false
+        return Self.isTextSelectionGesture(gestureRecognizer, of: webView)
     }
 
     @objc(deferringGestureRecognizer:shouldDeferGesturesForEventThatWillBeginTouches:)
@@ -2752,7 +2739,7 @@ extension WKAppKitGestureController {
         // This deferral waits on the page's reply to the pointerdown and not on position
         // information, so there is only something to wait for if pointer tracking will begin.
         if deferringGestureRecognizer === pointerDownDeferringGestureRecognizer {
-            return pointerTrackingShouldBegin(atLocation: locationInView, modifierFlags: event.modifierFlags)
+            return pointerTrackingShouldBegin(at: locationInView, modifierFlags: event.modifierFlags)
         }
 
         if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
@@ -2764,8 +2751,8 @@ extension WKAppKitGestureController {
             )
         }
 
-        let request = positionInformationRequest(atLocation: locationInView)
-        cxxSupport.doAfterUpdate(request) { [weak self, weak deferringGestureRecognizer] info in
+        let request = positionInformationRequest(at: locationInView)
+        cxxSupport.doAfterPositionInformationUpdate(request) { [weak self, weak deferringGestureRecognizer] info in
             guard let self, let deferringGestureRecognizer else {
                 return
             }
@@ -2797,122 +2784,12 @@ extension WKAppKitGestureController {
                 return
             }
 
-            let shouldPreventGestures: Bool? = {
-                let overLiveTextImage = self.cxxSupport.isLiveTextAvailableAndEnabled() && info.isImage
-
-                // Over a scrollbar: drive the scrollbar, not text selection -- prevent the deferred gestures
-                // so the mouse-tracking -> `Scrollbar::mouseDown` path wins.
-                if isInScrollbar {
-                    if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.debug(
-                            """
-                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                            deferral resolved: over scrollbar; preventing text-selection gestures
-                            """
-                        )
-                    }
-                    return true
-                }
-
-                if deferringGestureRecognizer === self.imageAnalysisTextSelectionDeferringGestureRecognizer
-                    || deferringGestureRecognizer === self.imageAnalysisDragAndContextMenuDeferringGestureRecognizer
-                {
-                    // Image-analysis deferrals (see the Image Analysis design note): over an image with Live
-                    // Text available, keep deferring (nil) until the preflight's analysis token resolves both
-                    // deferrals (see resolveImageAnalysisDeferrals(with:)); otherwise this deferral has no
-                    // opinion, so release. We only have basic hit-test info here (this request does not fetch
-                    // image data), so key off info.isImage; the preflight does the full analyzability check.
-                    if overLiveTextImage {
-                        let reusableOutcome = self.lastCompletedImageAnalysis?.outcome(for: info.hostImageOrVideoElementContext.value)
-
-                        if let reusableOutcome {
-                            let prevent = self.outcome(reusableOutcome, preventsGesturesDeferredBy: deferringGestureRecognizer)
-                            if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                                Logger.viewGestures.debug(
-                                    """
-                                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                                    deferral resolved: reusing completed image analysis outcome \
-                                    (prevent=\(appKitGestureLogInteger(prevent)))
-                                    """
-                                )
-                            }
-                            return prevent
-                        }
-
-                        if self.imageAnalysisDeferralState == .gestureFailed {
-                            if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                                Logger.viewGestures.debug(
-                                    """
-                                    [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                                    deferral resolved: image analysis preflight failed; not preventing
-                                    """
-                                )
-                            }
-                            return false
-                        }
-
-                        self.imageAnalysisDeferralState = .deferring
-                        return nil
-                    }
-
-                    return false
-                }
-
-                if deferringGestureRecognizer === self.dragDeferringGestureRecognizer {
-                    let isDraggable = representsDraggableElement(info)
-
-                    if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.debug(
-                            """
-                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                            deferral resolved: isDraggable=\(appKitGestureLogInteger(isDraggable)) \
-                            (link=\(appKitGestureLogInteger(info.isLink)) image=\(appKitGestureLogInteger(info.isImage)) \
-                            attachment=\(appKitGestureLogInteger(info.isAttachment)) \
-                            dhtml=\(appKitGestureLogInteger(info.isDHTMLDraggable)) color=\(appKitGestureLogInteger(info.isColorInput)) \
-                            prefersDrag=\(appKitGestureLogInteger(info.prefersDraggingOverTextSelection)))
-                            """
-                        )
-                    }
-
-                    return isDraggable && !overLiveTextImage
-                }
-
-                if deferringGestureRecognizer === self.secondaryClickDeferringGestureRecognizer {
-                    let isSelectable = representsSelectableContent(info)
-                    let prefersManipulation = prefersDirectManipulation(info)
-
-                    if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.debug(
-                            """
-                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                            Resolved deferral: isSelectable=\(appKitGestureLogInteger(isSelectable)) \
-                            prefersDirectManipulation=\(appKitGestureLogInteger(prefersManipulation)) \
-                            (selectability=\(info.selectability.rawValue) \
-                            overEditableContent=\(appKitGestureLogInteger(info.isOverEditableContent)))
-                            """
-                        )
-                    }
-
-                    return (!isSelectable || prefersManipulation) && !overLiveTextImage
-                }
-
-                if deferringGestureRecognizer === self.enclosingScrollViewPanDeferringGestureRecognizer {
-                    let prefersManipulation = prefersDirectManipulation(info)
-
-                    if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
-                        Logger.viewGestures.debug(
-                            """
-                            [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
-                            deferral resolved: enclosing scroll view pan yields to content=\(appKitGestureLogInteger(prefersManipulation))
-                            """
-                        )
-                    }
-
-                    return prefersManipulation
-                }
-
-                fatalError()
-            }()
+            let shouldPreventGestures = self.shouldPreventGestures(
+                deferredBy: deferringGestureRecognizer,
+                info: info,
+                isInScrollbar: isInScrollbar,
+                webView: webView
+            )
 
             if let shouldPreventGestures {
                 deferringGestureRecognizer.endDeferralShouldPreventGestures(shouldPreventGestures)
@@ -2924,7 +2801,7 @@ extension WKAppKitGestureController {
 
     @objc(deferringGestureRecognizer:didEndTouchesWithEvent:)
     func deferringGestureRecognizer(_ deferringGestureRecognizer: WKDeferringGestureRecognizer, didEndTouchesWith event: NSEvent) {
-        if deferringGestureRecognizer.state != .possible {
+        guard deferringGestureRecognizer.state == .possible else {
             return
         }
 
@@ -2938,7 +2815,7 @@ extension WKAppKitGestureController {
         }
 
         if deferringGestureRecognizer !== pointerDownDeferringGestureRecognizer {
-            cxxSupport.abandonOutstandingRequest()
+            cxxSupport.abandonPositionInformationRequest()
         }
 
         deferringGestureRecognizer.endDeferralShouldPreventGestures(false)
@@ -2955,14 +2832,14 @@ extension WKAppKitGestureController {
 extension NSGestureRecognizer.State {
     fileprivate var name: String {
         switch self {
-        case .began: "Began"
         case .possible: "Possible"
+        case .began: "Began"
         case .changed: "Changed"
         case .ended: "Ended"
         case .cancelled: "Cancelled"
         case .failed: "Failed"
         @unknown default:
-            fatalError()
+            preconditionFailure("Unknown gesture recognizer state")
         }
     }
 }

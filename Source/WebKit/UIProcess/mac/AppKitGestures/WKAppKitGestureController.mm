@@ -294,9 +294,8 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     _controller = controller;
 }
 
-- (void)setUpWithPage
+- (void)setUpPositionInformation
 {
-    RetainPtr protectedSelf = self;
     RetainPtr webView = [_controller.get() webView];
     if (!webView)
         return;
@@ -305,58 +304,57 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     _positionInformationManager = makeUnique<WebKit::PositionInformationManager>(*[webView _protectedPage]);
 }
 
-- (void)doAfterUpdate:(WebKit::InteractionInformationRequest)request completion:(void (^)(WebKit::OptionalInteractionInformationAtPosition info))completion
+- (void)doAfterPositionInformationUpdate:(WebKit::InteractionInformationRequest)request completion:(void (^)(WebKit::OptionalInteractionInformationAtPosition info))completion
 {
     RetainPtr protectedSelf = self;
-    _positionInformationManager->doAfterUpdate(WTF::move(request), [completion = makeBlockPtr(completion)](const auto& optionalInfo) {
+    _positionInformationManager->doAfterUpdate(request, [completion = makeBlockPtr(completion)](const auto& optionalInfo) {
         completion(optionalInfo);
     });
 }
 
-- (void)invalidate
+- (void)invalidatePositionInformation
 {
-    RetainPtr protectedSelf = self;
     _positionInformationManager->invalidate();
 }
 
-- (void)reset
+- (void)resetPositionInformation
 {
     RetainPtr protectedSelf = self;
     _positionInformationManager->reset();
 }
 
-- (void)abandonOutstandingRequest
+- (void)abandonPositionInformationRequest
 {
     RetainPtr protectedSelf = self;
     _positionInformationManager->abandonOutstandingRequest();
 }
 
-- (BOOL)currentIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(int)radius
+- (BOOL)positionInformationIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(int)radius
 {
     return _positionInformationManager->currentIsApproximatelyValid(request, radius);
 }
 
-- (BOOL)hasValidCurrentInformation
+- (BOOL)hasValidPositionInformation
 {
     return _positionInformationManager->hasValidCurrentInformation();
 }
 
-- (WebKit::InteractionInformationAtPosition)currentInformation
+- (WebKit::InteractionInformationAtPosition)positionInformation
 {
     return _positionInformationManager->currentInformation();
 }
 
-- (BOOL)currentInformationIsHoverActivatedByClick
+- (BOOL)positionInformationIsHoverActivatedByClick
 {
     return _positionInformationManager->currentInformation().isHoverActivatedByClick;
 }
 
-- (WebKit::OptionalIntPoint)currentNearbySliderInteractionLocation
+- (WebKit::OptionalIntPoint)nearbySliderInteractionLocation
 {
     return _positionInformationManager->currentInformation().nearbySliderInteractionLocation;
 }
 
-- (BOOL)isLiveTextAvailableAndEnabled
++ (BOOL)isLiveTextAvailableAndEnabled
 {
     return WebKit::isLiveTextAvailableAndEnabled();
 }
@@ -372,7 +370,7 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 - (void)preflightImageAnalysis:(WebKit::InteractionInformationRequest)request completion:(void (^)(BOOL foundText, WebCore::ElementContext element))completion
 {
     RetainPtr protectedSelf = self;
-    _positionInformationManager->doAfterUpdate(WTF::move(request), [weakSelf = WeakObjCPtr<WKAppKitGestureControllerCxxSupport>(self), completion = makeBlockPtr(completion)](const auto& optionalInfo) mutable {
+    _positionInformationManager->doAfterUpdate(request, [weakSelf = WeakObjCPtr<WKAppKitGestureControllerCxxSupport>(self), completion = makeBlockPtr(completion)](const auto& optionalInfo) mutable {
         if (!optionalInfo)
             return;
 
@@ -436,9 +434,9 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 {
     RetainPtr webView = [_controller.get() webView];
     if (!webView)
-        return static_cast<uint8_t>(OptionSet<WebCore::TouchAction> { WebCore::TouchAction::Auto }.toRaw());
+        return OptionSet<WebCore::TouchAction> { WebCore::TouchAction::Auto }.toRaw();
 
-    return static_cast<uint8_t>(touchActionsForPoint(webView.get(), WebCore::FloatPoint { point }).toRaw());
+    return touchActionsForPoint(webView.get(), WebCore::FloatPoint { point }).toRaw();
 }
 
 - (WebKit::OptionalTransactionID)lastCommittedMainFrameLayerTreeTransactionID

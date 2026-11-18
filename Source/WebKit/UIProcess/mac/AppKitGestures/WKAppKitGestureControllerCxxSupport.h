@@ -69,18 +69,18 @@ NS_HEADER_AUDIT_BEGIN(nullability, sendability)
 NS_SWIFT_UI_ACTOR
 @interface WKAppKitGestureControllerCxxSupport : NSObject
 @property (nonatomic, weak, nullable) WKAppKitGestureController *controller;
-- (void)setUpWithPage;
-- (void)doAfterUpdate:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(WebKit::OptionalInteractionInformationAtPosition info))completion NS_SWIFT_NAME(doAfterUpdate(_:completion:));
+- (void)setUpPositionInformation;
+- (void)doAfterPositionInformationUpdate:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(WebKit::OptionalInteractionInformationAtPosition info))completion NS_SWIFT_NAME(doAfterPositionInformationUpdate(_:completion:));
 - (void)preflightImageAnalysis:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL foundText, WebCore::ElementContext element))completion;
-- (void)invalidate;
-- (void)reset;
-- (void)abandonOutstandingRequest;
-- (BOOL)currentIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(int)radius;
-- (BOOL)hasValidCurrentInformation;
-- (WebKit::InteractionInformationAtPosition)currentInformation;
-- (BOOL)currentInformationIsHoverActivatedByClick;
-- (WebKit::OptionalIntPoint)currentNearbySliderInteractionLocation;
-- (BOOL)isLiveTextAvailableAndEnabled;
+- (void)invalidatePositionInformation;
+- (void)resetPositionInformation;
+- (void)abandonPositionInformationRequest;
+- (BOOL)positionInformationIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(int)radius;
+- (BOOL)hasValidPositionInformation;
+- (WebKit::InteractionInformationAtPosition)positionInformation;
+- (BOOL)positionInformationIsHoverActivatedByClick;
+- (WebKit::OptionalIntPoint)nearbySliderInteractionLocation;
++ (BOOL)isLiveTextAvailableAndEnabled;
 - (void)startMomentumAtPosition:(NSPoint)position globalPosition:(NSPoint)globalPosition timestamp:(double)timestamp velocity:(NSSize)velocity fastScrollMultiplier:(double)fastScrollMultiplier;
 - (void)interruptMomentum;
 - (void)resetMomentum;
