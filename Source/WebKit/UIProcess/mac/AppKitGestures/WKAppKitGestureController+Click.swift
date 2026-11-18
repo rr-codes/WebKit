@@ -71,7 +71,7 @@ extension WKAppKitGestureController {
         // means that the window can get focus from this tap before we complete the click.
         let commandKeyIsDown = gesture.modifierFlags.contains(.command)
         if !(webView._impl()?.window()?.isKeyWindow ?? false) && !commandKeyIsDown {
-            if let page = webView._protectedPage().get() {
+            if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
                 Logger.viewGestures.log(
                     "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): Tap began in an inactive window; suppressing"
                 )

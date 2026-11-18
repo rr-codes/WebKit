@@ -156,7 +156,7 @@ extension WKAppKitGestureController {
                     WebKit.NativeWebWheelEvent.create(WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta)).get()).get()
                 )
             if lastPanWheelEventWasHandledByViewGestureController {
-                if let page = webView._protectedPage().get() {
+                if Logger.viewGestures.isEnabled(type: .debug), let page = webView._protectedPage().get() {
                     Logger.viewGestures.debug(
                         "[pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): View gesture controller handled gesture"
                     )
@@ -256,7 +256,7 @@ extension WKAppKitGestureController {
         )
         isMomentumActive = true
 
-        if let page = webView._protectedPage().get() {
+        if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \

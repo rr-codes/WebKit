@@ -55,7 +55,7 @@ extension WKAppKitGestureController {
         let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: radius)
         let shouldDrag = requestIsValid && isDraggable && !information.isHoverActivatedByClick
 
-        if let page = webView._protectedPage().get() {
+        if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
@@ -96,7 +96,7 @@ extension WKAppKitGestureController {
         let yieldToContent =
             (requestIsValid && (prefersInteraction || information.isHoverActivatedByClick)) || usesHoverActivatedByClickBounds
 
-        if let page = webView._protectedPage().get() {
+        if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
@@ -161,7 +161,7 @@ extension WKAppKitGestureController {
         // that a long press selects a word instead of synthesizing a context menu.
         let shouldBegin = requestIsValid && isSecondaryClickable && !isOverSelectableText
 
-        if let page = webView._protectedPage().get() {
+        if Logger.viewGestures.isEnabled(type: .default), let page = webView._protectedPage().get() {
             Logger.viewGestures.log(
                 """
                 [pageProxyID=\(page.logIdentifier())] \(#function, privacy: .private): \
