@@ -37,13 +37,7 @@ private import WebCore_Private
 import struct Swift.String
 
 extension WKAppKitGestureController {
-    @nonobjc
-    final func updateLayerTreeTransactionIdAtLastInteractionStart() {
-        // Without a remote layer tree drawing area there is no transaction, and the last one is kept.
-        if let transactionID = cxxSupport.lastCommittedMainFrameLayerTreeTransactionID().value {
-            layerTreeTransactionIdAtLastInteractionStart = transactionID
-        }
-    }
+    // MARK: Position Information
 
     @nonobjc
     final func dragPressShouldBegin(atLocation locationInViewCoordinates: NSPoint) -> Bool {
@@ -51,14 +45,14 @@ extension WKAppKitGestureController {
             return false
         }
 
-        let radius = saturatingInt32(fromAllowableMovement: (dragPressGestureRecognizer?.allowableMovement ?? 0).rounded(.up))
+        let radius = saturatingInt32((dragPressGestureRecognizer?.allowableMovement ?? 0).rounded(.up))
 
         let information = cxxSupport.currentInformation()
 
         // FIXME: Migrate to requestDragStart: IPC for an authoritative decision.
         // The heuristic below approximates DragController::draggableElement() by consulting the same element-type and style signals.
         let isDraggable = representsDraggableElement(information)
-        let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: Int(radius))
+        let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: radius)
         let shouldDrag = requestIsValid && isDraggable && !information.isHoverActivatedByClick
 
         if appKitGestureControllerViewGesturesLog.isEnabled(type: .default), let page = webView._protectedPage().get() {
@@ -122,7 +116,7 @@ extension WKAppKitGestureController {
             return isInsideHoverActivatedByClickBounds(atLocation: locationInView)
         }
 
-        return cxxSupport.currentInformation().isHoverActivatedByClick
+        return cxxSupport.currentInformationIsHoverActivatedByClick()
     }
 
     @nonobjc
@@ -140,11 +134,11 @@ extension WKAppKitGestureController {
             return false
         }
 
-        let radius = saturatingInt32(fromAllowableMovement: (secondaryClickGestureRecognizer?.allowableMovement ?? 0).rounded(.up))
+        let radius = saturatingInt32((secondaryClickGestureRecognizer?.allowableMovement ?? 0).rounded(.up))
 
         let information = cxxSupport.currentInformation()
 
-        let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: Int(radius))
+        let requestIsValid = positionInformationRequestIsValid(atLocation: locationInViewCoordinates, withRadius: radius)
         let isSecondaryClickable = representsSecondaryClickableElement(information)
         let isOverSelectableText = information.isOverSelectableText
 
@@ -175,7 +169,7 @@ extension WKAppKitGestureController {
     }
 
     @nonobjc
-    final func positionInformationRequestIsValid(atLocation locationInViewCoordinates: NSPoint, withRadius radius: Int) -> Bool {
+    final func positionInformationRequestIsValid(atLocation locationInViewCoordinates: NSPoint, withRadius radius: Int32) -> Bool {
         let request = positionInformationRequest(atLocation: locationInViewCoordinates)
         return cxxSupport.currentIsApproximatelyValid(request, radius: radius)
     }
@@ -186,7 +180,7 @@ extension WKAppKitGestureController {
             return locationInWindow
         }
 
-        guard let adjustedLocationInView = cxxSupport.currentInformation().nearbySliderInteractionLocation.value else {
+        guard let adjustedLocationInView = cxxSupport.currentNearbySliderInteractionLocation().value else {
             return locationInWindow
         }
 

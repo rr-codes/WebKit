@@ -75,7 +75,7 @@ final class ImageAnalysisGestureDeferralToken {
     }
 }
 
-private let sharedPositionInformationToleranceRadius = 15
+private let sharedPositionInformationToleranceRadius: Int32 = 15
 let panPositionInformationToleranceRadius = sharedPositionInformationToleranceRadius
 let mouseDownPositionInformationToleranceRadius = sharedPositionInformationToleranceRadius
 
@@ -207,17 +207,8 @@ func representsSecondaryClickableElement(_ info: WebKit.InteractionInformationAt
 }
 
 // Converts like a C++ int cast on arm64: out-of-range values saturate and NaN becomes 0.
-func saturatingInt32(fromAllowableMovement value: Double) -> Int32 {
-    if value.isNaN {
-        return 0
-    }
-    if value >= 2_147_483_647 {
-        return .max
-    }
-    if value <= -2_147_483_648 {
-        return .min
-    }
-    return Int32(value)
+func saturatingInt32(_ value: Double) -> Int32 {
+    value.isNaN ? 0 : Int32(min(max(value, Double(Int32.min)), Double(Int32.max)))
 }
 
 // The os_log channel `Logger.viewGestures` writes to (WebKit's ViewGestures channel). A log site asks it whether its

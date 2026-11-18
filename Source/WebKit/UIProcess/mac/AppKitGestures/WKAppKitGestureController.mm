@@ -57,9 +57,9 @@
 #import <WebCore/FloatQuad.h>
 #import <WebCore/FloatSize.h>
 #import <WebCore/IntPoint.h>
-#import <WebCore/IntSize.h>
 #import <WebCore/Scrollbar.h>
 #import <WebCore/TextRecognitionResult.h>
+#import <source_location>
 #import <wtf/BlockPtr.h>
 #import <wtf/CheckedPtr.h>
 #import <wtf/Markable.h>
@@ -68,28 +68,6 @@
 #import <wtf/WeakObjCPtr.h>
 
 #define WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG(pageID, fmt, ...) RELEASE_LOG(ViewGestures, "[pageProxyID=%llu] %s: " fmt, pageID, std::source_location::current().function_name(), ##__VA_ARGS__)
-#define WK_APPKIT_GESTURE_CONTROLLER_RELEASE_LOG_DEBUG(pageID, fmt, ...) RELEASE_LOG_DEBUG(ViewGestures, "[pageProxyID=%llu] %s: " fmt, pageID, std::source_location::current().function_name(), ##__VA_ARGS__)
-
-static WebKit::WebEventPhase toWebEventPhase(NSGestureRecognizerState state)
-{
-    using enum WebKit::WebEventPhase;
-    switch (state) {
-    case NSGestureRecognizerStatePossible:
-        return MayBegin;
-    case NSGestureRecognizerStateBegan:
-        return Began;
-    case NSGestureRecognizerStateChanged:
-        return Changed;
-    case NSGestureRecognizerStateEnded:
-        return Ended;
-    case NSGestureRecognizerStateCancelled:
-    case NSGestureRecognizerStateFailed:
-        return Cancelled;
-    default:
-        ASSERT_NOT_REACHED();
-        return None;
-    }
-}
 
 static WebCore::FloatSize toRawPlatformDelta(WebCore::FloatSize delta)
 {
@@ -272,15 +250,6 @@ private:
 
 #endif // ENABLE(MOMENTUM_EVENT_DISPATCHER)
 
-// WebCore::Scrollbar::pixelsPerLineStep() is what the pan's wheel ticks divide by.
-static_assert(WebCore::Scrollbar::pixelsPerLineStep() == 40, "WKAppKitGestureController.swift's wheel ticks assume 40 pixels per line step");
-
-// WKAppKitGestureController.swift sets up the magnification and rotation gestures, the image analysis deferral gesture and
-// the click highlight unconditionally, and reads InteractionInformationAtPosition::isInteractiveModel.
-#if !ENABLE(MAC_GESTURE_EVENTS) || !ENABLE(IMAGE_ANALYSIS) || !ENABLE(TWO_PHASE_CLICKS)
-#error "WKAppKitGestureController.swift assumes MAC_GESTURE_EVENTS, IMAGE_ANALYSIS and TWO_PHASE_CLICKS"
-#endif
-
 static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, WebCore::FloatPoint&& point)
 {
     RetainPtr webView = view;
@@ -318,13 +287,14 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 #endif
 }
 
-- (instancetype)initWithController:(WKAppKitGestureController *)controller
+- (WKAppKitGestureController *)controller
 {
-    if (!(self = [super init]))
-        return nil;
+    return _controller.getAutoreleased();
+}
 
+- (void)setController:(WKAppKitGestureController *)controller
+{
     _controller = controller;
-    return self;
 }
 
 - (void)setUpWithPage
@@ -340,13 +310,11 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     _positionInformationManager = makeUnique<WebKit::PositionInformationManager>(*[webView _protectedPage]);
 }
 
-- (void)doAfterUpdate:(WebKit::InteractionInformationRequest)request completion:(void (^)(BOOL hasInfo, WebKit::InteractionInformationAtPosition info))completion
+- (void)doAfterUpdate:(WebKit::InteractionInformationRequest)request completion:(void (^)(WebKit::OptionalInteractionInformationAtPosition info))completion
 {
     RetainPtr protectedSelf = self;
     _positionInformationManager->doAfterUpdate(WTF::move(request), [completion = makeBlockPtr(completion)](const auto& optionalInfo) {
-        if (!optionalInfo)
-            return completion(NO, { });
-        completion(YES, *optionalInfo);
+        completion(optionalInfo);
     });
 }
 
@@ -368,7 +336,7 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     _positionInformationManager->abandonOutstandingRequest();
 }
 
-- (BOOL)currentIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(NSInteger)radius
+- (BOOL)currentIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(int)radius
 {
     return _positionInformationManager->currentIsApproximatelyValid(request, radius);
 }
@@ -381,6 +349,16 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 - (WebKit::InteractionInformationAtPosition)currentInformation
 {
     return _positionInformationManager->currentInformation();
+}
+
+- (BOOL)currentInformationIsHoverActivatedByClick
+{
+    return _positionInformationManager->currentInformation().isHoverActivatedByClick;
+}
+
+- (WebKit::OptionalIntPoint)currentNearbySliderInteractionLocation
+{
+    return _positionInformationManager->currentInformation().nearbySliderInteractionLocation;
 }
 
 - (BOOL)isLiveTextAvailableAndEnabled
@@ -396,7 +374,7 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     _positionInformationManager->didChange(info);
 }
 
-- (void)preflightImageAnalysis:(WebKit::InteractionInformationRequest)request completion:(void (^)(BOOL foundText, WebKit::OptionalElementContext element))completion
+- (void)preflightImageAnalysis:(WebKit::InteractionInformationRequest)request completion:(void (^)(BOOL foundText, WebCore::ElementContext element))completion
 {
     RetainPtr protectedSelf = self;
     _positionInformationManager->doAfterUpdate(WTF::move(request), [weakSelf = WeakObjCPtr<WKAppKitGestureControllerCxxSupport>(self), completion = makeBlockPtr(completion)](const auto& optionalInfo) mutable {
@@ -485,9 +463,8 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
     return remoteDrawingArea->lastCommittedMainFrameLayerTreeTransactionID();
 }
 
-- (void)dispatchTrackedPointerEventWithGestureState:(NSGestureRecognizerState)state atLocationInWindow:(NSPoint)locationInWindow modifierFlags:(NSEventModifierFlags)modifierFlags completion:(void (^)(BOOL wasCanceled))completion
+- (void)dispatchTrackedPointerEventWithPhase:(WebKit::WebEventPhase)phase atLocationInWindow:(NSPoint)locationInWindow modifierFlags:(NSEventModifierFlags)modifierFlags completion:(void (^)(BOOL wasCanceled))completion
 {
-    auto phase = toWebEventPhase(state);
     RetainPtr webView = [_controller.get() webView];
     if (!webView)
         return;
@@ -590,10 +567,11 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 
 @implementation WKAppKitGestureController (WebViewImpl)
 
-- (WKClickHighlightController *)clickHighlightController
+- (void)positionInformationDidChange:(const WebKit::InteractionInformationAtPosition&)info
 {
-    return dynamic_objc_cast<WKClickHighlightController>(self.untypedClickHighlightController);
+    [protect([self _cxxSupport]) positionInformationDidChange:info];
 }
+
 #if ENABLE(TWO_PHASE_CLICKS)
 
 - (void)didGetTapHighlightForRequest:(WebKit::TapIdentifier)requestID color:(const WebCore::Color&)color quads:(const Vector<WebCore::FloatQuad>&)highlightedQuads cornerRadii:(WebCore::CornerRadii&&)cornerRadii nodeHasBuiltInClickHandling:(BOOL)nodeHasBuiltInClickHandling
@@ -667,7 +645,7 @@ static OptionSet<WebCore::TouchAction> touchActionsForPoint(WKWebView *view, Web
 
 @implementation WKAppKitGestureController (Internal)
 
-- (id)_makeClickHighlightController
+- (WKClickHighlightController *)_makeClickHighlightController
 {
     return adoptNS([[WKClickHighlightController alloc] initWithDelegate:self]).autorelease();
 }

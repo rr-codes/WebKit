@@ -37,6 +37,16 @@ import struct Swift.String
 
 extension WKAppKitGestureController {
     @nonobjc
+    final func makeImageAnalysisDeferringGestureRecognizer(withName name: String) -> WKDeferringGestureRecognizer {
+        let deferringGestureRecognizer = WKDeferringGestureRecognizer(deferringGestureDelegate: self)
+        configure(forImageAnalysisDeferral: deferringGestureRecognizer)
+        deferringGestureRecognizer.name = name
+        deferringGestureRecognizer.delegate = self
+        deferringGestureRecognizer.immediatelyFailsAfterTouchEnd = true
+        return deferringGestureRecognizer
+    }
+
+    @nonobjc
     final func resolveImageAnalysisDeferrals(with outcome: ImageAnalysisDeferralOutcome) {
         if imageAnalysisDeferralState == .deferring {
             imageAnalysisDeferralState = .undecided

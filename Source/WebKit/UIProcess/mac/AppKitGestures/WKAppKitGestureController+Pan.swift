@@ -37,6 +37,31 @@ private import WebCore_Private
 import struct Swift.String
 
 extension WKAppKitGestureController {
+    // MARK: Wheel Event Handling
+
+    @nonobjc
+    final func prefersUnlockedScroll(_ gesture: NSPanGestureRecognizer) -> Bool {
+        gesture.touches.count > 1
+    }
+
+    @nonobjc
+    final func prefersForwardingToGestureController(_ gesture: NSPanGestureRecognizer) -> Bool {
+        gesture.touches.count == 1
+    }
+
+    @nonobjc
+    final func supportsMomentumScroll(_ gesture: NSPanGestureRecognizer) -> Bool {
+        gesture.touches.count == 1
+    }
+
+    @nonobjc
+    final func panVelocity(in view: NSView?) -> NSPoint {
+        guard let panGestureRecognizer = panGestureRecognizer as? WKPanGestureRecognizer else {
+            return .zero
+        }
+        return panGestureRecognizer.wk_velocity(in: view)
+    }
+
     @nonobjc
     final func sendWheelEvent(forGesture gesture: NSPanGestureRecognizer) {
         guard let webView = view else {
@@ -73,12 +98,12 @@ extension WKAppKitGestureController {
             return
         }
         // A nil pan gesture recognizer can pan along neither axis.
-        let prefersUnlockedScroll = storedPanGestureRecognizer.map { self.prefersUnlockedScroll($0) } ?? false
+        let prefersUnlockedScroll = panGestureRecognizer.map { self.prefersUnlockedScroll($0) } ?? false
         let canScrollHorizontally =
-            (storedPanGestureRecognizer?._canPanHorizontally ?? false)
+            (panGestureRecognizer?._canPanHorizontally ?? false)
             && !(pinnedState[WebCore.BoxSide.Left] && pinnedState[WebCore.BoxSide.Right])
         let canScrollVertically =
-            (storedPanGestureRecognizer?._canPanVertically ?? false) && !(pinnedState[WebCore.BoxSide.Top] && pinnedState[WebCore.BoxSide.Bottom])
+            (panGestureRecognizer?._canPanVertically ?? false) && !(pinnedState[WebCore.BoxSide.Top] && pinnedState[WebCore.BoxSide.Bottom])
         gestureDelta = WebCore.FloatSize(
             directionalScrollLockTracker.update(
                 delta: CGSize(width: CGFloat(gestureDelta.width()), height: CGFloat(gestureDelta.height())),
@@ -135,7 +160,7 @@ extension WKAppKitGestureController {
             // The view gesture controller is created only when forwarding.
             lastPanWheelEventWasHandledByViewGestureController =
                 forwardToGestureController
-                && impl.handleScrollWheelEventForGestureController(
+                && impl.handleScrollWheelEventOnViewGestureController(
                     WebKit.NativeWebWheelEvent.create(WebKit.WebWheelEvent.create(consuming: makeWheelEventInit(delta)).get()).get()
                 )
             if lastPanWheelEventWasHandledByViewGestureController {
@@ -159,6 +184,8 @@ extension WKAppKitGestureController {
 
         dispatchWheelEvent(gestureDelta)
     }
+
+    // MARK: Momentum Handling
 
     @nonobjc
     final func startMomentumIfNeeded(forGesture gesture: NSPanGestureRecognizer) {

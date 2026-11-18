@@ -596,9 +596,9 @@ list(APPEND WebKit_SOURCES
     ${WEBKIT_DIR}/UIProcess/mac/_WKCaptionStyleMenuControllerAVKitMac.mm
     ${WEBKIT_DIR}/UIProcess/mac/_WKCaptionStyleMenuControllerMac.mm
     ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureController+Click.swift
-    ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureController+HitTesting.swift
     ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureController+ImageAnalysis.swift
     ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureController+Pan.swift
+    ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureController+PositionInformation.swift
     ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureController.swift
     ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKAppKitGestureControllerSupport.swift
     ${WEBKIT_DIR}/UIProcess/mac/AppKitGestures/WKDOMDoubleClickGestureRecognizer.swift

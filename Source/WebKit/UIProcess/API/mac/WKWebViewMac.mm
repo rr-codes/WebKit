@@ -1325,7 +1325,7 @@ ALLOW_DEPRECATED_IMPLEMENTATIONS_END
 - (void)_didNotHandleTapAsClick:(const WebCore::IntPoint&)point
 {
     if (RetainPtr gestureController = _impl->appKitGestureController())
-        [gestureController didNotHandleTapAsClickAtX:point.x() y:point.y()];
+        [gestureController didNotHandleTapAsClickAtPoint:point];
 }
 
 - (void)_didHandleTapAsHover

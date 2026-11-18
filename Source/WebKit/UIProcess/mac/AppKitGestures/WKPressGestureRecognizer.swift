@@ -108,12 +108,13 @@ extension WKPressGestureRecognizer {
     }
 }
 
-// `WKPressGestureRecognizer(target:action:)` makes the compiler give the `@objc @implementation` the inherited initializers as
-// public members, which a library-evolution build (CMake) rejects; so -initWithTarget:action: is sent through the AppKit metatype.
 extension WKPressGestureRecognizer {
-    static func makePress(target: Any?, action: Selector?) -> WKPressGestureRecognizer {
-        let appKitType: NSPressGestureRecognizer.Type = WKPressGestureRecognizer.self
-        return appKitType.init(target: target, action: action) as! WKPressGestureRecognizer
+    static func make(target: Any?, action: Selector?) -> Self {
+        let appKitType: NSPressGestureRecognizer.Type = self
+        guard let recognizer = appKitType.init(target: target, action: action) as? Self else {
+            preconditionFailure("-initWithTarget:action: returned another class")
+        }
+        return recognizer
     }
 }
 

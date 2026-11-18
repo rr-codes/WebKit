@@ -69,7 +69,6 @@
 #import "ViewGestureController.h"
 #import "WKAlternatePDFHUDView.h"
 #import "WKAppKitGestureController.h"
-#import "WKAppKitGestureControllerCxxSupport.h"
 #import "WKDefaultPDFHUDView.h"
 #import "WKEditCommand.h"
 #import "WKErrorInternal.h"
@@ -8414,7 +8413,7 @@ void WebViewImpl::invalidateCachedPositionInformation()
 
 void WebViewImpl::positionInformationDidChange(const InteractionInformationAtPosition& info)
 {
-    [protect([m_appKitGestureController _cxxSupport]) positionInformationDidChange:info];
+    [m_appKitGestureController positionInformationDidChange:info];
 }
 
 void WebViewImpl::installClickHighlightView(NSView *highlightView)
@@ -8441,22 +8440,21 @@ bool WebViewImpl::moveMagnificationOriginIfMagnifying(WebCore::FloatPoint origin
     return false;
 }
 
-bool WebViewImpl::ensuredGestureControllerHasActiveMagnificationGesture()
+bool WebViewImpl::handleMagnificationGestureIfMagnifying(double scale, WebEventPhase phase, WebCore::FloatPoint originInViewCoordinates, WebEventInputSource inputSource)
 {
-    return protect(ensureGestureController())->hasActiveMagnificationGesture();
+    Ref gestureController = ensureGestureController();
+    if (!gestureController->hasActiveMagnificationGesture())
+        return false;
+    gestureController->handleMagnificationGesture(scale, phase, originInViewCoordinates, inputSource);
+    return true;
 }
 
-void WebViewImpl::handleMagnificationGestureForGestureController(double scale, WebEventPhase phase, WebCore::FloatPoint originInViewCoordinates, WebEventInputSource inputSource)
-{
-    protect(ensureGestureController())->handleMagnificationGesture(scale, phase, originInViewCoordinates, inputSource);
-}
-
-void WebViewImpl::handleSmartMagnificationGestureForGestureController(WebCore::FloatPoint originInViewCoordinates)
+void WebViewImpl::handleSmartMagnificationGestureOnViewGestureController(WebCore::FloatPoint originInViewCoordinates)
 {
     protect(ensureGestureController())->handleSmartMagnificationGesture(originInViewCoordinates);
 }
 
-bool WebViewImpl::handleScrollWheelEventForGestureController(const NativeWebWheelEvent& event)
+bool WebViewImpl::handleScrollWheelEventOnViewGestureController(const NativeWebWheelEvent& event)
 {
     return protect(ensureGestureController())->handleScrollWheelEvent(event);
 }

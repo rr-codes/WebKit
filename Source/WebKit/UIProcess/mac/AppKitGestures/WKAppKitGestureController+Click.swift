@@ -37,6 +37,16 @@ private import WebCore_Private
 import struct Swift.String
 
 extension WKAppKitGestureController {
+    // MARK: Click Handling
+
+    @nonobjc
+    final func updateLayerTreeTransactionIdAtLastInteractionStart() {
+        // Without a remote layer tree drawing area there is no transaction, and the last one is kept.
+        if let transactionID = cxxSupport.lastCommittedMainFrameLayerTreeTransactionID().value {
+            layerTreeTransactionIdAtLastInteractionStart = transactionID
+        }
+    }
+
     @nonobjc
     final func handleTapCancelled() {
         clickHighlight?.cancel()
@@ -77,7 +87,7 @@ extension WKAppKitGestureController {
         updateLayerTreeTransactionIdAtLastInteractionStart()
 
         let tapID = WebKit.TapIdentifier.generate()
-        latestTapID = WebKit.tapIdentifierToUInt64(tapID)
+        latestTapID = WebKit.appKitGestureTapIdentifierToUInt64(tapID)
         potentialTapIsInProgress = true
 
         clickHighlight?.beginRequest(tapID, expectsFastCommit: true)

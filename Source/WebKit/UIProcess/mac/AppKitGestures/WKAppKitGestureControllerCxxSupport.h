@@ -33,21 +33,22 @@
 #import "InteractionInformationAtPosition.h"
 #import "InteractionInformationRequest.h"
 #import "TransactionID.h"
-#import "WKAppKitGestureController.h"
+#import "WebEventPhase.h"
 #import <WebCore/ElementContext.h>
+#import <WebCore/IntPoint.h>
 #import <optional>
 #import <wtf/MathExtras.h>
 #import <wtf/MonotonicTime.h>
 
+OBJC_CLASS WKAppKitGestureController;
+
 namespace WebKit {
 
-// Declarations Swift cannot import from the C++ types directly.
-
-// Swift cannot spell an un-specialized std::optional; these instantiations are what it names.
+using OptionalInteractionInformationAtPosition = std::optional<InteractionInformationAtPosition>;
+using OptionalIntPoint = std::optional<WebCore::IntPoint>;
 using OptionalTransactionID = std::optional<TransactionID>;
-using OptionalElementContext = std::optional<WebCore::ElementContext>;
 
-inline uint64_t tapIdentifierToUInt64(TapIdentifier identifier) { return identifier.toUInt64(); }
+inline uint64_t appKitGestureTapIdentifierToUInt64(TapIdentifier identifier) { return identifier.toUInt64(); }
 inline MonotonicTime appKitGestureMonotonicTimeFromRawSeconds(double seconds) { return MonotonicTime::fromRawSeconds(seconds); }
 inline bool appKitGestureMagnificationIsOne(double magnification) { return WTF::areEssentiallyEqual(magnification, 1.0); }
 
@@ -67,24 +68,26 @@ NS_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 NS_SWIFT_UI_ACTOR
 @interface WKAppKitGestureControllerCxxSupport : NSObject
-- (instancetype)initWithController:(WKAppKitGestureController *)controller;
+@property (nonatomic, weak, nullable) WKAppKitGestureController *controller;
 - (void)setUpWithPage;
-- (void)doAfterUpdate:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL hasInfo, WebKit::InteractionInformationAtPosition info))completion;
-- (void)preflightImageAnalysis:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL foundText, WebKit::OptionalElementContext element))completion;
+- (void)doAfterUpdate:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(WebKit::OptionalInteractionInformationAtPosition info))completion NS_SWIFT_NAME(doAfterUpdate(_:completion:));
+- (void)preflightImageAnalysis:(WebKit::InteractionInformationRequest)request completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL foundText, WebCore::ElementContext element))completion;
 - (void)invalidate;
 - (void)reset;
 - (void)abandonOutstandingRequest;
-- (BOOL)currentIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(NSInteger)radius;
+- (BOOL)currentIsApproximatelyValid:(WebKit::InteractionInformationRequest)request radius:(int)radius;
 - (BOOL)hasValidCurrentInformation;
 - (WebKit::InteractionInformationAtPosition)currentInformation;
+- (BOOL)currentInformationIsHoverActivatedByClick;
+- (WebKit::OptionalIntPoint)currentNearbySliderInteractionLocation;
 - (BOOL)isLiveTextAvailableAndEnabled;
 - (void)startMomentumAtPosition:(NSPoint)position globalPosition:(NSPoint)globalPosition timestamp:(double)timestamp velocity:(NSSize)velocity fastScrollMultiplier:(double)fastScrollMultiplier;
 - (void)interruptMomentum;
 - (void)resetMomentum;
 - (uint8_t)touchActionsAtPoint:(NSPoint)point;
 - (WebKit::OptionalTransactionID)lastCommittedMainFrameLayerTreeTransactionID;
-- (void)dispatchTrackedPointerEventWithGestureState:(NSGestureRecognizerState)state atLocationInWindow:(NSPoint)locationInWindow modifierFlags:(NSEventModifierFlags)modifierFlags completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL wasCanceled))completion;
-- (void)doAfterProcessingAllPendingMouseEvents:(NS_SWIFT_UI_ACTOR void (^)(void))completion;
+- (void)dispatchTrackedPointerEventWithPhase:(WebKit::WebEventPhase)phase atLocationInWindow:(NSPoint)locationInWindow modifierFlags:(NSEventModifierFlags)modifierFlags completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL wasCanceled))completion NS_SWIFT_NAME(dispatchTrackedPointerEvent(_:atLocationInWindow:modifierFlags:completion:));
+- (void)doAfterProcessingAllPendingMouseEvents:(NS_SWIFT_UI_ACTOR void (^)(void))completion NS_SWIFT_NAME(doAfterProcessingAllPendingMouseEvents(_:));
 @end
 
 #if !__has_feature(modules)

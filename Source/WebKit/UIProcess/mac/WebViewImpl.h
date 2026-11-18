@@ -618,10 +618,9 @@ public:
     void positionInformationDidChange(const InteractionInformationAtPosition&);
     void installClickHighlightView(NSView *);
     bool moveMagnificationOriginIfMagnifying(WebCore::FloatPoint originInViewCoordinates);
-    bool ensuredGestureControllerHasActiveMagnificationGesture();
-    void handleMagnificationGestureForGestureController(double scale, WebEventPhase, WebCore::FloatPoint originInViewCoordinates, WebEventInputSource);
-    void handleSmartMagnificationGestureForGestureController(WebCore::FloatPoint originInViewCoordinates);
-    bool handleScrollWheelEventForGestureController(const NativeWebWheelEvent&);
+    bool handleMagnificationGestureIfMagnifying(double scale, WebEventPhase, WebCore::FloatPoint originInViewCoordinates, WebEventInputSource);
+    void handleSmartMagnificationGestureOnViewGestureController(WebCore::FloatPoint originInViewCoordinates);
+    bool handleScrollWheelEventOnViewGestureController(const NativeWebWheelEvent&);
 #endif
     NODELETE void setAllowsBackForwardNavigationGestures(bool);
     bool allowsBackForwardNavigationGestures() const { return m_allowsBackForwardNavigationGestures; }
