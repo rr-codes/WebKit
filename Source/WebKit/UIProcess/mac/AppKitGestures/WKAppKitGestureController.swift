@@ -150,7 +150,7 @@ extension WKAppKitGestureController {
     @nonobjc
     private final var contentDeclinedTransformGesture = false
     @nonobjc
-    private final var lastTransformGestureDriveTime: SuspendingClock.Instant?
+    private final var lastTransformGestureDriveTime: TimeInterval?
 
     @nonobjc
     private(set) final var dragPressGestureRecognizer: WKPressGestureRecognizer?
@@ -2313,13 +2313,13 @@ extension WKAppKitGestureController {
     }
 
     private func shouldSuppressMouseTrackingForTransformGesture() -> Bool {
-        let transformGestureDriveTimeout: Duration = .milliseconds(50)
+        let transformGestureDriveTimeout: TimeInterval = 0.050
 
         guard contentDeclinedTransformGesture, isRecognizingTransformGesture, let lastTransformGestureDriveTime else {
             return false
         }
 
-        return lastTransformGestureDriveTime.duration(to: .now) < transformGestureDriveTimeout
+        return ProcessInfo.processInfo.systemUptime - lastTransformGestureDriveTime < transformGestureDriveTimeout
     }
 
     private func transformGestureDidEnd() {
@@ -2332,7 +2332,7 @@ extension WKAppKitGestureController {
     }
 
     private func transformGestureDidDrive() {
-        lastTransformGestureDriveTime = .now
+        lastTransformGestureDriveTime = ProcessInfo.processInfo.systemUptime
 
         guard contentDeclinedTransformGesture, mouseTrackingHasSentMouseDown, let impl = view?._impl(), !impl.ignoresAllEvents() else {
             return
