@@ -39,6 +39,7 @@
 #include <wtf/MonotonicTime.h>
 #include <wtf/RetainPtr.h>
 #include <wtf/RunLoop.h>
+#include <wtf/SwiftBridging.h>
 #include <wtf/TZoneMalloc.h>
 #include <wtf/WeakPtr.h>
 
@@ -125,8 +126,8 @@ public:
     NODELETE static ViewGestureController* controllerForPage(WebPageProxyIdentifier);
     ~ViewGestureController();
 
-    void ref() const final { RefCounted::ref(); }
-    void deref() const final { RefCounted::deref(); }
+    SWIFT_UNSAFE void ref() const final { RefCounted::ref(); }
+    SWIFT_UNSAFE void deref() const final { RefCounted::deref(); }
 
     void platformInitialize();
     void platformTeardown();
@@ -548,6 +549,24 @@ private:
 
     const UniqueRef<SnapshotRemovalTracker> m_snapshotRemovalTracker;
     WTF::Function<void()> m_loadCallback;
-};
+// Swift isolates the class to the main actor and keeps it from being Sendable, which a main-actor type otherwise is:
+// its reference count is not atomic.
+#if PLATFORM(MAC) && defined(NS_SWIFT_SUPPRESS_SENDABLE)
+} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refViewGestureController, derefViewGestureController) NS_SWIFT_UI_ACTOR NS_SWIFT_SUPPRESS_SENDABLE;
+#else
+} DERIVED_CLASS_SWIFT_SHARED_REFERENCE(refViewGestureController, derefViewGestureController);
+#endif
 
 } // namespace WebKit
+
+#if !ENABLE(SWIFT_BASE_CLASS_ANNOTATIONS)
+SWIFT_UNSAFE inline void refViewGestureController(WebKit::ViewGestureController* WTF_NONNULL obj)
+{
+    obj->ref();
+}
+
+SWIFT_UNSAFE inline void derefViewGestureController(WebKit::ViewGestureController* WTF_NONNULL obj)
+{
+    obj->deref();
+}
+#endif
