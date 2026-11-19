@@ -71,6 +71,12 @@
 #include <wtf/WorkQueue.h>
 #include <wtf/text/WTFString.h>
 
+// Not every SDK defines NS_SWIFT_SUPPRESS_SENDABLE, which keeps WebViewImpl, a main-actor type in Swift, from being
+// Sendable: its checked-pointer count is not atomic.
+#ifndef NS_SWIFT_SUPPRESS_SENDABLE
+#define NS_SWIFT_SUPPRESS_SENDABLE
+#endif
+
 OBJC_CLASS CAShapeLayer;
 OBJC_CLASS NSAccessibilityRemoteUIElement;
 OBJC_CLASS NSImmediateActionGestureRecognizer;
@@ -1248,7 +1254,7 @@ private:
 #if ENABLE(AX_CUSTOM_COLOR_MODE)
     const RetainPtr<WKAXCustomColorModePreferencesController> m_axCustomColorModeControlsController;
 #endif
-} SWIFT_SHARED_REFERENCE(incrementCheckedPtrCountOnWebViewImpl, decrementCheckedPtrCountOnWebViewImpl) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT NS_SWIFT_UI_ACTOR;
+} SWIFT_SHARED_REFERENCE(incrementCheckedPtrCountOnWebViewImpl, decrementCheckedPtrCountOnWebViewImpl) SWIFT_RETURNED_AS_UNRETAINED_BY_DEFAULT NS_SWIFT_UI_ACTOR NS_SWIFT_SUPPRESS_SENDABLE;
 
 } // namespace WebKit
 
