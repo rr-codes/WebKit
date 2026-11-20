@@ -62,6 +62,15 @@ extension NSPanGestureRecognizer {
     }
 }
 
+extension WebCore.FloatSize {
+    // rawPlatformDelta uses IOHIDEvent coordinate conventions, which have the opposite
+    // sign from WebKit's delta field. This matches WebEventFactory.mm which negates
+    // IOHIDEventFieldScrollX/Y values when extracting rawPlatformDelta from real events.
+    fileprivate var rawPlatformDelta: WebCore.FloatSize {
+        -self
+    }
+}
+
 extension WKAppKitGestureController {
     // Momentum can start again while a caught decelerating scroll is still set, so the two are separate.
     struct ScrollGestureState {
@@ -298,7 +307,7 @@ extension WKAppKitGestureController {
         let forwardToGestureController = impl.allowsBackForwardNavigationGestures() && gesture.prefersForwardingToGestureController
 
         func dispatchWheelEvent(_ delta: WebCore.FloatSize, phase: WebKit.WebEventPhase) {
-            support.interruptMomentum()
+            interruptMomentumEventGenerator()
 
             lastPanWheelEventWasHandledByViewGestureController =
                 forwardToGestureController
@@ -321,6 +330,71 @@ extension WKAppKitGestureController {
         }
 
         dispatchWheelEvent(gestureDelta, phase: phase)
+    }
+
+    private static let fallbackMomentumFrameRate: WebCore.FramesPerSecond = 60
+
+    private static func momentumFrameRate(for event: WebKit.NativeWebWheelEvent) -> Float {
+        if let curve = Optional(fromCxx: WebKit.ScrollingAccelerationCurve.fromNativeWheelEvent(event)) {
+            return curve.frameRate()
+        }
+        if let curve = Optional(fromCxx: WebKit.ScrollingAccelerationCurve.fallbackCurve()) {
+            return curve.frameRate()
+        }
+        return Float(fallbackMomentumFrameRate)
+    }
+
+    private func sendMomentumBeganEvent(
+        for gesture: NSPanGestureRecognizer,
+        in webView: WKWebView,
+        velocity: WebCore.FloatSize,
+        fastScrollMultiplier: Double
+    ) {
+        guard let impl = webView._impl(), let page = webView._protectedPage().get() else {
+            return
+        }
+
+        let position = WebCore.IntPoint(gesture.location(in: webView))
+        let globalPosition = WebCore.IntPoint(WebCore.globalPoint(gesture.location(in: nil), impl.window()))
+        let timestamp = WTF.MonotonicTime.fromRawSeconds(gesture.timestamp)
+
+        var event = WebKit.WebEventData()
+        event.type = .Wheel
+        event.timestamp = timestamp
+
+        var wheel = WebKit.WebWheelEventData()
+        wheel.position = position
+        wheel.globalPosition = globalPosition
+        wheel.granularity = .ScrollByPixelWheelEvent
+        wheel.momentumPhase = .Began
+        wheel.hasPreciseScrollingDeltas = true
+        wheel.scrollCount = 1
+        wheel.ioHIDEventTimestamp = timestamp
+        wheel.inputSource = .Touch
+        wheel.momentumFastScrollMultiplier = Float(fastScrollMultiplier)
+        let momentumEvent = WebKit.NativeWebWheelEvent.create(
+            WebKit.WebWheelEvent.create(consuming: WebKit.WebWheelEventInit(event: event, wheel: wheel)).get()
+        )
+
+        let initialMomentumDelta = velocity / Self.momentumFrameRate(for: momentumEvent.get())
+        momentumEvent.get().setRawPlatformDelta(consuming: .init(initialMomentumDelta.rawPlatformDelta))
+
+        #if HAVE_NSREFRESHCONTROLLER
+        // The refresh controller should not track synthetic momentum scrolling.
+        impl.clearRefreshControllerTracking()
+        #endif
+
+        #if ENABLE_MOMENTUM_EVENT_DISPATCHER
+        // Started first, so that any momentum it ends is ended before this momentum begins.
+        WebKit.CxxInteropSupport.ensureMomentumEventGenerator(support).start(page, momentumEvent.get())
+        #endif
+        page.handleNativeWheelEvent(consuming: momentumEvent)
+    }
+
+    private func interruptMomentumEventGenerator() {
+        #if ENABLE_MOMENTUM_EVENT_DISPATCHER
+        WebKit.CxxInteropSupport.momentumEventGenerator(support)?.interrupt()
+        #endif
     }
 
     // MARK: Momentum Handling
@@ -386,11 +460,10 @@ extension WKAppKitGestureController {
             return
         }
 
-        support.startMomentum(
-            atPosition: gesture.location(in: webView),
-            globalPosition: WebCore.globalPoint(gesture.location(in: nil), webView._impl()?.window()),
-            timestamp: gesture.timestamp,
-            velocity: CGSize(velocity),
+        sendMomentumBeganEvent(
+            for: gesture,
+            in: webView,
+            velocity: velocity,
             fastScrollMultiplier: fastScrollMultiplier
         )
         scrollState.isMomentumActive = true
@@ -417,7 +490,7 @@ extension WKAppKitGestureController {
 
         positionInformation.invalidate()
 
-        support.interruptMomentum()
+        interruptMomentumEventGenerator()
 
         guard let page = webView._protectedPage().get() else {
             return
@@ -469,7 +542,7 @@ extension WKAppKitGestureController {
 @implementation
 extension WKAppKitGestureController {
     func interruptMomentumForScrollWheelEvent() {
-        support.interruptMomentum()
+        interruptMomentumEventGenerator()
     }
 
     var everMagnifiedDuringCurrentGesture: Bool { hasEverMagnifiedDuringCurrentGesture }

@@ -179,6 +179,18 @@ module WebKit_Internal [system] {
         export *
     }
 
+    module ScrollingAccelerationCurve {
+        requires cplusplus20,macos
+        header "../../Shared/ScrollingAccelerationCurve.h"
+        export *
+    }
+
+    module MomentumEventDispatcher {
+        requires cplusplus20,macos
+        header "../../WebProcess/WebPage/MomentumEventDispatcher.h"
+        export *
+    }
+
     module NativeWebGestureEvent {
         requires cplusplus20,objc,macos
         header "../../Shared/NativeWebGestureEvent.h"
@@ -540,6 +552,12 @@ module WebKit_Internal [system] {
     module WKPressGestureRecognizer {
         requires objc
         header "../../UIProcess/mac/AppKitGestures/WKPressGestureRecognizer.h"
+        export *
+    }
+
+    module AppKitGestureMomentumEventGenerator {
+        requires cplusplus20,objc,macos
+        header "../../UIProcess/mac/AppKitGestures/AppKitGestureMomentumEventGenerator.h"
         export *
     }
 

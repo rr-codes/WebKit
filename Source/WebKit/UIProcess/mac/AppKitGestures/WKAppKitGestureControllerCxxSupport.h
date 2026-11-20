@@ -42,6 +42,10 @@
 
 namespace WebKit {
 
+#if ENABLE(MOMENTUM_EVENT_DISPATCHER)
+class AppKitGestureMomentumEventGenerator;
+#endif
+
 using OptionalTransactionID = std::optional<TransactionID>;
 
 namespace CxxInteropSupport {
@@ -63,8 +67,8 @@ inline bool isInteractiveModel(const InteractionInformationAtPosition& info)
 
 NS_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-// The C++ that WKAppKitGestureController uses and Swift cannot call: the momentum event generator, Live Text's image
-// analysis and the page's drawing area. It also hands the page's position information to the controller.
+// The C++ that WKAppKitGestureController uses and Swift cannot call: Live Text's image analysis and the page's drawing
+// area. It also owns the momentum event generator and hands the page's position information to the controller.
 NS_SWIFT_UI_ACTOR
 @interface WKAppKitGestureControllerCxxSupport : NSObject
 
@@ -81,9 +85,7 @@ NS_SWIFT_UI_ACTOR
 // Live Text can analyze, or when the controller or its web view goes away first.
 - (void)preflightImageAnalysis:(WebKit::InteractionInformationAtPosition)info completion:(NS_SWIFT_UI_ACTOR void (^)(BOOL foundText, WebCore::ElementContext element))completion;
 
-// Momentum.
-- (void)startMomentumAtPosition:(NSPoint)position globalPosition:(NSPoint)globalPosition timestamp:(double)timestamp velocity:(NSSize)velocity fastScrollMultiplier:(double)fastScrollMultiplier;
-- (void)interruptMomentum;
+// Momentum. -resetMomentum destroys the momentum event generator.
 - (void)resetMomentum;
 
 // The page. doAfterProcessingAllPendingMouseEvents: drops its completion when the controller has no web view.
@@ -93,12 +95,19 @@ NS_SWIFT_UI_ACTOR
 
 @end
 
+#if ENABLE(MOMENTUM_EVENT_DISPATCHER)
+namespace WebKit::CxxInteropSupport {
+
+// The support object's momentum event generator, if it has one, and made if it has none. In Swift, the result of a
+// main-actor function is isolated to the main actor; an Objective-C method's result could be sent to another thread.
+NS_SWIFT_UI_ACTOR AppKitGestureMomentumEventGenerator* WTF_NULLABLE momentumEventGenerator(WKAppKitGestureControllerCxxSupport *);
+NS_SWIFT_UI_ACTOR AppKitGestureMomentumEventGenerator& ensureMomentumEventGenerator(WKAppKitGestureControllerCxxSupport *);
+
+} // namespace WebKit::CxxInteropSupport
+#endif
+
 @interface WKAppKitGestureController ()
 @property (nonatomic, readonly) WKAppKitGestureControllerCxxSupport *cxxSupport;
-@end
-
-@interface WKAppKitGestureController (MomentumEventGeneration)
-- (void)generatedMomentumDidEnd;
 @end
 
 @interface WKAppKitGestureController (WKClickHighlightControllerDelegate) <WKClickHighlightControllerDelegate>
