@@ -340,6 +340,7 @@ Tests/WebKit/WKWebView/TLSDeprecation.mm @nonARC
 Tests/WebKit/WKWebView/TabOutOfWebView.mm @nonARC
 Tests/WebKit/WKWebView/TestAwakener.mm @nonARC
 Tests/WebKit/WKWebView/SOAuthorizationTests.mm @nonARC
+Tests/WebKit/WKWebView/SOAuthorizationBench.mm @nonARC
 Tests/WebKit/WKWebView/TestURLSchemeHandler.mm @nonARC
 Tests/WebKit/WKWebView/TextScaleMeta.mm @nonARC
 Tests/WebKit/WKWebView/UIDelegate.mm @nonARC
