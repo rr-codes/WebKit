@@ -45,6 +45,7 @@
 #import <wtf/RetainPtr.h>
 #import <wtf/StdLibExtras.h>
 #import <wtf/StringPrintStream.h>
+#import <wtf/Threading.h>
 #import <wtf/URL.h>
 #import <wtf/cocoa/SpanCocoa.h>
 #import <wtf/darwin/DispatchExtras.h>
@@ -622,11 +623,9 @@ TEST(SOAuthorizationRedirect, InterceptionDoNotHandle)
     EXPECT_WK_STREQ(testURL.get().absoluteString, finalURL);
 }
 
-TEST(SOAuthorizationRedirect, InterceptionCancel)
+// Loads a page whose navigation AppSSO intercepts, and returns once AppSSO has been asked to authorize it. The caller swizzles AppSSO.
+static std::pair<RetainPtr<TestWKWebView>, RetainPtr<TestSOAuthorizationDelegate>> startRedirectInterception()
 {
-    resetState();
-    SWIZZLE_SOAUTH(PAL::getSOAuthorizationClassSingleton());
-
     RetainPtr<NSURL> testURL = [NSBundle.test_resourcesBundle URLForResource:@"simple" withExtension:@"html"];
 
     RetainPtr webView = adoptNS([[TestWKWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 500)]);
@@ -635,6 +634,16 @@ TEST(SOAuthorizationRedirect, InterceptionCancel)
 
     [webView loadRequest:[NSURLRequest requestWithURL:testURL.get()]];
     Util::run(&authorizationPerformed);
+
+    return { WTF::move(webView), WTF::move(delegate) };
+}
+
+TEST(SOAuthorizationRedirect, InterceptionCancel)
+{
+    resetState();
+    SWIZZLE_SOAUTH(PAL::getSOAuthorizationClassSingleton());
+
+    auto [webView, delegate] = startRedirectInterception();
     checkAuthorizationOptions(false, emptyString(), 0);
     EXPECT_TRUE(policyForAppSSOPerformed);
 
@@ -644,6 +653,33 @@ TEST(SOAuthorizationRedirect, InterceptionCancel)
     EXPECT_FALSE(webView.get().loading);
     EXPECT_FALSE(navigationCompleted);
 }
+
+#if GTEST_HAS_DEATH_TEST
+static void cancelAuthorizationOffMainThread()
+{
+    resetState();
+    SWIZZLE_SOAUTH(PAL::getSOAuthorizationClassSingleton());
+
+    auto interception = startRedirectInterception();
+
+    Thread::create("cancelAuthorizationOffMainThread"_s, [] {
+        [gDelegate authorizationDidCancel:gAuthorization];
+    })->waitForCompletion();
+}
+
+// The SOAuthorization delegate must be called on the main thread; a call from another thread traps.
+// The trap's signal is checked, so that a crash of another kind does not pass.
+TEST(SOAuthorizationRedirectDeathTest, InterceptionCancelOffMainThread)
+{
+    ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+#if CPU(X86_64)
+    constexpr int trapSignal = SIGILL;
+#else
+    constexpr int trapSignal = SIGTRAP;
+#endif
+    ASSERT_EXIT(cancelAuthorizationOffMainThread(), ::testing::KilledBySignal(trapSignal), "");
+}
+#endif
 
 TEST(SOAuthorizationRedirect, InterceptionCompleteWithoutData)
 {
@@ -751,7 +787,7 @@ TEST(SOAuthorizationRedirect, InterceptionSucceed2)
 #if PLATFORM(MAC)
     [webView _loadRequest:[NSURLRequest requestWithURL:testURL.createNSURL().get()] shouldOpenExternalURLs:YES];
 #elif PLATFORM(IOS) || PLATFORM(VISION)
-    // Here we force RedirectSOAuthorizationSession to go to the with user gestures route.
+    // Here we force the redirect session to go to the with user gestures route.
     [webView evaluateJavaScript:adoptNS([[NSString alloc] initWithFormat:@"location = '%@'", testURL.string().createNSString().get()]).get() completionHandler:nil];
 #endif
     Util::run(&authorizationPerformed);
@@ -784,7 +820,7 @@ TEST(SOAuthorizationRedirect, InterceptionSucceed3)
 #if PLATFORM(MAC)
     [webView _loadRequest:[NSURLRequest requestWithURL:testURL.createNSURL().get()] shouldOpenExternalURLs:YES];
 #elif PLATFORM(IOS) || PLATFORM(VISION)
-    // Here we force RedirectSOAuthorizationSession to go to the with user gestures route.
+    // Here we force the redirect session to go to the with user gestures route.
     [webView evaluateJavaScript:adoptNS([[NSString alloc] initWithFormat:@"location = '%@'", testURL.string().createNSString().get()]).get() completionHandler:nil];
 #endif
     Util::run(&authorizationPerformed);
@@ -1244,7 +1280,7 @@ TEST(SOAuthorizationRedirect, InterceptionSucceedWithRedirectionAndCookie)
 #if PLATFORM(MAC)
     [webView loadRequest:[NSURLRequest requestWithURL:testURL.createNSURL().get()]];
 #elif PLATFORM(IOS) || PLATFORM(VISION)
-    // Here we force RedirectSOAuthorizationSession to go to the with user gestures route.
+    // Here we force the redirect session to go to the with user gestures route.
     [webView evaluateJavaScript:adoptNS([[NSString alloc] initWithFormat:@"location = '%@'", testURL.string().createNSString().get()]).get() completionHandler:nil];
 #endif
     Util::run(&authorizationPerformed);

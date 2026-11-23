@@ -1018,6 +1018,8 @@ if (SWIFT_REQUIRED)
             UIProcess/API/ios/WKWebViewIOS.mm
             UIProcess/API/mac/WKWebViewMac.mm
 
+            UIProcess/Cocoa/SOAuthorization/SOAuthorizationCoordinator.mm
+
             UIProcess/PhoneNumberPossession/Cocoa/WebPhoneNumberPossessionCoordinatorProxyCocoa.mm
 
             UIProcess/ios/ViewGestureControllerIOS.mm
