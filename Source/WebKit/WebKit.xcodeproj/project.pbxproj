@@ -7651,6 +7651,7 @@
 		93BA04DF2151ADF4007F455F /* WebSWOriginStore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebSWOriginStore.cpp; sourceTree = "<group>"; };
 		93BA04E02151ADF4007F455F /* WebSWServerConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSWServerConnection.h; sourceTree = "<group>"; };
 		93BA04E12151ADF4007F455F /* WebSWServerConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebSWServerConnection.cpp; sourceTree = "<group>"; };
+		93D1D8EF2F4E7A1A005C926B /* SOAuthorizationSwiftSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SOAuthorizationSwiftSupport.h; sourceTree = "<group>"; };
 		93D1EEF429669D73009B31D6 /* UnifiedOriginStorageLevel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnifiedOriginStorageLevel.h; sourceTree = "<group>"; };
 		93D6B767254B7BC60058DD3A /* WebSpeechRecognitionConnection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebSpeechRecognitionConnection.cpp; sourceTree = "<group>"; };
 		93D6B768254B7BC60058DD3A /* WebSpeechRecognitionConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSpeechRecognitionConnection.h; sourceTree = "<group>"; };
@@ -15107,6 +15108,7 @@
 				57FD317722B35149008D0E8B /* SubFrameSOAuthorizationSession.mm */,
 				57FD317122B35148008D0E8B /* WKSOAuthorizationDelegate.h */,
 				57FD317E22B3514A008D0E8B /* WKSOAuthorizationDelegate.mm */,
+				93D1D8EF2F4E7A1A005C926B /* SOAuthorizationSwiftSupport.h */,
 			);
 			path = SOAuthorization;
 			sourceTree = "<group>";

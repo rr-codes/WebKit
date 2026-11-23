@@ -27,3 +27,8 @@
 
 #include "IPCTesterReceiverMessages.h"
 #include "SecurityFlags.h"
+
+#if HAVE(APP_SSO)
+// A project header that neither build installs, so it is included by its path from this directory.
+#include "../../UIProcess/Cocoa/SOAuthorization/SOAuthorizationSwiftSupport.h"
+#endif
