@@ -9060,6 +9060,7 @@
 		EEEEBCBC2EE35A8B000FF6AF /* UIWindowScene+Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "UIWindowScene+Extras.swift"; path = "$(BUILT_PRODUCTS_DIR)/DerivedSources/WebKit/UIWindowScene+Extras.swift"; sourceTree = "<group>"; };
 		EEFE72782D64FE5600DC6214 /* StageModeInteractionState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StageModeInteractionState.h; sourceTree = "<group>"; };
 		F036978715F4BF0500C3A80E /* WebColorPicker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebColorPicker.cpp; sourceTree = "<group>"; };
+		F18E04FA148524BF26D23E33 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		F30EE46D2E721ECE00935B60 /* FrameInspectorTarget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FrameInspectorTarget.h; sourceTree = "<group>"; };
 		F30EE46F2E721EDB00935B60 /* FrameInspectorTarget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameInspectorTarget.cpp; sourceTree = "<group>"; };
 		F30EE4702E72225D00935B60 /* PageInspectorTargetProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PageInspectorTargetProxy.h; sourceTree = "<group>"; };
@@ -9496,6 +9497,7 @@
 		C5B999CD29BB9B11852EBA95 /* WebPhoneNumberPossessionCoordinatorProxyCocoa.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WebPhoneNumberPossessionCoordinatorProxyCocoa.mm; sourceTree = "<group>"; };
 		22FE3E4E5FDB2A3685605EB9 /* PhoneNumberPossessionManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneNumberPossessionManaging.swift; sourceTree = "<group>"; };
 		34FC558120E9C9FB6C819C9C /* MockPhoneNumberPossessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPhoneNumberPossessionManager.swift; sourceTree = "<group>"; };
+		855FB98EA6BEE04A9E68A66D /* AppSSO_SPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppSSO_SPI.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -9760,6 +9762,7 @@
 		0744DA522CE05F5300AACC81 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				07FE9C8C4EFFCD8F47E2E782 /* AppSSO_SPI */,
 				0744DA532CE05F9500AACC81 /* module.modulemap */,
 				5E55104200000000000C000F /* SecurityFlagsForSwift.h */,
 				07EF24BE2E309EFE004429B6 /* WebKitInternalCxx.h */,
@@ -10071,6 +10074,15 @@
 				07D489B52E9F097B00330200 /* RemoteMediaSessionState.serialization.in */,
 			);
 			path = Media;
+			sourceTree = "<group>";
+		};
+		07FE9C8C4EFFCD8F47E2E782 /* AppSSO_SPI */ = {
+			isa = PBXGroup;
+			children = (
+				855FB98EA6BEE04A9E68A66D /* AppSSO_SPI.h */,
+				F18E04FA148524BF26D23E33 /* module.modulemap */,
+			);
+			path = AppSSO_SPI;
 			sourceTree = "<group>";
 		};
 		0867D691FE84028FC02AAC07 /* WebKit2 */ = {

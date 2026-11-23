@@ -1,0 +1,5 @@
+module AppSSO_SPI [system] {
+    requires objc
+    header "AppSSO_SPI.h"
+    export *
+}
